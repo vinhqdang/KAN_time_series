@@ -1,0 +1,10 @@
+torch
+kan
+aiokafka
+yfinance
+pandas
+numpy
+scikit-learn
+pandas_datareader
+fredapi
+nest_asyncio
