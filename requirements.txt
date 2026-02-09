@@ -1,5 +1,5 @@
 torch
-kan
+pykan
 aiokafka
 yfinance
 pandas
@@ -8,3 +8,6 @@ scikit-learn
 pandas_datareader
 fredapi
 nest_asyncio
+tqdm
+pyyaml
+matplotlib
