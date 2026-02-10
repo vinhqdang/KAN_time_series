@@ -5,35 +5,87 @@ from .utils import LagAttention, TemporalModulator, gumbel_sigmoid_sample
 
 # Simple B-Spline Function for a single edge
 class BSplineFunction(nn.Module):
-    def __init__(self, grid_size=10, order=3):
+    def __init__(self, grid_size=10, spline_order=3, scale_noise=0.1, scale_base=1.0, grid_eps=0.02, grid_range=[-1, 1]):
         super().__init__()
         self.grid_size = grid_size
+        self.spline_order = spline_order
+        self.grid_range = grid_range
+        
+        # Grid parameters
+        h = (grid_range[1] - grid_range[0]) / grid_size
+        grid = (
+            (
+                torch.arange(-spline_order, grid_size + spline_order + 1) * h
+                + grid_range[0]
+            )
+            .expand(1, -1)
+            .contiguous()
+        )
+        self.register_buffer("grid", grid) # [1, G + 2k + 1]
+        
+        # Trainable coefficients
+        self.coef = nn.Parameter(
+            (scale_noise * (torch.rand(1, grid_size + spline_order) - 0.5))
+            * scale_base
+        )
+        
+    def b_splines(self, x):
+        """
+        Compute B-spline bases for x.
+        x: [batch_size]
+        Returns: [batch_size, num_coeffs]
+        """
+        # x shape adjustment
+        if x.dim() == 1:
+            x = x.unsqueeze(-1)
+            
+        assert x.dim() == 2 and x.size(1) == 1
+        
+        
+        grid = self.grid
+        # x = x.expand(-1, grid.size(1)) # Incorrect expansion causing shape mismatch
+        
+        k = self.spline_order
+        
+        # Basis order 0
+        bases = ((x >= grid[:, :-1]) & (x < grid[:, 1:])).to(x.dtype)
+        
+        # Recursive Cox-de Boor
+        for i in range(1, k + 1):
+            # bases at iteration i has shape [batch, grid_len - i]
+            # We need to compute [batch, grid_len - i - 1]
+            
+            # term 1
+            left_num = x - grid[:, :-(i+1)]
+            left_den = grid[:, i:-1] - grid[:, :-(i+1)]
+            term1 = (left_num / (left_den + 1e-8)) * bases[:, :-1]
+            
+            # term 2
+            right_num = grid[:, i+1:] - x
+            right_den = grid[:, i+1:] - grid[:, 1:-i]
+            term2 = (right_num / (right_den + 1e-8)) * bases[:, 1:]
+            
+            bases = term1 + term2
+            
+        return bases
 
-        self.order = order
-        # Coeffs: grid + order
-        self.coeffs = nn.Parameter(torch.randn(grid_size + order) * 0.1)
-        
     def forward(self, x):
-        # x: [batch]
-        # Simplified linear B-spline for prototype speed (can upgrade to cubic)
-        # Mapping x (assumed normalized/bounded) to grid
-        # For robust implementation we should use the same logic as efficient-kan or pykan
-        # Here implementing a simple grid lookup for "Univariate Function"
+        # x is [batch] or [batch, 1]
+        # Normalize/Clamp x to grid range? 
+        # KAN usually expects inputs in [-1, 1]. We should use Tanh or similar before?
+        # Or Just clamp.
+        original_shape = x.shape
+        x = x.view(-1, 1)
         
-        # Norm to [0, 1] loosely
-        x_clamped = torch.sigmoid(x) # continuous relaxation 
+        # Optional: Dynamic grid update (not implementing here for simplicity)
+        x_clamped = torch.clamp(x, self.grid_range[0], self.grid_range[1])
         
-        # Grid index
-        idx = x_clamped * (self.grid_size - 1)
-        k = idx.long()
-        w1 = idx - k
-        w0 = 1.0 - w1
+        bases = self.b_splines(x_clamped) # [Batch, Coeffs]
         
-        # Safe lookup
-        c0 = self.coeffs[torch.clamp(k, 0, len(self.coeffs)-1)]
-        c1 = self.coeffs[torch.clamp(k+1, 0, len(self.coeffs)-1)]
+        # y = sum(c_i * B_i(x))
+        y = torch.matmul(bases, self.coef.t()) # [Batch, 1]
         
-        return c0 * w0 + c1 * w1
+        return y.view(original_shape)
 
 class CDKANLayer(nn.Module):
     def __init__(self, in_features, out_features, max_lag=10, grid_size=5, learn_structure=True):

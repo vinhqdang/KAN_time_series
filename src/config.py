@@ -19,8 +19,8 @@ HORIZON = 1  # one-step ahead
 MAX_SCORED = 50     # max scored predictions per asset before stopping
 
 # Date Range
-START_DATE = "2023-01-01"
-END_DATE   = "2024-01-01"
+START_DATE = "2020-01-01"
+END_DATE   = "2025-01-01"
 
 # Map for optional FRED daily series
 FRED_SERIES = {
@@ -33,4 +33,9 @@ ASSETS = {
     "GLD":     {"ticker": "GLD"},
     "WTI":     {"ticker": "CL=F"},
     "DXY":     {"ticker": "DX-Y.NYB"},
+    "SPX":     {"ticker": "^GSPC"}, # S&P 500
+    "BTC":     {"ticker": "BTC-USD"}, # Bitcoin
+    "SLV":     {"ticker": "SLV"},   # Silver
+    "COPPER":  {"ticker": "HG=F"},  # Copper
+    "NG":      {"ticker": "NG=F"},  # Natural Gas
 }

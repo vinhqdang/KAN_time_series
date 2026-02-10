@@ -178,3 +178,83 @@ def load_and_preprocess_data():
         }
         print(f"{asset}: train {X[:split].shape}, test {X[split:].shape}")
     return scalers, datasets
+
+def load_multivariate_data():
+    """
+    Load all assets defined in config.ASSETS, align timestamps, and return a unified dataset.
+    Returns:
+        scaler: fitted MinMaxScaler
+        dataset: dict with X_train, y_train, X_test, y_test, asset_names, raw_df
+    """
+    raw_dfs = []
+    asset_names = []
+    
+    # Pre-fetch series to align
+    print("=== Loading Multivariate Data ===")
+    for name, cfg in ASSETS.items():
+        print(f"Fetching {name}...")
+        try:
+            df = load_close_series(cfg["ticker"], start=START_DATE, end=END_DATE)
+            if df is not None:
+                # Rename 'Close' to asset name
+                df = df.rename(columns={"Close": name})
+                raw_dfs.append(df)
+                asset_names.append(name)
+        except Exception as e:
+            print(f"Skipping {name}: {e}")
+            
+    if not raw_dfs:
+        print("No data loaded via API, trying to generate synthetic if needed? No, raising error.")
+        raise RuntimeError("No data loaded! Check API keys or internet connection.")
+        
+    # Merge all on index (Outer join then fill?)
+    # Inner join is safer to ensure we have data for all, but might lose too much history if one asset is short.
+    # Let's do Outer join and ffill carefully.
+    full_df = pd.concat(raw_dfs, axis=1)
+    full_df = full_df.sort_index()
+    
+    # Fill missing values (forward fill then backward fill)
+    full_df = full_df.ffill().bfill().dropna()
+    
+    print(f"Aligned Data Shape: {full_df.shape}")
+    print(f"Assets: {asset_names}")
+    
+    # Scale
+    scaler = MinMaxScaler()
+    data_values = full_df.values.astype(np.float32)
+    data_scaled = scaler.fit_transform(data_values)
+    
+    # Split
+    n = len(data_scaled)
+    n_train = int(n * 0.8)
+    
+    train_data = data_scaled[:n_train]
+    test_data = data_scaled[n_train:]
+    
+    # Sliding Window
+    def make_dataset(d):
+        X, Y = [], []
+        # Need at least Window + Horizon
+        if len(d) < WINDOW + HORIZON:
+            return np.zeros((0, WINDOW, d.shape[1])), np.zeros((0, HORIZON, d.shape[1]))
+            
+        for i in range(len(d) - WINDOW - HORIZON + 1):
+            X.append(d[i : i+WINDOW])
+            Y.append(d[i+WINDOW : i+WINDOW+HORIZON])
+        return np.array(X, dtype=np.float32), np.array(Y, dtype=np.float32)
+        
+    X_train, y_train = make_dataset(train_data)
+    X_test, y_test = make_dataset(test_data)
+    
+    # To Tensor
+    dataset = {
+        "X_train": torch.from_numpy(X_train).to(DEVICE),
+        "y_train": torch.from_numpy(y_train).to(DEVICE), # [Batch, Horizon, Num_Assets]
+        "X_test": torch.from_numpy(X_test).to(DEVICE),
+        "y_test": torch.from_numpy(y_test).to(DEVICE),
+        "asset_names": asset_names,
+        "raw_df": full_df
+    }
+    
+    print(f"Train: {X_train.shape} -> {y_train.shape}")
+    return scaler, dataset
