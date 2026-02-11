@@ -53,7 +53,7 @@ def gumbel_softmax_sample(logits, temperature):
     y = y + gumbel_noise
     return F.softmax(y / temperature, dim=-1)
 
-def gumbel_sigmoid_sample(logits, temperature):
+def gumbel_sigmoid_sample(logits, temperature, hard=False):
     # For binary case: P(1) = sigmoid(logits)
     # Gumbel-Softmax on [logits, 0] is equivalent to Gumbel-Sigmoid
     # Or simple logistic noise:
@@ -61,4 +61,12 @@ def gumbel_sigmoid_sample(logits, temperature):
     u = torch.rand_like(logits)
     logistic_noise = torch.log(u + 1e-8) - torch.log(1 - u + 1e-8)
     y = (logits + logistic_noise) / temperature
-    return torch.sigmoid(y)
+    y_soft = torch.sigmoid(y)
+    
+    if hard:
+        # Straight-through estimator
+        y_hard = (y_soft > 0.5).float()
+        y = (y_hard - y_soft).detach() + y_soft
+        return y
+    
+    return y_soft

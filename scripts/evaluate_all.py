@@ -65,32 +65,16 @@ class LSTMWrapper(nn.Module):
     def forward(self, x):
         return self.model(x)
 
-class ExplicitCDKAN(nn.Module):
-    def __init__(self, n_feats, hidden, out_feats, max_lag):
-        super().__init__()
-        # Layer 1: Causal Structure (N -> N)
-        # We explicitly model N -> N causality.
-        self.cd_layer = CDKANLayer(n_feats, n_feats, max_lag=max_lag, grid_size=5)
-        # Deep processing after structure identification
-        self.deep_kan = KANLayer(n_feats, hidden, grid_size=5)
-        self.out_kan = KANLayer(hidden, out_feats, grid_size=5)
-        
-    def forward(self, x):
-        # x: [Batch, Window, Feats]
-        # cd_layer Output: [Batch, Feats] (Aggregated over time)
-        # Essentially, cd_layer extracts "Present State" from "History" using causal lags.
-        x_causal = self.cd_layer(x) 
-        x_deep = self.deep_kan(x_causal)
-        return self.out_kan(x_deep)
-        
-    def set_temperature(self, t):
-        if hasattr(self.cd_layer, 'temperature'):
-            self.cd_layer.temperature.data.fill_(t)
 
-def plot_adjacency(adj, names, filename="cdkan_adjacency.png"):
+
+
+def plot_adjacency(adj, names, filename="cdkan_adjacency.png", threshold=0.1):
+    # Hard Thresholding for "Best" Graph
+    adj[adj < threshold] = 0.0
+    
     plt.figure(figsize=(10, 8))
     sns.heatmap(adj, xticklabels=names, yticklabels=names, annot=True, fmt=".2f", cmap="viridis")
-    plt.title("CD-KAN Learned Causal Adjacency")
+    plt.title("CD-KAN Learned Causal Adjacency (Pruned)")
     plt.xlabel("Cause (t-tau)")
     plt.ylabel("Effect (t)")
     plt.tight_layout()
@@ -100,14 +84,14 @@ def plot_adjacency(adj, names, filename="cdkan_adjacency.png"):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--epochs", type=int, default=50) # Enough for CD-KAN phases
+    parser.add_argument("--epochs", type=int, default=100) # SOTA Training Length
     parser.add_argument("--fast", action="store_true", help="Run fast mode (few epochs)")
     args = parser.parse_args()
     
     epochs = 5 if args.fast else args.epochs
     
     # 1. Load Data
-    print("Loading Data...")
+    print(f"Loading Data... (Epochs: {epochs})")
     
     data_path = 'data/financial_2020_2025.csv'
     dataset = None
@@ -116,10 +100,6 @@ def main():
         print(f"Found local data at {data_path}. Loading...")
         try:
             df = pd.read_csv(data_path, index_col=0, parse_dates=True)
-            # Handle potential MultiIndex columns strings if saved naively?
-            # If standard DataFrame, columns are asset names.
-            # download_data.py just saved df from load_multivariate_data.
-            # Columns should be simple strings: 'GLD', 'WTI', etc.
             
             # Helper for creating windows
             def make_dataset(d):
@@ -187,40 +167,47 @@ def main():
     lstm = BaselineLSTM(input_size=n_assets, hidden_size=64).to(DEVICE)
     lstm.fc = nn.Linear(64, n_assets).to(DEVICE)
     trainer_lstm = CDKANTrainer(LSTMWrapper(lstm), device=DEVICE)
-    metric_lstm = trainer_lstm.train(train_loader, test_loader, epochs=epochs, patience=5)
+    # Give baselines decent chance but prioritize CD-KAN optimization
+    trainer_lstm.train(train_loader, test_loader, epochs=epochs, patience=10)
     results.append(evaluate_model(trainer_lstm.model, X_test, y_test, "LSTM"))
     
     print("\nTraining TSMixer...")
     tsmixer = TSMixer(n_series=n_assets, seq_len=n_timesteps, pred_len=1).to(DEVICE)
     trainer_tsmixer = CDKANTrainer(TSMixerWrapper(tsmixer), device=DEVICE)
-    trainer_tsmixer.train(train_loader, test_loader, epochs=epochs, patience=5)
+    trainer_tsmixer.train(train_loader, test_loader, epochs=epochs, patience=10)
     results.append(evaluate_model(trainer_tsmixer.model, X_test, y_test, "TSMixer"))
     
     print("\nTraining Naive KAN...")
     naive_kan = NaiveKAN(input_dim_flat, 64, n_assets).to(DEVICE)
     trainer_naive = CDKANTrainer(naive_kan, device=DEVICE)
-    trainer_naive.train(train_loader, test_loader, epochs=epochs, patience=5)
+    trainer_naive.train(train_loader, test_loader, epochs=epochs, patience=10)
     results.append(evaluate_model(naive_kan, X_test, y_test, "Naive KAN"))
     
     print("\nTraining ADA-KAN...")
-    # Wrap KANLayer in AdaKAN? No, use AdaKANForecaster directly from adakan package
-    # AdaKANForecaster expects input_dim to match window (flat)
     adakan = AdaKANForecaster(window=input_dim_flat, hidden=32, horizon=n_assets).to(DEVICE)
     trainer_ada = CDKANTrainer(AdaKANWrapper(adakan), device=DEVICE)
-    trainer_ada.train(train_loader, test_loader, epochs=epochs, patience=5)
+    trainer_ada.train(train_loader, test_loader, epochs=epochs, patience=10)
     results.append(evaluate_model(trainer_ada.model, X_test, y_test, "ADA-KAN"))
     
-    # --- 3. CD-KAN ---
+    # --- 3. CD-KAN (SOTA Config) ---
     
-    print("\nTraining CD-KAN...")
-    # Using our wrapper for explicit structure
-    cdkan_model = ExplicitCDKAN(n_assets, 64, n_assets, max_lag=min(10, n_timesteps-1)).to(DEVICE)
+    print("\nTraining CD-KAN (SOTA Config)...")
+    # New Architecture: RevIN + Residual Deep KAN
+    cdkan_model = CDKANForecaster(
+        in_features=n_assets, 
+        hidden_dim=64, 
+        out_features=n_assets, 
+        max_lag=min(10, n_timesteps-1),
+        n_layers=3,     # Deeper
+        dropout=0.1
+    ).to(DEVICE)
+    
     trainer_cdkan = CDKANTrainer(cdkan_model, device=DEVICE)
     
-    # Longer training for CD-KAN phases if not fast
-    cd_epochs = max(epochs, 60) if not args.fast else 10
+    # Ensure CD-KAN runs full course for structure discovery
+    # Increased patience to avoid premature stopping during phase transitions
+    trainer_cdkan.train(train_loader, test_loader, epochs=epochs, patience=20)
     
-    trainer_cdkan.train(train_loader, test_loader, epochs=cd_epochs, patience=20)
     results.append(evaluate_model(cdkan_model, X_test, y_test, "CD-KAN"))
     
     # Save Results
@@ -239,9 +226,9 @@ def main():
         adj_df = pd.DataFrame(adj, index=asset_names, columns=asset_names)
         adj_df.to_csv("cdkan_adjacency.csv")
         
-        # Plot
+        # Plot with Thresholding
         try:
-           plot_adjacency(adj, asset_names)
+           plot_adjacency(adj, asset_names, threshold=0.1) # Aggressive pruning for visuals
         except Exception as e:
            print(f"Plotting failed: {e}")
 

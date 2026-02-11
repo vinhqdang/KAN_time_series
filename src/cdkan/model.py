@@ -1,108 +1,136 @@
 import torch
 import torch.nn as nn
 from .layers import CDKANLayer, KANLayer
-from src.config import WINDOW, HORIZON
+
+class RevIN(nn.Module):
+    def __init__(self, num_features: int, eps=1e-5, affine=True):
+        """
+        Reversible Instance Normalization for solving distribution shift.
+        """
+        super().__init__()
+        self.num_features = num_features
+        self.eps = eps
+        self.affine = affine
+        if self.affine:
+            self._init_params()
+
+    def _init_params(self):
+        self.affine_weight = nn.Parameter(torch.ones(self.num_features))
+        self.affine_bias = nn.Parameter(torch.zeros(self.num_features))
+
+    def forward(self, x, mode:str):
+        if mode == 'norm':
+            self._get_statistics(x)
+            x = self._normalize(x)
+        elif mode == 'denorm':
+            x = self._denormalize(x)
+        else: raise NotImplementedError
+        return x
+
+    def _get_statistics(self, x):
+        dim2reduce = tuple(range(1, x.ndim-1))
+        self.mean = torch.mean(x, dim=dim2reduce, keepdim=True).detach()
+        self.stdev = torch.sqrt(torch.var(x, dim=dim2reduce, keepdim=True, unbiased=False) + self.eps).detach()
+
+    def _normalize(self, x):
+        x = x - self.mean
+        x = x / self.stdev
+        if self.affine:
+            x = x * self.affine_weight
+            x = x + self.affine_bias
+        return x
+
+    def _denormalize(self, x):
+        if self.affine:
+            x = x - self.affine_bias
+            x = x / (self.affine_weight + 1e-10)
+        x = x * self.stdev
+        x = x + self.mean
+        return x
+
+class ResidualKANBlock(nn.Module):
+    def __init__(self, in_dim, out_dim, grid_size=10, dropout=0.1):
+        super().__init__()
+        self.kan = KANLayer(in_dim, out_dim, grid_size=grid_size)
+        self.norm = nn.LayerNorm(out_dim)
+        self.dropout = nn.Dropout(dropout)
+        self.skip = nn.Identity() if in_dim == out_dim else nn.Linear(in_dim, out_dim)
+
+    def forward(self, x):
+        # Residual connection
+        res = self.skip(x)
+        # KAN Path
+        out = self.kan(x)
+        out = self.norm(out)
+        out = self.dropout(out)
+        return out + res
 
 class CDKANForecaster(nn.Module):
-    @classmethod
-    def create_best(cls, in_features, hidden_dim=64, out_features=1, max_lag=10, dataset_name=""):
-        """Factory to create the optimal CD-KAN architecture for a given dataset."""
-        # Config A: High Frequency / Minutes (Deep CD-KAN)
-        if "m1" in dataset_name.lower(): 
-             # Proven Winner on ETTm1 (No RNN, Deep Stack)
-             model = cls(in_features, hidden_dim, out_features, max_lag, n_layers=3)
-             model.use_rnn = False
-             # Re-init layers without RNN logic which is set in __init__
-             model.layers = nn.ModuleList()
-             model.layers.append(CDKANLayer(in_features, hidden_dim, max_lag=max_lag))
-             model.layers.append(KANLayer(hidden_dim, hidden_dim, grid_size=20))
-             model.layers.append(KANLayer(hidden_dim, out_features, grid_size=20))
-             model.skip_head = nn.Identity() # Disable skip
-             return model
-             
-        # Config B: Low Frequency / Hourly / Volatile (Recurrent CD-KAN)
-        else:
-             # Proven Winner on ETTh2 (RNN Backbone + KAN Head)
-             # Use the Gated Residual setup which works well if tuned, or strict R-CDKAN
-             # Let's stick to strict R-CDKAN (proven in Step 818)
-             model = cls(in_features, hidden_dim, out_features, max_lag, n_layers=2)
-             model.use_rnn = True
-             # Reset layers for Recurrent Config
-             model.layers = nn.ModuleList()
-             model.layers.append(KANLayer(hidden_dim, hidden_dim, grid_size=10))
-             model.layers.append(KANLayer(hidden_dim, out_features, grid_size=10))
-             return model
-
-    def __init__(self, in_features, hidden_dim=64, out_features=1, max_lag=10, n_layers=2):
+    """
+    SOTA Causal Discovery KAN Forecaster.
+    Features:
+    - Residual Deep KAN Backbone
+    """
+    def __init__(self, in_features, hidden_dim=64, out_features=1, max_lag=10, n_layers=3, dropout=0.1, learn_structure=True):
         super().__init__()
-        self.n_layers = n_layers
-        self.layers = nn.ModuleList()
         
+        # 1. Reversible Instance Norm
+        self.revin = RevIN(in_features)
         
-        # R-CDKAN Adaptation: Recurrent Backbone
-        # To make it "Best", we combine RNN memory with KAN reasoning.
-        self.use_rnn = True
-        self.rnn = nn.GRU(in_features, hidden_dim, num_layers=2, batch_first=True, dropout=0.1)
+        # 2. Causal Structure Discovery Layer
+        # Maps [Batch, Window, Vars] -> [Batch, Vars] (Aggregation over time via causal lags)
+        self.cd_layer = CDKANLayer(in_features, in_features, max_lag=max_lag, grid_size=10, learn_structure=learn_structure) # Grid=10 for precision
         
-        # Layer 1: Temporal Causal Discovery / Feature Processing
-        # If RNN is used, input to KAN is [Batch, Hidden]. 
-        # So we skip "Temporal Lag" KAN layer (which reduces time) and go straight to Dense KANs?
-        # OR we treat RNN output as "features" and use CDKAN to find causal relations among latent states?
-        # Let's map RNN hidden -> KAN Input.
+        # 3. Mixing / Deep Reasoning Backbone
+        # Input to backbone is [Batch, Vars] (the "Current State" extracted from history)
+        # We process this state with a deep Residual KAN
+        self.backbone = nn.ModuleList()
+        # First projection from Vars -> Hidden
+        self.backbone.append(ResidualKANBlock(in_features, hidden_dim, grid_size=10, dropout=dropout))
         
-        # If using RNN, the first KAN layer maps Hidden -> Hidden
-        kan_in_dim = hidden_dim if self.use_rnn else in_features
-        
-        # Layer 1
-        if self.use_rnn:
-             # Standard Dense KAN for latent processing
-             self.layers.append(KANLayer(kan_in_dim, hidden_dim, grid_size=10)) # Reduced Grid to 10
-        else:
-             # Original Temporal Layer
-             self.layers.append(CDKANLayer(in_features, hidden_dim, max_lag=max_lag))
-        
-        # Layer 2+: Deep Composition (Dense KAN)
-        # Maps [Batch, Hidden] -> [Batch, Hidden] ... -> [Batch, Out]
-        for _ in range(n_layers - 2):
-            self.layers.append(KANLayer(hidden_dim, hidden_dim, grid_size=10)) # Reduced Grid to 10
+        # Hidden -> Hidden layers
+        for _ in range(n_layers - 1):
+            self.backbone.append(ResidualKANBlock(hidden_dim, hidden_dim, grid_size=10, dropout=dropout))
             
-        # Output Layer
-        if n_layers > 1:
-            self.layers.append(KANLayer(hidden_dim, out_features, grid_size=10)) # Reduced Grid to 10
+        # 4. Output Projection
+        self.output_head = KANLayer(hidden_dim, out_features, grid_size=10)
+        
+    def forward(self, x):
+        # x: [Batch, Window, Features]
+        
+        # 1. Normalize
+        x = self.revin(x, 'norm')
+        
+        # 2. Causal Extraction (The "Causal Twist")
+        # This layer learns WHICH past time points matter for the current state.
+        # Output: [Batch, Features]
+        x_causal = self.cd_layer(x)
+        
+        # 3. Deep Reasoning
+        x_hidden = x_causal
+        for block in self.backbone:
+            x_hidden = block(x_hidden)
             
-        # Residual Linear Head (Skip Connection)
-        self.skip_head = nn.Linear(hidden_dim, out_features)
+        # 4. Prediction
+        out = self.output_head(x_hidden)
         
-        # Learnable Gate for Skip Connection
-        # y = sigmoid(gate) * skip + (1 - sigmoid(gate)) * kan
-        # Init to favor Linear initially (0.0 -> 0.5, maybe -1.0 -> 0.27 to bias towards linear?)
-        self.gate = nn.Parameter(torch.tensor(0.0))
-        
-    def forward(self, x_history):
-        # x_history: [Batch, Window, Features]
-        
-        x = x_history
-        if self.use_rnn:
-            # RNN Forward
-            r_out, _ = self.rnn(x)
-            x = r_out[:, -1, :] # [Batch, Hidden]
+        # 5. Denormalize
+        # Note: RevIN denorm expects same shape as input usually, but we are predicting different shape?
+        # Usually RevIN is for [Batch, Window, Vars] -> [Batch, Window, Vars].
+        # Here we predict [Batch, Out_Vars]. 
+        # If Out_Vars == In_Features, we can use RevIN.
+        # Assuming Out_Features (Prediction Target) is a subset or same as In_Features.
+        # For this dataset, we predict ALL assets (Next Step), so Out == In.
+        if out.shape[-1] == self.revin.num_features:
+            out = out.unsqueeze(1)
+            out = self.revin(out, 'denorm')
+            out = out.squeeze(1)
             
-        # 1. KAN Path
-        kan_out = x
-        for i in range(len(self.layers)):
-            kan_out = self.layers[i](kan_out)
+        return out
+        
+    def set_temperature(self, t):
+        if hasattr(self.cd_layer, 'temperature'):
+            self.cd_layer.temperature.data.fill_(t)
             
-        # 2. Skip Path (Linear)
-        skip_out = 0.0
-        if self.use_rnn:
-             skip_out = self.skip_head(x)
-        
-        # Gated Combination
-        alpha = torch.sigmoid(self.gate)
-        # alpha * Linear + (1-alpha) * KAN
-        return alpha * skip_out + (1 - alpha) * kan_out
-        
-    def set_temperature(self, temp):
-        # Propagate temp to all CDKANLayers (only first layer usually has it)
-        if hasattr(self.layers[0], 'temperature'):
-            self.layers[0].temperature.data.fill_(temp)
+    def prune(self, density=0.2):
+        self.cd_layer.prune_edges(target_density=density)

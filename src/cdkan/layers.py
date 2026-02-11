@@ -87,6 +87,29 @@ class BSplineFunction(nn.Module):
         
         return y.view(original_shape)
 
+class CausalStructure(nn.Module):
+    def __init__(self, num_nodes, init_scale=0.1):
+        super().__init__()
+        self.num_nodes = num_nodes
+        # Initialize logits near 0 (prob ~ 0.5) or slightly negative to encourage sparsity start
+        self.adj_logits = nn.Parameter(torch.zeros(num_nodes, num_nodes))
+        nn.init.uniform_(self.adj_logits, -init_scale, init_scale)
+
+    def forward(self, temperature=1.0, hard=False):
+        """
+        Returns the adjacency matrix Probabilities (or sampled mask).
+        """
+        if self.training:
+            # Gumbel-Sigmoid for differentiable discrete sampling
+            return gumbel_sigmoid_sample(self.adj_logits, temperature, hard=hard)
+        else:
+            # Deterministic/Soft during Inference
+            return torch.sigmoid(self.adj_logits)
+
+    def get_adj(self):
+        """Returns raw probabilities for analysis"""
+        return torch.sigmoid(self.adj_logits)
+
 class CDKANLayer(nn.Module):
     def __init__(self, in_features, out_features, max_lag=10, grid_size=5, learn_structure=True):
         super().__init__()
@@ -97,10 +120,13 @@ class CDKANLayer(nn.Module):
         self.edge_functions = nn.ModuleDict()
         self.lag_attention = nn.ModuleDict()
         self.modulators = nn.ModuleDict()
-        self.edge_logits = nn.ParameterDict() # For structure learning
         
         self.learn_structure = learn_structure
         
+        # Centralized Structure Learner
+        if learn_structure:
+            self.causal_structure = CausalStructure(num_nodes=max(in_features, out_features))
+
         for i in range(out_features):
             for j in range(in_features):
                 edge_id = f"{i}_{j}"
@@ -113,79 +139,84 @@ class CDKANLayer(nn.Module):
                 
                 # 3. Modulator
                 self.modulators[edge_id] = TemporalModulator(input_dim=1)
-                
-                # 4. Structure Prob (Logits)
-                if learn_structure:
-                    # Init logits to higher value to encourage edges initially (sigmoid(2.0) ~= 0.88)
-                    self.edge_logits[edge_id] = nn.Parameter(torch.tensor(2.0))
                     
         self.register_buffer('temperature', torch.tensor(1.0))
         
     def forward(self, x_history):
         # x_history: [batch, seq_len, in_features]
-        # seq_len must be >= max_lag + 1
-        
         batch_size, seq_len, _ = x_history.shape
         output = torch.zeros(batch_size, self.out_features, device=x_history.device)
-        
-        # Current time step is the last one
         t_curr = seq_len - 1
         
+        # Get Structure Mask [Out, In]
+        if self.learn_structure:
+            full_adj = self.causal_structure(self.temperature, hard=self.training)
+            # Slice to relevant dimensions if non-square
+            adj_mask = full_adj[:self.out_features, :self.in_features]
+        else:
+            adj_mask = torch.ones(self.out_features, self.in_features, device=x_history.device)
+
         for i in range(self.out_features):
             edge_accum = 0.0
             for j in range(self.in_features):
                 edge_id = f"{i}_{j}"
                 
                 # A. Lag Attention
-                w_lag = self.lag_attention[edge_id].get_weights() # [max_lag+1]
-                
-                # Extract lagged input: sum(w[tau] * x[t - tau])
-                # We can vectorize this extraction
-                # Slice history: x_history[:, t_curr-max_lag : t_curr+1, j]
-                # Reversing the slice to match lags [0, 1, ..., max_lag]
-                history_window = x_history[:, t_curr-self.max_lag : t_curr+1, j] # [Batch, lag+1]
-                history_window = torch.flip(history_window, dims=[1]) # Now index 0 is lag 0 (t_curr), index 1 is lag 1...
-                
-                x_lagged = (history_window * w_lag).sum(dim=1) # [Batch]
+                w_lag = self.lag_attention[edge_id].get_weights()
+                history_window = x_history[:, t_curr-self.max_lag : t_curr+1, j] 
+                history_window = torch.flip(history_window, dims=[1])
+                x_lagged = (history_window * w_lag).sum(dim=1)
                 
                 # B. KAN Function
                 y_edge = self.edge_functions[edge_id](x_lagged)
                 
                 # C. Temporal Modulation
-                # We use the full history series for the modulator RNN
-                alpha = self.modulators[edge_id](x_history[:, :, j:j+1]) # [Batch, 1]
+                alpha = self.modulators[edge_id](x_history[:, :, j:j+1])
                 
-                # D. Structure Learning
-                mask = 1.0
-                if self.learn_structure:
-                    if self.training:
-                         mask = gumbel_sigmoid_sample(self.edge_logits[edge_id], self.temperature)
-                    else:
-                         mask = torch.sigmoid(self.edge_logits[edge_id]) > 0.5
-                         mask = mask.float()
+                # D. Apply Mask
+                mask = adj_mask[i, j]
                 
-                edge_accum = edge_accum + y_edge * alpha.squeeze(-1) * mask.squeeze(-1)
+                edge_accum = edge_accum + y_edge * alpha.squeeze(-1) * mask
                 
             output[:, i] = edge_accum
             
         return output
-
-    def get_causal_graph(self):
-        adj = torch.zeros(self.out_features, self.in_features)
-        lags = torch.zeros(self.out_features, self.in_features)
+    
+    def get_adjacency(self):
+        """Returns the learned soft adjacency matrix [Out, In]"""
+        if self.learn_structure:
+            full_adj = self.causal_structure.get_adj()
+            return full_adj[:self.out_features, :self.in_features]
+        return torch.ones(self.out_features, self.in_features)
+    
+    def get_feature_importance(self):
+        """
+        Compute edge importance based on:
+        Importance = Probability * Mean(Abs(Coefficients))
+        """
+        importance = torch.zeros(self.out_features, self.in_features)
         
+        # Move probabilities to same device/cpu for calculation
+        # It's safer to keep on CPU for numpy conversion later
+        if self.learn_structure:
+            adj_probs = self.get_adjacency().detach().cpu() 
+        else:
+            adj_probs = torch.ones(self.out_features, self.in_features)
+            
         with torch.no_grad():
             for i in range(self.out_features):
                 for j in range(self.in_features):
                     edge_id = f"{i}_{j}"
-                    if self.learn_structure:
-                        prob = torch.sigmoid(self.edge_logits[edge_id])
-                        adj[i, j] = prob
-                    else:
-                        adj[i, j] = 1.0
+                    
+                    # 1. Structure Probability
+                    prob = adj_probs[i, j]
                         
-                    lags[i, j] = self.lag_attention[edge_id].get_expected_lag()
-        return adj, lags
+                    # 2. Coefficient Magnitude
+                    coef_norm = self.edge_functions[edge_id].coef.abs().mean().cpu()
+                    
+                    importance[i, j] = prob * coef_norm
+                    
+        return importance
 
 class KANLayer(nn.Module):
     def __init__(self, in_features, out_features, grid_size=20):
