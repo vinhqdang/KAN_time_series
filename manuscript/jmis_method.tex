@@ -1,0 +1,81 @@
+
+\section{Our Method}
+
+In this section, we present the proposed Causal Discovery Kolmogorov-Arnold Network (CD-KAN). Our framework addresses the dual challenge of time series forecasting and causal structure learning by integrating two key components: (1) A learnable, interpretable function approximation based on the Kolmogorov-Arnold representation theorem, and (2) A rigorous differentiable DAG learning mechanism enforced via the Augmented Lagrangian Method.
+
+\subsection{Problem Formulation}
+
+Let $\mathbf{X} = \{\mathbf{x}_1, \mathbf{x}_2, \dots, \mathbf{x}_T\}$ be a multivariate time series of length $T$, where each $\mathbf{x}_t \in \mathbb{R}^d$ represents a vector of $d$ variables at time $t$. We assume the data generation process follows a non-linear Structural Vector Autoregressive (SVAR) model:
+
+\begin{equation}
+    x_{t,j} = f_j(\mathbf{x}_{t-L:t}^{(\text{PA}(j))}) + \epsilon_{t,j}, \quad j=1,\dots,d
+\end{equation}
+
+where $x_{t,j}$ is the value of variable $j$ at time $t$, $\mathbf{x}_{t-L:t}$ represents the history of variables over a maximum lag window $L$, $\text{PA}(j)$ denotes the set of causal parents of variable $j$, and $\epsilon_{t,j}$ is independent noise.
+
+Our goal is twofold:
+\begin{enumerate}
+    \item \textbf{Forecasting}: Predict the future state $\mathbf{x}_{t+1}$ given history $\mathbf{x}_{t-L:t}$ by learning the functions $f_j$.
+    \item \textbf{Causal Discovery}: Recover the underlying causal graph $\mathcal{G} = (\mathcal{V}, \mathcal{E})$ represented by the adjacency matrix $A \in \{0,1\}^{d \times d}$, such that $A_{ij}=1$ if variable $i$ causes variable $j$.
+\end{enumerate}
+
+\subsection{The CD-KAN Architecture}
+
+The CD-KAN architecture consists of three sequential modules: Reversible Instance Normalization (RevIN), the Causal Discovery Layer, and the Residual KAN Backbone. Figure \ref{fig:architecture} illustrates the overall framework.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\textwidth]{figures/cdkan_architecture.png}
+    \caption{Overview of the CD-KAN Architecture. The model processes time series input through RevIN normalization, learns a sparse causal structure via the Causal Discovery Layer using Gumbel-Sigmoid sampling, and approximates non-linear dynamics using Residual KAN Blocks. The DAG constraint is enforced during training via the Augmented Lagrangian Method.}
+    \label{fig:architecture}
+\end{figure}
+
+\subsubsection{Causal Discovery Layer}
+To enable end-to-end differentiable structure learning, we parameterize the adjacency matrix $A$ as a learnable matrix of logits $\Theta \in \mathbb{R}^{d \times d}$. During the forward pass, we approximate the discrete binary adjacency matrix using the Gumbel-Sigmoid Estimator \cite{Jang2017}:
+
+\begin{equation}
+    A_{ij} = \sigma\left(\frac{\Theta_{ij} + g}{\tau}\right)
+\end{equation}
+
+where $\sigma(\cdot)$ is the sigmoid function, $g \sim \text{Gumbel}(0,1)$ is noise sampled from the Gumbel distribution, and $\tau$ is a temperature parameter. As $\tau \to 0$, $A_{ij}$ approaches the discrete distribution. We employ the Straight-Through Estimator (STE) during the backward pass to allow gradient flow through the discrete samples.
+
+The learnable adjacency matrix $A$ acts as a mask on the input features for the subsequent layers. For a target variable $j$, the input from variable $i$ is weighted by $A_{ij}$. If $A_{ij} \approx 0$, the connection is pruned, and the causal link is removed.
+
+\subsubsection{Kolmogorov-Arnold Representation}
+Unlike standard Multi-Layer Perceptrons (MLPs) which use fixed activation functions, KANs \cite{Liu2024} place learnable activation functions on edges. We model the causal mechanism $f_{i \to j}$ using B-splines:
+
+\begin{equation}
+    \phi(x) = \sum_{k=1}^{G} c_k B_k(x)
+\end{equation}
+
+where $B_k(x)$ are B-spline basis functions on a grid of size $G$, and $c_k$ are learnable coefficients. This allows CD-KAN to learn arbitrary non-linear causal functions (e.g., quadratic, exponential) for each edge, offering superior interpretability compared to black-box neural networks.
+
+\subsection{Optimization with Structural Constraints}
+
+To ensure the learned graph is a Directed Acyclic Graph (DAG), we employ the continuous characterization of acyclicity proposed by NOTEARS \cite{Zheng2018}:
+
+\begin{equation}
+    h(A) = \text{tr}(e^{A \circ A}) - d = 0
+\end{equation}
+
+where $A \circ A$ denotes the Hadamard product. The condition $h(A)=0$ is satisfied if and only if $A$ is acyclic.
+
+We formulate the training as a constrained optimization problem:
+
+\begin{equation}
+    \min_{\Theta, \Phi} \mathcal{L}_{\text{MSE}} + \lambda_{\text{sparse}} \|A\|_1 \quad \text{subject to} \quad h(A) = 0
+\end{equation}
+
+We solve this using the Augmented Lagrangian Method (ALM). The objective function is:
+
+\begin{equation}
+    \mathcal{L}(\Theta, \Phi, \alpha, \rho) = \mathcal{L}_{\text{MSE}} + \lambda_{\text{sparse}} \|A\|_1 + \alpha h(A) + \frac{\rho}{2} h(A)^2
+\end{equation}
+
+where $\alpha$ is the Lagrange multiplier and $\rho$ is the penalty parameter. The training proceeds in a dual-loop fashion:
+\begin{itemize}
+    \item \textbf{Inner Loop}: Minimize $\mathcal{L}$ with respect to model parameters $\Theta$ (structure) and $\Phi$ (KAN weights).
+    \item \textbf{Outer Loop}: Update $\alpha \leftarrow \alpha + \rho h(A)$ and $\rho \leftarrow \beta \rho$ (where $\beta > 1$) if the constraint is not sufficiently satisfied.
+\end{itemize}
+
+This rigorous optimization ensures that CD-KAN learns sparse, interpretable, and valid causal graphs while maximizing forecasting accuracy.

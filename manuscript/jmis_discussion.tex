@@ -1,0 +1,22 @@
+
+\section{Discussion: Managerial Implications}
+
+The results presented above demonstrate that CD-KAN is not merely a technical improvement in forecasting accuracy but a significant advancement in the design of Decision Support Systems (DSS). In this section, we discuss the broader implications of our artifact for management practice and organizational strategy.
+
+\subsection{From Prediction to Strategic Sense-Making}
+Traditional forecasting systems operate as "oracles," providing predictions without context. While high accuracy is valuable, it is often insufficient for strategic decision-making. CD-KAN transforms time series analytics into a tool for **sense-making** \cite{Weick1995}. By explicitly modeling and visualizing the causal graph structure, managers can move beyond asking "what will happen?" to understanding "why it is happening."
+
+For instance, in our financial analysis, CD-KAN did not just predict asset price movements; it revealed specific lagged causal dependencies (e.g., how changes in oil prices propagate to transportation stocks with a 2-day lag). This allows portfolio managers to understand the *structural dynamics* of the market, enabling more robust investment strategies that are resilient to short-term noise.
+
+\subsection{Risk Management and Intervention}
+A key advantage of causal discovery over correlation-based methods is the ability to distinguish between spurious associations and true drivers. This distinction is critical for **risk management**. If a model identifies a correlation between variable $X$ and outcome $Y$ that is non-causal (e.g., both are driven by a confounder $Z$), intervening on $X$ will have no effect on $Y$.
+
+CD-KAN's rigorously enforced Directed Acyclic Graph (DAG) structure provides a map of genuine leverage points. For supply chain managers, this means accurately identifying which upstream bottlenecks (e.g., raw material delays) causally drive downstream shortages, allowing for targeted interventions rather than reactive firefighting. The interpretability of the KAN functions further reveals the *nature* of these relationships (e.g., linear vs. non-linear saturation), aiding in capacity planning.
+
+\subsection{Fostering Trust in AI-Augmented Decision Making}
+The "black box" nature of deep learning has been a major barrier to AI adoption in high-stakes organizational contexts \cite{Benbasat2021}. Managers are rightfully hesitant to rely on opaque algorithms for critical decisions. CD-KAN addresses this trust deficit through **structural transparency**.
+
+By providing an interpretable adjacency matrix and explicit functional forms for each connection, CD-KAN offers a "glass box" approach. Decisions can be audited and validated against domain knowledge. If the model learns a counter-intuitive causal link, it surfaces for expert review, fostering a collaborative loop between human intuition and machine intelligence. This alignment with the "human-in-the-loop" paradigm is essential for the successful organizational embedding of AI systems.
+
+\subsection{Limitations and Boundary Conditions}
+While CD-KAN offers substantial benefits, managers should be aware of its boundary conditions. The validity of the discovered causal graph relies on the assumption of **causal sufficiency** (i.e., no unobserved confounders). In open systems with significant external shocks, the learned structure may capture proxy relationships. Additionally, while the training time is linear with respect to sample size $N$, the DAG constraint optimization is cubic with respect to the number of variables $d$, making it currently suitable for systems with moderate dimensionality (e.g., $d < 50$), such as macroeconomic indicators or departmental KPIs, rather than massive high-frequency trading data with thousands of assets.
