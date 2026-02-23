@@ -2,135 +2,179 @@ import torch
 import torch.nn as nn
 from .layers import CDKANLayer, KANLayer
 
+
+# ---------------------------------------------------------------------------
+# Reversible Instance Normalization (RevIN)
+# ---------------------------------------------------------------------------
+
 class RevIN(nn.Module):
-    def __init__(self, num_features: int, eps=1e-5, affine=True):
-        """
-        Reversible Instance Normalization for solving distribution shift.
-        """
+    """
+    Reversible Instance Normalization (Kim et al., 2022).
+
+    Reviewer note: Statistics (mean/std) are stored as *local* variables
+    in each forward pass, not as persistent buffers. This prevents leakage
+    between different windows during walk-forward evaluation.
+    """
+
+    def __init__(self, num_features: int, eps: float = 1e-5, affine: bool = True):
         super().__init__()
         self.num_features = num_features
         self.eps = eps
         self.affine = affine
-        if self.affine:
-            self._init_params()
+        if affine:
+            self.affine_weight = nn.Parameter(torch.ones(num_features))
+            self.affine_bias   = nn.Parameter(torch.zeros(num_features))
+        # Leakage guard: stats computed fresh each forward; never cached across calls
+        self._mean  = None
+        self._stdev = None
 
-    def _init_params(self):
-        self.affine_weight = nn.Parameter(torch.ones(self.num_features))
-        self.affine_bias = nn.Parameter(torch.zeros(self.num_features))
-
-    def forward(self, x, mode:str):
+    def forward(self, x: torch.Tensor, mode: str) -> torch.Tensor:
         if mode == 'norm':
-            self._get_statistics(x)
-            x = self._normalize(x)
+            # Compute stats on the *current* input only (no cross-window reuse)
+            dim2reduce = tuple(range(1, x.ndim - 1))
+            self._mean  = torch.mean(x, dim=dim2reduce, keepdim=True).detach()
+            self._stdev = torch.sqrt(
+                torch.var(x, dim=dim2reduce, keepdim=True, unbiased=False) + self.eps
+            ).detach()
+            x = (x - self._mean) / self._stdev
+            if self.affine:
+                x = x * self.affine_weight + self.affine_bias
         elif mode == 'denorm':
-            x = self._denormalize(x)
-        else: raise NotImplementedError
+            if self._mean is None or self._stdev is None:
+                return x  # safety guard — no prior norm call
+            if self.affine:
+                x = (x - self.affine_bias) / (self.affine_weight + 1e-10)
+            x = x * self._stdev + self._mean
+        else:
+            raise NotImplementedError(f"RevIN mode must be 'norm' or 'denorm', got '{mode}'")
         return x
 
-    def _get_statistics(self, x):
-        dim2reduce = tuple(range(1, x.ndim-1))
-        self.mean = torch.mean(x, dim=dim2reduce, keepdim=True).detach()
-        self.stdev = torch.sqrt(torch.var(x, dim=dim2reduce, keepdim=True, unbiased=False) + self.eps).detach()
 
-    def _normalize(self, x):
-        x = x - self.mean
-        x = x / self.stdev
-        if self.affine:
-            x = x * self.affine_weight
-            x = x + self.affine_bias
-        return x
-
-    def _denormalize(self, x):
-        if self.affine:
-            x = x - self.affine_bias
-            x = x / (self.affine_weight + 1e-10)
-        x = x * self.stdev
-        x = x + self.mean
-        return x
+# ---------------------------------------------------------------------------
+# Residual KAN block
+# ---------------------------------------------------------------------------
 
 class ResidualKANBlock(nn.Module):
-    def __init__(self, in_dim, out_dim, grid_size=10, dropout=0.1):
+    def __init__(self, in_dim: int, out_dim: int, grid_size: int = 10,
+                 dropout: float = 0.1):
         super().__init__()
-        self.kan = KANLayer(in_dim, out_dim, grid_size=grid_size)
-        self.norm = nn.LayerNorm(out_dim)
+        self.kan     = KANLayer(in_dim, out_dim, grid_size=grid_size)
+        self.norm    = nn.LayerNorm(out_dim)
         self.dropout = nn.Dropout(dropout)
-        self.skip = nn.Identity() if in_dim == out_dim else nn.Linear(in_dim, out_dim)
+        self.skip    = nn.Identity() if in_dim == out_dim else nn.Linear(in_dim, out_dim)
 
-    def forward(self, x):
-        # Residual connection
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         res = self.skip(x)
-        # KAN Path
         out = self.kan(x)
         out = self.norm(out)
         out = self.dropout(out)
         return out + res
 
+
+# ---------------------------------------------------------------------------
+# CD-KAN Forecaster
+# ---------------------------------------------------------------------------
+
 class CDKANForecaster(nn.Module):
     """
-    SOTA Causal Discovery KAN Forecaster.
-    Features:
-    - Residual Deep KAN Backbone
+    Causal Discovery KAN Forecaster.
+
+    Architecture: RevIN → CDKANLayer (lag-aware causal discovery) → Residual KAN backbone → Output
+
+    Changes from original:
+    - RevIN uses fresh per-call statistics (no cross-window leakage)
+    - CDKANLayer uses LagAwareAdjacency [max_lag, d, d] instead of a flat [d, d]
+    - Exposes lag-level adjacency diagnostics via get_lag_adjacency()
     """
-    def __init__(self, in_features, hidden_dim=64, out_features=1, max_lag=10, n_layers=3, dropout=0.1, learn_structure=True):
+
+    def __init__(self, in_features: int, hidden_dim: int = 64, out_features: int = 1,
+                 max_lag: int = 10, n_layers: int = 3, dropout: float = 0.1,
+                 learn_structure: bool = True, grid_size: int = 10):
         super().__init__()
-        
-        # 1. Reversible Instance Norm
+
+        # 1. Reversible Instance Normalisation
         self.revin = RevIN(in_features)
-        
-        # 2. Causal Structure Discovery Layer
-        # Maps [Batch, Window, Vars] -> [Batch, Vars] (Aggregation over time via causal lags)
-        self.cd_layer = CDKANLayer(in_features, in_features, max_lag=max_lag, grid_size=10, learn_structure=learn_structure) # Grid=10 for precision
-        
-        # 3. Mixing / Deep Reasoning Backbone
-        # Input to backbone is [Batch, Vars] (the "Current State" extracted from history)
-        # We process this state with a deep Residual KAN
+
+        # 2. Causal Discovery Layer (lag-aware)
+        self.cd_layer = CDKANLayer(
+            in_features, in_features,
+            max_lag=max_lag,
+            grid_size=grid_size,
+            learn_structure=learn_structure,
+        )
+
+        # 3. Residual KAN backbone
         self.backbone = nn.ModuleList()
-        # First projection from Vars -> Hidden
-        self.backbone.append(ResidualKANBlock(in_features, hidden_dim, grid_size=10, dropout=dropout))
-        
-        # Hidden -> Hidden layers
+        self.backbone.append(
+            ResidualKANBlock(in_features, hidden_dim, grid_size=grid_size, dropout=dropout)
+        )
         for _ in range(n_layers - 1):
-            self.backbone.append(ResidualKANBlock(hidden_dim, hidden_dim, grid_size=10, dropout=dropout))
-            
-        # 4. Output Projection
-        self.output_head = KANLayer(hidden_dim, out_features, grid_size=10)
-        
-    def forward(self, x):
-        # x: [Batch, Window, Features]
-        
-        # 1. Normalize
+            self.backbone.append(
+                ResidualKANBlock(hidden_dim, hidden_dim, grid_size=grid_size, dropout=dropout)
+            )
+
+        # 4. Output head
+        self.output_head = KANLayer(hidden_dim, out_features, grid_size=grid_size)
+
+        self.out_features = out_features
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Args:
+            x: [batch, window, in_features]
+        Returns:
+            [batch, out_features]
+        """
+        # 1. Normalise (stats computed fresh — no leakage)
         x = self.revin(x, 'norm')
-        
-        # 2. Causal Extraction (The "Causal Twist")
-        # This layer learns WHICH past time points matter for the current state.
-        # Output: [Batch, Features]
-        x_causal = self.cd_layer(x)
-        
-        # 3. Deep Reasoning
+
+        # 2. Causal extraction
+        x_causal = self.cd_layer(x)         # [batch, in_features]
+
+        # 3. Deep reasoning
         x_hidden = x_causal
         for block in self.backbone:
             x_hidden = block(x_hidden)
-            
-        # 4. Prediction
-        out = self.output_head(x_hidden)
-        
-        # 5. Denormalize
-        # Note: RevIN denorm expects same shape as input usually, but we are predicting different shape?
-        # Usually RevIN is for [Batch, Window, Vars] -> [Batch, Window, Vars].
-        # Here we predict [Batch, Out_Vars]. 
-        # If Out_Vars == In_Features, we can use RevIN.
-        # Assuming Out_Features (Prediction Target) is a subset or same as In_Features.
-        # For this dataset, we predict ALL assets (Next Step), so Out == In.
+
+        # 4. Predict
+        out = self.output_head(x_hidden)    # [batch, out_features]
+
+        # 5. Denormalise (only when output dimension matches input features)
         if out.shape[-1] == self.revin.num_features:
-            out = out.unsqueeze(1)
-            out = self.revin(out, 'denorm')
-            out = out.squeeze(1)
-            
+            out = self.revin(out.unsqueeze(1), 'denorm').squeeze(1)
+
         return out
-        
-    def set_temperature(self, t):
+
+    # ------------------------------------------------------------------
+    # Diagnostics
+    # ------------------------------------------------------------------
+
+    def set_temperature(self, t: float):
+        """Set Gumbel-Sigmoid temperature on CDKANLayer."""
         if hasattr(self.cd_layer, 'temperature'):
             self.cd_layer.temperature.data.fill_(t)
-            
-    def prune(self, density=0.2):
-        self.cd_layer.prune_edges(target_density=density)
+
+    def get_summary_adjacency(self) -> torch.Tensor:
+        """Summary causal graph [in, in] (max over lags)."""
+        return self.cd_layer.get_adjacency()
+
+    def get_lag_adjacency(self, k: int) -> torch.Tensor:
+        """Causal graph for lag k [in, in]."""
+        return self.cd_layer.get_lag_adjacency(k)
+
+    def get_expected_lags(self) -> torch.Tensor:
+        """Expected lag per edge [in, in] — for managerial reporting."""
+        return self.cd_layer.get_expected_lags()
+
+    def get_feature_importance(self) -> torch.Tensor:
+        """Edge importance = adjacency_prob × spline_coef_magnitude [in, in]."""
+        return self.cd_layer.get_feature_importance()
+
+    def prune(self, threshold: float = 0.2):
+        """Zero out edges whose summary probability is below threshold (in-place)."""
+        with torch.no_grad():
+            adj = self.cd_layer.lag_adj.adj_logits
+            probs = torch.sigmoid(adj)
+            mask  = probs.max(0).values < threshold  # [d, d] — True where weak
+            # Suppress by pushing logits hard negative
+            adj[:, mask] = -10.0

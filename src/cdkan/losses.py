@@ -2,87 +2,143 @@
 import torch
 import torch.nn.functional as F
 
-def structural_sparsity_loss(model, lambda_sparse=0.01):
-    """
-    Penalize the sum of edge probabilities to encourage sparsity.
-    Now looks for CausalStructure modules.
-    """
-    loss = 0.0
-    count = 0
-    
-    # Iterate over all modules to find CausalStructure
-    for module in model.modules():
-        if module.__class__.__name__ == 'CausalStructure':
-            # Get Probabilities
-            probs = torch.sigmoid(module.adj_logits)
-            loss = loss + torch.sum(probs)
-            count += probs.numel()
-        elif module.__class__.__name__ == 'CausalStructureMatrix':
-             probs = torch.sigmoid(module.adj_logits)
-             loss = loss + torch.sum(probs)
-             count += probs.numel()
-            
-    if count == 0:
-        return torch.tensor(0.0, device=next(model.parameters()).device)
-        
-    return lambda_sparse * loss
 
-def group_lasso_loss(model, lambda_sparse=0.01):
-    """
-    Apply Group Lasso (L1-norm of L2-norms) to KAN edges.
-    Encourages entire edges (groups of coefficients) to go to zero.
-    """
-    loss = 0.0
-    counter = 0
-    
-    for name, module in model.named_modules():
-        if hasattr(module, 'edge_functions'):
-             # module is likely a CDKANLayer
-             for edge_id, func in module.edge_functions.items():
-                 # functional coeffs: func.coef
-                 # L2 norm of this edge's coefficients
-                 l2_norm = torch.norm(func.coef, p=2)
-                 loss = loss + l2_norm
-                 counter += 1
-                 
-    if counter == 0:
-        return torch.tensor(0.0, device=next(model.parameters()).device)
-        
-    return lambda_sparse * loss
+# ---------------------------------------------------------------------------
+# NOTEARS acyclicity helpers
+# ---------------------------------------------------------------------------
 
-def causal_consistency_loss(model, lambda_dag=0.1):
+def _h_notears(W: torch.Tensor) -> torch.Tensor:
     """
-    Penalize cycles in the adjacency matrix (DAG constraint).
-    h(A) = tr(e^A) - d = 0
+    Correct NOTEARS acyclicity constraint (Zheng et al., 2018):
+        h(W) = tr(exp(W ∘ W)) − d = 0
+    where W is a real-valued d×d weight matrix and ∘ denotes element-wise product.
+
+    Args:
+        W: [d, d] real-valued adjacency weights (NOT sigmoid-bounded probabilities).
+    Returns:
+        Scalar tensor h(W) ≥ 0; equals 0 iff W is a DAG.
     """
-    dag_loss = 0.0
+    assert W.dim() == 2 and W.shape[0] == W.shape[1], "W must be square"
+    d = W.shape[0]
+    # Element-wise square keeps gradient flow; avoids computing W^T W
+    expm_W = torch.matrix_exp(W * W)
+    return torch.trace(expm_W) - d
+
+
+def compute_dag_residual(model) -> float:
+    """
+    Compute and return the raw h(W) value (as a Python float) for diagnostic logging.
+    Iterates over all LagAwareAdjacency modules; for plain CausalStructure uses raw logits.
+    """
+    total_h = 0.0
     count = 0
-    
-    for module in model.modules():
-        if module.__class__.__name__ in ['CausalStructure', 'CausalStructureMatrix']:
-            adj = torch.sigmoid(module.adj_logits)
-            d = adj.shape[0]
-            
-            # Matrix Exponential Trace
-            # Ensure A is square. If M x N and M != N, we can't compute trace directly for cycles.
-            # Usually strict DAG is for square matrices.
-            if adj.shape[0] == adj.shape[1]:
-                expm_A = torch.matrix_exp(adj)
-                dag_loss = dag_loss + (torch.trace(expm_A) - d)
+    with torch.no_grad():
+        for module in model.modules():
+            if module.__class__.__name__ == 'LagAwareAdjacency':
+                # 3D lag tensor: use summary (max-over-lags) for constraint
+                W = module.adj_logits  # [max_lag, d, d]
+                W_summary = W.abs().max(dim=0).values  # [d, d]
+                h = _h_notears(W_summary)
+                total_h += h.item()
                 count += 1
-            else:
-                # Rectangular case (e.g. bipartite)? 
-                # cycles not defined in the same way. 
-                pass
-                
-    if count == 0:
-         return torch.tensor(0.0, device=next(model.parameters()).device)
+            elif module.__class__.__name__ == 'CausalStructure':
+                W = module.adj_logits  # [d, d]
+                if W.shape[0] == W.shape[1]:
+                    h = _h_notears(W)
+                    total_h += h.item()
+                    count += 1
+    return total_h
 
-    return lambda_dag * dag_loss
+
+# ---------------------------------------------------------------------------
+# Loss functions
+# ---------------------------------------------------------------------------
+
+def structural_sparsity_loss(model, lambda_sparse: float = 0.01) -> torch.Tensor:
+    """
+    L1 sparsity penalty on soft edge probabilities.
+    Works with both LagAwareAdjacency (3D) and CausalStructure (2D).
+    """
+    loss = torch.tensor(0.0, device=next(model.parameters()).device)
+    count = 0
+    for module in model.modules():
+        if module.__class__.__name__ == 'LagAwareAdjacency':
+            probs = torch.sigmoid(module.adj_logits)  # [max_lag, d, d]
+            loss = loss + probs.sum()
+            count += probs.numel()
+        elif module.__class__.__name__ == 'CausalStructure':
+            probs = torch.sigmoid(module.adj_logits)  # [d, d]
+            loss = loss + probs.sum()
+            count += probs.numel()
+    if count == 0:
+        return loss
+    return lambda_sparse * loss
+
+
+def group_lasso_loss(model, lambda_sparse: float = 0.01) -> torch.Tensor:
+    """
+    Group Lasso on KAN spline coefficients — encourages entire edges to vanish.
+    L2 norm of each edge's coefficient block summed and scaled.
+    """
+    loss = torch.tensor(0.0, device=next(model.parameters()).device)
+    counter = 0
+    for _, module in model.named_modules():
+        if hasattr(module, 'edge_functions'):
+            for _, func in module.edge_functions.items():
+                l2_norm = torch.norm(func.coef, p=2)
+                loss = loss + l2_norm
+                counter += 1
+    if counter == 0:
+        return loss
+    return lambda_sparse * loss
+
+
+def causal_consistency_loss(model, lambda_dag: float = 0.1) -> tuple:
+    """
+    NOTEARS DAG penalty using the correct h(W) = tr(exp(W ∘ W)) − d formulation.
+
+    Applies the constraint over:
+      - LagAwareAdjacency modules:  summary graph (max-pool over lag dim)
+      - CausalStructure modules:    raw logits directly
+
+    Returns:
+        (alm_loss, h_val) where:
+            alm_loss = lambda_dag * h(W)  (for backward pass)
+            h_val    = float diagnostic value
+    """
+    dag_loss = torch.tensor(0.0, device=next(model.parameters()).device)
+    h_val = 0.0
+    count = 0
+
+    for module in model.modules():
+        if module.__class__.__name__ == 'LagAwareAdjacency':
+            # Use raw logits so gradients flow unrestricted
+            W = module.adj_logits          # [max_lag, d, d]
+            W_summary = W.abs().max(dim=0).values  # [d, d]  summary graph
+            h = _h_notears(W_summary)
+            dag_loss = dag_loss + h
+            h_val += h.item()
+            count += 1
+        elif module.__class__.__name__ == 'CausalStructure':
+            W = module.adj_logits          # [d, d]
+            if W.shape[0] == W.shape[1]:
+                h = _h_notears(W)
+                dag_loss = dag_loss + h
+                h_val += h.item()
+                count += 1
+
+    if count == 0:
+        return dag_loss, 0.0
+
+    return lambda_dag * dag_loss, h_val
+
 
 def intervention_loss(model, x, do_idx, do_val):
+    """Placeholder for future do-calculus intervention penalty."""
     return torch.tensor(0.0, device=x.device)
 
+
 def granger_regularization(adjacency, x, y, threshold=0.1):
+    """Placeholder for future Granger regularization."""
     return torch.tensor(0.0, device=x.device)
 
