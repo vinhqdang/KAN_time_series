@@ -403,9 +403,6 @@ def main():
         if end > T:
             break
 
-        train_raw = raw_data[start : start + n_train]
-        test_raw  = raw_data[start + n_train : end]
-
         # Normalize with training statistics only
         data_norm, mean, std = normalise(raw_data[start:end])
         train_scaled = data_norm[:n_train]
@@ -427,8 +424,53 @@ def main():
         fold_models.append(model)
         fold_hists.append(hist)
 
-        print(f'  Final val MSE: {hist["test_loss"][-1]:.5f}')
-        print(f'  Final h(W):    {hist["h_residuals"][-1]:.4e}')
+        final_mse = hist['test_loss'][-1]
+        final_h   = hist['h_residuals'][-1]
+        print(f'  Final val MSE: {final_mse:.5f}')
+        print(f'  Final h(W):    {final_h:.4e}')
+
+        # ---- Save per-fold checkpoint immediately ----
+        fold_prefix = f'fold{fold+1}'
+        adj_df  = pd.DataFrame(adj,    index=asset_names, columns=asset_names)
+        lags_df = pd.DataFrame(e_lags, index=asset_names, columns=asset_names)
+        adj_df.to_csv( os.path.join(OUT_DIR, f'real_causal_adjacency_{fold_prefix}.csv'))
+        lags_df.to_csv(os.path.join(OUT_DIR, f'real_causal_expected_lags_{fold_prefix}.csv'))
+
+        plot_adjacency_heatmap(
+            adj, asset_names,
+            os.path.join(OUT_DIR, f'real_causal_adjacency_{fold_prefix}.png'),
+        )
+        plot_lag_heatmap(
+            e_lags, adj, asset_names, args.threshold,
+            os.path.join(OUT_DIR, f'real_causal_lag_heatmap_{fold_prefix}.png'),
+        )
+        plot_network_graph(
+            adj, asset_names, args.threshold,
+            os.path.join(OUT_DIR, f'real_causal_network_{fold_prefix}.png'),
+        )
+        plot_top_edge_functions(
+            model, adj, asset_names,
+            args.threshold, args.top_k,
+            os.path.join(OUT_DIR, f'real_causal_functions_{fold_prefix}.png'),
+        )
+
+        # Summary log
+        log_row = {
+            'fold': fold + 1,
+            'val_mse': final_mse,
+            'h_W': final_h,
+            'edge_density': float((adj >= args.threshold).mean()),
+            'n_epochs': len(hist['test_loss']),
+        }
+        log_path = os.path.join(OUT_DIR, 'fold_summary.csv')
+        log_df = pd.DataFrame([log_row])
+        if os.path.exists(log_path):
+            existing = pd.read_csv(log_path)
+            # Replace row if fold already exists
+            existing = existing[existing['fold'] != fold + 1]
+            log_df = pd.concat([existing, log_df], ignore_index=True)
+        log_df.to_csv(log_path, index=False)
+        print(f'  Checkpoint saved for fold {fold+1} -> {OUT_DIR}/')
 
     # Use the first (primary) fold for main visualizations
     primary_model = fold_models[0]
