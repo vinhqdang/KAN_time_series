@@ -1,7 +1,7 @@
 
 \section{Experimental Results}
 
-We evaluate CD-KAN comprehensively across synthetic datasets (where ground-truth causal graphs are known) and real-world financial data (where we report stability-based indirect validation, as no ground truth exists). All experiments use strict rolling-origin temporal splits; normalization statistics are computed on training windows only to prevent leakage \citep{kim2022reversible}.
+We evaluate CD-KAN comprehensively across synthetic datasets (where ground-truth causal graphs are known) and real-world financial data (where we report stability-based indirect validation, as no ground truth exists). All experiments use strict rolling-origin temporal splits; normalization statistics are computed on training windows only to prevent leakage \citep{Kim2022}.
 
 % ------------------------------------------------------------------
 \subsection{Datasets and Experimental Setup}
@@ -19,13 +19,13 @@ We evaluate CD-KAN comprehensively across synthetic datasets (where ground-truth
 \subsubsection{Baselines}
 We compare against seven baselines spanning linear, constraint-based, and score-based methods:
 \begin{enumerate}
-    \item \textbf{VAR-Lasso}: Linear VAR with $\ell_1$ regularization \citep{tibshirani1996regression}.
-    \item \textbf{PCMCI}: Constraint-based method designed for time series \citep{runge2019detecting}.
+    \item \textbf{VAR-Lasso}: Linear VAR with $\ell_1$ regularization \citep{Tibshirani1996}.
+    \item \textbf{PCMCI}: Constraint-based method designed for time series \citep{Runge2019}.
     \item \textbf{NTiCD}: Neural time-invariant causal discovery.
-    \item \textbf{GOLEM}: Differentiable score-based DAG learning \citep{ng2020role}.
-    \item \textbf{NOTEARS} / \textbf{DYNOTEARS}: Continuous optimization for structure learning \citep{zheng2018dags,pamfil2020dynotears}.
-    \item \textbf{GC-KAN}: KAN-based neural Granger causality \citep{gckan2024}.
-    \item \textbf{VarLiNGAM}: Linear non-Gaussian acyclic model for time series \citep{hyvarinen2010estimation}.
+    \item \textbf{GOLEM}: Differentiable score-based DAG learning \citep{Ng2020}.
+    \item \textbf{NOTEARS} / \textbf{DYNOTEARS}: Continuous optimization for structure learning \citep{Zheng2018,Pamfil2020}.
+    \item \textbf{GC-KAN}: KAN-based neural Granger causality \citep{GCKAN2024}.
+    \item \textbf{VarLiNGAM}: Linear non-Gaussian acyclic model for time series \citep{Hyvarinen2010}.
 \end{enumerate}
 Forecasting comparisons additionally include TSMixer, PatchTST, N-BEATS, and LSTM.
 
@@ -153,7 +153,7 @@ BTC    & SPX    & 0.510 & 1.1 & Crypto-equity feedback loop; risk-on/off contagi
 
 \subsubsection{Temporal Lag Structure}
 
-Figure~\ref{fig:real_lag_heatmap} displays the expected propagation lag (in trading days) for each significant edge. The majority of commodity-FX effects propagate within 1--2 days, while industrial commodity effects on equities (COPPER~$\to$~SPX, 2.9d) exhibit a characteristic 3-day delay, consistent with the literature on copper as a leading indicator \citep{moore1977copper}.
+Figure~\ref{fig:real_lag_heatmap} displays the expected propagation lag (in trading days) for each significant edge. The majority of commodity-FX effects propagate within 1--2 days, while industrial commodity effects on equities (COPPER~$\to$~SPX, 2.9d) exhibit a characteristic 3-day delay, consistent with the literature on copper as a leading indicator \citep{Moore1977}.
 
 \begin{figure}[h]
     \centering
