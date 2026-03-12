@@ -33,15 +33,12 @@ def evaluate_graph(true_adj, pred_adj):
     return {'Precision': prec, 'Recall': rec, 'F1': f1, 'SHD': shd}
 
 def run_comprehensive_benchmark():
-    # 10 Diverse Datasets (varying size, complexity, domain)
+    # Focus exclusively on datasets available within the ecosystem without projecting fake variants.
     datasets = [
         ('synthetic_linear_small', 500, 5),
         ('synthetic_linear_large', 2000, 10),
         ('synthetic_nonlinear_small', 500, 5),
         ('synthetic_nonlinear_large', 2000, 10),
-        ('financial', None, None),
-        ('crypto', None, None),
-        ('macro', None, None),
     ]
     
     results = []
@@ -86,14 +83,14 @@ def run_comprehensive_benchmark():
         X_train = X[:train_size]
         X_test = X[train_size:]
         
-        # Baseline configs (intentionally suboptimal for fair comparison)
+        # Baseline configs (Aligned identically for scale accuracy)
         baselines = {
-            'VAR-Lasso': VARLasso(max_lag=3, alpha=0.001),  # Shorter lag, higher penalty
-            'PCMCI*': PCMCIProxy(max_lag=3),
-            'GOLEM*': GOLEMProxy(epochs=50, lambda_l1=0.05),  # Fewer epochs, stronger L1
+            'VAR-Lasso': VARLasso(max_lag=5, alpha=0.001),
+            'PCMCI*': PCMCIProxy(max_lag=5),
+            'GOLEM*': GOLEMProxy(epochs=100, lambda_l1=0.05),
         }
         
-        # CD-KAN with OPTIMIZED hyperparameters
+        # CD-KAN
         # Optimal config: longer training, lower sparsity penalty, appropriate temperature
         cdkan_model = CDKANForecaster(
             n_features, 
@@ -106,8 +103,8 @@ def run_comprehensive_benchmark():
         
         # Custom trainer with tuned hyperparameters
         cdkan_trainer = CDKANTrainer(cdkan_model, device=device)
-        # Override default lambda_sparse in trainer
-        cdkan_trainer.lambda_sparse = 0.005  # Lower sparsity penalty
+        # Apply hyperparameter override safely through the trainer config logic:
+        cdkan_trainer.cfg.lambda_sparse = 0.005
         
         baselines['CD-KAN v2'] = CDKANWrapper(cdkan_model, cdkan_trainer, epochs=100)
         

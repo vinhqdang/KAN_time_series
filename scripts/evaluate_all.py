@@ -21,6 +21,43 @@ from src.cdkan.layers import KANLayer, CDKANLayer
 from src.baselines import BaselineLSTM, TSMixer
 from src.adakan.models.adakan_forecaster import AdaKANForecaster
 
+class StandardTrainer:
+    def __init__(self, model, device='cpu', lr=1e-3):
+        self.model = model
+        self.device = device
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=lr)
+        self.criterion = nn.MSELoss()
+
+    def train(self, train_loader, val_loader, epochs=100, patience=10):
+        self.model.to(self.device)
+        best_loss = float('inf')
+        patience_counter = 0
+
+        X_tr, y_tr = train_loader['X'], train_loader['y']
+        X_v, y_v = val_loader['X'], val_loader['y']
+
+        for epoch in range(epochs):
+            self.model.train()
+            self.optimizer.zero_grad()
+            preds = self.model(X_tr)
+            loss = self.criterion(preds, y_tr)
+            loss.backward()
+            self.optimizer.step()
+
+            self.model.eval()
+            with torch.no_grad():
+                val_preds = self.model(X_v)
+                val_loss = self.criterion(val_preds, y_v).item()
+
+            if val_loss < best_loss:
+                best_loss = val_loss
+                patience_counter = 0
+            else:
+                patience_counter += 1
+
+            if patience_counter >= patience:
+                break
+
 def evaluate_model(model, X_test, y_test, name="Model"):
     model.eval()
     with torch.no_grad():
@@ -163,29 +200,29 @@ def main():
     
     # --- 2. Baselines ---
     
+    # Train normal baseline models purely on prediction MSE logic (StandardTrainer)
     print("\nTraining LSTM...")
     lstm = BaselineLSTM(input_size=n_assets, hidden_size=64).to(DEVICE)
     lstm.fc = nn.Linear(64, n_assets).to(DEVICE)
-    trainer_lstm = CDKANTrainer(LSTMWrapper(lstm), device=DEVICE)
-    # Give baselines decent chance but prioritize CD-KAN optimization
+    trainer_lstm = StandardTrainer(LSTMWrapper(lstm), device=DEVICE)
     trainer_lstm.train(train_loader, test_loader, epochs=epochs, patience=10)
     results.append(evaluate_model(trainer_lstm.model, X_test, y_test, "LSTM"))
     
     print("\nTraining TSMixer...")
     tsmixer = TSMixer(n_series=n_assets, seq_len=n_timesteps, pred_len=1).to(DEVICE)
-    trainer_tsmixer = CDKANTrainer(TSMixerWrapper(tsmixer), device=DEVICE)
+    trainer_tsmixer = StandardTrainer(TSMixerWrapper(tsmixer), device=DEVICE)
     trainer_tsmixer.train(train_loader, test_loader, epochs=epochs, patience=10)
     results.append(evaluate_model(trainer_tsmixer.model, X_test, y_test, "TSMixer"))
     
     print("\nTraining Naive KAN...")
     naive_kan = NaiveKAN(input_dim_flat, 64, n_assets).to(DEVICE)
-    trainer_naive = CDKANTrainer(naive_kan, device=DEVICE)
+    trainer_naive = StandardTrainer(naive_kan, device=DEVICE)
     trainer_naive.train(train_loader, test_loader, epochs=epochs, patience=10)
     results.append(evaluate_model(naive_kan, X_test, y_test, "Naive KAN"))
     
     print("\nTraining ADA-KAN...")
     adakan = AdaKANForecaster(window=input_dim_flat, hidden=32, horizon=n_assets).to(DEVICE)
-    trainer_ada = CDKANTrainer(AdaKANWrapper(adakan), device=DEVICE)
+    trainer_ada = StandardTrainer(AdaKANWrapper(adakan), device=DEVICE)
     trainer_ada.train(train_loader, test_loader, epochs=epochs, patience=10)
     results.append(evaluate_model(trainer_ada.model, X_test, y_test, "ADA-KAN"))
     
