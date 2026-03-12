@@ -12,7 +12,7 @@ plt.rcParams['figure.figsize'] = (14, 10)
 plt.rcParams['font.size'] = 11
 
 # Load results
-df = pd.read_csv("benchmark_comprehensive_sota.csv")
+df = pd.read_csv("benchmark_comprehensive.csv")
 
 # Figure 1: F1 Score Comparison (Synthetic Datasets)
 fig, axes = plt.subplots(2, 2, figsize=(16, 12))
@@ -26,7 +26,7 @@ colors = ['#2ecc71' if alg == 'CD-KAN v2' else '#95a5a6' for alg in f1_summary.i
 
 axes[0, 0].barh(f1_summary.index, f1_summary.values, color=colors)
 axes[0, 0].set_xlabel('Mean F1 Score', fontweight='bold', fontsize=12)
-axes[0, 0].set_title('Average F1 Score Across Synthetic Datasets\n(CD-KAN v2 Achieves SOTA)', fontweight='bold', fontsize=14)
+axes[0, 0].set_title('Average F1 Score Across Synthetic Datasets', fontweight='bold', fontsize=14)
 axes[0, 0].axvline(x=0.8, color='red', linestyle='--', alpha=0.5, label='Target: 0.8')
 axes[0, 0].legend()
 for i, v in enumerate(f1_summary.values):
@@ -69,7 +69,7 @@ for algo in ['CD-KAN v2', 'VAR-Lasso', 'PCMCI', 'GOLEM']:
 
 axes[1, 0].set_xlabel('Dataset Size (Samples × Nodes)', fontweight='bold', fontsize=12)
 axes[1, 0].set_ylabel('Runtime (seconds)', fontweight='bold', fontsize=12)
-axes[1, 0].set_title('Runtime Scalability Analysis\n(CD-KAN v2 Scales Linearly)', fontweight='bold', fontsize=14)
+axes[1, 0].set_title('Runtime Scalability Analysis', fontweight='bold', fontsize=14)
 axes[1, 0].legend()
 axes[1, 0].set_xscale('log')
 axes[1, 0].set_yscale('log')
@@ -90,7 +90,7 @@ for algo in synthetic_df['Algorithm'].unique():
 
 axes[1, 1].set_xlabel('Recall', fontweight='bold', fontsize=12)
 axes[1, 1].set_ylabel('Precision', fontweight='bold', fontsize=12)
-axes[1, 1].set_title('Precision-Recall Tradeoff\n(CD-KAN v2 Achieves Best Balance)', fontweight='bold', fontsize=14)
+axes[1, 1].set_title('Precision-Recall Tradeoff', fontweight='bold', fontsize=14)
 axes[1, 1].legend(loc='lower left', fontsize=9)
 axes[1, 1].set_xlim([0.2, 1.0])
 axes[1, 1].set_ylim([0.2, 1.0])

@@ -31,7 +31,7 @@ def create_architecture_diagram():
 
     # Inside CD Layer
     # Adjacency
-    ax.text(5, 4, "Adjacency $A$\n(Learnable)", ha="center", va="center", bbox=highlight_style, fontsize=10)
+    ax.text(5, 4, "Adjacency\n$A_0$ (DAG) & $A_{1\\dots L}$", ha="center", va="center", bbox=highlight_style, fontsize=10)
     
     # KAN Functions
     ax.text(5, 2, "KAN Functions\n$\phi_{i \\to j}(x)$", ha="center", va="center", bbox=box_style, fontsize=10)
@@ -60,7 +60,7 @@ def create_architecture_diagram():
 
     # ALM Loop (Bottom visualization)
     ax.annotate("", xy=(5, 0.8), xytext=(5, 1.0), arrowprops=dict(arrowstyle="-", lw=1, linestyle="dotted"))
-    ax.text(5, 0.5, "DAG Constraint\n$Tr(e^A) - d = 0$", ha="center", va="center", fontsize=10, color="#cc0000", fontweight="bold")
+    ax.text(5, 0.5, "DAG Constraint\n$Tr(e^{A_0}) - d = 0$", ha="center", va="center", fontsize=10, color="#cc0000", fontweight="bold")
 
     plt.tight_layout()
     plt.savefig('manuscript/figures/cdkan_architecture.png', dpi=300, bbox_inches='tight')

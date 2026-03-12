@@ -4,6 +4,9 @@ from .config import DEVICE
 
 def train_once(model, Xtr, ytr, Xte, yte, steps, lr, name):
     model.to(DEVICE)
+    Xtr, ytr = Xtr.to(DEVICE), ytr.to(DEVICE)
+    Xte, yte = Xte.to(DEVICE), yte.to(DEVICE)
+    
     opt = torch.optim.Adam(model.parameters(), lr=lr)
     loss_fn = nn.MSELoss()
     model.train()

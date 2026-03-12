@@ -2,8 +2,9 @@
 import os
 import shutil
 import glob
+import argparse
 
-def cleanup():
+def cleanup(dry_run=True):
     # Files to delete
     files_to_delete = [
         "benchmark_predictive.py", # Old script
@@ -21,25 +22,42 @@ def cleanup():
         ".pytest_cache"
     ]
     
+    if not dry_run:
+        confirm = input("Are you absolutely sure you want to delete these files? [y/N]: ")
+        if confirm.lower() != 'y':
+            print("Cleanup cancelled.")
+            return
+
     print("Cleaning up...")
     
     for f in files_to_delete:
         if os.path.exists(f):
-            os.remove(f)
-            print(f"Deleted {f}")
+            if not dry_run:
+                os.remove(f)
+            print(f"{'Would delete' if dry_run else 'Deleted'} {f}")
             
     for d in dirs_to_delete:
         if os.path.exists(d):
-            shutil.rmtree(d)
-            print(f"Deleted directory {d}")
+            if not dry_run:
+                shutil.rmtree(d)
+            print(f"{'Would delete directory' if dry_run else 'Deleted directory'} {d}")
             
     # Clean up any pyc files recursively
     for root, dirs, files in os.walk("."):
         for file in files:
             if file.endswith(".pyc"):
-                os.remove(os.path.join(root, file))
+                path = os.path.join(root, file)
+                if not dry_run:
+                    os.remove(path)
+                print(f"{'Would delete' if dry_run else 'Deleted'} {path}")
                 
-    print("Cleanup complete.")
+    if dry_run:
+        print("\nDry run complete. Use --no-dry-run to actually delete files.")
+    else:
+        print("Cleanup complete.")
 
 if __name__ == "__main__":
-    cleanup()
+    parser = argparse.ArgumentParser(description="Clean up repository artifacts.")
+    parser.add_argument('--no-dry-run', action='store_true', help="Actually perform the deletions.")
+    args = parser.parse_args()
+    cleanup(dry_run=not args.no_dry_run)
