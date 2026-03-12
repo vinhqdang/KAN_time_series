@@ -12,7 +12,7 @@ from sklearn.metrics import f1_score, precision_score, recall_score
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from src.synthetic import generate_nonlinear_scm, visualize_ground_truth
-from src.causal_baselines import CausalBaselines
+from src.benchmarks.baselines import VARLasso, CorrelationThresholdBaseline
 from src.cdkan.model import CDKANForecaster
 from src.cdkan.trainer import CDKANTrainer
 from src.config import DEVICE
@@ -23,14 +23,17 @@ def shd(target, pred):
     return np.sum(diff)
 
 def evaluate_graph(target, pred):
-    """Compute F1, Precision, Recall, SHD."""
-    target_flat = target.flatten()
-    pred_flat = pred.flatten()
+    """Compute F1, Precision, Recall, SHD ignoring diagonal self-loops."""
+    # Mask diagonals
+    mask = ~np.eye(target.shape[0], dtype=bool)
     
-    f1 = f1_score(target_flat, pred_flat)
-    prec = precision_score(target_flat, pred_flat)
-    rec = recall_score(target_flat, pred_flat)
-    s_dist = shd(target, pred)
+    target_flat = target[mask]
+    pred_flat = pred[mask]
+    
+    f1 = f1_score(target_flat, pred_flat, zero_division=0)
+    prec = precision_score(target_flat, pred_flat, zero_division=0)
+    rec = recall_score(target_flat, pred_flat, zero_division=0)
+    s_dist = shd(target[mask], pred[mask])
     
     return {"F1": f1, "Precision": prec, "Recall": rec, "SHD": s_dist}
 
@@ -81,14 +84,23 @@ def main():
     
     # --- 1. VAR-Lasso Baseline ---
     print("\nRunning VAR-Lasso...")
-    adj_lasso = CausalBaselines.var_lasso(data, max_lag=2, alpha=0.05)
-    metrics_lasso = evaluate_graph(adj_true, adj_lasso)
+    lasso = VARLasso(max_lag=2, alpha=0.05)
+    lasso.fit(data)
+    adj_lasso = lasso.get_adjacency()
+    
+    # Threshold Baseline (MAGNITUDE PRUNING)
+    adj_lasso_binary = (adj_lasso > 0.01).astype(int)
+    metrics_lasso = evaluate_graph(adj_true, adj_lasso_binary)
     print(f"VAR-Lasso Results: {metrics_lasso}")
     
     # --- 2. Correlation Baseline ---
     print("\nRunning Correlation...")
-    adj_corr = CausalBaselines.correlation_threshold(data, threshold=0.3)
-    metrics_corr = evaluate_graph(adj_true, adj_corr)
+    corr = CorrelationThresholdBaseline(threshold=0.3)
+    corr.fit(data)
+    adj_corr = corr.get_adjacency()
+    
+    adj_corr_binary = (adj_corr > 0.3).astype(int)
+    metrics_corr = evaluate_graph(adj_true, adj_corr_binary)
     print(f"Correlation Results: {metrics_corr}")
     
     # --- 3. CD-KAN ---
@@ -100,27 +112,24 @@ def main():
         out_features=n_nodes,
         max_lag=2,
         n_layers=2,
-        learn_structure=False # Disable Gumbel Gating, rely on Group Lasso
+        learn_structure=True # Enabled true structural Gumbel gating
     ).to(DEVICE)
     
     trainer = CDKANTrainer(model, device=DEVICE)
-    # Fast training on synthetic data is usually enough to capture structure
     trainer.train(train_loader, test_loader, epochs=60, patience=10)
     
-    # Extract Graph using Feature Importance (Magnitude Pruning)
-    # With Group Lasso, irrelevant edges should have very small norms.
-    adj_importance = model.cd_layer.get_feature_importance()
-    if isinstance(adj_importance, torch.Tensor):
-        adj_importance = adj_importance.cpu().numpy()
+    # Extract Graph using the natively learned probabilities
+    adj_prob = model.get_summary_adjacency()
+    if isinstance(adj_prob, torch.Tensor):
+        adj_prob = adj_prob.cpu().numpy()
         
-    print(f"Edge Importance Range: Min {adj_importance.min():.4f}, Max {adj_importance.max():.4f}, Mean {adj_importance.mean():.4f}")
+    print(f"Edge Probability Range: Min {adj_prob.min():.4f}, Max {adj_prob.max():.4f}, Mean {adj_prob.mean():.4f}")
         
-    # Thresholding
-    # Fixed threshold 0.01 found to balance Recall/Precision best with Lambda=0.01
-    thresh = 0.01
-    print(f"Fixed Threshold: {thresh}")
+    # Thresholding directly on learned binary confidence probabilities
+    thresh = 0.5
+    print(f"Confidence Threshold: {thresh}")
     
-    adj_cdkan = (adj_importance > thresh).astype(int) 
+    adj_cdkan = (adj_prob > thresh).astype(int) 
     
     metrics_cdkan = evaluate_graph(adj_true, adj_cdkan)
     print(f"CD-KAN Results (Thresh {thresh}): {metrics_cdkan}")

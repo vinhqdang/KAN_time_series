@@ -58,12 +58,12 @@ os.makedirs(OUT_DIR, exist_ok=True)
 
 def load_financial_data():
     """Load and clean the financial CSV, returning (data_np, asset_names, dates)."""
-    df = pd.read_csv(DATA_PATH, index_col=0, header=[0, 1])
     # The CSV has two header rows (Price / Ticker); flatten to just asset columns
     df = pd.read_csv(DATA_PATH, index_col=0, skiprows=[1, 2])
     df.index = pd.to_datetime(df.index, errors='coerce')
     df = df[df.index.notna()].sort_index()
-    df = df.apply(pd.to_numeric, errors='coerce').ffill().bfill().dropna()
+    # Forward fill missing days natively. Do NOT backward fill to avoid future leakage.
+    df = df.apply(pd.to_numeric, errors='coerce').ffill().dropna()
     asset_names = df.columns.tolist()
     return df.values.astype(np.float32), asset_names, df
 
@@ -403,10 +403,12 @@ def main():
         if end > T:
             break
 
-        # Normalize with training statistics only
-        data_norm, mean, std = normalise(raw_data[start:end])
-        train_scaled = data_norm[:n_train]
-        test_scaled  = data_norm[n_train:]
+        # Normalize strictly resolving stats against the training boundary to prevent test-leakage
+        train_raw = raw_data[start : start + n_train]
+        test_raw = raw_data[start + n_train : end]
+        
+        train_scaled, mean, std = normalise(train_raw)
+        test_scaled = (test_raw - mean) / std
 
         X_tr, y_tr = make_windows(train_scaled, WINDOW)
         X_te, y_te = make_windows(test_scaled, WINDOW)

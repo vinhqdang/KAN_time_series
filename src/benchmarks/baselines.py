@@ -579,7 +579,7 @@ class CorrelationThresholdBaseline(CausalBaseline):
     def fit(self, X):
         import pandas as pd
         df = pd.DataFrame(X)
-        corr = df.corr().abs().values
+        corr = df.corr().abs().values.copy()
         np.fill_diagonal(corr, 0)
         self.adj = (corr > self.threshold).astype(int)
         return self
