@@ -31,7 +31,7 @@ def verify():
     # OLS: A = (X'X)^-1 X'Y
     # Or per component
     coeffs_est = np.zeros_like(adj, dtype=float)
-    for i in range(5):
+    for i in range(adj.shape[0]):
         # target column i
         y = Tgt[:, i]
         # fit on all previous
@@ -43,7 +43,7 @@ def verify():
     
     print("\nRunning Lasso (alpha=0.01)...")
     lasso_adj = np.zeros_like(adj)
-    for i in range(5):
+    for i in range(adj.shape[0]):
         model = Lasso(alpha=0.01)
         model.fit(Inp, Tgt[:, i])
         lasso_adj[i] = model.coef_

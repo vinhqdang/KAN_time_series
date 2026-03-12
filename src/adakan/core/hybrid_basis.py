@@ -3,6 +3,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class HybridBasisFunction(nn.Module):
+    """
+    EXPERIMENTAL WARNING: Piecewise constant waveforms; linear interpolations substituting higher-order B-Splines.
+    """
     def __init__(self, wavelet_levels=4, spline_grid=5, spline_order=3):
         super().__init__()
         self.wavelet_levels = wavelet_levels

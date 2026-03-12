@@ -10,7 +10,7 @@ def test_cdkan():
     # Random Data
     n_features = 5
     X = torch.randn(100, 10, n_features).to(device)
-    y = torch.randn(100, 1, n_features).to(device)
+    y = torch.randn(100, n_features).to(device)
     
     loader = {'X': X, 'y': y}
     

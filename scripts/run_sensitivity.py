@@ -36,30 +36,40 @@ def make_synthetic_loaders(n_samples=600, n_nodes=5, window=16, seed=0):
         n_samples=n_samples, n_nodes=n_nodes, density=0.3,
         max_lag=3, seed=seed,
     )
-    # Normalize
-    mean = data.mean(0, keepdims=True)
-    std  = data.std(0, keepdims=True) + 1e-8
-    data = (data - mean) / std
+    
+    split_idx = int(n_samples * 0.8)
+    
+    train_raw = data[:split_idx]
+    test_raw = data[split_idx:]
+    
+    # Normalize with train statistics only
+    mean = train_raw.mean(0, keepdims=True)
+    std  = train_raw.std(0, keepdims=True) + 1e-8
+    train_scaled = (train_raw - mean) / std
+    test_scaled  = (test_raw - mean) / std
 
     # Sliding windows
-    horizon = 1
-    X, y = [], []
-    for i in range(len(data) - window - horizon + 1):
-        X.append(data[i : i + window])
-        y.append(data[i + window])
-    X = np.array(X, dtype=np.float32)
-    y = np.array(y, dtype=np.float32)
+    def create_windows(arr, window, horizon=1):
+        X, y = [], []
+        for i in range(len(arr) - window - horizon + 1):
+            X.append(arr[i : i + window])
+            y.append(arr[i + window])
+        if not X:
+            return np.zeros((0, window, arr.shape[1]), dtype=np.float32), np.zeros((0, arr.shape[1]), dtype=np.float32)
+        return np.array(X, dtype=np.float32), np.array(y, dtype=np.float32)
 
-    split = int(len(X) * 0.8)
+    X_tr, y_tr = create_windows(train_scaled, window)
+    X_te, y_te = create_windows(test_scaled, window)
+
     dev = torch.device('cpu')
 
     train_loader = {
-        'X': torch.from_numpy(X[:split]).to(dev),
-        'y': torch.from_numpy(y[:split]).to(dev),
+        'X': torch.from_numpy(X_tr).to(dev),
+        'y': torch.from_numpy(y_tr).to(dev),
     }
     test_loader = {
-        'X': torch.from_numpy(X[split:]).to(dev),
-        'y': torch.from_numpy(y[split:]).to(dev),
+        'X': torch.from_numpy(X_te).to(dev),
+        'y': torch.from_numpy(y_te).to(dev),
     }
     return train_loader, test_loader, n_nodes, adj
 
