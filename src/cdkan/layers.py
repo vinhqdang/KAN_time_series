@@ -26,9 +26,29 @@ class BSplineFunction(nn.Module):
         )
         self.register_buffer("grid", grid)  # [1, G + 2k + 1]
 
+        self.grid_eps = grid_eps
+
         self.coef = nn.Parameter(
             (scale_noise * (torch.rand(1, grid_size + spline_order) - 0.5)) * scale_base
         )
+        
+        # Adaptive grid trackers
+        self.register_buffer("running_min", torch.tensor(grid_range[0], dtype=torch.float32))
+        self.register_buffer("running_max", torch.tensor(grid_range[1], dtype=torch.float32))
+        
+    def update_grid_from_samples(self):
+        """Update grid range from empirical running stats."""
+        with torch.no_grad():
+            self.grid_range[0] = self.running_min.item() - self.grid_eps
+            self.grid_range[1] = self.running_max.item() + self.grid_eps
+            
+            h = (self.grid_range[1] - self.grid_range[0]) / self.grid_size
+            new_grid = (
+                (torch.arange(-self.spline_order, self.grid_size + self.spline_order + 1, device=self.grid.device) * h + self.grid_range[0])
+                .expand(1, -1)
+                .contiguous()
+            )
+            self.grid.copy_(new_grid)
 
     def b_splines(self, x):
         """Compute B-spline bases.  x: [batch, 1]  ->  [batch, num_coeffs]"""
@@ -54,6 +74,12 @@ class BSplineFunction(nn.Module):
     def forward(self, x):
         original_shape = x.shape
         x = x.view(-1, 1)
+        
+        if self.training:
+            with torch.no_grad():
+                self.running_min.copy_(torch.min(self.running_min, x.min()))
+                self.running_max.copy_(torch.max(self.running_max, x.max()))
+                
         x_clamped = torch.clamp(x, self.grid_range[0], self.grid_range[1])
         bases = self.b_splines(x_clamped)            # [batch, C]
         y = torch.matmul(bases, self.coef.t())       # [batch, 1]
@@ -96,9 +122,9 @@ class LagAwareAdjacency(nn.Module):
         super().__init__()
         self.num_nodes = num_nodes
         self.max_lag   = max_lag
-        # Shape: [max_lag, d, d]  — lag 0 means lag-1 in actual time
+        # Shape: [max_lag+1, d, d]  — lag 0 means contemporaneous, lag 1..L are historical
         self.adj_logits = nn.Parameter(
-            torch.zeros(max_lag, num_nodes, num_nodes)
+            torch.zeros(max_lag + 1, num_nodes, num_nodes)
         )
         nn.init.uniform_(self.adj_logits, -init_scale, init_scale)
 
@@ -113,8 +139,9 @@ class LagAwareAdjacency(nn.Module):
         return torch.sigmoid(self.adj_logits[k])
 
     def get_summary_adj(self) -> torch.Tensor:
-        """Summary graph: max over lags [d, d] — used for evaluation & plotting."""
-        return torch.sigmoid(self.adj_logits).max(dim=0).values
+        """Summary graph: noisy-OR over all lags [d, d] — used for evaluation & plotting."""
+        probs = torch.sigmoid(self.adj_logits)
+        return 1.0 - torch.prod(1.0 - probs, dim=0)
 
     def get_expected_lag(self) -> torch.Tensor:
         """
@@ -122,8 +149,8 @@ class LagAwareAdjacency(nn.Module):
             E[lag | edge i<-j] = sum_k k * P_k(i,j) / sum_k P_k(i,j)
         Returns [d, d] tensor of expected lags.
         """
-        probs = torch.sigmoid(self.adj_logits)          # [L, d, d]
-        lags  = torch.arange(1, self.max_lag + 1,
+        probs = torch.sigmoid(self.adj_logits)          # [L+1, d, d]
+        lags  = torch.arange(0, self.max_lag + 1,
                               dtype=probs.dtype,
                               device=probs.device).view(-1, 1, 1)
         weighted = (probs * lags).sum(0)                # [d, d]
@@ -158,7 +185,6 @@ class CDKANLayer(nn.Module):
 
         self.edge_functions = nn.ModuleDict()
         self.lag_attention  = nn.ModuleDict()
-        self.modulators     = nn.ModuleDict()
         self.learn_structure = learn_structure
 
         if learn_structure:
@@ -172,7 +198,11 @@ class CDKANLayer(nn.Module):
                 eid = f"{i}_{j}"
                 self.edge_functions[eid] = BSplineFunction(grid_size=grid_size)
                 self.lag_attention[eid]  = LagAttention(max_lag=max_lag)
-                self.modulators[eid]     = TemporalModulator(input_dim=1)
+                
+        # Shared Temporal Encoder (one per variable, not per edge)
+        self.modulators = nn.ModuleList([
+            TemporalModulator(input_dim=1) for _ in range(in_features)
+        ])
 
         self.register_buffer('temperature', torch.tensor(1.0))
 
@@ -186,13 +216,13 @@ class CDKANLayer(nn.Module):
         batch_size, seq_len, _ = x_history.shape
         output = torch.zeros(batch_size, self.out_features, device=x_history.device)
 
-        # Get adjacency masks: [max_lag, out, in] (stochastic during training)
+        # Get adjacency masks: [max_lag+1, out, in] (stochastic during training)
         if self.learn_structure:
             full_adj = self.lag_adj(self.temperature.item(), hard=self.training)
             # Slice to the actual in/out dimensions
-            adj_mask = full_adj[:, :self.out_features, :self.in_features]  # [L, out, in]
+            adj_mask = full_adj[:, :self.out_features, :self.in_features]  # [L+1, out, in]
         else:
-            adj_mask = torch.ones(self.max_lag, self.out_features, self.in_features,
+            adj_mask = torch.ones(self.max_lag + 1, self.out_features, self.in_features,
                                   device=x_history.device)
 
         for i in range(self.out_features):
@@ -210,22 +240,22 @@ class CDKANLayer(nn.Module):
                 history_window = x_history[:, t_start:, j]             # [batch, L+1]
                 history_window = torch.flip(history_window, dims=[1])  # [batch, L+1] newest first
 
-                # Per-lag mask for edge (i, j): [max_lag]
-                lag_mask = adj_mask[:, i, j]                           # [max_lag]
+                # Per-lag mask for edge (i, j): [max_lag+1]
+                lag_mask = adj_mask[:, i, j]                           # [max_lag+1]
 
                 # Combine attention weight with lag-specific adjacency mask
-                # We index the first max_lag lags (exclude lag-0 = current step)
+                # We now index lags 0 to max_lag
                 L = min(self.max_lag, history_window.shape[1] - 1)
-                combined_weights = w_lag[1:L+1] * lag_mask[:L]         # [L]
+                combined_weights = w_lag[:L+1] * lag_mask[:L+1]        # [L+1]
                 combined_weights = combined_weights / (combined_weights.sum() + 1e-8)
 
-                x_lagged = (history_window[:, 1:L+1] * combined_weights).sum(dim=1)  # [batch]
+                x_lagged = (history_window[:, :L+1] * combined_weights).sum(dim=1)  # [batch]
 
                 # ------ B. KAN non-linear transform ------
                 y_edge = self.edge_functions[eid](x_lagged)             # [batch]
 
-                # ------ C. Temporal modulation ------
-                alpha = self.modulators[eid](x_history[:, :, j:j+1])  # [batch, 1]
+                # ------ C. Shared Temporal modulation ------
+                alpha = self.modulators[j](x_history[:, :, j:j+1])  # [batch, 1]
 
                 edge_accum = edge_accum + y_edge * alpha.squeeze(-1)
 

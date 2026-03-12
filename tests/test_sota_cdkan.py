@@ -41,7 +41,8 @@ def test_sota_cdkan_forward():
     print("Backward pass successful.")
     
     # Test Graph Extraction
-    adj, lags = model.cd_layer.get_causal_graph()
+    adj = model.cd_layer.get_adjacency()
+    lags = model.cd_layer.get_expected_lags()
     print(f"Adjacency shape: {adj.shape}")
     assert adj.shape == (n_assets, n_assets)
     print("Graph extraction successful.")

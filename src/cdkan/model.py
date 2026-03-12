@@ -153,6 +153,12 @@ class CDKANForecaster(nn.Module):
         """Set Gumbel-Sigmoid temperature on CDKANLayer."""
         if hasattr(self.cd_layer, 'temperature'):
             self.cd_layer.temperature.data.fill_(t)
+            
+    def update_grid(self):
+        """Update dynamic KAN grids empirically tracking activation ranges."""
+        for module in self.modules():
+            if module.__class__.__name__ == 'BSplineFunction' and hasattr(module, 'update_grid_from_samples'):
+                module.update_grid_from_samples()
 
     def get_summary_adjacency(self) -> torch.Tensor:
         """Summary causal graph [in, in] (max over lags)."""

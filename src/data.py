@@ -118,19 +118,21 @@ def load_ett_data(file_path="ETTh1.csv", target_col="OT", window=WINDOW, horizon
     # Scale all columns
     scaler = MinMaxScaler()
     data = df.iloc[:, 1:].values # Skip date, take all cols (7 features)
-    data_scaled = scaler.fit_transform(data)
-    
     # Identify target index (OT is usually last)
     target_idx = -1
     if target_col in df.columns:
         target_idx = df.columns.get_loc(target_col) - 1 # -1 because we skipped date
         
-    n = len(data_scaled)
+    n = len(data)
     n_train = int(n * 0.7)
     n_test = int(n * 0.2)
     
-    train = data_scaled[:n_train]
-    test = data_scaled[-n_test:]
+    train = data[:n_train]
+    test = data[-n_test:]
+
+    # Scale using train only
+    train_scaled = scaler.fit_transform(train)
+    test_scaled = scaler.transform(test)
     
     # create_dataset returns (X, y) where y is full horizon for all features
     # We want X=[Window, Feats], y=[Horizon, Target]
@@ -162,10 +164,22 @@ def load_and_preprocess_data():
     scalers, datasets = {}, {}
     for asset, df in raw.items():
         sc = MinMaxScaler()
-        scaled = sc.fit_transform(df[["Close"]]).astype(np.float32).reshape(-1)
+        values = df[["Close"]].values.astype(np.float32)
+        n = len(values)
+        split_val = int(n * 0.8)
+
+        train_val = values[:split_val]
+        test_val = values[split_val:]
+        
+        train_scaled = sc.fit_transform(train_val)
+        test_scaled = sc.transform(test_val)
+        
+        scaled = np.concatenate([train_scaled, test_scaled], axis=0).reshape(-1)
         scalers[asset] = sc
         X, y = build_supervised(scaled, WINDOW, HORIZON)
-        split = int(len(X)*0.8)
+        
+        # Determine the sliding window split index
+        split = int(len(X) * 0.8)
         datasets[asset] = {
             "df": df,
             "scaled": scaled,
@@ -213,23 +227,25 @@ def load_multivariate_data():
     full_df = pd.concat(raw_dfs, axis=1)
     full_df = full_df.sort_index()
     
-    # Fill missing values (forward fill then backward fill)
-    full_df = full_df.ffill().bfill().dropna()
+    # Fill missing values (forward fill only)
+    full_df = full_df.ffill().dropna()
     
     print(f"Aligned Data Shape: {full_df.shape}")
     print(f"Assets: {asset_names}")
     
-    # Scale
-    scaler = MinMaxScaler()
     data_values = full_df.values.astype(np.float32)
-    data_scaled = scaler.fit_transform(data_values)
     
     # Split
-    n = len(data_scaled)
+    n = len(data_values)
     n_train = int(n * 0.8)
     
-    train_data = data_scaled[:n_train]
-    test_data = data_scaled[n_train:]
+    train_data = data_values[:n_train]
+    test_data = data_values[n_train:]
+    
+    # Scale
+    scaler = MinMaxScaler()
+    train_scaled = scaler.fit_transform(train_data)
+    test_scaled = scaler.transform(test_data)
     
     # Sliding Window
     def make_dataset(d):
@@ -243,8 +259,8 @@ def load_multivariate_data():
             Y.append(d[i+WINDOW : i+WINDOW+HORIZON])
         return np.array(X, dtype=np.float32), np.array(Y, dtype=np.float32)
         
-    X_train, y_train = make_dataset(train_data)
-    X_test, y_test = make_dataset(test_data)
+    X_train, y_train = make_dataset(train_scaled)
+    X_test, y_test = make_dataset(test_scaled)
     
     # To Tensor
     dataset = {

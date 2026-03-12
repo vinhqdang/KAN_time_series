@@ -69,11 +69,14 @@ class VARLasso(CausalBaseline):
 
 # 2. PCMCI Proxy (Constraint-based)
 class PCMCIProxy(CausalBaseline):
-    def __init__(self, max_lag=5):
+    def __init__(self, max_lag=5, strict=True):
         self.max_lag = max_lag
+        self.strict = strict
         self.adj = None
         
     def fit(self, X):
+        if self.strict:
+            raise NotImplementedError("PCMCIProxy is a placeholder. To compare against true PCMCI, use tigramite or set strict=False.")
         # Simplified Partial Correlation approach
         # A real PCMCI implementation requires 'tigramite'
         # Here we substitute with a simple correlation wrapper or placeholder
@@ -128,14 +131,17 @@ class PCMCIProxy(CausalBaseline):
 
 # 3. NTiCD Proxy (Neural SOTA)
 class NTiCDProxy(CausalBaseline):
-    def __init__(self, hidden_dim=32, epochs=100, device='cuda'):
+    def __init__(self, hidden_dim=32, epochs=100, device='cuda', strict=True):
         self.hidden_dim = hidden_dim
         self.epochs = epochs
         self.device = device
+        self.strict = strict
         self.adj = None
         self.model = None
         
     def fit(self, X):
+        if self.strict:
+            raise NotImplementedError("NTiCDProxy is a placeholder. To compare against true NTiCD, provide a full implementation or set strict=False.")
         # Neural Time-invariant Causal Discovery Proxy
         # Model: x_t^i = MLP_i(Mask_i * LSTM(x_<t))
         
@@ -481,14 +487,17 @@ class NBEATSBaseline(nn.Module):
 
 # 9. GOLEM Proxy (DAG SOTA) - Differentiable optimization
 class GOLEMProxy(CausalBaseline):
-    def __init__(self, lambda_l1=0.01, lambda_dag=1.0, epochs=100, device='cuda'):
+    def __init__(self, lambda_l1=0.01, lambda_dag=1.0, epochs=100, device='cuda', strict=True):
         self.l1 = lambda_l1
         self.dag = lambda_dag
         self.epochs = epochs
         self.device = device
+        self.strict = strict
         self.adj = None
         
     def fit(self, X):
+        if self.strict:
+            raise NotImplementedError("GOLEMProxy is a placeholder. Use the official GOLEM library or set strict=False.")
         # Minimize |X - X@W|^2 + l1|W| + alpha*h(W) + rho/2*h(W)^2
         # Linear GOLEM
         T, D = X.shape
@@ -560,3 +569,20 @@ class CDKANWrapper(CausalBaseline):
     
     def get_model(self):
         return self.model
+
+# 11. Correlation Threshold Proxy (from deleted causal_baselines.py)
+class CorrelationThresholdBaseline(CausalBaseline):
+    def __init__(self, threshold=0.5):
+        self.threshold = threshold
+        self.adj = None
+        
+    def fit(self, X):
+        import pandas as pd
+        df = pd.DataFrame(X)
+        corr = df.corr().abs().values
+        np.fill_diagonal(corr, 0)
+        self.adj = (corr > self.threshold).astype(int)
+        return self
+
+    def get_adjacency(self):
+        return self.adj

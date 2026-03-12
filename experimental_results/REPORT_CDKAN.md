@@ -56,7 +56,7 @@ The learned adjacency matrix (pruned at threshold 0.1) reveals:
 
 ### Interpretability
 The "dense" initial graph has been tamed. The combination of:
-1.  **3-Phase Training** (Discovery -> Pruning -> Tuning)
+1.  **Augmented Lagrangian Method (ALM) optimization** ensuring structural constraints
 2.  **Hard Thresholding** for visualization
 3.  **RevIN** removing trend noise
 ...has resulted in a highly interpretable causal structure that also delivers state-of-the-art forecasting accuracy.
@@ -102,12 +102,12 @@ To elevate CD-KAN to true SOTA status in *causal discovery*, we implemented:
 
 ### 1. Differentiable DAG Learning
 **Previous**: Edge-wise logits with soft masking  
-**Updated**: `CausalStructure` module with learnable adjacency matrix
+**Updated**: `LagAwareAdjacency` module capturing contemporaneous and lagged depth relationships
 
 ```python
-class CausalStructure(nn.Module):
-    def __init__(self, num_nodes):
-        self.adj_logits = nn.Parameter(torch.zeros(num_nodes, num_nodes))
+class LagAwareAdjacency(nn.Module):
+    def __init__(self, num_nodes, max_lag):
+        self.adj_logits = nn.Parameter(torch.zeros(max_lag + 1, num_nodes, num_nodes))
     
     def forward(self, temperature, hard=False):
         return gumbel_sigmoid_sample(self.adj_logits, temperature, hard=hard)

@@ -27,11 +27,11 @@ $$x_{\text{norm}} = \frac{x - \mu(x)}{\sigma(x)}$$
 
 **Purpose**: Learn sparse causal graph with temporal lag information.
 
-#### 2.1 CausalStructure Module
+#### 2.1 LagAwareAdjacency Module
 
-Learnable adjacency matrix parameterized by logits:
+Learnable adjacency matrix parameterized by logits capturing both contemporaneous ($A_0$) and lagged relationships ($A_{1\dots L}$):
 
-$$A_{logits} \in \mathbb{R}^{d \times d}$$
+$$A_{logits} \in \mathbb{R}^{(L + 1) \times d \times d}$$
 
 **Gumbel-Sigmoid Sampling** for differentiable discrete decisions:
 ```python
@@ -224,8 +224,7 @@ For outer_iter = 1 to max_outer:
 
 1. **Get adjacency probabilities**:
    ```python
-   adj_logits = model.cd_layer.causal_structure.adj_logits
-   adj_probs = torch.sigmoid(adj_logits)
+   adj_binary = model.cd_layer.get_adjacency()
    ```
 
 2. **Thresholding**:

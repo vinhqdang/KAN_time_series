@@ -1,4 +1,4 @@
-﻿import torch
+import torch
 import torch.nn as nn
 import time
 import itertools
@@ -10,6 +10,7 @@ from .losses import (
     structural_sparsity_loss,
     causal_consistency_loss,
     compute_dag_residual,
+    group_lasso_loss,
 )
 
 
@@ -63,6 +64,9 @@ class CDKANTrainerConfig:
     tau_decay:     float = 0.99
 
     lr:            float = 1e-3
+    lr_adj:        float = 1e-3
+    lambda_group_lasso: float = 0.01
+
     seed:          Optional[int] = None
 
 
@@ -88,7 +92,19 @@ class CDKANTrainer:
             torch.manual_seed(self.cfg.seed)
             np.random.seed(self.cfg.seed)
 
-        self.optimizer = torch.optim.Adam(model.parameters(), lr=self.cfg.lr)
+        # Segregate parameters into learning rate groups
+        adj_params = []
+        base_params = []
+        for name, param in model.named_parameters():
+            if 'adj_logits' in name:
+                adj_params.append(param)
+            else:
+                base_params.append(param)
+
+        self.optimizer = torch.optim.Adam([
+            {'params': base_params, 'lr': self.cfg.lr},
+            {'params': adj_params, 'lr': self.cfg.lr_adj}
+        ])
         self.criterion = nn.MSELoss()
 
     # ------------------------------------------------------------------
@@ -171,6 +187,10 @@ class CDKANTrainer:
                     alpha = alpha + rho * h_val
                     print(f"  [ALM] Epoch {epoch+1}: h(W)={h_val:.4e} -> "
                           f"rho={rho:.2e}, alpha={alpha:.4f}")
+                          
+                # Adaptive Grid Update
+                if hasattr(self.model, 'update_grid'):
+                    self.model.update_grid()
 
             # Temperature annealing
             tau = max(cfg.tau_final, tau * cfg.tau_decay)
@@ -179,6 +199,8 @@ class CDKANTrainer:
             if val_mse < best_loss:
                 best_loss        = val_mse
                 patience_counter = 0
+                import copy
+                best_state_dict = copy.deepcopy(self.model.state_dict())
             else:
                 patience_counter += 1
 
@@ -191,6 +213,9 @@ class CDKANTrainer:
                 print(f"Early stopping at epoch {epoch+1} "
                       f"(patience={patience}, h(W)={epoch_h:.4e})")
                 break
+
+        if 'best_state_dict' in locals():
+            self.model.load_state_dict(best_state_dict)
 
         return history
 
@@ -271,6 +296,9 @@ class CDKANTrainer:
 
         # Sparsity
         sparse_loss = structural_sparsity_loss(self.model, self.cfg.lambda_sparse)
+        
+        # Group Lasso
+        g_lasso_loss = group_lasso_loss(self.model) * self.cfg.lambda_group_lasso
 
         # NOTEARS DAG constraint via ALM
         # causal_consistency_loss now returns (tensor, float_h)
@@ -279,7 +307,7 @@ class CDKANTrainer:
         # ALM: alpha * h(W) + rho/2 * h(W)^2
         alm_loss = alpha * h_loss_tensor + (rho / 2.0) * h_loss_tensor * h_loss_tensor
 
-        total_loss = mse_loss + sparse_loss + alm_loss
+        total_loss = mse_loss + sparse_loss + g_lasso_loss + alm_loss
         total_loss.backward()
         self.optimizer.step()
 

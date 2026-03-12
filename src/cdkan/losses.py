@@ -35,9 +35,9 @@ def compute_dag_residual(model) -> float:
     with torch.no_grad():
         for module in model.modules():
             if module.__class__.__name__ == 'LagAwareAdjacency':
-                # 3D lag tensor: use summary (max-over-lags) for constraint
-                W = module.adj_logits  # [max_lag, d, d]
-                W_summary = W.abs().max(dim=0).values  # [d, d]
+                # 3D lag tensor: constrain only A0 (lag 0)
+                W = module.adj_logits  # [max_lag+1, d, d]
+                W_summary = W[0]  # [d, d]
                 h = _h_notears(W_summary)
                 total_h += h.item()
                 count += 1
@@ -112,9 +112,9 @@ def causal_consistency_loss(model, lambda_dag: float = 0.1) -> tuple:
 
     for module in model.modules():
         if module.__class__.__name__ == 'LagAwareAdjacency':
-            # Use raw logits so gradients flow unrestricted
-            W = module.adj_logits          # [max_lag, d, d]
-            W_summary = W.abs().max(dim=0).values  # [d, d]  summary graph
+            # Use raw logits so gradients flow unrestricted, but ONLY for A0
+            W = module.adj_logits          # [max_lag+1, d, d]
+            W_summary = W[0]                       # [d, d]  contemporaneous graph
             h = _h_notears(W_summary)
             dag_loss = dag_loss + h
             h_val += h.item()
