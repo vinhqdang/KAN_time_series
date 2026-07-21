@@ -402,15 +402,15 @@ correct regime graph on each side (AUROC~0.89 before, 1.00 after). Thus CD-KAN
 detects the intervention \emph{and} recovers the two distinct structures---not
 merely a stable graph.
 
-\paragraph{Event-anchored regime analysis (real data).} Applying the same
-sliding-window analysis to the financial panel (Figure~\ref{fig:intervention}B),
-the largest structural shifts fall in documented turbulent periods (the 2020
-COVID era and the 2021--2022 inflation/rate-hike era). Splitting at the 2022
-rate-hike onset, the top-quartile edge set changes substantially (Jaccard 0.12) in
-an economically coherent direction: \emph{after} 2022, gold becomes a downstream
-hub (SPX$\to$GLD and BTC$\to$GLD flight-to-safety links appear), while several
-oil--equity links dissolve. That the structure tracks known macro regime shifts is
-evidence the edges encode real, time-varying dependencies.
+\paragraph{Event-anchored regime analysis (real data, illustrative).} Applying the
+same sliding-window analysis to the financial panel
+(Figure~\ref{fig:intervention}B) surfaces structural shifts during the 2020 COVID
+and 2021--2022 rate-hike eras; splitting at the 2022 rate-hike onset, the graph
+changes in an economically coherent direction (post-2022, gold becomes a
+downstream hub as flight-to-safety links appear). We stress this is
+\emph{illustrative}: the rigorous, placebo-controlled version below shows real-data
+single-event attribution is only marginal, so the clean intervention evidence is
+the synthetic experiment.
 
 \begin{figure}[t]
     \centering
@@ -422,3 +422,21 @@ evidence the edges encode real, time-varying dependencies.
     coincide with the 2020 COVID and 2021--2022 rate-hike eras.}
     \label{fig:intervention}
 \end{figure}
+
+\paragraph{Documented policy shock (real data), reported candidly.} We also test
+whether documented policy shocks coincide with larger structural change than
+placebo dates. Two findings. First, a methodological one that echoes a Reviewer
+concern: on daily \emph{price levels} the learned structure is degenerate (e.g.\
+the US-dollar index carries $<$1\% of outgoing influence, dominated by co-trending
+non-stationarity), whereas on \emph{log-returns} it is balanced and economically
+plausible---so this analysis uses returns. Second, a placebo-controlled test
+(pre/post-split graph dissimilarity, log-returns, $W{=}300$ each side): the March
+2022 Fed rate-hike liftoff coincides with the \emph{largest} pre/post structural
+shift in the sample (dissimilarity 0.96 vs.\ a placebo mean of 0.86), though this
+is only marginally above chance ($p\!\approx\!0.10$), and the 2020 COVID shock is
+not individually distinguishable ($p\!=\!0.76$). Daily-return graphs vary
+substantially window-to-window, which limits attribution of any single real-world
+event; accordingly we regard the \emph{controlled synthetic} experiment
+(Figure~\ref{fig:intervention}A), where ground truth is known, as the definitive
+demonstration that CD-KAN recovers structural change, and the real-data result as
+suggestive rather than conclusive.
