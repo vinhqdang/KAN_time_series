@@ -208,3 +208,13 @@ __marimo__/
 
 # honest-benchmark run logs (results CSVs are kept)
 experimental_results/*.log
+
+# LaTeX build artifacts (manuscript compiles from *.tex)
+*.aux
+*.bbl
+*.blg
+*.out
+*.toc
+*.synctex.gz
+manuscript/main.pdf
+SPADE_manuscript.pdf
