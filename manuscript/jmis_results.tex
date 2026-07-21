@@ -21,16 +21,22 @@ data). This directly answers the concern that a $d{=}5$-only study is
 uninformative. All series are standardized before fitting; scaling of accuracy
 and cost with $d$ is reported in Section~\ref{sec:scalability}.
 
-\paragraph{Baselines.} We compare against seven \emph{genuine} implementations:
-VAR-Lasso \citep{Tibshirani1996}; linear NOTEARS \citep{Zheng2018}; GOLEM
-\citep{ng2020golem}; PCMCI (tigramite, \citealt{Runge2019}); VAR-LiNGAM (lingam,
-\citealt{Hyvarinen2010}); a lagged-correlation threshold; and GC-KAN
-\citep{GCKAN2024} with genuine B-spline edge functions. We additionally include
-\textbf{GC-KAN$+$ALM}, which adds our acyclicity penalty to the GC-KAN backbone,
-to isolate the contribution of the DAG constraint from that of the KAN edge
-functions (Reviewer-requested ablation). Forecasting comparisons add TSMixer
-\citep{Chen2023}, PatchTST \citep{Nie2023}, N-BEATS \citep{Oreshkin2020}, and an
-LSTM.
+\paragraph{Baselines.} We compare against \emph{genuine} implementations spanning
+classical and recent methods. Classical/econometric: VAR-Lasso
+\citep{Tibshirani1996}, PCMCI (tigramite, \citealt{Runge2019}), VAR-LiNGAM
+(lingam, \citealt{Hyvarinen2010}), and a lagged-correlation threshold.
+Differentiable DAG learning: linear NOTEARS \citep{Zheng2018} and GOLEM
+\citep{ng2020golem}. \emph{Recent} deep temporal causal discovery: \textbf{Neural
+Granger Causality} (cMLP, \citealt{tank2021neural}, IEEE~TPAMI~2021) and
+\textbf{NTS-NOTEARS} \citep{sun2023ntsnotears} (AISTATS~2023), both run from the
+authors' vendored code. Within the KAN family: GC-KAN \citep{GCKAN2024} with
+genuine B-spline edge functions, plus a \textbf{GC-KAN$+$ALM} ablation that adds
+our acyclicity penalty to the GC-KAN backbone, isolating the DAG constraint's
+contribution from that of the KAN edge functions. We attempted to include Rhino
+\citep{Gong2023Rhino}, but its \texttt{causica} package requires Python${<}3.11$,
+incompatible with our environment; we report this rather than omit it silently.
+Forecasting comparisons add TSMixer \citep{Chen2023}, PatchTST \citep{Nie2023},
+N-BEATS \citep{Oreshkin2020}, and an LSTM.
 
 \paragraph{Metrics.} Because thresholding confounds structural-ranking quality
 with a chosen operating point, we report \textbf{AUROC} and \textbf{AUPRC}

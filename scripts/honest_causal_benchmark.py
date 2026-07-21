@@ -182,6 +182,55 @@ def bl_varlingam(X, max_lag=3):
     return mats[1:].max(0) if mats.shape[0] > 1 else mats.max(0)
 
 
+def bl_neural_gc(X, max_lag=3, hidden=10, lam=0.02, lr=1e-2, epochs=1500, seed=0):
+    """Neural Granger Causality (cMLP), Tank et al., IEEE TPAMI 2021.
+    Uses the authors' cMLP architecture and GC() read-out (vendored under
+    external/neural_gc); trained with Adam + group-lasso on the first-layer
+    input weights, the method's prescribed group-sparse objective. Returns a
+    [effect, cause] importance matrix."""
+    _EXT = os.path.join(os.path.dirname(__file__), "..", "external", "neural_gc")
+    if _EXT not in sys.path:
+        sys.path.insert(0, _EXT)
+    from models.cmlp import cMLP
+    torch.manual_seed(seed)
+    D = X.shape[1]
+    Xt = torch.tensor(X[np.newaxis], dtype=torch.float32)          # (1,T,D)
+    cmlp = cMLP(D, lag=max_lag, hidden=[hidden])
+    opt = torch.optim.Adam(cmlp.parameters(), lr=lr); lf = nn.MSELoss()
+    for _ in range(epochs):
+        opt.zero_grad()
+        pred = cmlp(Xt[:, :-1])
+        loss = sum(lf(pred[:, :, i], Xt[:, max_lag:, i]) for i in range(D))
+        gl = sum(torch.norm(net.layers[0].weight, dim=(0, 2)).sum() for net in cmlp.networks)
+        (loss + lam * gl).backward(); opt.step()
+    return cmlp.GC(threshold=False).detach().cpu().numpy()          # [effect, cause]
+
+
+def bl_nts_notears(X, max_lag=3, hidden=10, lambda1=0.02, lambda2=0.01, seed=0):
+    """NTS-NOTEARS, Sun et al., AISTATS 2023 (vendored, unmodified, under
+    external/nts_notears): 1D-CNN structural functions for nonlinear lagged and
+    instantaneous edges with a NOTEARS acyclicity constraint. Returns a
+    [effect, cause] summary importance matrix (max over lagged + instantaneous)."""
+    _EXT = os.path.join(os.path.dirname(__file__), "..", "external", "nts_notears")
+    for p in (os.path.join(_EXT, "notears"), _EXT):
+        if p not in sys.path:
+            sys.path.insert(0, p)
+    from notears.nts_notears import NTS_NOTEARS, train_NTS_NOTEARS
+    prev_dtype = torch.get_default_dtype(); torch.set_default_dtype(torch.double)
+    try:
+        D = X.shape[1]
+        m = NTS_NOTEARS(dims=[D, hidden, 1], bias=True, number_of_lags=max_lag,
+                        variable_names_no_time=[str(i) for i in range(D)], prior_knowledge=[])
+        train_NTS_NOTEARS(m, X.astype(np.float64), device="cpu", lambda1=lambda1,
+                          lambda2=lambda2, w_threshold=0.0, h_tol=1e-8, verbose=0, rho_max=1e16)
+        Wsim, Wnar = m.fc1_to_adj()                                 # row->col = [cause, effect]
+        Wsim = np.abs(np.asarray(Wsim)); Wnar = np.abs(np.asarray(Wnar)).reshape(max_lag, D, D)
+        summ = np.maximum(Wsim, Wnar.max(0))                        # [cause, effect]
+        return summ.T                                              # -> [effect, cause]
+    finally:
+        torch.set_default_dtype(prev_dtype)
+
+
 class _EdgeKAN(nn.Module):
     """Per-target KAN Granger predictor: genuine B-spline edge functions."""
     def __init__(self, d_in, grid=8):
@@ -325,7 +374,7 @@ def main():
 
     # some classical baselines are O(d^2)-O(d^3) and slow at high d
     SLOW_MAXD = {"PCMCI": 20, "VarLiNGAM": 20, "NOTEARS": 50, "GOLEM": 50,
-                 "GC-KAN": 10, "GC-KAN+ALM": 10}
+                 "GC-KAN": 10, "GC-KAN+ALM": 10, "Neural-GC": 20, "NTS-NOTEARS": 10}
 
     raw_path = os.path.join(RESULTS_DIR, "honest_causal_raw.csv")
     import pandas as pd
@@ -344,6 +393,8 @@ def main():
         "VarLiNGAM":     lambda X: (bl_varlingam(X), None, None),
         "GC-KAN":        lambda X: (bl_gc_kan(X, use_alm=False), None, None),
         "GC-KAN+ALM":    lambda X: (bl_gc_kan(X, use_alm=True), None, None),
+        "Neural-GC":     lambda X: (bl_neural_gc(X), None, None),
+        "NTS-NOTEARS":   lambda X: (bl_nts_notears(X), None, None),
     }
 
     rows = []

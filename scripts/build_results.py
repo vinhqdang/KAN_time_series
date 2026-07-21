@@ -19,8 +19,8 @@ FIG = "manuscript/figures"
 os.makedirs(FIG, exist_ok=True)
 NUM = {}
 
-ORDER = ["SPADE", "GC-KAN+ALM", "GC-KAN", "PCMCI", "VarLiNGAM",
-         "VAR-Lasso", "NOTEARS", "GOLEM", "Correlation"]
+ORDER = ["SPADE", "NTS-NOTEARS", "Neural-GC", "GC-KAN+ALM", "GC-KAN",
+         "PCMCI", "VarLiNGAM", "VAR-Lasso", "NOTEARS", "GOLEM", "Correlation"]
 
 
 def load_causal():

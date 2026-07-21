@@ -310,6 +310,39 @@ use $E{=}150$ epochs, learning rate $5\!\times\!10^{-3}$, grid size $G{=}8$, and
 $\lambda_g{=}10^{-2}$ throughout; a sensitivity analysis over $\lambda_g$ and $G$
 appears in Section~\ref{sec:sensitivity}.
 
+The purely-instantaneous specialization---the model behind our headline
+result---deserves an explicit statement, as it is the cleanest instance of the
+identifiability theory of Section~\ref{sec:identif}. Here each variable is
+predicted from its contemporaneous parents only, self-loops are masked, and the
+NOTEARS constraint of Theorem~\ref{thm:notears} is dualized on the edge-norm
+matrix $W$ so the recovered graph is a DAG. Algorithm~\ref{alg:instant} gives the
+full procedure; it is exactly the estimator whose population minimizer
+Proposition~\ref{prop:identif} shows to be consistent.
+
+\begin{algorithm}[t]
+\caption{SPADE-Instantaneous: self-masked nonlinear SEM with acyclicity (ALM)}
+\label{alg:instant}
+\begin{algorithmic}[1]
+\STATE \textbf{Input:} standardized data $X\in\Real^{N\times d}$; grid $G$; group
+weight $\lambda_g$; learning rate $\eta$; epochs $E$; ALM schedule
+$(\rho{=}1,\alpha{=}0,\beta{=}2,K{=}50)$, tolerance $\tau{=}10^{-8}$
+\STATE Initialize spline coefficients $C\in\Real^{d\times d\times(G+p)}$, bias $b$; fix self-mask $M_{ii}{=}0,\,M_{ij}{=}1$
+\FOR{epoch $=1$ to $E$}
+    \STATE $\hat{x}_{\cdot i} \leftarrow b_i + \sum_{j\neq i}\phi_{ij}(x_{\cdot j})$ \quad(self-masked SEM forecast, Eq.~\ref{eq:predict})
+    \STATE $\mathcal{L}_{\mathrm{MSE}} \leftarrow \tfrac1{Nd}\lVert \hat X - X\rVert_F^2$
+    \STATE $W_{ij} \leftarrow \lVert (C\odot M)_{ij,:}\rVert_2$ \quad(edge-norm matrix)
+    \STATE $h \leftarrow \operatorname{tr}(e^{W\circ W})-d$ \hfill(Theorem~\ref{thm:notears})
+    \STATE $\mathcal{L} \leftarrow \mathcal{L}_{\mathrm{MSE}} + \lambda_g\!\sum_{ij}W_{ij} + \alpha\,h + \tfrac{\rho}{2}h^2$
+    \STATE Adam step on $\mathcal{L}$ with $\eta$; gradient-clip at $5.0$
+    \IF{epoch $\bmod\ K = 0$ \textbf{and} $h>\tau$}
+        \STATE $\alpha \leftarrow \alpha + \rho\,h$;\quad $\rho \leftarrow \min(\beta\rho,\,10^{10})$
+    \ENDIF
+\ENDFOR
+\STATE $S_{ij} \leftarrow \mathrm{std}_t\big[(C\odot M)_{ij}\!\cdot\! B(x_{t,j})\big]$ \quad(edge scores, $[\text{effect},\text{cause}]$)
+\STATE \textbf{Return} $S$, spline edge functions $\{\phi_{ij}\}$
+\end{algorithmic}
+\end{algorithm}
+
 \subsection{Complexity}
 \label{sec:complexity}
 Per epoch, SPADE evaluates $O(d^2 L)$ edge splines, each $O(G)$, over $N$ windows,
