@@ -23,7 +23,7 @@ A causal (rather than merely correlational) map identifies candidate leverage
 points: if $X$ and $Y$ are both driven by a confounder $Z$, intervening on $X$
 will not move $Y$. SPADE's contemporaneous-DAG constraint and lag attribution
 help distinguish plausible directional drivers from co-movement. We stress
-\emph{candidate}: under observational data and assumption A1 (causal
+\emph{candidate}: under observational data and Assumption~\ref{as:suff} (causal
 sufficiency), unobserved confounders may still induce spurious edges, so the
 graph is a hypothesis generator for expert review, not a substitute for
 controlled experiments or natural-experiment identification.
@@ -43,10 +43,11 @@ remains future work.
 \label{sec:limits}
 Several boundary conditions delimit responsible use:
 \begin{itemize}
-    \item \textbf{Causal sufficiency and observational data (A1--A2).} Recovered
+    \item \textbf{Causal sufficiency and observational data
+    (Assumptions~\ref{as:suff}--\ref{as:markov}).} Recovered
     directions are only causal under the stated assumptions; in open markets with
     latent macro drivers they are best read as structured hypotheses.
-    \item \textbf{Stationarity (A3).} The mechanism is assumed constant within an
+    \item \textbf{Stationarity (Assumption~\ref{as:stat}).} The mechanism is assumed constant within an
     estimation window. Our rolling-window stability test
     (Section~\ref{sec:stability}) quantifies, rather than assumes, temporal
     constancy; it also shows that window design (length and overlap) materially
@@ -62,7 +63,7 @@ Several boundary conditions delimit responsible use:
     suffice; SPADE's advantage is delivering competitive structure \emph{together}
     with interpretable edge shapes and a coupled forecaster.
     \item \textbf{The $\ell_1$ penalty.} Consistent with recent critiques
-    \citep{Ng2024CALM,Bello2022}, the $\ell_1$ sparsity term can bias structure
+    \citep{ng2020golem,Bello2022}, the $\ell_1$ sparsity term can bias structure
     recovery; our group-lasso term and threshold-free reporting mitigate but do
     not eliminate this.
     \item \textbf{Scalability.} The acyclicity term is $O(d^3)$ and the Python

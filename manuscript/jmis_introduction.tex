@@ -32,37 +32,86 @@ paradigm \citep{Hevner2004}.
 \subsection{Related work and positioning}
 \label{sec:related}
 
-\paragraph{Continuous DAG learning.} NOTEARS \citep{Zheng2018} recast structure
-learning as continuous optimization via the trace-exponential acyclicity
-constraint; GOLEM \citep{Ng2024CALM} and DAGMA \citep{Bello2022} refine the loss
-and the acyclicity characterization. These target i.i.d.\ data with (mostly)
-linear mechanisms. DYNOTEARS \citep{Pamfil2020} extends the idea to time series
-by separating contemporaneous from lagged adjacencies, but retains linear
-structural equations. SPADE inherits DYNOTEARS's block treatment of lags while
-replacing linear mechanisms with learnable spline edge functions.
+SPADE sits at the confluence of four literatures---continuous DAG learning,
+temporal causal discovery, the identifiability theory that says when either is
+meaningful, and the nascent use of Kolmogorov--Arnold networks for interpretable
+modelling. We review each and state precisely where our artifact departs.
 
-\paragraph{Causal discovery for time series.} Constraint-based PCMCI
+\paragraph{From combinatorial to continuous DAG learning.} Learning a directed
+acyclic graph was long a combinatorial search over super-exponentially many
+structures. NOTEARS \citep{Zheng2018} dissolved this obstacle with a smooth
+algebraic characterization of acyclicity---$h(W)=\operatorname{tr}(e^{W\circ
+W})-d=0$---recasting structure learning as continuous optimization. Refinements
+followed quickly: GOLEM \citep{ng2020golem} showed a likelihood objective with
+soft sparsity often suffices; DAGMA \citep{Bello2022} replaced the
+trace-exponential with a better-conditioned log-determinant potential; and
+\citet{zhang2025analytic} derive an entire family of analytic acyclicity
+constraints closed under differentiation. The nonlinear branch of this
+family---nonparametric NOTEARS \citep{zheng2020sparse} and gradient-based neural
+DAG learning (GraN-DAG, \citealt{lachapelle2020grandag})---parameterizes each
+mechanism with a multilayer perceptron and reads structure from the network's
+input Jacobian. These are simultaneously our closest algorithmic relatives and
+our principal baselines; the decisive difference is architectural
+(Section~\ref{sec:identif}).
+
+\paragraph{Causal discovery for time series.} Temporal data bring a blessing
+(time orders cause before effect) and a curse (lagged and instantaneous effects
+coexist, and series are seldom stationary). Constraint-based PCMCI
 \citep{Runge2019}, restricted-SEM methods (TiMINo, \citealt{Peters2013TiMINo}),
-and non-Gaussian VAR-LiNGAM \citep{Hyvarinen2010} are strong, widely used
-baselines; neural Granger methods \citep{Tank2021,Shojaie2022} learn non-linear
-predictive dependencies but recover Granger-causal, not necessarily structural,
-graphs. Recent deep approaches---NTiCD \citep{Absar2023}, CUTS
-\citep{Cheng2023CUTS}, and Rhino \citep{Gong2023Rhino}---push accuracy further but
-are largely black-box. SPADE's distinguishing aim is to deliver competitive
-recovery \emph{with} per-edge interpretable mechanisms; we benchmark against
-representatives of the classical and KAN-based families and position against these
-neural methods.
+and non-Gaussian VAR-LiNGAM \citep{Hyvarinen2010} remain strong, widely used
+references. DYNOTEARS \citep{Pamfil2020} lifted NOTEARS to dynamic Bayesian
+networks by separating a contemporaneous block from lagged blocks---an idea SPADE
+inherits---but kept \emph{linear} structural equations. The deep-learning wave has
+since produced far more expressive temporal learners: NTS-NOTEARS
+\citep{sun2023ntsnotears} uses 1-D convolutions for nonlinear lagged and
+instantaneous edges; Rhino \citep{Gong2023Rhino} models history-dependent noise;
+CUTS and CUTS+ \citep{Cheng2023CUTS,cheng2024cutsplus} handle irregular sampling;
+and the neural-Granger family \citep{Tank2021,Shojaie2022,zhou2024jacobian},
+recently extended to xLSTM backbones \citep{poonia2025gcxlstm}, learns nonlinear
+predictive dependencies. A parallel effort pushes toward amortized or
+foundation-model discovery---AVICI \citep{lorch2022avici}, DECI
+\citep{geffner2022deci}, and 2024--2026 transformer-based learners
+\citep{stein2024causalpretraining,shen2024stic,misiakos2025spinsvar,faruque2026ttcd,fesanghary2026grace}---while
+application-driven systems such as CausalStock \citep{li2024causalstock} bring
+causal discovery directly into financial decision support. Powerful as these are,
+nearly all return the graph as a black box: the \emph{mechanism} on each edge is
+not itself an inspectable object. SPADE's distinguishing aim is competitive
+recovery \emph{with} per-edge interpretable functions.
 
-\paragraph{KAN-based causality.} Closest to our work, GC-KAN
-\citep{GCKAN2024} uses Kolmogorov--Arnold edge functions for \emph{Granger}
-causality via sparse regularization, but does \emph{not} impose an acyclicity
-constraint and does not separate lagged from contemporaneous structure. Our
-contribution relative to GC-KAN is therefore precise: (i) an Augmented-Lagrangian
-NOTEARS constraint on the contemporaneous block, and (ii) an explicit per-lag
-adjacency. To isolate the value of the DAG constraint we include a
-\emph{GC-KAN$+$ALM} ablation (Section~\ref{sec:synthetic}) that adds our
-acyclicity penalty to a GC-KAN backbone---the controlled comparison requested to
-disentangle the constraint's contribution from the KAN edge functions.
+\paragraph{When is any of this identifiable?} A directed edge is recoverable from
+observational data only under conditions, and ignoring them is how simulated
+benchmarks mislead. The additive-noise-model theory of \citet{hoyer2008nonlinear}
+and \citet{peters2014causal} establishes the fact SPADE is built around: a
+\emph{nonlinear} additive-noise mechanism is identifiable up to its graph, whereas
+the linear--Gaussian case provably is not. Score-matching methods exploit exactly
+this---SCORE \citep{rolland2022score} and NoGAM \citep{montagna2023nogam} order
+variables through the Hessian of the log-density---confirming that nonlinearity is
+the resource that makes orientation possible. Conversely,
+\citet{reisach2021beware,reisach2023scale} warn that continuous learners can
+``cheat'' on simulated data by exploiting \emph{varsortability}, an artifact of
+marginal scale; we neutralize this by standardizing every series and reporting
+threshold-free metrics (Remark~\ref{rem:varsort}). This literature motivates our
+central design choice: because identifiability lives in the nonlinear regime, an
+estimator with \emph{flexible per-edge mechanisms} should have an advantage there
+over fixed-architecture learners---a hypothesis our headline experiment confirms.
+
+\paragraph{Kolmogorov--Arnold networks and KAN-based causality.} KANs
+\citep{Liu2024,liu2024kan2} replace the fixed activations of an MLP with learnable
+univariate functions on edges---typically B-splines---and carry approximation
+guarantees, including minimax-optimal nonparametric regression rates for
+spline-based variants \citep{liu2025kanconvergence}. They have been adopted
+rapidly for interpretable time-series forecasting
+\citep{xu2024kantimeseries,genet2024tkan,liang2025itfkan,vacarubio2025pkan}.
+Closest to us, GC-KAN \citep{GCKAN2024} and KANGCI \citep{liu2025kangci} use KAN
+edges for \emph{Granger} causality via sparse regularization, but neither imposes
+an acyclicity constraint nor separates lagged from contemporaneous structure. Our
+contribution relative to this line is precise: SPADE (i) places a NOTEARS
+acyclicity constraint on the contemporaneous block via an Augmented Lagrangian,
+(ii) maintains an explicit per-lag adjacency, and (iii) grounds the design in ANM
+identifiability. To isolate the value of the DAG constraint, a
+\emph{GC-KAN$+$ALM} ablation (Section~\ref{sec:synthetic}) adds our acyclicity
+penalty to a GC-KAN backbone, disentangling the constraint's contribution from
+that of the KAN edge functions.
 
 \subsection{Contributions}
 We frame SPADE as an interpretable non-linear causal-discovery artifact and make

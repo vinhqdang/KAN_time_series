@@ -1,0 +1,110 @@
+\section{Proofs}
+\label{app:proofs}
+
+We restate and prove the two propositions of Section~\ref{sec:identif}. Throughout,
+$P$ denotes the population law of the (weakly stationary) process, and the
+one-step reconstruction risk of a predictor $g=(g_1,\dots,g_d)$ is
+$R(g)=\sum_{i=1}^{d}\mathbb{E}_P\big[(x_{t,i}-g_i)^2\big]$.
+
+\subsection*{A.1\quad Identifiability of SPADE's target (Proposition~\ref{prop:identif})}
+
+\begin{proof}[Proof sketch]
+The argument has three steps.
+
+\emph{Step 1 (SPADE's target is a bona fide restricted ANM).} By construction
+(Eq.~\ref{eq:predict}), SPADE predicts each target through additive univariate
+functions of its candidate parents and nothing else, so any element of its
+hypothesis class has the form $x_{t,j}=\sum_{h,i} f^{(h)}_{ij}(x_{t-h,i})+e_{t,j}$
+with mutually independent residuals---identical in form to the data-generating
+Eq.~\eqref{eq:svar}. Under Assumption~\ref{as:markov} (causal minimality) each
+mechanism depends non-trivially on its argument, so the model is a
+\emph{restricted} additive-noise model in the sense of
+\citet[\S 4]{peters2014causal}.
+
+\emph{Step 2 (lagged and contemporaneous identification).}
+For lagged edges, condition on the past: given
+$\mathbf{x}_{<t}$, the map $\mathbf{x}_{t-h}\mapsto x_{t,j}$ is a regression whose
+non-vanishing partial dependence on coordinate $i$ certifies
+$A^{(h)}_{ij}=1$; time ordering fixes the direction, so
+$\{A^{(h)}\}_{h\ge 1}$ is identified from the joint law without an acyclicity
+requirement. For the contemporaneous block, restrict to the instantaneous SEM
+over $\mathbf{x}_t$: by \citet[Thm.~31]{peters2014causal}, a restricted ANM
+satisfying causal minimality has its DAG identifiable from the observational
+distribution, provided the degenerate configuration of
+\citet[Cond.~18]{peters2014causal} does not hold. Assumption~\ref{as:restrict}
+excludes exactly that configuration (of which linear--Gaussian is the canonical
+instance, cf.\ \citealt{hoyer2008nonlinear}), giving unique identification of
+$A^{(0)}$; without it, $A^{(0)}$ is identified only up to Markov equivalence, the
+general statement in part~(b).
+
+\emph{Step 3 (the constrained population minimizer recovers $A$).} B-splines of
+order $p$ are dense in the H\"older/Sobolev classes as the grid refines, and KAN
+regressors built from them attain the minimax-optimal nonparametric rate
+\citep{Liu2024,liu2025kanconvergence}; hence for a sufficiently fine grid the
+true mechanisms lie in (the closure of) SPADE's class and the population risk
+$R$ is minimized at the true regression functions. Because, by Steps~1--2, the
+true functions correspond to a \emph{unique} adjacency once the feasible set is
+restricted to DAGs on the contemporaneous block ($h(W^{(0)})=0$,
+Theorem~\ref{thm:notears}), the constrained minimizer's summary graph equals $A$.
+Finite-sample recovery is not claimed; the statement is a well-specified,
+large-sample identifiability guarantee, consistent with our empirical finding
+that recovery is strongest where the target is genuinely identifiable (non-linear
+instantaneous structure) and weaker on near-integrated lagged series.
+\end{proof}
+
+\subsection*{A.2\quad Necessity of the information bottleneck (Proposition~\ref{prop:bottleneck})}
+
+\begin{proof}
+Let the predictor for target $i$ be $g_i=\psi_i(\mathbf{x}_{-i})$ drawn from a
+class $\mathcal{F}$ of functions of all other coordinates
+$\mathbf{x}_{-i}$, and suppose $\mathcal{F}$ is rich enough to contain the
+conditional mean $m_i(\mathbf{x}_{-i})=\mathbb{E}_P[x_{t,i}\mid\mathbf{x}_{-i}]$.
+The per-target risk $\mathbb{E}_P[(x_{t,i}-\psi_i)^2]$ is minimized, over all
+measurable $\psi_i$, uniquely (in $L^2(P)$) at $\psi_i=m_i$, and its value depends
+only on $\psi_i$. Now suppose an adjacency $\hat A$ is read \emph{post hoc} from
+the fitted predictor by any rule that does not itself enter the objective. Since
+the objective $R(g)=\sum_i\mathbb{E}_P[(x_{t,i}-\psi_i)^2]$ contains no term in
+$\hat A$, its minimizer $g^\star=(m_1,\dots,m_d)$ is unchanged for every choice of
+$\hat A$. Consequently all adjacencies are risk-equivalent at the optimum and
+$\hat A$ is not identified by risk minimization.
+
+Conversely, impose the bottleneck: require
+$g_i=\sum_{j}\mathbf{1}[\hat A_{ji}=1]\,\phi_{ji}(x_j)$, i.e.\ $\hat A$ indexes
+\emph{which} additive edge terms are permitted. Then the attainable function set
+is $\mathcal{G}(\hat A)=\{\sum_{j\in\pa(i)}\phi_{ji}\}$, and $R$ becomes a genuine
+function of $\hat A$ through the constraint $\mathcal{G}(\hat A)$. Under
+Assumptions~\ref{as:markov}--\ref{as:restrict} the conditional mean $m_i$ is
+additive in the true parents (Eq.~\ref{eq:svar}), so $m_i\in\mathcal{G}(\hat A)$
+iff $\hat A$ contains the true parent set of $i$; among such $\hat A$, causal
+minimality makes the true (minimal) parent set the unique risk minimizer once a
+sparsity preference breaks ties toward fewer edges. Hence the risk-minimizing
+structure is unique, which is what the bottleneck buys.
+\end{proof}
+
+\begin{remark}
+Proposition~\ref{prop:bottleneck} is not specific to KANs: it explains why
+\emph{any} sufficiently expressive shared-backbone predictor fails as a structure
+learner, and why component-wise neural-Granger designs
+\citep{Tank2021,GCKAN2024} and per-node score-based learners
+\citep{zheng2020sparse,lachapelle2020grandag} adopt the same restriction. SPADE's
+contribution is to combine this bottleneck with \emph{learnable spline edges},
+which is what lets it identify the non-linear mechanisms that fixed-architecture
+learners approximate poorly (Section~\ref{sec:instdag}).
+\end{remark}
+
+\section{Reproducibility}
+\label{app:repro}
+
+All experiments use the released code and fixed seeds. Unless stated otherwise,
+SPADE uses $E{=}150$ epochs (400 for the instantaneous-DAG study), learning rate
+$5\times10^{-3}$, spline grid $G{=}8$ of cubic ($p{=}3$) B-splines on
+$[-3,3]$, group-lasso weight $\lambda_g{=}10^{-2}$, gradient clipping at $5.0$,
+and---when contemporaneous edges are modelled---an Augmented-Lagrangian schedule
+$(\rho_0,\alpha_0,\beta,K)=(1,0,2,50)$ with $\rho$ capped at $10^{10}$. Series are
+$z$-scored per training window (Remark~\ref{rem:varsort}). Baselines use their
+authors' reference implementations: DAGMA \citep{Bello2022} via the
+\texttt{dagma} package; GraN-DAG \citep{lachapelle2020grandag}, GOLEM
+\citep{ng2020golem}, and non-linear NOTEARS \citep{zheng2020sparse} via
+\texttt{gcastle}; PCMCI \citep{Runge2019} via \texttt{tigramite}; VAR-LiNGAM
+\citep{Hyvarinen2010} via \texttt{lingam}. Any baseline that failed to run in our
+environment within the compute budget is reported as such rather than omitted.

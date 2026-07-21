@@ -13,52 +13,144 @@ hyperparameter schedule (Section~\ref{sec:opt}), and a complexity analysis
 (Section~\ref{sec:complexity}). A reference implementation is available in the
 accompanying repository.
 
-\subsection{Problem Formulation and Assumptions}
+\subsection{Problem Formulation}
 \label{sec:formulation}
 
 Let $\mathbf{X} = \{\mathbf{x}_1, \dots, \mathbf{x}_T\}$ be a multivariate time
-series with $\mathbf{x}_t \in \mathbb{R}^d$. We assume a non-linear Structural
-Vector Autoregressive (SVAR) data-generating process with a maximum lag $L$:
+series with $\mathbf{x}_t \in \Real^d$. We posit a non-linear Structural
+Vector Autoregressive (SVAR) data-generating process with maximum lag $L$: for
+each target $j\in\{1,\dots,d\}$,
 \begin{equation}
-    x_{t,j} \;=\; \sum_{h=1}^{L} \sum_{i=1}^{d} A^{(h)}_{ij}\, f^{(h)}_{ij}\!\big(x_{t-h,i}\big)
-    \;+\; \sum_{i=1}^{d} A^{(0)}_{ij}\, f^{(0)}_{ij}\!\big(x_{t,i}\big)
+    x_{t,j} \;=\; \underbrace{\sum_{i\,\in\,\pa^{(0)}(j)} f^{(0)}_{ij}\!\big(x_{t,i}\big)}_{\text{contemporaneous}}
+    \;+\; \underbrace{\sum_{h=1}^{L}\ \sum_{i\,\in\,\pa^{(h)}(j)} f^{(h)}_{ij}\!\big(x_{t-h,i}\big)}_{\text{lagged}}
     \;+\; \epsilon_{t,j},
     \label{eq:svar}
 \end{equation}
-where $A^{(h)} \in \{0,1\}^{d\times d}$ is the \emph{lag-$h$} adjacency
-($A^{(h)}_{ij}=1$ iff variable $i$ at lag $h$ is a direct cause of variable $j$),
-$f^{(h)}_{ij}$ are (possibly non-linear) causal mechanisms, and $\epsilon_{t,j}$
-is exogenous noise. We explicitly separate \emph{lagged} adjacencies
-$A^{(1)},\dots,A^{(L)}$ from the \emph{contemporaneous} adjacency $A^{(0)}$
-because they require different treatment (Section~\ref{sec:opt}). The summary
-graph used for reporting is the union $A_{ij} = 1 - \prod_{h=0}^{L}(1-A^{(h)}_{ij})$.
+where $\pa^{(h)}(j)=\{i: A^{(h)}_{ij}=1\}$ are the lag-$h$ parents of $j$,
+encoded by adjacency $A^{(h)}\in\{0,1\}^{d\times d}$; the $f^{(h)}_{ij}$ are
+(possibly non-linear) univariate causal mechanisms; and the noises
+$\{\epsilon_{t,j}\}$ are jointly independent across $j$ and i.i.d.\ across $t$.
+Equation~\eqref{eq:svar} is an \emph{additive-noise model} (ANM): each target is
+an additive function of its parents plus independent noise. We separate the
+\emph{lagged} adjacencies $A^{(1)},\dots,A^{(L)}$ from the \emph{contemporaneous}
+adjacency $A^{(0)}$ because, as Section~\ref{sec:identif} shows, only the latter
+needs an acyclicity constraint. The summary graph reported throughout is the
+union $A_{ij}=1-\prod_{h=0}^{L}(1-A^{(h)}_{ij})$.
 
 Our goal is twofold: (i) \textbf{forecasting}---predict $\mathbf{x}_{t+1}$ from
 history $\mathbf{x}_{t-L:t}$; and (ii) \textbf{causal discovery}---recover the
-$\{A^{(h)}\}_{h=0}^{L}$ and the mechanisms $f^{(h)}_{ij}$.
+adjacencies $\{A^{(h)}\}_{h=0}^{L}$ \emph{and} the mechanisms $f^{(h)}_{ij}$
+that give the graph its managerial meaning.
 
-\paragraph{Identifiability assumptions.} Directed edges recovered from purely
-observational data are only interpretable as causal under stated assumptions.
-We make these explicit (following \citealt{Pearl2009,Runge2019}):
-\begin{itemize}
-    \item[\textbf{A1}] \emph{Causal sufficiency}: there are no unobserved common
-    causes (confounders) of the measured variables. In open financial systems
-    this is a strong assumption; we therefore treat real-data edges as
-    \emph{candidate} mechanisms for expert review rather than verified causes
-    (Section~\ref{sec:real}).
-    \item[\textbf{A2}] \emph{Causal Markov and faithfulness}: the joint
-    distribution is Markov and faithful to the SVAR graph.
-    \item[\textbf{A3}] \emph{Weak stationarity of the causal mechanism}: the
-    graph and functions $\{A^{(h)}, f^{(h)}\}$ are constant within each
-    estimation window. We probe violations directly through the rolling-window
-    stability analysis of Section~\ref{sec:stability}.
-    \item[\textbf{A4}] \emph{Acyclic contemporaneous structure}: instantaneous
-    effects $A^{(0)}$ form a DAG. Lagged effects need not be acyclic---time's
-    arrow already orders them---so we enforce acyclicity only on $A^{(0)}$
-    (cf.\ DYNOTEARS, \citealt{Pamfil2020}).
-\end{itemize}
-These assumptions delimit the boundary conditions of the artifact and are
-revisited in the Discussion.
+We work under four standard assumptions, made explicit because directed edges
+from observational data are causal only under stated conditions
+\citep{Pearl2009,peters2014causal}.
+\begin{assumption}[Causal sufficiency]\label{as:suff}
+There are no unobserved common causes of the measured variables. In open economic
+systems this is strong; we therefore treat real-data edges as \emph{candidate}
+mechanisms for expert review, not verified causes (Section~\ref{sec:real}).
+\end{assumption}
+\begin{assumption}[Markov and causal minimality]\label{as:markov}
+The joint law is Markov to the SVAR graph, and no proper sub-graph also renders
+it Markov (equivalently, every declared mechanism $f^{(h)}_{ij}$ depends
+non-trivially on its argument). Causal minimality is the mild condition under
+which ANMs are identifiable \citep{peters2014causal}.
+\end{assumption}
+\begin{assumption}[Restricted, non-linear mechanisms]\label{as:restrict}
+The contemporaneous mechanisms are \emph{non-linear} and $(f^{(0)}_{ij},$ noise,
+cause$)$ triples do not solve the differential equation of
+\citet[Cond.~18]{peters2014causal} (the degeneracy that would admit a reverse
+model). This rules out the linear--Gaussian case, in which cause and effect are
+provably indistinguishable.
+\end{assumption}
+\begin{assumption}[Within-window stationarity]\label{as:stat}
+$\{A^{(h)},f^{(h)}\}$ are constant within each estimation window. We probe
+violations directly via rolling-window stability (Section~\ref{sec:stability})
+and a structural-change experiment (Section~\ref{sec:validation}).
+\end{assumption}
+These delimit the artifact's boundary conditions and are revisited in the
+Discussion.
+
+\subsection{Identifiability: what makes structure recoverable}
+\label{sec:identif}
+
+Before specifying the estimator we state \emph{why} its target is well posed.
+Two facts drive the entire design: (i) a non-linear ANM is identifiable up to its
+graph, whereas a linear--Gaussian one is not; and (ii) identifiability is a
+property of the \emph{hypothesis class}, not merely of the data---a
+sufficiently flexible predictor destroys it. These motivate, respectively,
+SPADE's spline edge functions and its information-bottleneck architecture.
+
+\paragraph{Acyclicity as a smooth constraint.} We first recall the
+characterization that turns discrete DAG search into continuous optimization.
+\begin{theorem}[Acyclicity, \citealt{Zheng2018}]\label{thm:notears}
+For a weighted adjacency $W\in\Real^{d\times d}$ with non-negative entries, let
+$h(W)=\operatorname{tr}\!\big(e^{\,W\circ W}\big)-d$, where $\circ$ is the
+Hadamard product and $e^{(\cdot)}$ the matrix exponential. Then $h(W)\ge 0$, and
+$h(W)=0$ if and only if the graph induced by the non-zeros of $W$ is a directed
+acyclic graph. Moreover $\nabla h(W)=\big(e^{W\circ W}\big)^{\!\top}\!\circ 2W$.
+\end{theorem}
+An equivalent log-determinant characterization,
+$h^{s}_{\mathrm{ldet}}(W)=-\log\det(sI-W\circ W)+d\log s$, was later shown to have
+better-conditioned gradients \citep{Bello2022}; either may be used, and our
+implementation defaults to Theorem~\ref{thm:notears}. Crucially, we will apply
+$h(\cdot)$ \emph{only} to the contemporaneous block: lagged edges are ordered by
+time's arrow and need not be acyclic.
+
+\paragraph{The estimation target is identifiable.} SPADE's forecast of each
+target flows only through additive univariate functions of its candidate parents
+(Section~\ref{sec:arch}); it is therefore, by construction, an ANM of the same
+form as Eq.~\eqref{eq:svar}. This lets us inherit the identifiability theory of
+restricted additive-noise models.
+\begin{proposition}[Identifiability of SPADE's target]\label{prop:identif}
+Under Assumptions~\ref{as:suff}--\ref{as:stat}, suppose the data follow
+Eq.~\eqref{eq:svar} with mechanisms in a class approximable by order-$p$
+B-splines. Then (a) the lagged adjacencies $\{A^{(h)}\}_{h\ge 1}$ are identified
+by the joint law of $(\mathbf{x}_t,\mathbf{x}_{t-1},\dots)$; and (b) the
+contemporaneous DAG $A^{(0)}$ is identified up to Markov equivalence in general,
+and \emph{uniquely} under Assumption~\ref{as:restrict}. Consequently the
+population minimizer of the one-step reconstruction risk over the component-wise
+B-spline class, subject to $h(W^{(0)})=0$, recovers the summary graph $A$ as the
+spline grid refines.
+\end{proposition}
+Proposition~\ref{prop:identif} is an application to our function class of the
+restricted-ANM identifiability theorem of \citet[Thm.~31]{peters2014causal} (in
+turn built on \citealt{hoyer2008nonlinear}), combined with the spline
+approximation guarantee for KAN regressors \citep{Liu2024,liu2025kanconvergence};
+we give the argument in Appendix~\ref{app:proofs}. The content of
+Assumption~\ref{as:restrict} is essential and honest: \emph{linear} mechanisms
+with Gaussian noise are the textbook non-identifiable case, which is exactly why
+a method built for the \emph{non-linear} regime (SPADE) can succeed where its
+target is identifiable, while purely linear learners cannot orient such edges.
+
+\paragraph{Why the bottleneck is necessary.} Identifiability can be forfeited by
+the estimator even when the population target is well posed. The following makes
+precise the empirical collapse we document in Section~\ref{sec:ablation}.
+\begin{proposition}[Necessity of the information bottleneck]\label{prop:bottleneck}
+Let a predictor model each $x_{t,i}$ through a shared function class
+$\mathcal{F}$ of \emph{all} other coordinates that is rich enough to contain the
+true conditional mean, and let an adjacency $\hat A$ be read post hoc from the
+fitted predictor. Then the reconstruction risk depends on the fitted function
+alone and not on $\hat A$; hence every adjacency consistent with the unconstrained
+optimum attains the minimum risk, and $\hat A$ is \emph{not} identified by risk
+minimization. Restricting the hypothesis class so that the adjacency indexes the
+function---predicting each target \emph{only} through per-parent edges---is
+sufficient to make the risk-minimizing structure unique.
+\end{proposition}
+The proof (Appendix~\ref{app:proofs}) is elementary but consequential: it is the
+formal reason a ``dense-backbone'' KAN forecaster recovers structure only at
+chance (AUROC~$\approx 0.5$; Section~\ref{sec:ablation}), whereas the
+component-wise SPADE does not.
+
+\begin{remark}[Guarding against benchmark artifacts]\label{rem:varsort}
+Continuous DAG learners can exploit \emph{varsortability}---an accidental
+alignment between marginal variance and causal order in simulated
+data---inflating apparent accuracy \citep{reisach2021beware,reisach2023scale}. We
+neutralize this by standardizing every series to unit variance before fitting (so
+marginal scale carries no order information) and by reporting threshold-free
+AUROC/AUPRC rather than tuned-threshold scores. Our advantage therefore cannot be
+attributed to a variance-ordering shortcut.
+\end{remark}
 
 \subsection{The SPADE Architecture}
 \label{sec:arch}
@@ -143,7 +235,7 @@ acyclic iff
 \end{equation}
 Crucially, we apply Eq.~\eqref{eq:hnotears} \emph{only} to the contemporaneous
 block $W_0$. Lagged blocks are left unconstrained because temporal precedence
-already forbids cycles across time (assumption A4); constraining them would
+already forbids cycles across time (Section~\ref{sec:identif}); constraining them would
 incorrectly penalize legitimate feedback such as $x_{t-1}\!\to\! y_t$ and
 $y_{t-1}\!\to\! x_t$. This block treatment mirrors DYNOTEARS \citep{Pamfil2020}
 and resolves the limitation of a single flat $d\times d$ constraint.
@@ -187,7 +279,7 @@ for datasets with instantaneous effects.
 \paragraph{On the choice of the sparsity penalty.} We deliberately avoid an
 $\ell_1$ penalty on stochastic gating logits, which recent work shows can bias
 continuous DAG learning toward many small-magnitude edges and which we found
-empirically unstable under temperature annealing \citep{Ng2024CALM,Bello2022}.
+empirically unstable under temperature annealing \citep{ng2020golem,Bello2022}.
 The group-lasso acts at the granularity of whole edges, and our threshold-free
 evaluation (AUROC/AUPRC, Section~\ref{sec:synthetic}) reports ranking quality
 independently of any single sparsity level. An $\ell_0$-style gate is a natural

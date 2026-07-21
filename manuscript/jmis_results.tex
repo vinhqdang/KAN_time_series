@@ -23,7 +23,7 @@ and cost with $d$ is reported in Section~\ref{sec:scalability}.
 
 \paragraph{Baselines.} We compare against seven \emph{genuine} implementations:
 VAR-Lasso \citep{Tibshirani1996}; linear NOTEARS \citep{Zheng2018}; GOLEM
-\citep{Ng2024CALM}; PCMCI (tigramite, \citealt{Runge2019}); VAR-LiNGAM (lingam,
+\citep{ng2020golem}; PCMCI (tigramite, \citealt{Runge2019}); VAR-LiNGAM (lingam,
 \citealt{Hyvarinen2010}); a lagged-correlation threshold; and GC-KAN
 \citep{GCKAN2024} with genuine B-spline edge functions. We additionally include
 \textbf{GC-KAN$+$ALM}, which adds our acyclicity penalty to the GC-KAN backbone,
@@ -149,27 +149,6 @@ baselines and ties NOTEARS/Correlation.}
 \input{figures/tab_causal_stats}
 \end{table}
 
-Figure~\ref{fig:comprehensive} summarizes AUROC by regime and the wall-clock
-runtime of each method; Figure~\ref{fig:heatmap} shows per-dataset AUROC.
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=\textwidth]{figures/cdkan_sota_comprehensive_results.png}
-    \caption{Left/middle: causal-discovery AUROC on non-linear and linear
-    synthetic data. Right: mean fit time (log scale). SPADE's advantage is
-    confined to the non-linear regime and comes at a substantial runtime cost.}
-    \label{fig:comprehensive}
-\end{figure}
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=0.82\textwidth]{figures/cdkan_sota_heatmap.png}
-    \caption{AUROC for every method--dataset pair. Linear baselines saturate on
-    linear datasets; KAN-based methods are relatively stronger on non-linear
-    datasets.}
-    \label{fig:heatmap}
-\end{figure}
-
 \subsection{Combined contemporaneous $+$ lagged structure (SVAR)}
 \label{sec:contemp}
 
@@ -206,7 +185,7 @@ $h(W_0)\!\to\!0$; on these non-linear instantaneous edges it beats linear NOTEAR
 The component-wise design is inexpensive: SPADE fits in seconds at $d{=}5$
 (vs.\ minutes for the discarded coupled variant), though its edge-wise spline
 evaluation still makes it slower than the highly optimized classical baselines
-(Figure~\ref{fig:comprehensive}, right; seconds vs.\ sub-second). Cost grows with
+(Table~\ref{tab:scale}; seconds vs.\ sub-second). Cost grows with
 $d$ as the $O(d^2 L)$ edge count increases (Table~\ref{tab:scale}, reporting
 parameter count and fit time at $d\in\{5,10\}$ from the main benchmark and at
 $d\in\{15,20\}$ from a dedicated timing sweep). SPADE is thus well suited to

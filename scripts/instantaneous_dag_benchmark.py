@@ -106,10 +106,35 @@ def notears_linear(X, seed=0, ep=200):
     return (W * mask).abs().detach().numpy()                   # [cause,effect]
 
 
+# ---- Modern neural DAG learners from gcastle (official implementations) ----
+def _castle():
+    os.environ.setdefault("CASTLE_BACKEND", "pytorch")
+    import castle.algorithms as alg
+    return alg
+
+
+def grandag(X, seed):                         # Lachapelle et al., ICLR 2020
+    torch.set_default_dtype(torch.float64)
+    alg = _castle(); d = X.shape[1]
+    m = alg.GraNDAG(input_dim=d, iterations=2000, device_type="cpu")
+    m.learn(zscore(X).astype(np.float64))
+    W = m.model.get_w_adj().detach().cpu().numpy()   # continuous [cause,effect]
+    return np.asarray(W)
+
+
+def golem(X, seed):                           # Ng et al., NeurIPS 2020 (linear)
+    alg = _castle()
+    m = alg.GOLEM(num_iter=7000, seed=int(seed), device_type="cpu")
+    m.learn(zscore(X).astype(np.float64))
+    return np.abs(np.asarray(m.weight_causal_matrix))   # continuous [cause,effect]
+
+
 METHODS = {
     "SPADE": lambda X, s: cdkan(X, s),
     "DAGMA-nonlinear": lambda X, s: dagma_nonlinear(X),
+    "GraN-DAG": lambda X, s: grandag(X, s),
     "NOTEARS-MLP": lambda X, s: notears_mlp(X, s),
+    "GOLEM": lambda X, s: golem(X, s),
     "DAGMA-linear": lambda X, s: dagma_linear(X),
     "NOTEARS-linear": lambda X, s: notears_linear(X, s),
 }
@@ -136,7 +161,8 @@ def main():
     agg = df.groupby(["method"]).agg(auroc=("auroc", "mean"), auprc=("auprc", "mean"),
                                      f1=("f1", "mean"), t=("time_s", "mean"))
     byd = df.pivot_table(index="method", columns="d", values="auroc")
-    order = ["SPADE", "DAGMA-nonlinear", "NOTEARS-MLP", "DAGMA-linear", "NOTEARS-linear"]
+    order = ["SPADE", "DAGMA-nonlinear", "GraN-DAG", "NOTEARS-MLP", "GOLEM",
+             "DAGMA-linear", "NOTEARS-linear"]
     agg = agg.reindex([m for m in order if m in agg.index]); byd = byd.reindex(agg.index)
     print("\n", agg.round(3).to_string()); print("\nby d:\n", byd.round(3).to_string())
     agg.to_csv(os.path.join(RES, "instdag_agg.csv"))
