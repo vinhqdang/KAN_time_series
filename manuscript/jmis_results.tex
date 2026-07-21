@@ -423,20 +423,34 @@ the synthetic experiment.
     \label{fig:intervention}
 \end{figure}
 
-\paragraph{Documented policy shock (real data), reported candidly.} We also test
-whether documented policy shocks coincide with larger structural change than
-placebo dates. Two findings. First, a methodological one that echoes a Reviewer
-concern: on daily \emph{price levels} the learned structure is degenerate (e.g.\
-the US-dollar index carries $<$1\% of outgoing influence, dominated by co-trending
-non-stationarity), whereas on \emph{log-returns} it is balanced and economically
-plausible---so this analysis uses returns. Second, a placebo-controlled test
-(pre/post-split graph dissimilarity, log-returns, $W{=}300$ each side): the March
-2022 Fed rate-hike liftoff coincides with the \emph{largest} pre/post structural
-shift in the sample (dissimilarity 0.96 vs.\ a placebo mean of 0.86), though this
-is only marginally above chance ($p\!\approx\!0.10$), and the 2020 COVID shock is
-not individually distinguishable ($p\!=\!0.76$). Daily-return graphs vary
-substantially window-to-window, which limits attribution of any single real-world
-event; accordingly we regard the \emph{controlled synthetic} experiment
-(Figure~\ref{fig:intervention}A), where ground truth is known, as the definitive
-demonstration that CD-KAN recovers structural change, and the real-data result as
-suggestive rather than conclusive.
+\paragraph{Documented policy shock on real macro data (a candid negative result).}
+To test the most direct version of the Reviewer's request, we assembled a real
+macro panel from FRED (2016--2024) that includes the \emph{actual policy
+instrument}---the effective Federal Funds rate---alongside 2Y/3M/10Y Treasury
+yields, the broad US-dollar index, the S\&P~500, WTI, and the VIX (stationary
+representation: rates/yields/VIX differenced, price indices in log-returns). The
+documented shock is the March~2022 Fed rate-hike liftoff. We report the outcome
+honestly, because it is instructive:
+\begin{itemize}
+    \item \emph{Methodological (confirmed).} On daily \emph{price levels} the
+    learned structure is degenerate (the dollar index carries $<$1\% of outgoing
+    influence, swamped by co-trending non-stationarity); a stationary
+    representation is necessary---echoing the Reviewer's non-stationarity concern.
+    \item \emph{Change magnitude (null).} A placebo-controlled, symmetric-window
+    test finds the 2022 liftoff produces a structural change no larger than
+    typical placebo dates (dissimilarity 0.80 vs.\ placebo mean 0.75,
+    $p{=}0.44$).
+    \item \emph{Direction (contrary to a naive prior).} The interest-rate block's
+    causal out-influence \emph{decreases} across the shock (0.38 $\to$ 0.11)
+    rather than increasing; inspection suggests the pre-2022 window is dominated
+    by the 2020 COVID rate shock, when Fed actions drove markets most strongly.
+\end{itemize}
+We draw a deliberate, honest conclusion: on purely \emph{observational} macro
+data, CD-KAN's graph does not cleanly recover documented interventions in a
+direction simple economic priors predict, and single-event attribution is not
+statistically distinguishable from chance. This is a genuine limitation of
+observational causal discovery (not specific to CD-KAN), and it is precisely why
+we anchor the intervention claim on the \emph{controlled synthetic} experiment
+(Figure~\ref{fig:intervention}A), where the ground-truth change is known and CD-KAN
+recovers it cleanly. We prefer to report this null candidly rather than
+over-interpret a learned macro graph.

@@ -86,10 +86,12 @@ three contributions:
     Spline edge functions expose the \emph{shape} of each dependency (linear,
     saturating, threshold) and lag attribution recovers known delays on synthetic
     data. On real markets the learned graph is stable $4.7\times$ above a
-    permutation chance level ($p<0.0001$), degrades under time-reversal (showing
-    it uses temporal precedence), and tracks the 2022 macro regime shift---giving
-    managers hypotheses grounded in more than self-consistency. CD-KAN also scales
-    to $d{=}50$ in seconds via a vectorized implementation.
+    permutation chance level ($p<0.0001$) and degrades under time-reversal (showing
+    it uses temporal precedence); on a controlled synthetic intervention it detects
+    a known structural break and recovers both regime graphs. We also report
+    candidly that documented real-world policy shocks are \emph{not} cleanly
+    recoverable from observational macro data---an honest limit of the setting.
+    CD-KAN scales to $d{=}50$ in seconds via a vectorized implementation.
 \end{enumerate}
 
 The remainder of the paper is organized as follows.

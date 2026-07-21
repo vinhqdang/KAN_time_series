@@ -50,9 +50,12 @@ forecasts an 8-asset financial panel competitively (MSE $\approx\forecastmse$; w
 retract an earlier $0.0008$ traced to a test-leaking normalization). We validate
 the recovered structure beyond self-consistency: it survives a permutation test
 (4.7$\times$ chance, $p<0.0001$), degrades sharply under time-reversal
-(AUROC~0.94$\to$0.64, confirming it uses time's arrow), and tracks the 2022
-rate-hike regime shift; its spline edge functions expose linear, saturating, and
-threshold-like dependencies---supporting a ``glass-box'' decision-support tool for
+(AUROC~0.94$\to$0.64, confirming it uses time's arrow), and---on a controlled
+synthetic intervention with a known structural break---detects the change and
+recovers both regime graphs (though we report candidly that documented policy
+shocks are \emph{not} cleanly recoverable from observational macro data). Its
+spline edge functions expose linear, saturating, and threshold-like
+dependencies---supporting a ``glass-box'' decision-support tool for
 moderate-dimensional, non-linear business systems.
 \end{abstract}
 
