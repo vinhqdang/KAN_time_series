@@ -45,12 +45,19 @@ def zscore(X):
     return (X - mu) / sd
 
 
+def _sparse_density(d):
+    """Keep the graph learnably sparse as d grows (~2 expected parents/node),
+    as is standard in causal-discovery benchmarks. Dense graphs at high d are
+    unrecoverable by ANY method and make the comparison uninformative."""
+    return min(0.3, 2.0 / (d - 1))
+
+
 def make_dataset(kind, n, d, seed):
     """Return (X_standardised [T,d], true_adj [d,d] binary effect<-cause)."""
+    dens = _sparse_density(d)
     if kind == "linear":
-        # get_synthetic_linear uses a fixed internal seed; vary structure by seed
         np.random.seed(seed)
-        adj = np.tril((np.random.rand(d, d) < 0.3).astype(int), k=-1)
+        adj = np.tril((np.random.rand(d, d) < dens).astype(int), k=-1)
         coeffs = np.random.uniform(0.4, 0.8, size=(d, d)) * adj
         X = np.zeros((n, d))
         for t in range(1, n):
@@ -58,7 +65,7 @@ def make_dataset(kind, n, d, seed):
         true_adj = adj
     elif kind == "nonlinear":
         X, true_adj, _ = generate_nonlinear_scm(n_samples=n, n_nodes=d,
-                                                density=0.2, max_lag=3, seed=seed)
+                                                density=dens, max_lag=3, seed=seed)
     else:
         raise ValueError(kind)
     return zscore(X.astype(np.float64)), true_adj.astype(int)
@@ -303,16 +310,22 @@ def main():
     args = ap.parse_args()
 
     configs = [
-        ("linear",    "linear_d5_n500",   500,  5),
-        ("linear",    "linear_d5_n1500",  1500, 5),
-        ("nonlinear", "nonlin_d5_n500",   500,  5),
-        ("nonlinear", "nonlin_d5_n1500",  1500, 5),
-        ("linear",    "linear_d10_n1500", 1500, 10),
-        ("nonlinear", "nonlin_d10_n1500", 1500, 10),
+        ("linear",    "linear_d5_n1500",   1500, 5),
+        ("nonlinear", "nonlin_d5_n1500",   1500, 5),
+        ("linear",    "linear_d10_n2000",  2000, 10),
+        ("nonlinear", "nonlin_d10_n2000",  2000, 10),
+        ("linear",    "linear_d20_n2000",  2000, 20),
+        ("nonlinear", "nonlin_d20_n2000",  2000, 20),
+        ("linear",    "linear_d50_n3000",  3000, 50),
+        ("nonlinear", "nonlin_d50_n3000",  3000, 50),
     ]
     if args.quick:
         configs = configs[:1]
         args.seeds = args.seeds[:1]
+
+    # some classical baselines are O(d^2)-O(d^3) and slow at high d
+    SLOW_MAXD = {"PCMCI": 20, "VarLiNGAM": 20, "NOTEARS": 50, "GOLEM": 50,
+                 "GC-KAN": 10, "GC-KAN+ALM": 10}
 
     raw_path = os.path.join(RESULTS_DIR, "honest_causal_raw.csv")
     import pandas as pd
@@ -339,6 +352,8 @@ def main():
             X, true_adj = make_dataset(kind, n, d, seed)
             # baselines
             for mname, fn in methods.items():
+                if d > SLOW_MAXD.get(mname, 999):
+                    continue   # skip baselines that don't scale to this width
                 try:
                     t0 = time.time()
                     adj, _, _ = fn(X)

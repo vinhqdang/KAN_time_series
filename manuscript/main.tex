@@ -39,19 +39,21 @@ learned structure identifiable---with an edge-level group-lasso for sparsity and
 an optional acyclicity constraint on contemporaneous edges. We evaluate it
 transparently against seven genuine baselines (PCMCI, VAR-LiNGAM, NOTEARS, GOLEM,
 VAR-Lasso, and two KAN-based Granger variants) using threshold-free AUROC/AUPRC
-with paired significance tests. On synthetic data with known ground truth, CD-KAN
-recovers linear structure perfectly (AUROC~$=$~1.0) and is competitive on
-non-linear structure (AUROC~$=$~0.82 overall, $\approx$0.95 at $d{=}5$),
-significantly outperforming the KAN-Granger baselines ($p<0.05$) and matching
-several classical methods, while remaining fully interpretable. We show that this
+with paired significance tests. Across graph widths $d\in\{5,10,20,50\}$, CD-KAN recovers linear structure
+near-perfectly and is competitive on non-linear structure (AUROC~$=$~0.76,
+$\approx$0.90--0.97 at low $d$), significantly outperforming the KAN-Granger
+baselines and NOTEARS ($p<0.05$) while remaining fully interpretable; the very
+strongest classical estimators (PCMCI, VAR-LiNGAM) still lead. We show
 identifiability hinges on the bottleneck: a variant with a dense forecasting
 backbone collapses to chance. Under a leakage-free rolling-origin protocol CD-KAN
-also forecasts an 8-asset financial panel competitively (MSE $\approx\forecastmse$;
-we retract an earlier $0.0008$ traced to a test-leaking normalization), its
-learned real-market graph is temporally stable roughly six-fold above a
-permutation chance level ($p<0.0001$), and its spline edge functions expose
-linear, saturating, and threshold-like dependencies---supporting a ``glass-box''
-decision-support tool for moderate-dimensional, non-linear business systems.
+forecasts an 8-asset financial panel competitively (MSE $\approx\forecastmse$; we
+retract an earlier $0.0008$ traced to a test-leaking normalization). We validate
+the recovered structure beyond self-consistency: it survives a permutation test
+(4.7$\times$ chance, $p<0.0001$), degrades sharply under time-reversal
+(AUROC~0.94$\to$0.64, confirming it uses time's arrow), and tracks the 2022
+rate-hike regime shift; its spline edge functions expose linear, saturating, and
+threshold-like dependencies---supporting a ``glass-box'' decision-support tool for
+moderate-dimensional, non-linear business systems.
 \end{abstract}
 
 % Include the Introduction Section

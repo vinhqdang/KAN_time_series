@@ -12,25 +12,30 @@ candidate causal graph from a single differentiable model.
 
 ## Key Results (honest, reproducible)
 
-> **Correction (2026).** Earlier versions of this README and the manuscript
-> reported causal-discovery F1 = 0.8971 and forecasting MSE = 0.0008 (a "20×"
-> gain). **Both are retracted.** Under a fair, leakage-free re-evaluation (see
-> `scripts/honest_causal_benchmark.py` and `scripts/honest_forecast_benchmark.py`):
->
-> - **Causal discovery:** CD-KAN's adjacency recovers ground-truth structure only
->   *near chance* (AUROC ≈ 0.51 non-linear, 0.58 linear; F1 ≈ 0.33–0.47) and is
->   **significantly worse than every baseline** (VAR-Lasso, NOTEARS, GOLEM, PCMCI,
->   VAR-LiNGAM, and even GC-KAN), Wilcoxon *p* < 0.001. The 0.8971 figure was not
->   reproducible.
-> - **Forecasting:** the 0.0008 MSE was an artifact of test-leaking normalization.
->   The correct, leakage-free rolling-origin MSE is on the order of 10⁻². CD-KAN is
->   *competitive* with strong deep baselines but not dominant.
-> - **What holds up:** the learned real-market graph is temporally stable ~6× above
->   a permutation chance level (*p* < 0.0001), and the spline edge functions provide
->   genuine interpretability.
+> **Note (2026).** Earlier versions claimed causal-discovery F1 = 0.8971 and
+> forecasting MSE = 0.0008 ("20×"). Both were **retracted** (the first was not
+> reproducible; the second was a test-leaking-normalization artifact). The model
+> was then **redesigned** — see the correction history in the manuscript.
 
-See the manuscript in [`manuscript/`](manuscript/) and
-[`experimental_results/NUMBERS.json`](experimental_results/) for the numbers.
+The current **component-wise CausalKAN** (`src/cdkan/causal_kan.py`) is an
+identifiable, vectorized model. Under a fair, leakage-free re-evaluation against
+genuine baselines (real PCMCI/tigramite, VAR-LiNGAM/lingam, NOTEARS, GOLEM,
+VAR-Lasso, KAN-Granger):
+
+- **Causal discovery** (AUROC, mean over seeds; `honest_causal_benchmark.py`):
+  linear **0.96** (≈1.0 up to d=20), non-linear **0.76**. CD-KAN **significantly
+  beats** the KAN-Granger baselines and NOTEARS (Wilcoxon p<0.05) and ties the
+  correlation baseline; the strongest classical methods (PCMCI, VAR-LiNGAM ≈0.94)
+  still lead. It is thus *competitive and interpretable*, not a uniform SOTA.
+- **Scale:** vectorized model fits **d=50 in ~4s** on CPU; accuracy holds as d grows.
+- **Design insight:** an information bottleneck is essential — a dense-backbone
+  variant collapses to chance (AUROC 0.58).
+- **Validation beyond stability:** permutation test (4.7× chance, p<0.0001);
+  time-reversal placebo (forward AUROC 0.94 → reversed 0.64); tracks the 2022
+  macro regime shift.
+
+See [`manuscript/`](manuscript/) and
+[`experimental_results/NUMBERS.json`](experimental_results/) for all numbers.
 
 ## 📋 Features
 
@@ -101,25 +106,24 @@ print("Causal Adjacency Matrix:", adjacency.shape)
 
 ## 📊 Benchmark Results
 
-### Causal discovery, synthetic ground truth (AUROC; mean over 4 configs × 3 seeds)
+### Causal discovery, synthetic ground truth (AUROC; d ∈ {5,10,20,50}, 3 seeds)
 
-| Method | Non-linear AUROC | Linear AUROC |
+| Method | Non-linear | Linear |
 |--------|:---:|:---:|
-| GOLEM | 0.98 | 1.00 |
-| PCMCI | 0.98 | 1.00 |
-| NOTEARS | 0.97 | 1.00 |
-| VAR-Lasso | 0.97 | 1.00 |
+| PCMCI | 0.94 | 1.00 |
 | VAR-LiNGAM | 0.94 | 1.00 |
-| GC-KAN | 0.89 | 0.97 |
-| GC-KAN + ALM | 0.90 | 0.97 |
-| **CD-KAN (ours)** | **0.51** | **0.58** |
+| VAR-Lasso | 0.93 | 1.00 |
+| GOLEM | 0.79 | 1.00 |
+| **CD-KAN (ours)** | **0.76** | **0.96** |
+| Correlation | 0.76 | 0.99 |
+| NOTEARS | 0.72 | 0.86 |
+| GC-KAN / +ALM | 0.70 | 0.99 |
 
-CD-KAN is the weakest method — its forecaster-coupled adjacency does not reliably
-recover structure. Reproduce with `python scripts/honest_causal_benchmark.py`.
-
-Forecasting is evaluated under a leakage-free rolling-origin protocol
-(`scripts/honest_forecast_benchmark.py`), which also demonstrates the
-normalization leak behind the retracted 0.0008 figure.
+CD-KAN is competitive and interpretable: it significantly beats the KAN-Granger
+baselines and NOTEARS (Wilcoxon p<0.05) and ties correlation; PCMCI/VAR-LiNGAM
+lead. Reproduce with `python scripts/honest_causal_benchmark.py`. Forecasting uses
+a leakage-free rolling-origin protocol (`scripts/honest_forecast_benchmark.py`);
+`scripts/validation_tests.py` runs the time-reversal and regime-shift checks.
 
 ## 📁 Project Structure
 

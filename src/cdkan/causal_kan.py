@@ -1,119 +1,117 @@
 """
-CausalKAN: an improved, identifiable causal-discovery KAN for time series.
+CausalKAN: an identifiable, scalable causal-discovery KAN for time series.
 
-Design lessons from the diagnosis of the original CD-KAN (which recovered
-structure only near chance):
+Design (see the manuscript, Sec. 3):
+  * **Information bottleneck / component-wise.** Each target i is predicted ONLY
+    through per-(cause j, lag h) B-spline edge functions of the inputs; there is
+    no shared cross-variable backbone. The edge functions are the sole path from
+    cause to effect, so their contribution is an identifying structural signal.
+  * **Group-lasso, not stochastic gates.** Whole (i, j) edges are driven to zero
+    by a group-lasso over their stacked lag coefficients; structure is read from
+    each edge's *contribution* to the forecast (deterministic, stable).
+  * **Per-lag resolution + optional acyclicity.** A separate spline per
+    (effect, cause, lag) gives lag attribution; a NOTEARS penalty can be applied
+    to the contemporaneous (lag-0) block when instantaneous edges are modelled.
 
-  1. **Component-wise / information-bottleneck.** Each target variable i is
-     predicted ONLY through per-(cause, lag) edge functions of the inputs; there
-     is no shared cross-variable backbone that re-mixes signals. The edge
-     functions are therefore the sole path from cause to effect, so their
-     magnitude is an identifying structural signal (as in neural-Granger models).
-
-  2. **Deterministic edges + group-lasso, not stochastic Gumbel logits.**
-     Structure is read from the *contribution* of each edge, and whole edges are
-     driven to zero by a group-lasso over each (i, j) coefficient block. This is
-     far more stable than annealed Gumbel-Sigmoid sampling.
-
-  3. **Per-lag resolution retained.** Separate spline per (effect, cause, lag)
-     gives lag attribution, and acyclicity (NOTEARS) can be applied to the
-     contemporaneous block when instantaneous edges are modelled.
-
-The result recovers structure competitively with strong baselines while keeping
-KAN interpretability, lag attribution, and (optional) DAG constraints.
+This implementation is **fully vectorized**: all d*d*(#lags) B-spline edges are
+evaluated as batched tensor ops sharing one grid, so it scales to d ~ 50 and runs
+on GPU. It preserves the interface used by the benchmark scripts.
 """
 import torch
 import torch.nn as nn
-from .layers import BSplineFunction
 from .losses import _h_notears
 
 
 class CausalKAN(nn.Module):
     def __init__(self, d: int, max_lag: int = 3, grid_size: int = 8,
-                 contemporaneous: bool = False):
+                 spline_order: int = 3, contemporaneous: bool = False,
+                 grid_range=(-3.0, 3.0)):
         super().__init__()
         self.d = d
         self.max_lag = max_lag
         self.contemporaneous = contemporaneous
         self.lags = list(range(0 if contemporaneous else 1, max_lag + 1))
-        self.edges = nn.ModuleDict()
-        for i in range(d):
-            for j in range(d):
-                for h in self.lags:
-                    self.edges[f"{i}_{j}_{h}"] = BSplineFunction(grid_size=grid_size)
+        self.L = len(self.lags)
+        self.k = spline_order
+        self.n_basis = grid_size + spline_order
+        self.grid_size = grid_size
+
+        # shared knot vector for every edge
+        lo, hi = grid_range
+        step = (hi - lo) / grid_size
+        grid = (torch.arange(-spline_order, grid_size + spline_order + 1) * step + lo)
+        self.register_buffer("grid", grid)                    # [G + 2k + 1]
+        self.grid_range = (lo, hi)
+
+        # coefficients: [effect d, cause d, lag L, n_basis]
+        self.coef = nn.Parameter(0.1 * (torch.rand(d, d, self.L, self.n_basis) - 0.5))
         self.bias = nn.Parameter(torch.zeros(d))
 
-    # x_hist: [B, W, d]; predict next step. Lag h uses timestep (W-h).
-    def _edge_input(self, x_hist, j, h):
-        # Window x_hist covers timesteps [t-W, ..., t-1] at positions [0, ..., W-1].
-        # To predict step t, lag h refers to timestep t-h at position W-h.
-        # (h==0 contemporaneous falls back to the most recent observation, W-1.)
+    # ---- B-spline bases for a batch of scalar inputs -------------------------
+    def _bases(self, x):
+        """x: [..., ] arbitrary shape of scalar inputs -> [..., n_basis]."""
+        x = x.clamp(self.grid_range[0], self.grid_range[1]).unsqueeze(-1)   # [...,1]
+        g = self.grid
+        b = ((x >= g[:-1]) & (x < g[1:])).to(x.dtype)          # [..., G+2k]
+        for i in range(1, self.k + 1):
+            ln = x - g[:-(i + 1)]
+            ld = g[i:-1] - g[:-(i + 1)]
+            rn = g[i + 1:] - x
+            rd = g[i + 1:] - g[1:-i]
+            b = (ln / (ld + 1e-8)) * b[..., :-1] + (rn / (rd + 1e-8)) * b[..., 1:]
+        return b                                               # [..., n_basis]
+
+    # ---- gather the lag-aligned inputs from a window -------------------------
+    def _lagged(self, x_hist):
+        """x_hist: [B, W, d]  ->  [B, d, L] input value per (cause, lag)."""
         W = x_hist.shape[1]
-        idx = W - h if h >= 1 else W - 1
-        idx = max(0, min(W - 1, idx))
-        return x_hist[:, idx, j]
+        cols = []
+        for h in self.lags:
+            idx = max(0, min(W - 1, W - h if h >= 1 else W - 1))
+            cols.append(x_hist[:, idx, :])                     # [B, d]
+        return torch.stack(cols, dim=-1)                       # [B, d, L]
 
     def forward(self, x_hist):
-        B = x_hist.shape[0]
-        out = self.bias.unsqueeze(0).expand(B, self.d).clone()
-        for i in range(self.d):
-            acc = torch.zeros(B, device=x_hist.device)
-            for j in range(self.d):
-                for h in self.lags:
-                    acc = acc + self.edges[f"{i}_{j}_{h}"](self._edge_input(x_hist, j, h))
-            out[:, i] = out[:, i] + acc
-        return out
+        xin = self._lagged(x_hist)                             # [B, d(cause), L]
+        bases = self._bases(xin)                               # [B, d, L, n_basis]
+        # edge output phi_{i j h}(x_{jh}) = <bases[b,j,h,:], coef[i,j,h,:]>
+        # predict[b,i] = bias[i] + sum_{j,h} <bases[b,j,h,:], coef[i,j,h,:]>
+        pred = torch.einsum("bjhk,ijhk->bi", bases, self.coef) + self.bias
+        return pred                                            # [B, d]
 
-    # ---- structure read-outs -------------------------------------------------
+    # ---- penalties & read-outs ----------------------------------------------
     def group_lasso(self):
-        """Sum over (i,j) of the L2 norm of that edge's stacked coefficients
-        across lags — drives whole cause->effect edges to zero."""
-        loss = 0.0
-        for i in range(self.d):
-            for j in range(self.d):
-                coefs = torch.cat([self.edges[f"{i}_{j}_{h}"].coef.flatten()
-                                   for h in self.lags])
-                loss = loss + torch.linalg.vector_norm(coefs)
-        return loss
+        # L2 norm of each (effect i, cause j) group (over lags & basis)
+        g = torch.linalg.vector_norm(self.coef, dim=(2, 3))    # [d, d]
+        return g.sum()
+
+    @torch.no_grad()
+    def _edge_contrib(self, x_hist):
+        """Per-(effect, cause, lag) contribution over the batch: [B, d, d, L]."""
+        xin = self._lagged(x_hist)                             # [B, d, L]
+        bases = self._bases(xin)                               # [B, d, L, n_basis]
+        # contribution of edge (i,j,h) to target i for each sample b
+        return torch.einsum("bjhk,ijhk->bijh", bases, self.coef)  # [B, i, j, h]
 
     @torch.no_grad()
     def importance(self, x_hist):
-        """[d, d] structural importance: std over the batch of each edge's total
-        (summed over lags) contribution to the forecast. Row=effect, col=cause."""
-        B = x_hist.shape[0]
-        imp = torch.zeros(self.d, self.d)
-        for i in range(self.d):
-            for j in range(self.d):
-                c = torch.zeros(B, device=x_hist.device)
-                for h in self.lags:
-                    c = c + self.edges[f"{i}_{j}_{h}"](self._edge_input(x_hist, j, h))
-                imp[i, j] = c.std()
-        return imp
+        """[d, d] structural score = std over the batch of each edge's total
+        (summed over lags) contribution. Row = effect i, col = cause j."""
+        c = self._edge_contrib(x_hist).sum(dim=3)              # [B, i, j]
+        return c.std(dim=0)                                    # [d, d]
 
     @torch.no_grad()
     def expected_lags(self, x_hist):
-        """[d, d] expected propagation lag per edge, weighted by per-lag
-        contribution magnitude."""
-        B = x_hist.shape[0]
-        el = torch.zeros(self.d, self.d)
-        for i in range(self.d):
-            for j in range(self.d):
-                num = den = 0.0
-                for h in self.lags:
-                    m = self.edges[f"{i}_{j}_{h}"](self._edge_input(x_hist, j, h)).std()
-                    num = num + h * m
-                    den = den + m
-                el[i, j] = num / (den + 1e-8)
-        return el
+        """[d, d] contribution-weighted mean lag per edge."""
+        c = self._edge_contrib(x_hist).std(dim=0)              # [i, j, h]
+        lags = torch.tensor([float(h) for h in self.lags], device=c.device)
+        num = (c * lags.view(1, 1, -1)).sum(-1)
+        den = c.sum(-1).clamp(min=1e-8)
+        return num / den                                       # [d, d]
 
     def contemporaneous_h(self, x_hist):
-        """NOTEARS acyclicity residual on the lag-0 (contemporaneous) importance
-        block; 0 if contemporaneous edges are not modelled."""
+        """NOTEARS acyclicity residual on the lag-0 contemporaneous block."""
         if not self.contemporaneous:
-            return torch.zeros((), device=x_hist.device)
-        B = x_hist.shape[0]
-        W = torch.zeros(self.d, self.d, device=x_hist.device)
-        for i in range(self.d):
-            for j in range(self.d):
-                W[i, j] = self.edges[f"{i}_{j}_0"](self._edge_input(x_hist, j, 0)).std()
-        return _h_notears(W)
+            return torch.zeros((), device=self.coef.device)
+        c = self._edge_contrib(x_hist)[:, :, :, 0].std(dim=0)  # [d, d] lag-0
+        return _h_notears(c)

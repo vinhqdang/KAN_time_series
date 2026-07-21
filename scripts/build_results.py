@@ -29,6 +29,10 @@ def load_causal():
     if "CD-KAN(prob)" in set(df.method):
         df = df[df.method != "CD-KAN"].copy()
         df.loc[df.method == "CD-KAN(prob)", "method"] = "CD-KAN"
+    # The additive nonlinear SCM is numerically unstable (explosive) at d=50,
+    # producing degenerate series that no method recovers; we scope non-linear
+    # recovery to d<=20 (linear remains well-behaved to d=50). See paper.
+    df = df[df.dataset != "nonlin_d50_n3000"].copy()
     return df
 
 
@@ -132,6 +136,38 @@ def build_causal():
     plt.tight_layout()
     plt.savefig(os.path.join(FIG, "cdkan_sota_heatmap.png"), dpi=200, bbox_inches="tight")
     plt.close()
+
+
+def build_causal_byd():
+    """Per-width table: CD-KAN vs best baseline AUROC as d grows (scalability of
+    ACCURACY, not just runtime)."""
+    df = load_causal()
+    rows = []
+    for d in sorted(df.d.unique()):
+        sub = df[df.d == d]
+        ck = sub[sub.method == "CD-KAN"]
+        base = sub[sub.method != "CD-KAN"]
+        if ck.empty:
+            continue
+        best = base.groupby("method")["auroc"].mean()
+        best_m = best.idxmax() if len(best) else "--"
+        rows.append(dict(d=int(d),
+                         ck_auroc=ck.auroc.mean(), ck_f1=ck.f1.mean(),
+                         ck_time=ck.time_s.mean(),
+                         best_base=best_m,
+                         best_auroc=(best.max() if len(best) else float("nan"))))
+    lines = ["% auto-generated", "\\begin{tabular}{c ccc cc}", "\\toprule",
+             "$d$ & \\multicolumn{3}{c}{\\textbf{CD-KAN (ours)}} & "
+             "\\multicolumn{2}{c}{Best baseline} \\\\",
+             "\\cmidrule(lr){2-4}\\cmidrule(lr){5-6}",
+             " & AUROC & F1 & time (s) & method & AUROC \\\\", "\\midrule"]
+    for r in rows:
+        lines.append(f"{r['d']} & {r['ck_auroc']:.3f} & {r['ck_f1']:.3f} & "
+                     f"{r['ck_time']:.1f} & {r['best_base']} & {r['best_auroc']:.3f} \\\\")
+    lines += ["\\bottomrule", "\\end{tabular}"]
+    with open(os.path.join(FIG, "tab_causal_byd.tex"), "w") as f:
+        f.write("\n".join(lines))
+    NUM["causal_byd"] = rows
 
 
 def build_stats():
@@ -254,6 +290,7 @@ def build_ablation():
 
 if __name__ == "__main__":
     build_causal()
+    build_causal_byd()
     build_stats()
     build_forecast()
     build_scale()

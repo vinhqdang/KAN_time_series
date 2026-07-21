@@ -1,0 +1,2 @@
+pre_post_jaccard,n_appeared,n_disappeared,appeared,disappeared
+0.12,11,11,"[('SPX', 'GLD'), ('BTC', 'GLD'), ('NG', 'GLD'), ('COPPER', 'DXY'), ('GLD', 'SPX'), ('GLD', 'BTC'), ('SPX', 'BTC'), ('GLD', 'SLV')]","[('SPX', 'WTI'), ('COPPER', 'WTI'), ('WTI', 'SPX'), ('COPPER', 'SPX'), ('NG', 'SPX'), ('COPPER', 'BTC'), ('DXY', 'SLV'), ('WTI', 'COPPER')]"

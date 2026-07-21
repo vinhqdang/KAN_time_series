@@ -42,11 +42,16 @@ structural equations. CD-KAN inherits DYNOTEARS's block treatment of lags while
 replacing linear mechanisms with learnable spline edge functions.
 
 \paragraph{Causal discovery for time series.} Constraint-based PCMCI
-\citep{Runge2019} and non-Gaussian VAR-LiNGAM \citep{Hyvarinen2010} are strong,
-widely used baselines; neural Granger methods \citep{Tank2021,Shojaie2022} learn
-non-linear predictive dependencies but recover Granger-causal, not necessarily
-structural, graphs. NTiCD \citep{Absar2023} learns time-invariant neural causal
-structure. We compare against representatives of each family.
+\citep{Runge2019}, restricted-SEM methods (TiMINo, \citealt{Peters2013TiMINo}),
+and non-Gaussian VAR-LiNGAM \citep{Hyvarinen2010} are strong, widely used
+baselines; neural Granger methods \citep{Tank2021,Shojaie2022} learn non-linear
+predictive dependencies but recover Granger-causal, not necessarily structural,
+graphs. Recent deep approaches---NTiCD \citep{Absar2023}, CUTS
+\citep{Cheng2023CUTS}, and Rhino \citep{Gong2023Rhino}---push accuracy further but
+are largely black-box. CD-KAN's distinguishing aim is to deliver competitive
+recovery \emph{with} per-edge interpretable mechanisms; we benchmark against
+representatives of the classical and KAN-based families and position against these
+neural methods.
 
 \paragraph{KAN-based causality.} Closest to our work, GC-KAN
 \citep{GCKAN2024} uses Kolmogorov--Arnold edge functions for \emph{Granger}
@@ -77,11 +82,14 @@ three contributions:
     baselines and matching several classical methods---while forecasting
     competitively under a leakage-free protocol. We make no claim of uniform
     dominance and retract the earlier, unreproducible F1~=~0.897 and MSE~=~0.0008.
-    \item \textbf{An interpretation layer for practice.} Spline edge functions
-    expose the \emph{shape} of each dependency (linear, saturating, threshold),
-    lag attribution gives propagation delays in trading days, and on real markets
-    CD-KAN's learned graph is temporally stable well above a permutation chance
-    level---usable by managers as hypotheses for expert review.
+    \item \textbf{Validation beyond stability, and an interpretation layer.}
+    Spline edge functions expose the \emph{shape} of each dependency (linear,
+    saturating, threshold) and lag attribution recovers known delays on synthetic
+    data. On real markets the learned graph is stable $4.7\times$ above a
+    permutation chance level ($p<0.0001$), degrades under time-reversal (showing
+    it uses temporal precedence), and tracks the 2022 macro regime shift---giving
+    managers hypotheses grounded in more than self-consistency. CD-KAN also scales
+    to $d{=}50$ in seconds via a vectorized implementation.
 \end{enumerate}
 
 The remainder of the paper is organized as follows.

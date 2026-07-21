@@ -52,11 +52,11 @@ Several boundary conditions delimit responsible use:
     constancy; it also shows that window design (length and overlap) materially
     affects apparent stability, which practitioners must report.
     \item \textbf{Where CD-KAN stands vs.\ classical methods.} CD-KAN is
-    competitive---perfect on linear structure and, on non-linear structure,
-    matching methods such as NOTEARS/GOLEM and significantly beating the
-    KAN-Granger baselines---but the strongest constraint- and non-Gaussianity-based
-    methods (PCMCI, VAR-LiNGAM) retain an edge on the hardest high-dimensional
-    cases, and all classical methods are far faster
+    competitive---near-perfect on linear structure (AUROC~$\approx$~1.0 up to
+    $d{=}20$) and, on non-linear structure, beating NOTEARS and the KAN-Granger
+    baselines (Wilcoxon $p<0.05$) and matching the correlation baseline---but the
+    strongest constraint- and non-Gaussianity-based methods (PCMCI, VAR-LiNGAM,
+    VAR-Lasso, GOLEM) retain an edge, and all classical methods are far faster
     (Section~\ref{sec:synthetic}). When \emph{only} a structure estimate is needed
     and interpretability of mechanisms is not required, a fast classical method may
     suffice; CD-KAN's advantage is delivering competitive structure \emph{together}
