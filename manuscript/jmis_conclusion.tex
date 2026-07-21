@@ -1,10 +1,41 @@
 
 \section{Conclusion}
+\label{sec:conclusion}
 
-This research presented **Causal Discovery Kolmogorov-Arnold Networks (CD-KAN)**, a novel information systems artifact that bridges the gap between predictive accuracy and causal interpretability in time series analysis. By integrating the expressive power of Kolmogorov-Arnold Networks with rigorous differentiable DAG learning, we demonstrated that it is possible to achieve state-of-the-art forecasting performance without sacrificing the ability to understand the underlying causal mechanisms.
+We presented CD-KAN, an information-systems artifact that couples
+Kolmogorov--Arnold edge functions with differentiable, lag-aware DAG learning to
+produce, from one differentiable model, both a one-step forecast and an
+interpretable causal graph. Methodologically, CD-KAN separates lagged from
+contemporaneous adjacencies and enforces acyclicity only on the contemporaneous
+block via an Augmented Lagrangian scheme---a formulation we specify in full,
+including its hyperparameter schedule and convergence criteria.
 
-Our comprehensive evaluation across ten diverse datasets confirmed CD-KAN's superiority over existing methods, achieving a mean F1-score of 0.8971 in causal discovery (a 37\% improvement over the best baseline) and reducing forecasting error by an order of magnitude in financial applications. More importantly, we showed how CD-KAN serves as a "dual-capability" decision support system, empowering managers with both accurate foresight and actionable insight.
+Our evaluation is deliberately candid. On synthetic data with known ground truth,
+CD-KAN recovers linear structure perfectly and is competitive on non-linear
+structure---significantly outperforming KAN-based Granger baselines and matching
+several classical methods, though not the very strongest (PCMCI, VAR-LiNGAM) on
+the hardest cases. The key design lesson is that this identifiability hinges on an
+information bottleneck: predicting each variable only through its incoming edges,
+rather than through a dense forecasting backbone (which we show collapses to
+chance). We retract the earlier, unreproducible F1~=~0.897 in favour of these
+honest numbers. In forecasting, we corrected a prior artifact---an error of
+$\approx$0.0008 from test-leaking normalization---and report leakage-free
+rolling-origin results instead, under which CD-KAN is competitive. On real financial data, CD-KAN recovers a directed graph with plausible,
+lag-resolved structure whose stability exceeds a permutation-based chance level
+by roughly six-fold ($p<0.0001$), and whose spline edge functions expose the
+shape of each dependency.
 
-Future research will extend this work in three directions: (1) Scaling the DAG constraint optimization to high-dimensional systems ($d > 100$) via approximate algorithms; (2) Incorporating domain knowledge constraints to guide structure learning in data-scarce environments; and (3) Developing interactive visualizations to allow managers to perform "what-if" analyses based on the discovered causal graphs.
-
-As organizations increasingly rely on AI for strategic decision-making, the need for systems that are both accurate and trustworthy is paramount. CD-KAN represents a significant step towards this goal, offering a principled path for integrating deep learning into the managerial toolkit.
+CD-KAN's contribution is therefore best understood as a \emph{unified,
+interpretable decision-support artifact} that delivers competitive structure
+recovery \emph{together} with interpretable mechanisms and coupled forecasting for
+moderate-dimensional, non-linear settings. Its main limitations---the per-edge
+spline evaluation cost (and the $O(d^3)$ acyclicity term when contemporaneous
+edges are modelled), and the causal-sufficiency and stationarity assumptions
+required to read edges causally---define a clear agenda: (1) vectorized spline
+evaluation and low-rank/log-det acyclicity for higher $d$; (2) $\ell_0$-style
+gates as an alternative to the group-lasso; (3) intervention- and event-based
+validation (e.g., policy-announcement windows) to test recovered structure beyond
+stability; and (4) expert user studies to quantify, rather than assert,
+interpretability. As organizations lean further on AI for strategy, artifacts that
+are simultaneously predictive, transparent, and honest about their boundaries are
+essential; CD-KAN is a step in that direction.

@@ -1,0 +1,4 @@
+config,auroc,f1
+CD-KAN (component-wise),0.971,0.886
+w/ dense backbone (coupled),0.579,0.467
+w/o group-lasso,0.984,0.952

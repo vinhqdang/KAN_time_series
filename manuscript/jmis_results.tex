@@ -1,198 +1,339 @@
 
-\section{Experimental Results}
+\section{Evaluation}
+\label{sec:results}
 
-We evaluate CD-KAN comprehensively across synthetic datasets (where ground-truth causal graphs are known) and real-world financial data (where we report stability-based indirect validation, as no ground truth exists). All experiments use strict rolling-origin temporal splits; normalization statistics are computed on training windows only to prevent leakage \citep{Kim2022}.
+We evaluate CD-KAN on (i) synthetic data with known ground-truth graphs, (ii) a
+leakage-free forecasting protocol, and (iii) real financial markets where no
+ground truth exists. All code and configurations are released for reproduction;
+every number below is produced by the accompanying scripts rather than reported
+from a single tuned run.
 
-% ------------------------------------------------------------------
-\subsection{Datasets and Experimental Setup}
-% ------------------------------------------------------------------
+\subsection{Datasets, baselines, metrics, and protocol}
+\label{sec:setup}
 
-\subsubsection{Datasets}
-\begin{itemize}
-    \item \textbf{Synthetic Linear (2 datasets)}: Generated via Vector Autoregression (VAR) with random sparse adjacency matrices ($N \in \{500, 2000\}$, nodes$=5$).
-    \item \textbf{Synthetic Nonlinear (2 datasets)}: Structural Causal Models (SCMs) with non-linear functions (sine, tanh) and additive non-Gaussian noise ($N \in \{500, 2000\}$, nodes$=5$).
-    \item \textbf{Financial (8 Assets, $N=1\,827$)}: Daily closing prices of Gold (GLD), WTI Crude Oil, U.S. Dollar Index (DXY), S\&P 500 (SPX), Bitcoin (BTC), Silver (SLV), Copper (COPPER), and Natural Gas (NG) from 2020--2025.
-    \item \textbf{Cryptocurrency (5 Coins, $N=1\,095$)}: Top-5 cryptocurrencies by market capitalisation.
-    \item \textbf{Macroeconomic (5 Series, $N=1\,257$)}: Key indicators including CPI, interest rates, and industrial production.
-\end{itemize}
+\paragraph{Synthetic data.} We generate \emph{linear} data from a sparse
+lower-triangular VAR process and \emph{non-linear} data from a structural causal
+model whose mechanisms are drawn from $\{$linear, $\sin$, $\tanh$, signed-square$\}$
+with additive noise and random lags in $\{1,2,3\}$. We use widths
+$d\in\{5,10\}$ and lengths $N\in\{500,1500\}$, with three random seeds per
+configuration (each seed re-draws both the graph and the data), giving eighteen
+ground-truth benchmarks. All series are standardized before fitting. Wall-clock
+and parameter growth with larger width are reported in
+Section~\ref{sec:scalability}.
 
-\subsubsection{Baselines}
-We compare against seven baselines spanning linear, constraint-based, and score-based methods:
-\begin{enumerate}
-    \item \textbf{VAR-Lasso}: Linear VAR with $\ell_1$ regularization \citep{Tibshirani1996}.
-    \item \textbf{PCMCI}: Constraint-based method designed for time series \citep{Runge2019}.
-    \item \textbf{NTiCD}: Neural time-invariant causal discovery.
-    \item \textbf{GOLEM}: Differentiable score-based DAG learning \citep{Ng2020}.
-    \item \textbf{NOTEARS} / \textbf{DYNOTEARS}: Continuous optimization for structure learning \citep{Zheng2018,Pamfil2020}.
-    \item \textbf{GC-KAN}: KAN-based neural Granger causality \citep{GCKAN2024}.
-    \item \textbf{VarLiNGAM}: Linear non-Gaussian acyclic model for time series \citep{Hyvarinen2010}.
-\end{enumerate}
-Forecasting comparisons additionally include TSMixer, PatchTST, N-BEATS, and LSTM.
+\paragraph{Baselines.} We compare against seven \emph{genuine} implementations:
+VAR-Lasso \citep{Tibshirani1996}; linear NOTEARS \citep{Zheng2018}; GOLEM
+\citep{Ng2024CALM}; PCMCI (tigramite, \citealt{Runge2019}); VAR-LiNGAM (lingam,
+\citealt{Hyvarinen2010}); a lagged-correlation threshold; and GC-KAN
+\citep{GCKAN2024} with genuine B-spline edge functions. We additionally include
+\textbf{GC-KAN$+$ALM}, which adds our acyclicity penalty to the GC-KAN backbone,
+to isolate the contribution of the DAG constraint from that of the KAN edge
+functions (Reviewer-requested ablation). Forecasting comparisons add TSMixer
+\citep{Chen2023}, PatchTST \citep{Nie2023}, N-BEATS \citep{Oreshkin2020}, and an
+LSTM.
 
-% ------------------------------------------------------------------
-\subsection{Causal Discovery on Synthetic Data}
-% ------------------------------------------------------------------
+\paragraph{Metrics.} Because thresholding confounds structural-ranking quality
+with a chosen operating point, we report \textbf{AUROC} and \textbf{AUPRC}
+(threshold-free) as primary metrics, and F1/SHD at each method's own best-F1
+threshold---the identical selection procedure applied to every method, CD-KAN
+included, so no method is advantaged. All causal metrics are computed only on
+synthetic data with known ground truth; on real data we use stability-based
+validation (Section~\ref{sec:real}). For CD-KAN we use the edge-probability
+(summary-adjacency) readout; a coefficient-magnitude readout performed markedly
+worse and is not used.
 
-\textit{Note}: F1, SHD, AUROC, and AUPRC are computed exclusively on synthetic datasets where ground-truth
-adjacency matrices are available. These metrics are not applied to real-world data.
+\paragraph{Forecasting protocol.} We use strict rolling-origin (walk-forward)
+splits with normalization statistics computed on each training window only,
+preventing leakage \citep{Kim2022}. All models are trained for the same number of
+epochs (matched budget); we report one-step-ahead MSE/MAE averaged over the
+rolling folds and seeds.
 
-Table~\ref{tab:causal_results} summarizes performance across all synthetic datasets.
-CD-KAN achieves a mean F1 of \textbf{0.8971}, reducing SHD by 81\% versus VAR-Lasso and
-surpassing GC-KAN (F1~=~0.791) directly.
+\subsection{Causal discovery on synthetic data}
+\label{sec:synthetic}
 
-\begin{table}[h]
+Table~\ref{tab:causal} reports results split by regime. On \textbf{linear}
+structure CD-KAN recovers the graph essentially perfectly (AUROC~$=$~1.00,
+F1~$=$~1.00), tying the mature estimators (VAR-Lasso, NOTEARS, GOLEM, PCMCI,
+VAR-LiNGAM). On \textbf{non-linear} structure CD-KAN attains AUROC~$=$~0.82
+(averaged over the $d{=}5$ and harder $d{=}10$ settings), placing it among the
+classical methods (NOTEARS 0.84, Correlation 0.85, GOLEM 0.86) and clearly ahead
+of the KAN-based Granger baselines. On the cleaner $d{=}5$ non-linear settings it
+reaches AUROC~$\approx$~0.94--0.97; the strongest constraint- and
+non-Gaussianity-based methods (PCMCI~0.97, VAR-LiNGAM~0.93) retain an edge on the
+hardest high-dimensional cases.
+
+\paragraph{Statistical significance.} Paired Wilcoxon signed-rank tests
+(Table~\ref{tab:causal_stats}) show CD-KAN significantly \emph{outperforms} both
+GC-KAN ($p{=}0.033$) and GC-KAN$+$ALM ($p{=}0.041$), and is statistically
+indistinguishable from NOTEARS ($p{=}0.47$) and the correlation baseline
+($p{=}0.51$); PCMCI, VAR-Lasso, and GOLEM remain ahead ($p{\approx}0.04$). CD-KAN
+is thus competitive with established causal-discovery methods and is the strongest
+KAN-based approach, rather than dominating all baselines---we make no such claim
+(and explicitly retract the earlier, unreproducible F1~=~0.897).
+
+\paragraph{Why the component-wise design matters.} A revealing contrast is with a
+variant that feeds the causal layer into a dense residual KAN backbone (the
+``coupled'' design). Table~\ref{tab:ablation} shows this variant collapses to
+chance (AUROC~$\approx$~0.5): the backbone minimizes forecasting error regardless
+of the adjacency, so structure is not identified. Enforcing the information
+bottleneck---each target predicted \emph{only} through its incoming edges---is
+what makes CD-KAN's structure faithful, and the edge-level group-lasso is what
+makes it sparse. GC-KAN, which shares the B-spline edges but lacks per-lag
+resolution, sits below CD-KAN, and adding our acyclicity term to it
+(GC-KAN$+$ALM) changes little on these purely-lagged graphs---confirming that the
+gains come from the identifiable architecture, not the DAG penalty alone.
+
+\begin{table}[t]
 \centering
-\caption{Causal Discovery on Synthetic Datasets (mean across 4 synthetic settings, 3 seeds each). F1~$\uparrow$, SHD~$\downarrow$, AUROC~$\uparrow$. Results reported as mean~$\pm$~std.}
-\label{tab:causal_results}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{lcccc}
-\hline
-\textbf{Algorithm} & \textbf{F1} $\uparrow$ & \textbf{SHD} $\downarrow$ & \textbf{AUROC} $\uparrow$ & \textbf{Precision / Recall} \\ \hline
-\textbf{CD-KAN (Ours)} & $\mathbf{0.897 \pm 0.031}$ & $\mathbf{1.40 \pm 0.62}$ & $\mathbf{0.941 \pm 0.028}$ & $0.870$ / $0.920$ \\
-GC-KAN                 & $0.791 \pm 0.044$          & $3.80 \pm 0.91$           & $0.843 \pm 0.039$          & $0.771$ / $0.813$ \\
-PCMCI                  & $0.655 \pm 0.057$          & $10.60 \pm 2.10$          & $0.812 \pm 0.051$          & $0.620$ / $0.710$ \\
-VarLiNGAM              & $0.648 \pm 0.063$          & $8.90 \pm 1.87$           & $0.797 \pm 0.044$          & $0.598$ / $0.714$ \\
-VAR-Lasso              & $0.643 \pm 0.058$          & $7.60 \pm 1.73$           & $0.773 \pm 0.049$          & $0.580$ / $0.750$ \\
-NTiCD                  & $0.594 \pm 0.071$          & $10.40 \pm 2.31$          & $0.751 \pm 0.055$          & $0.550$ / $0.680$ \\
-NOTEARS                & $0.508 \pm 0.084$          & $15.40 \pm 3.12$          & $0.691 \pm 0.062$          & $0.480$ / $0.550$ \\
-GOLEM                  & $0.495 \pm 0.079$          & $15.00 \pm 3.04$          & $0.683 \pm 0.059$          & $0.450$ / $0.520$ \\ \hline
-\end{tabular}}
+\caption{Causal discovery on synthetic data, split by mechanism type
+(mean over configurations $\times$ 3 seeds). AUROC/AUPRC are threshold-free;
+F1 uses each method's best threshold. Higher is better.}
+\label{tab:causal}
+\input{figures/tab_causal}
 \end{table}
 
-Figure~\ref{fig:comprehensive_results} illustrates performance distributions across dataset sizes and the precision-recall trade-off, confirming CD-KAN's consistent advantage.
+\begin{table}[t]
+\centering
+\caption{Paired Wilcoxon signed-rank tests (CD-KAN vs.\ each baseline, F1 across
+matched configuration/seed pairs). CD-KAN significantly beats the KAN-Granger
+baselines and ties NOTEARS/Correlation.}
+\label{tab:causal_stats}
+\input{figures/tab_causal_stats}
+\end{table}
 
-\begin{figure}[h]
+Figure~\ref{fig:comprehensive} summarizes AUROC by regime and the wall-clock
+runtime of each method; Figure~\ref{fig:heatmap} shows per-dataset AUROC.
+
+\begin{figure}[t]
     \centering
     \includegraphics[width=\textwidth]{figures/cdkan_sota_comprehensive_results.png}
-    \caption{CD-KAN vs.\ baselines. \textbf{Top-left}: mean F1 (all synthetic datasets). \textbf{Top-right}: per-dataset F1 comparison against the best baseline. \textbf{Bottom-left}: runtime scalability. \textbf{Bottom-right}: precision-recall trade-off across algorithms.}
-    \label{fig:comprehensive_results}
+    \caption{Left/middle: causal-discovery AUROC on non-linear and linear
+    synthetic data. Right: mean fit time (log scale). CD-KAN's advantage is
+    confined to the non-linear regime and comes at a substantial runtime cost.}
+    \label{fig:comprehensive}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[t]
     \centering
     \includegraphics[width=0.82\textwidth]{figures/cdkan_sota_heatmap.png}
-    \caption{F1 score heatmap across all algorithm-dataset pairs. CD-KAN (top row) achieves consistently high performance across both linear and non-linear settings, whereas baselines degrade significantly under non-linear dependencies.}
+    \caption{AUROC for every method--dataset pair. Linear baselines saturate on
+    linear datasets; KAN-based methods are relatively stronger on non-linear
+    datasets.}
     \label{fig:heatmap}
 \end{figure}
 
-% ------------------------------------------------------------------
-\subsection{Forecasting Performance}
-% ------------------------------------------------------------------
+\subsection{Scalability and runtime}
+\label{sec:scalability}
 
-Table~\ref{tab:forecasting_results} reports one-step-ahead forecasting MSE and MAE on the Financial dataset, evaluated with rolling-origin splits and mean~$\pm$~std over three seeds.
+The component-wise design is inexpensive: CD-KAN fits in seconds at $d{=}5$
+(vs.\ minutes for the discarded coupled variant), though its edge-wise spline
+evaluation still makes it slower than the highly optimized classical baselines
+(Figure~\ref{fig:comprehensive}, right; seconds vs.\ sub-second). Cost grows with
+$d$ as the $O(d^2 L)$ edge count increases (Table~\ref{tab:scale}, reporting
+parameter count and fit time at $d\in\{5,10\}$ from the main benchmark and at
+$d\in\{15,20\}$ from a dedicated timing sweep). CD-KAN is thus well suited to
+moderate-width systems (tens of variables); the thousands-of-series regime would
+require vectorized spline evaluation and low-rank acyclicity
+(Section~\ref{sec:limits}).
 
-\begin{table}[h]
+\begin{table}[t]
 \centering
-\caption{Forecasting Performance on Financial Dataset ($N=1\,827$; mean $\pm$ std over 3 random seeds, rolling-origin evaluation). MSE~$\downarrow$, MAE~$\downarrow$.}
-\label{tab:forecasting_results}
-\begin{tabular}{lcc}
-\hline
-\textbf{Model} & \textbf{MSE} $\downarrow$ & \textbf{MAE} $\downarrow$ \\ \hline
-\textbf{CD-KAN (Ours)} & $\mathbf{0.0179 \pm 0.0011}$ & $\mathbf{0.0914 \pm 0.0072}$ \\
-PatchTST               & $0.0201 \pm 0.0018$          & $0.1021 \pm 0.0091$          \\
-TSMixer                & $0.0213 \pm 0.0022$          & $0.1079 \pm 0.0098$          \\
-N-BEATS                & $0.0244 \pm 0.0031$          & $0.1138 \pm 0.0107$          \\
-LSTM                   & $0.0620 \pm 0.0051$          & $0.2120 \pm 0.0142$          \\
-Naive KAN              & $0.0550 \pm 0.0048$          & $0.1829 \pm 0.0131$          \\ \hline
-\end{tabular}
+\caption{CD-KAN parameter count and fit time vs.\ graph width $d$
+(150 epochs, 4-core CPU; $d\!\le\!10$ from the main benchmark, $d\!\ge\!15$ from a
+timing sweep).}
+\label{tab:scale}
+\input{figures/tab_scale}
 \end{table}
 
-% ------------------------------------------------------------------
-\subsection{Real-World Causal Insights: Financial Markets 2020--2025}
-% ------------------------------------------------------------------
+\subsection{Forecasting}
+\label{sec:forecast}
 
-For real-world data, no ground-truth adjacency exists; therefore we do not report F1 or SHD. Instead, we present the causal structures learned by CD-KAN as interpretive outputs and validate them via \emph{stability analysis}---measuring Jaccard consistency of the learned binary graph across three rolling time windows.
+Table~\ref{tab:forecast} reports one-step-ahead forecasting on the 8-asset
+financial dataset under the leakage-free rolling-origin protocol. CD-KAN attains
+the lowest error (MSE~$=$~0.044). We are careful about interpretation: CD-KAN's
+RevIN wrapper removes per-window level and scale, which is decisive on strongly
+non-stationary financial \emph{levels}---the deep baselines here lack built-in
+normalization and degrade badly (LSTM and PatchTST perform worse than a naive
+predictor). The comparison should therefore be read as evidence for coupling the
+interpretable causal edge-functions \emph{with} reversible normalization, not as a
+claim that the CD-KAN structure module alone beats Transformers; a
+normalization-matched forecasting study is future work.
 
-\subsubsection{Learned Causal Graph}
-
-Figure~\ref{fig:real_causal_adj} shows the learned edge probability matrix (row~=~effect, column~=~cause) averaged over three rolling folds. Edges are considered significant at a threshold of 0.50.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.85\textwidth]{figures/real_causal_adjacency.png}
-    \caption{CD-KAN learned causal edge probabilities across eight financial assets (2020--2025). Probabilities are averaged over three rolling-window folds. Darker cells indicate stronger learned causal influence. Diagonal (self-loops) is suppressed. Row = effect; Column = cause.}
-    \label{fig:real_causal_adj}
-\end{figure}
-
-Figure~\ref{fig:real_causal_network} presents the corresponding directed causal network, where node color denotes asset class and edge width reflects learned edge probability.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.82\textwidth]{figures/real_causal_network.png}
-    \caption{Directed causal network learned by CD-KAN on financial assets 2020--2025 (edges with probability~$\geq 0.50$). Edge width is proportional to causal strength. Node colors encode asset class: yellow = precious metals (GLD, SLV); brown = energy (WTI, NG, COPPER); blue = equity (SPX); red = crypto (BTC); green = FX (DXY).}
-    \label{fig:real_causal_network}
-\end{figure}
-
-The 14 significant edges ($\geq$0.50) are summarized in Table~\ref{tab:real_causal_edges}, ordered by strength.
-
-\begin{table}[h]
+\begin{table}[t]
 \centering
-\caption{Significant causal edges learned by CD-KAN on financial data (prob.\ $\geq 0.50$, averaged over 3 rolling folds). ``Lag'' = expected propagation delay in trading days. Economic interpretation provided for all edges.}
-\label{tab:real_causal_edges}
+\caption{Forecasting on the financial dataset ($N{=}1{,}827$, $d{=}8$),
+leakage-free rolling-origin, matched-epoch budget, mean$\pm$std over folds and
+seeds. CD-KAN uses RevIN; the deep baselines have no built-in normalization
+(see text). Lower is better.}
+\label{tab:forecast}
+\input{figures/tab_forecast}
+\end{table}
+
+\paragraph{Reconciling the reported error (addressing the abstract/table
+inconsistency).} An earlier version reported MSE~$\approx$~0.0008 and a
+``20$\times$'' improvement. We traced this to an \emph{evaluation artifact}:
+computing normalization statistics on the full series (test values leaking into
+the scaling) rather than on training data only. Table~\ref{tab:leak} isolates the
+mechanism on a single split: global (leaky) normalization yields a markedly lower
+MSE (0.016) than the correct train-only normalization (0.028)---confirming the
+direction of the bias---and the original 0.0008 figure combined this leak with a
+more favourable single split. We therefore \emph{retract} the 0.0008 / 20$\times$
+claim; the correct, leakage-free numbers are those in Table~\ref{tab:forecast},
+and all abstract and conclusion statements are updated accordingly.
+
+\begin{table}[t]
+\centering
+\caption{Leak demonstration: identical CD-KAN model, single 80/20 split, global
+(test-leaking) vs.\ train-only normalization. Leaking test statistics into the
+scaler lowers the reported MSE---the artifact behind the retracted figure.}
+\label{tab:leak}
+\input{figures/tab_leak}
+\end{table}
+
+\subsection{Ablation and sensitivity}
+\label{sec:ablation}
+
+Table~\ref{tab:ablation} isolates CD-KAN's design choices on non-linear synthetic
+data. The decisive factor is the \textbf{information bottleneck}: replacing the
+component-wise readout with a dense residual KAN backbone (the ``coupled''
+variant) collapses recovery to chance (AUROC~$0.58$), because the backbone can fit
+the forecast irrespective of the adjacency. The edge-level group-lasso, by
+contrast, is not essential for ranking quality on these small dense graphs
+(AUROC is comparable with and without it); its role is to yield an explicitly
+sparse graph, which matters more as $d$ grows and the true graph becomes sparser.
+
+\begin{table}[t]
+\centering
+\caption{Ablation of CD-KAN on non-linear synthetic data (mean over 3 seeds).
+The information bottleneck is decisive; the dense-backbone variant collapses to
+chance.}
+\label{tab:ablation}
+\input{figures/tab_ablation}
+\end{table}
+
+\paragraph{Sensitivity.}
+\label{sec:sensitivity}
+Table~\ref{tab:sensitivity} sweeps the group-lasso weight $\lambda_g$ and the
+spline grid size $G$ on non-linear synthetic data. Recovery is robust
+(AUROC~$0.82$--$0.98$): strong and stable for $\lambda_g\!\le\!0.01$ across grid
+sizes, degrading only gracefully as the penalty is made very aggressive. We use
+$\lambda_g{=}0.01$, $G{=}8$ throughout.
+
+\begin{table}[t]
+\centering
+\caption{Sensitivity of CD-KAN to the group-lasso weight $\lambda_g$ and spline
+grid size $G$ on non-linear synthetic data (mean over 3 seeds).}
+\label{tab:sensitivity}
+\input{figures/tab_sensitivity}
+\end{table}
+
+\subsection{Real-world causal insights: financial markets 2020--2025}
+\label{sec:real}
+
+We apply CD-KAN to daily closing prices of eight assets: gold (GLD), WTI crude
+oil (WTI), the U.S. dollar index (DXY), the S\&P~500 (SPX), Bitcoin (BTC), silver
+(SLV), copper (COPPER), and natural gas (NG), over 2020--2025 ($N{=}1{,}827$).
+No ground-truth graph exists, so we treat the output as \emph{candidate}
+mechanisms and validate via stability (Section~\ref{sec:stability}) rather than
+F1/SHD.
+
+\subsubsection{Learned causal graph and lag structure}
+Figure~\ref{fig:real_adj} shows the learned edge-probability matrix (row = effect,
+column = cause), averaged over three rolling folds; Figure~\ref{fig:real_net}
+renders the corresponding directed network. The 14 edges with probability
+$\geq 0.50$ are listed in Table~\ref{tab:real_edges} with their expected
+propagation lag (in trading days) and an economic reading. We emphasize that
+these readings are \emph{post-hoc, plausibility-based} interpretations offered to
+domain experts, not evidence of verified causation; in the absence of ground
+truth or intervention, the economic narrative corroborates but does not
+establish the edges.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.80\textwidth]{figures/real_causal_adjacency.png}
+    \caption{Learned causal edge probabilities across eight financial assets
+    (averaged over three rolling folds). Row = effect; column = cause. Asset
+    tickers: GLD gold, WTI crude oil, DXY US dollar index, SPX S\&P~500, BTC
+    Bitcoin, SLV silver, COPPER copper, NG natural gas.}
+    \label{fig:real_adj}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.80\textwidth]{figures/real_causal_network.png}
+    \caption{Directed causal network (edges with probability $\geq 0.50$; width
+    $\propto$ probability). Node colour encodes asset class: precious metals
+    (GLD, SLV), energy (WTI, NG, COPPER), equity (SPX), crypto (BTC), FX (DXY).}
+    \label{fig:real_net}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\caption{Significant causal edges learned by CD-KAN (probability $\geq 0.50$,
+averaged over three folds). ``Lag'' is the expected propagation delay in trading
+days. Interpretations are post-hoc plausibility readings for expert review.}
+\label{tab:real_edges}
 \resizebox{\textwidth}{!}{%
-\begin{tabular}{llccp{6.5cm}}
-\hline
-\textbf{Cause} & \textbf{Effect} & \textbf{Prob.} & \textbf{Lag (d)} & \textbf{Economic Interpretation} \\ \hline
-DXY    & GLD    & 0.705 & 1.0 & Stronger USD depresses gold (inverse commodity relationship) \\
-WTI    & DXY    & 0.668 & 2.0 & Petrodollar loop: oil receipts flow into USD-denominated assets \\
-COPPER & SPX    & 0.665 & 2.9 & Copper as leading economic barometer; demand anticipates equity performance \\
-DXY    & WTI    & 0.664 & 1.3 & Oil priced in USD; strong dollar lowers purchasing power for importers \\
+\begin{tabular}{llccp{6.4cm}}
+\toprule
+\textbf{Cause} & \textbf{Effect} & \textbf{Prob.} & \textbf{Lag (d)} & \textbf{Plausibility reading} \\ \midrule
+DXY    & GLD    & 0.705 & 1.0 & Stronger USD tends to depress gold (inverse commodity relation) \\
+WTI    & DXY    & 0.668 & 2.0 & Petrodollar channel: oil receipts recycle into USD assets \\
+COPPER & SPX    & 0.665 & 2.9 & Copper as an activity barometer leading equities \\
+DXY    & WTI    & 0.664 & 1.3 & Oil priced in USD; a strong dollar lowers importer purchasing power \\
 SLV    & GLD    & 0.651 & 1.1 & Precious-metals co-movement; silver liquidity spills to gold \\
 GLD    & SLV    & 0.645 & 1.0 & Gold price discovery propagates to silver \\
-COPPER & WTI    & 0.614 & 2.1 & Industrial cycle co-movement via global demand \\
+COPPER & WTI    & 0.614 & 2.1 & Industrial-cycle co-movement via global demand \\
 WTI    & NG     & 0.610 & 2.8 & Energy-complex substitution effects \\
-SPX    & GLD    & 0.595 & 1.2 & Equity risk-off flows attract safe-haven gold demand \\
-WTI    & COPPER & 0.589 & 2.1 & Energy cost pass-through to industrial metals \\
-SPX    & BTC    & 0.572 & 1.2 & Post-2020 crypto-equity linkage through risk sentiment \\
-WTI    & SLV    & 0.545 & 1.8 & Silver's dual role as industrial metal and inflation hedge \\
-GLD    & DXY    & 0.540 & 1.8 & Gold as alternative reserve asset competing with USD \\
-BTC    & SPX    & 0.510 & 1.1 & Crypto-equity feedback loop; risk-on/off contagion \\
-\hline
+SPX    & GLD    & 0.595 & 1.2 & Risk-off equity flows attract safe-haven gold \\
+WTI    & COPPER & 0.589 & 2.1 & Energy-cost pass-through to industrial metals \\
+SPX    & BTC    & 0.572 & 1.2 & Post-2020 crypto--equity linkage via risk sentiment \\
+WTI    & SLV    & 0.545 & 1.8 & Silver's dual industrial/hedge role \\
+GLD    & DXY    & 0.540 & 1.8 & Gold as a competing reserve asset \\
+BTC    & SPX    & 0.510 & 1.1 & Crypto--equity risk-on/off feedback \\
+\bottomrule
 \end{tabular}}
 \end{table}
 
-\subsubsection{Temporal Lag Structure}
+\subsubsection{Learned functional forms (spline shapes)}
+\label{sec:splines}
+A central interpretability claim is that edge functions expose the \emph{shape}
+of a dependency. Figure~\ref{fig:splines} plots the learned B-spline
+$\phi_{ij}$ for the strongest edges. Several are near-linear (e.g., DXY$\to$GLD),
+while others saturate or show threshold behaviour---information a scalar
+coefficient cannot convey and that changes the managerial reading of the edge.
 
-Figure~\ref{fig:real_lag_heatmap} displays the expected propagation lag (in trading days) for each significant edge. The majority of commodity-FX effects propagate within 1--2 days, while industrial commodity effects on equities (COPPER~$\to$~SPX, 2.9d) exhibit a characteristic 3-day delay, consistent with the literature on copper as a leading indicator \citep{Moore1977}.
-
-\begin{figure}[h]
+\begin{figure}[t]
     \centering
-    \includegraphics[width=0.82\textwidth]{figures/real_causal_lag_heatmap.png}
-    \caption{Expected propagation lag (trading days) per significant causal edge (prob.\ $\geq 0.50$). Cells are shown only for edges above the threshold; blank cells indicate sub-threshold edges. FX-commodity links are fastest ($\approx$1~day); industrial-to-equity links exhibit a 2--3~day delay.}
-    \label{fig:real_lag_heatmap}
+    \includegraphics[width=0.92\textwidth]{figures/real_causal_functions.png}
+    \caption{Learned spline edge functions $\phi_{ij}(x)$ for the highest-probability
+    edges (input on the normalized scale). Shapes range from near-linear to
+    saturating/threshold, substantiating the interpretability of the edge
+    functions.}
+    \label{fig:splines}
 \end{figure}
 
-\subsubsection{Rolling-Time Stability}
+\subsubsection{Rolling-window stability and its significance}
+\label{sec:stability}
+We estimate the graph on three rolling windows (70\% training span advanced by
+$\approx$137 trading days; because the windows overlap, high agreement partly
+reflects shared data, which we state explicitly). Figure~\ref{fig:stability}
+(left) shows per-edge Jaccard persistence; the mean off-diagonal Jaccard is
+\textbf{0.91}. To test whether this exceeds chance---the analysis Reviewers asked
+for---we compare against a permutation null of random graphs matched to each
+fold's edge count (Figure~\ref{fig:stability}, right). The observed stability is
+\textbf{6.2$\times$} the null mean (null mean 0.15; 95th percentile 0.22) with
+permutation $p<0.0001$. The learned structure is thus stable well beyond chance,
+though we caution that this reflects overlapping windows; disjoint
+regime-specific windows (e.g., pre/post-2022 rate-hike cycle) would test
+regime robustness more stringently and are a natural extension.
 
-To validate that discovered edges reflect genuine structural relationships rather than noise, Figure~\ref{fig:real_stability} reports pairwise Jaccard similarity of the binarized causal graph across three rolling time windows (2020--2024, 2021--2024, 2022--2025). A mean Jaccard of 0.242 reflects moderate stability, consistent with documented macro-financial regime shifts during the 2021--2023 period (pandemic recovery, rate-hike cycle, FTX collapse).
-
-\begin{figure}[h]
+\begin{figure}[t]
     \centering
-    \includegraphics[width=0.82\textwidth]{figures/real_causal_stability.png}
-    \caption{Pairwise Jaccard stability of the learned causal graph across three rolling time windows. Higher values indicate edges that persist across regimes. The mean Jaccard index of 0.242 reflects known structural breaks in commodity, FX, and crypto markets over 2020--2025.}
-    \label{fig:real_stability}
+    \includegraphics[width=\textwidth]{figures/real_causal_stability.png}
+    \caption{Left: per-edge Jaccard persistence across three rolling windows
+    (mean 0.91). Right: observed mean Jaccard vs.\ a permutation null of
+    edge-count-matched random graphs; observed stability is 6.2$\times$ the null
+    mean ($p<0.0001$).}
+    \label{fig:stability}
 \end{figure}
-
-% ------------------------------------------------------------------
-\subsection{Ablation Study}
-% ------------------------------------------------------------------
-
-Table~\ref{tab:ablation} quantifies the contribution of each core design choice.
-
-\begin{table}[h]
-\centering
-\caption{Ablation study on the Financial dataset ($N=1\,827$). Each row removes one component from the full CD-KAN model.}
-\label{tab:ablation}
-\begin{tabular}{lcc}
-\hline
-\textbf{Configuration} & \textbf{Forecasting MSE} $\downarrow$ & \textbf{F1 (Synthetic)} $\uparrow$ \\ \hline
-CD-KAN (Full)                     & \textbf{0.0179} & \textbf{0.897} \\
-w/o ALM (soft penalty only)        & 0.0214 & 0.718 \\
-w/o Lag-Aware Adjacency            & 0.0231 & 0.741 \\
-w/o RevIN (fixed normalization)    & 0.0415 & 0.881 \\
-w/o KAN (MLP backbone)             & 0.0267 & 0.581 \\
-w/o Temperature Annealing          & 0.0198 & 0.842 \\ \hline
-\end{tabular}
-\end{table}
-
-The largest degradation occurs when removing RevIN ($+$132\% MSE), confirming the importance of per-window normalization for non-stationary financial data. Replacing the NOTEARS-ALM constraint with a soft penalty collapses F1 by 17.9 percentage points, validating the acyclicity fix. Removing the lag-aware adjacency module ($-$Lag-Aware) reduces F1 by 15.6 pp, demonstrating that separating lag-specific edges is critical for identifying temporal causal structure.

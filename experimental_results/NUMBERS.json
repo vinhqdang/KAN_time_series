@@ -1,0 +1,451 @@
+{
+  "causal_configs": [
+    "linear_d10_n1500",
+    "linear_d5_n1500",
+    "linear_d5_n500",
+    "nonlin_d10_n1500",
+    "nonlin_d5_n1500",
+    "nonlin_d5_n500"
+  ],
+  "causal_seeds": [
+    42,
+    43,
+    44
+  ],
+  "causal_all": {
+    "CD-KAN": {
+      "f1": 0.863,
+      "auroc": 0.911,
+      "auprc": 0.863,
+      "shd": 9.39,
+      "time": 13.39
+    },
+    "Correlation": {
+      "f1": 0.857,
+      "auroc": 0.918,
+      "auprc": 0.859,
+      "shd": 6.28,
+      "time": 0.0
+    },
+    "GC-KAN": {
+      "f1": 0.791,
+      "auroc": 0.887,
+      "auprc": 0.762,
+      "shd": 10.0,
+      "time": 11.31
+    },
+    "GC-KAN+ALM": {
+      "f1": 0.8,
+      "auroc": 0.886,
+      "auprc": 0.761,
+      "shd": 9.89,
+      "time": 11.15
+    },
+    "GOLEM": {
+      "f1": 0.892,
+      "auroc": 0.929,
+      "auprc": 0.885,
+      "shd": 8.61,
+      "time": 0.15
+    },
+    "NOTEARS": {
+      "f1": 0.865,
+      "auroc": 0.921,
+      "auprc": 0.869,
+      "shd": 9.22,
+      "time": 0.11
+    },
+    "PCMCI": {
+      "f1": 0.961,
+      "auroc": 0.985,
+      "auprc": 0.971,
+      "shd": 0.62,
+      "time": 0.29
+    },
+    "VAR-Lasso": {
+      "f1": 0.954,
+      "auroc": 0.977,
+      "auprc": 0.962,
+      "shd": 0.88,
+      "time": 0.01
+    },
+    "VarLiNGAM": {
+      "f1": 0.965,
+      "auroc": 0.971,
+      "auprc": 0.952,
+      "shd": 0.5,
+      "time": 0.27
+    }
+  },
+  "causal_nonlinear": {
+    "CD-KAN": {
+      "f1": 0.731,
+      "auroc": 0.822,
+      "auprc": 0.728,
+      "shd": 18.67,
+      "time": 13.2
+    },
+    "Correlation": {
+      "f1": 0.764,
+      "auroc": 0.845,
+      "auprc": 0.752,
+      "shd": 11.44,
+      "time": 0.0
+    },
+    "GC-KAN": {
+      "f1": 0.673,
+      "auroc": 0.79,
+      "auprc": 0.61,
+      "shd": 18.78,
+      "time": 11.31
+    },
+    "GC-KAN+ALM": {
+      "f1": 0.681,
+      "auroc": 0.786,
+      "auprc": 0.602,
+      "shd": 18.67,
+      "time": 10.87
+    },
+    "GOLEM": {
+      "f1": 0.784,
+      "auroc": 0.857,
+      "auprc": 0.769,
+      "shd": 17.22,
+      "time": 0.14
+    },
+    "NOTEARS": {
+      "f1": 0.734,
+      "auroc": 0.843,
+      "auprc": 0.739,
+      "shd": 18.33,
+      "time": 0.06
+    },
+    "PCMCI": {
+      "f1": 0.911,
+      "auroc": 0.965,
+      "auprc": 0.933,
+      "shd": 1.43,
+      "time": 0.23
+    },
+    "VAR-Lasso": {
+      "f1": 0.896,
+      "auroc": 0.947,
+      "auprc": 0.914,
+      "shd": 2.0,
+      "time": 0.01
+    },
+    "VarLiNGAM": {
+      "f1": 0.92,
+      "auroc": 0.933,
+      "auprc": 0.89,
+      "shd": 1.14,
+      "time": 0.24
+    }
+  },
+  "causal_linear": {
+    "CD-KAN": {
+      "f1": 0.996,
+      "auroc": 1.0,
+      "auprc": 0.999,
+      "shd": 0.11,
+      "time": 13.58
+    },
+    "Correlation": {
+      "f1": 0.949,
+      "auroc": 0.99,
+      "auprc": 0.965,
+      "shd": 1.11,
+      "time": 0.0
+    },
+    "GC-KAN": {
+      "f1": 0.91,
+      "auroc": 0.985,
+      "auprc": 0.914,
+      "shd": 1.22,
+      "time": 11.31
+    },
+    "GC-KAN+ALM": {
+      "f1": 0.918,
+      "auroc": 0.987,
+      "auprc": 0.919,
+      "shd": 1.11,
+      "time": 11.43
+    },
+    "GOLEM": {
+      "f1": 1.0,
+      "auroc": 1.0,
+      "auprc": 1.0,
+      "shd": 0.0,
+      "time": 0.15
+    },
+    "NOTEARS": {
+      "f1": 0.996,
+      "auroc": 1.0,
+      "auprc": 1.0,
+      "shd": 0.11,
+      "time": 0.16
+    },
+    "PCMCI": {
+      "f1": 1.0,
+      "auroc": 1.0,
+      "auprc": 1.0,
+      "shd": 0.0,
+      "time": 0.34
+    },
+    "VAR-Lasso": {
+      "f1": 1.0,
+      "auroc": 1.0,
+      "auprc": 1.0,
+      "shd": 0.0,
+      "time": 0.01
+    },
+    "VarLiNGAM": {
+      "f1": 1.0,
+      "auroc": 1.0,
+      "auprc": 1.0,
+      "shd": 0.0,
+      "time": 0.29
+    }
+  },
+  "causal_stats": [
+    {
+      "baseline": "Correlation",
+      "n_pairs": 18,
+      "cdkan_mean": 0.863,
+      "base_mean": 0.857,
+      "wilcoxon_W": 17.0,
+      "p_value": 0.5143004874563052
+    },
+    {
+      "baseline": "GC-KAN",
+      "n_pairs": 18,
+      "cdkan_mean": 0.863,
+      "base_mean": 0.791,
+      "wilcoxon_W": 9.0,
+      "p_value": 0.0328542199286436
+    },
+    {
+      "baseline": "GC-KAN+ALM",
+      "n_pairs": 18,
+      "cdkan_mean": 0.863,
+      "base_mean": 0.8,
+      "wilcoxon_W": 10.0,
+      "p_value": 0.0408598437128062
+    },
+    {
+      "baseline": "GOLEM",
+      "n_pairs": 18,
+      "cdkan_mean": 0.863,
+      "base_mean": 0.892,
+      "wilcoxon_W": 0.0,
+      "p_value": 0.0431144467830753
+    },
+    {
+      "baseline": "NOTEARS",
+      "n_pairs": 18,
+      "cdkan_mean": 0.863,
+      "base_mean": 0.865,
+      "wilcoxon_W": 3.0,
+      "p_value": 0.4652088184521418
+    },
+    {
+      "baseline": "PCMCI",
+      "n_pairs": 16,
+      "cdkan_mean": 0.927,
+      "base_mean": 0.961,
+      "wilcoxon_W": 0.0,
+      "p_value": 0.0431144467830753
+    },
+    {
+      "baseline": "VAR-Lasso",
+      "n_pairs": 16,
+      "cdkan_mean": 0.927,
+      "base_mean": 0.954,
+      "wilcoxon_W": 0.0,
+      "p_value": 0.0431144467830753
+    },
+    {
+      "baseline": "VarLiNGAM",
+      "n_pairs": 16,
+      "cdkan_mean": 0.927,
+      "base_mean": 0.965,
+      "wilcoxon_W": 0.0,
+      "p_value": 0.0678891548618289
+    }
+  ],
+  "forecast": {
+    "CD-KAN": {
+      "mse_mean": 0.0442,
+      "mse_std": 0.0,
+      "mae_mean": 0.1454,
+      "mae_std": 0.0002,
+      "time_mean": 47.95
+    },
+    "TSMixer": {
+      "mse_mean": 0.2438,
+      "mse_std": 0.0159,
+      "mae_mean": 0.373,
+      "mae_std": 0.0335,
+      "time_mean": 8.1
+    },
+    "N-BEATS": {
+      "mse_mean": 1.2007,
+      "mse_std": 0.3684,
+      "mae_mean": 0.7624,
+      "mae_std": 0.0941,
+      "time_mean": 1.65
+    },
+    "PatchTST": {
+      "mse_mean": 2.3056,
+      "mse_std": 0.0173,
+      "mae_mean": 0.9693,
+      "mae_std": 0.0062,
+      "time_mean": 6.85
+    },
+    "LSTM": {
+      "mse_mean": 3.3092,
+      "mse_std": 0.1003,
+      "mae_mean": 1.2696,
+      "mae_std": 0.0351,
+      "time_mean": 5.55
+    }
+  },
+  "forecast_leak": [
+    {
+      "scaling": "global_leak",
+      "split": "single_80_20",
+      "mse": 0.01587,
+      "mae": 0.09204
+    },
+    {
+      "scaling": "train_only",
+      "split": "single_80_20",
+      "mse": 0.02807,
+      "mae": 0.11745
+    }
+  ],
+  "scale": [
+    {
+      "d": 5,
+      "params": 830.0,
+      "t": 5.88
+    },
+    {
+      "d": 10,
+      "params": 3310.0,
+      "t": 28.4
+    }
+  ],
+  "sensitivity": [
+    {
+      "lambda_g": 0.005,
+      "grid_size": 6,
+      "auroc": 0.971,
+      "f1": 0.886,
+      "val_mse": 0.72
+    },
+    {
+      "lambda_g": 0.005,
+      "grid_size": 8,
+      "auroc": 0.978,
+      "f1": 0.905,
+      "val_mse": 0.711
+    },
+    {
+      "lambda_g": 0.005,
+      "grid_size": 12,
+      "auroc": 0.98,
+      "f1": 0.933,
+      "val_mse": 0.694
+    },
+    {
+      "lambda_g": 0.01,
+      "grid_size": 6,
+      "auroc": 0.965,
+      "f1": 0.886,
+      "val_mse": 0.74
+    },
+    {
+      "lambda_g": 0.01,
+      "grid_size": 8,
+      "auroc": 0.971,
+      "f1": 0.886,
+      "val_mse": 0.738
+    },
+    {
+      "lambda_g": 0.01,
+      "grid_size": 12,
+      "auroc": 0.984,
+      "f1": 0.952,
+      "val_mse": 0.733
+    },
+    {
+      "lambda_g": 0.03,
+      "grid_size": 6,
+      "auroc": 0.941,
+      "f1": 0.867,
+      "val_mse": 0.771
+    },
+    {
+      "lambda_g": 0.03,
+      "grid_size": 8,
+      "auroc": 0.923,
+      "f1": 0.867,
+      "val_mse": 0.774
+    },
+    {
+      "lambda_g": 0.03,
+      "grid_size": 12,
+      "auroc": 0.86,
+      "f1": 0.867,
+      "val_mse": 0.778
+    },
+    {
+      "lambda_g": 0.06,
+      "grid_size": 6,
+      "auroc": 0.817,
+      "f1": 0.867,
+      "val_mse": 0.835
+    },
+    {
+      "lambda_g": 0.06,
+      "grid_size": 8,
+      "auroc": 0.874,
+      "f1": 0.867,
+      "val_mse": 0.848
+    },
+    {
+      "lambda_g": 0.06,
+      "grid_size": 12,
+      "auroc": 0.925,
+      "f1": 0.867,
+      "val_mse": 0.865
+    }
+  ],
+  "ablation": [
+    {
+      "config": "CD-KAN (component-wise)",
+      "auroc": 0.971,
+      "f1": 0.886
+    },
+    {
+      "config": "w/ dense backbone (coupled)",
+      "auroc": 0.579,
+      "f1": 0.467
+    },
+    {
+      "config": "w/o group-lasso",
+      "auroc": 0.984,
+      "f1": 0.952
+    }
+  ],
+  "stability": {
+    "folds": 3,
+    "threshold": 0.5,
+    "obs_jaccard": 0.9111,
+    "null_mean": 0.1466,
+    "null_p95": 0.2189,
+    "p_value": 0.0,
+    "ratio": 6.216
+  }
+}

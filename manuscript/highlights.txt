@@ -1,0 +1,5 @@
+CD-KAN jointly learns interpretable causal graphs and time-series forecasts.
+An information bottleneck makes the learned causal structure identifiable.
+Spline edge functions reveal the shape of each causal dependency.
+Perfect on linear graphs; competitive on non-linear; beats KAN-Granger methods.
+Recovered financial-market causal graph is stable 6x above chance (p<0.0001).

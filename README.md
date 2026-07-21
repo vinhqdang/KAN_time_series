@@ -4,32 +4,42 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-orange.svg)](https://pytorch.org/)
 
-> **State-of-the-Art (SOTA) time series causal discovery and forecasting**
+> **An interpretable forecasting artifact that unifies time-series prediction with lag-resolved causal structure learning.**
 
-CD-KAN combines Kolmogorov-Arnold Networks with differentiable DAG learning to achieve unprecedented performance in both prediction accuracy and causal structure recovery.
+CD-KAN combines Kolmogorov-Arnold (B-spline) edge functions with differentiable,
+lag-aware DAG learning. It produces a one-step forecast and an interpretable
+candidate causal graph from a single differentiable model.
 
-## 🏆 Key Results
+## Key Results (honest, reproducible)
 
-**Causal Discovery (F1 Score)**:
-- CD-KAN v2: **0.8971** (SOTA)
-- Best Baseline (PCMCI): 0.6550
-- **+37% improvement**, 81% fewer structural errors
+> **Correction (2026).** Earlier versions of this README and the manuscript
+> reported causal-discovery F1 = 0.8971 and forecasting MSE = 0.0008 (a "20×"
+> gain). **Both are retracted.** Under a fair, leakage-free re-evaluation (see
+> `scripts/honest_causal_benchmark.py` and `scripts/honest_forecast_benchmark.py`):
+>
+> - **Causal discovery:** CD-KAN's adjacency recovers ground-truth structure only
+>   *near chance* (AUROC ≈ 0.51 non-linear, 0.58 linear; F1 ≈ 0.33–0.47) and is
+>   **significantly worse than every baseline** (VAR-Lasso, NOTEARS, GOLEM, PCMCI,
+>   VAR-LiNGAM, and even GC-KAN), Wilcoxon *p* < 0.001. The 0.8971 figure was not
+>   reproducible.
+> - **Forecasting:** the 0.0008 MSE was an artifact of test-leaking normalization.
+>   The correct, leakage-free rolling-origin MSE is on the order of 10⁻². CD-KAN is
+>   *competitive* with strong deep baselines but not dominant.
+> - **What holds up:** the learned real-market graph is temporally stable ~6× above
+>   a permutation chance level (*p* < 0.0001), and the spline edge functions provide
+>   genuine interpretability.
 
-**Forecasting (MSE)**:
-- CD-KAN: **0.0008** (SOTA)
-- TSMixer: 0.0178
-- **20× better performance**
-
-Evaluated on **10 diverse datasets** (500-5000 samples) against **8 baseline algorithms**.
+See the manuscript in [`manuscript/`](manuscript/) and
+[`experimental_results/NUMBERS.json`](experimental_results/) for the numbers.
 
 ## 📋 Features
 
 ### Core Capabilities
-- **Dual SOTA**: Best-in-class for both forecasting and causal discovery
-- **Differentiable DAG Learning**: Augmented Lagrangian Method (ALM) for strict acyclicity
-- **Scalable**: Linear complexity O(n·d), handles large datasets efficiently
-- **Interpretable**: Learns sparse causal graphs with temporal lag information
-- **Robust**: Handles linear, nonlinear, and time-varying dynamics
+- **Unified model**: one differentiable model yields a forecast and a candidate causal graph
+- **Differentiable DAG Learning**: Augmented Lagrangian Method (ALM); acyclicity enforced on the contemporaneous block only
+- **Lag-aware**: separate adjacency per lag, with expected-lag attribution
+- **Interpretable**: learnable B-spline edge functions expose the shape of each dependency
+- **Complexity**: O(N·d²·G) per epoch (linear in samples N); O(d³) acyclicity term — suited to moderate d
 
 ### Technical Innovations
 - **KAN Function Approximation**: Learnable spline-based activation functions
@@ -91,26 +101,25 @@ print("Causal Adjacency Matrix:", adjacency.shape)
 
 ## 📊 Benchmark Results
 
-### Comprehensive Evaluation
+### Causal discovery, synthetic ground truth (AUROC; mean over 4 configs × 3 seeds)
 
-We evaluated CD-KAN v2 against 7 baseline algorithms on 10 datasets:
+| Method | Non-linear AUROC | Linear AUROC |
+|--------|:---:|:---:|
+| GOLEM | 0.98 | 1.00 |
+| PCMCI | 0.98 | 1.00 |
+| NOTEARS | 0.97 | 1.00 |
+| VAR-Lasso | 0.97 | 1.00 |
+| VAR-LiNGAM | 0.94 | 1.00 |
+| GC-KAN | 0.89 | 0.97 |
+| GC-KAN + ALM | 0.90 | 0.97 |
+| **CD-KAN (ours)** | **0.51** | **0.58** |
 
-| Algorithm | Mean F1 | Mean SHD | Runtime (s) |
-|-----------|---------|----------|-------------|
-| **CD-KAN v2** | **0.8971** | **1.4** | 10.32 |
-| PCMCI | 0.6550 | 10.6 | 32.56 |
-| VAR-Lasso | 0.6434 | 7.6 | 4.76 |
-| NTiCD | 0.5939 | 10.4 | 19.26 |
-| VAR-GrangerTest | 0.5585 | 13.6 | 6.81 |
-| NOTEARS | 0.5075 | 15.4 | 37.09 |
-| DYNOTEARS | 0.5069 | 13.0 | 53.13 |
-| GOLEM | 0.4954 | 15.0 | 45.22 |
+CD-KAN is the weakest method — its forecaster-coupled adjacency does not reliably
+recover structure. Reproduce with `python scripts/honest_causal_benchmark.py`.
 
-**Datasets Tested**:
-- Synthetic: Linear/Nonlinear/TimeVarying (500-2000 samples)
-- Real-world: Financial, Crypto, Macro, Energy Grid, Climate Sensors
-
-See [`experimental_results/REPORT_CDKAN.md`](experimental_results/REPORT_CDKAN.md) for full details.
+Forecasting is evaluated under a leakage-free rolling-origin protocol
+(`scripts/honest_forecast_benchmark.py`), which also demonstrates the
+normalization leak behind the retracted 0.0008 figure.
 
 ## 📁 Project Structure
 
@@ -155,11 +164,13 @@ Augmented Lagrangian Method (ALM) for DAG constraint enforcement:
 
 $$\mathcal{L} = \text{MSE} + \lambda_{\text{sparse}} \sum A_{ij} + \alpha h(A) + \frac{\rho}{2} h(A)^2$$
 
-Where $h(A) = \text{tr}(e^A) - d$ ensures acyclicity.
+Where $h(A) = \text{tr}(e^{A \circ A}) - d$ ensures acyclicity, applied **only to
+the contemporaneous adjacency block** (lagged edges are acyclic by temporal order).
 
-**Schedule**:
-- Inner loop: Minimize augmented Lagrangian (10 epochs)
-- Outer loop: Update dual variables $\rho$, $\alpha$ if $h(A) > 10^{-8}$
+**Schedule** (see `src/cdkan/trainer.py`):
+- Inner loop: minimize the augmented Lagrangian (Adam, gradient clip)
+- Outer loop: every 10 epochs, if $h > 10^{-8}$ then $\rho \leftarrow 2\rho$, $\alpha \leftarrow \alpha + \rho h$
+- Gumbel temperature annealed $1.0 \rightarrow 0.1$
 
 ## 📖 Citation
 
@@ -202,4 +213,5 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 
 ---
 
-**Status**: Production-ready SOTA implementation with comprehensive benchmarks. Last updated: February 2025.
+**Status**: Research prototype. Headline claims from earlier versions have been
+retracted; see the correction note above and the honest benchmark scripts.

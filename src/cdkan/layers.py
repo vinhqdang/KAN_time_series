@@ -267,6 +267,48 @@ class CDKANLayer(nn.Module):
     # Introspection helpers
     # ------------------------------------------------------------------
 
+    def edge_contributions(self, x_history: torch.Tensor) -> torch.Tensor:
+        """
+        Per-edge contribution tensor [batch, out, in]:
+            c[b, i, j] = A[i,j] * phi_ij(lag-weighted x_j) * alpha_j
+        i.e. exactly the additive term edge (i,j) contributes to the forecast
+        of variable i. The magnitude of this term over data is a faithful,
+        gradient-grounded measure of edge importance (cf. neural-Granger edge
+        norms), and is far more stable than reading raw Gumbel-Sigmoid logits.
+        Uses the deterministic (sigmoid) adjacency, no sampling.
+        """
+        batch_size, seq_len, _ = x_history.shape
+        contrib = torch.zeros(batch_size, self.out_features, self.in_features,
+                              device=x_history.device)
+        if self.learn_structure:
+            full_adj = self.lag_adj(temperature=1.0, hard=False)  # eval -> sigmoid
+            adj_mask = full_adj[:, :self.out_features, :self.in_features]
+        else:
+            adj_mask = torch.ones(self.max_lag + 1, self.out_features,
+                                  self.in_features, device=x_history.device)
+        for i in range(self.out_features):
+            for j in range(self.in_features):
+                eid = f"{i}_{j}"
+                w_lag = self.lag_attention[eid].get_weights()
+                t_start = max(0, seq_len - self.max_lag - 1)
+                hw = torch.flip(x_history[:, t_start:, j], dims=[1])
+                lag_mask = adj_mask[:, i, j]
+                L = min(self.max_lag, hw.shape[1] - 1)
+                cw = w_lag[:L + 1] * lag_mask[:L + 1]
+                cw = cw / (cw.sum() + 1e-8)
+                x_lagged = (hw[:, :L + 1] * cw).sum(dim=1)
+                y_edge = self.edge_functions[eid](x_lagged)
+                alpha = self.modulators[j](x_history[:, :, j:j + 1]).squeeze(-1)
+                contrib[:, i, j] = y_edge * alpha.squeeze(-1) if alpha.dim() > 1 else y_edge * alpha
+        return contrib
+
+    def get_contribution_importance(self, x_history: torch.Tensor) -> torch.Tensor:
+        """Structural importance [out, in] = std over the batch of each edge's
+        contribution to the forecast. Robust, data-grounded edge scores."""
+        with torch.no_grad():
+            c = self.edge_contributions(x_history)      # [B, out, in]
+            return c.std(dim=0)                          # [out, in]
+
     def get_adjacency(self) -> torch.Tensor:
         """Summary adjacency [out, in] for evaluation/plotting."""
         if self.learn_structure:

@@ -1,81 +1,220 @@
 
-\section{Our Method}
+\section{The CD-KAN Artifact}
+\label{sec:method}
 
-In this section, we present the proposed Causal Discovery Kolmogorov-Arnold Network (CD-KAN). Our framework addresses the dual challenge of time series forecasting and causal structure learning by integrating two key components: (1) A learnable, interpretable function approximation based on the Kolmogorov-Arnold representation theorem, and (2) A rigorous differentiable DAG learning mechanism enforced via the Augmented Lagrangian Method.
+We present Causal Discovery Kolmogorov--Arnold Networks (CD-KAN), a design-science
+artifact that jointly performs multivariate time-series forecasting and causal
+structure learning. This section gives the complete specification needed for
+reproduction: the problem formulation and its identifiability assumptions
+(Section~\ref{sec:formulation}), the lag-aware architecture
+(Section~\ref{sec:arch}), the constrained-optimization procedure with its full
+hyperparameter schedule (Section~\ref{sec:opt}), and a complexity analysis
+(Section~\ref{sec:complexity}). A reference implementation is available in the
+accompanying repository.
 
-\subsection{Problem Formulation}
+\subsection{Problem Formulation and Assumptions}
+\label{sec:formulation}
 
-Let $\mathbf{X} = \{\mathbf{x}_1, \mathbf{x}_2, \dots, \mathbf{x}_T\}$ be a multivariate time series of length $T$, where each $\mathbf{x}_t \in \mathbb{R}^d$ represents a vector of $d$ variables at time $t$. We assume the data generation process follows a non-linear Structural Vector Autoregressive (SVAR) model:
-
+Let $\mathbf{X} = \{\mathbf{x}_1, \dots, \mathbf{x}_T\}$ be a multivariate time
+series with $\mathbf{x}_t \in \mathbb{R}^d$. We assume a non-linear Structural
+Vector Autoregressive (SVAR) data-generating process with a maximum lag $L$:
 \begin{equation}
-    x_{t,j} = f_j(\mathbf{x}_{t-L:t}^{(\text{PA}(j))}) + \epsilon_{t,j}, \quad j=1,\dots,d
+    x_{t,j} \;=\; \sum_{h=1}^{L} \sum_{i=1}^{d} A^{(h)}_{ij}\, f^{(h)}_{ij}\!\big(x_{t-h,i}\big)
+    \;+\; \sum_{i=1}^{d} A^{(0)}_{ij}\, f^{(0)}_{ij}\!\big(x_{t,i}\big)
+    \;+\; \epsilon_{t,j},
+    \label{eq:svar}
 \end{equation}
+where $A^{(h)} \in \{0,1\}^{d\times d}$ is the \emph{lag-$h$} adjacency
+($A^{(h)}_{ij}=1$ iff variable $i$ at lag $h$ is a direct cause of variable $j$),
+$f^{(h)}_{ij}$ are (possibly non-linear) causal mechanisms, and $\epsilon_{t,j}$
+is exogenous noise. We explicitly separate \emph{lagged} adjacencies
+$A^{(1)},\dots,A^{(L)}$ from the \emph{contemporaneous} adjacency $A^{(0)}$
+because they require different treatment (Section~\ref{sec:opt}). The summary
+graph used for reporting is the union $A_{ij} = 1 - \prod_{h=0}^{L}(1-A^{(h)}_{ij})$.
 
-where $x_{t,j}$ is the value of variable $j$ at time $t$, $\mathbf{x}_{t-L:t}$ represents the history of variables over a maximum lag window $L$, $\text{PA}(j)$ denotes the set of causal parents of variable $j$, and $\epsilon_{t,j}$ is independent noise.
+Our goal is twofold: (i) \textbf{forecasting}---predict $\mathbf{x}_{t+1}$ from
+history $\mathbf{x}_{t-L:t}$; and (ii) \textbf{causal discovery}---recover the
+$\{A^{(h)}\}_{h=0}^{L}$ and the mechanisms $f^{(h)}_{ij}$.
 
-Our goal is twofold:
-\begin{enumerate}
-    \item \textbf{Forecasting}: Predict the future state $\mathbf{x}_{t+1}$ given history $\mathbf{x}_{t-L:t}$ by learning the functions $f_j$.
-    \item \textbf{Causal Discovery}: Recover the underlying causal graph $\mathcal{G} = (\mathcal{V}, \mathcal{E})$ represented by the adjacency matrix $A \in \{0,1\}^{d \times d}$, such that $A_{ij}=1$ if variable $i$ causes variable $j$.
-\end{enumerate}
+\paragraph{Identifiability assumptions.} Directed edges recovered from purely
+observational data are only interpretable as causal under stated assumptions.
+We make these explicit (following \citealt{Pearl2009,Runge2019}):
+\begin{itemize}
+    \item[\textbf{A1}] \emph{Causal sufficiency}: there are no unobserved common
+    causes (confounders) of the measured variables. In open financial systems
+    this is a strong assumption; we therefore treat real-data edges as
+    \emph{candidate} mechanisms for expert review rather than verified causes
+    (Section~\ref{sec:real}).
+    \item[\textbf{A2}] \emph{Causal Markov and faithfulness}: the joint
+    distribution is Markov and faithful to the SVAR graph.
+    \item[\textbf{A3}] \emph{Weak stationarity of the causal mechanism}: the
+    graph and functions $\{A^{(h)}, f^{(h)}\}$ are constant within each
+    estimation window. We probe violations directly through the rolling-window
+    stability analysis of Section~\ref{sec:stability}.
+    \item[\textbf{A4}] \emph{Acyclic contemporaneous structure}: instantaneous
+    effects $A^{(0)}$ form a DAG. Lagged effects need not be acyclic---time's
+    arrow already orders them---so we enforce acyclicity only on $A^{(0)}$
+    (cf.\ DYNOTEARS, \citealt{Pamfil2020}).
+\end{itemize}
+These assumptions delimit the boundary conditions of the artifact and are
+revisited in the Discussion.
 
 \subsection{The CD-KAN Architecture}
+\label{sec:arch}
 
-The CD-KAN architecture consists of three sequential modules: Reversible Instance Normalization (RevIN), the Causal Discovery Layer, and the Residual KAN Backbone. Figure \ref{fig:architecture} illustrates the overall framework.
+The central design principle of CD-KAN is an \emph{information bottleneck}: the
+forecast of each target variable must flow \emph{only} through per-edge functions
+of its candidate causes, with no shared network that re-mixes variables
+afterwards. This is what makes the learned structure identifiable---the edge
+functions are the sole path from a cause to an effect, so their magnitude is a
+faithful structural signal (as in neural-Granger models,
+\citealt{Tank2021,Shojaie2022}). We found this property to be decisive: a variant
+that instead feeds the causal layer into a dense residual backbone recovers
+structure only at chance, because the backbone can minimize forecasting error
+regardless of the adjacency (Section~\ref{sec:ablation}).
 
-\begin{figure}[h]
+\begin{figure}[t]
     \centering
-    \includegraphics[width=1.0\textwidth]{figures/cdkan_architecture.png}
-    \caption{Overview of the CD-KAN Architecture. The model processes time series input through RevIN normalization, learns a sparse causal structure via the Causal Discovery Layer using Gumbel-Sigmoid sampling, and approximates non-linear dynamics using Residual KAN Blocks. The DAG constraint is enforced during training via the Augmented Lagrangian Method.}
+    \includegraphics[width=0.98\textwidth]{figures/cdkan_architecture.png}
+    \caption{The CD-KAN pipeline. RevIN removes per-window level/scale shifts;
+    the component-wise causal layer predicts each target $i$ as a sum of
+    B-spline edge functions of its lagged causes---one spline per (effect, cause,
+    lag)---and nothing else. Structure is read from each edge's contribution to
+    the forecast; a group-lasso drives whole edges to zero; and (when
+    contemporaneous edges are modelled) acyclicity is enforced on the lag-0 block
+    via the Augmented Lagrangian Method.}
     \label{fig:architecture}
 \end{figure}
 
-\subsubsection{Causal Discovery Layer}
-To enable end-to-end differentiable structure learning, we parameterize the adjacency matrix $A$ as a learnable matrix of logits $\Theta \in \mathbb{R}^{d \times d}$. During the forward pass, we approximate the discrete binary adjacency matrix using the Gumbel-Sigmoid Estimator \cite{Jang2017}:
+\paragraph{(1) Reversible Instance Normalization (RevIN).}
+Financial series are strongly non-stationary. We apply RevIN
+\citep{Kim2022}: for each input window we subtract the window mean and divide by
+the window standard deviation (statistics are computed on the input window only
+and detached from the computation graph, so no future information leaks), apply a
+learnable affine transform, and invert it on the output. Because the statistics
+are window-local and detached, RevIN is an invertible reparameterization of
+location and scale, and the causal layer operates on level/scale-removed signals.
 
+\paragraph{(2) Component-wise causal layer with per-lag B-spline edges.}
+For each ordered pair $(i,j)$ and lag $h$ we place a learnable B-spline edge
+function, in the spirit of Kolmogorov--Arnold networks \citep{Liu2024},
 \begin{equation}
-    A_{ij} = \sigma\left(\frac{\Theta_{ij} + g}{\tau}\right)
+    \phi^{(h)}_{ij}(x) = \sum_{k=1}^{G+p} c^{(ijh)}_k B_k(x),
+    \label{eq:spline}
 \end{equation}
-
-where $\sigma(\cdot)$ is the sigmoid function, $g \sim \text{Gumbel}(0,1)$ is noise sampled from the Gumbel distribution, and $\tau$ is a temperature parameter. As $\tau \to 0$, $A_{ij}$ approaches the discrete distribution. We employ the Straight-Through Estimator (STE) during the backward pass to allow gradient flow through the discrete samples.
-
-The learnable adjacency matrix $A$ acts as a mask on the input features for the subsequent layers. For a target variable $j$, the input from variable $i$ is weighted by $A_{ij}$. If $A_{ij} \approx 0$, the connection is pruned, and the causal link is removed.
-
-\subsubsection{Kolmogorov-Arnold Representation}
-Unlike standard Multi-Layer Perceptrons (MLPs) which use fixed activation functions, KANs \cite{Liu2024} place learnable activation functions on edges. We model the causal mechanism $f_{i \to j}$ using B-splines:
-
+where $\{B_k\}$ are order-$p$ B-spline bases on a grid of size $G$. The forecast
+of target $i$ is the \emph{additive} aggregation of its incoming edges only,
 \begin{equation}
-    \phi(x) = \sum_{k=1}^{G} c_k B_k(x)
+    \hat{x}_{t,i} \;=\; b_i \;+\; \sum_{j=1}^{d}\ \sum_{h}\ \phi^{(h)}_{ij}\!\big(x_{t-h,\,j}\big),
+    \label{eq:predict}
 \end{equation}
+with lags $h\in\{1,\dots,L\}$ (and $h=0$ added only when contemporaneous effects
+are modelled). Crucially there is no downstream layer mixing the $\hat{x}_{t,i}$
+across $i$; variable $j$ influences the forecast of $i$ solely through the edges
+$\{\phi^{(h)}_{ij}\}$. Placing the learnable nonlinearity \emph{on the edge}
+makes each mechanism inspectable---plotting $\phi^{(h)}_{ij}$ reveals whether an
+influence is linear, saturating, or threshold-like (Section~\ref{sec:splines}).
 
-where $B_k(x)$ are B-spline basis functions on a grid of size $G$, and $c_k$ are learnable coefficients. This allows CD-KAN to learn arbitrary non-linear causal functions (e.g., quadratic, exponential) for each edge, offering superior interpretability compared to black-box neural networks.
-
-\subsection{Optimization with Structural Constraints}
-
-To ensure the learned graph is a Directed Acyclic Graph (DAG), we employ the continuous characterization of acyclicity proposed by NOTEARS \cite{Zheng2018}:
-
+\paragraph{(3) Structure and lag read-outs.}
+Rather than reading structure from stochastic gating logits (which we found
+unstable), we read it from the \emph{contribution} each edge makes to the
+forecast. Let $c_{ij}(t)=\sum_h \phi^{(h)}_{ij}(x_{t-h,j})$ be the total signal
+edge $(i,j)$ injects into target $i$. The edge score is its dispersion over the
+data,
 \begin{equation}
-    h(A) = \text{tr}(e^{A \circ A}) - d = 0
+    S_{ij} \;=\; \mathrm{std}_t\big[c_{ij}(t)\big],
+    \label{eq:importance}
 \end{equation}
+a data-grounded, deterministic measure of how much cause $j$ drives effect $i$.
+The expected propagation delay is the contribution-weighted mean lag,
+$\mathbb{E}[h]_{ij}=\sum_h h\,m^{(h)}_{ij}/\sum_h m^{(h)}_{ij}$ with
+$m^{(h)}_{ij}=\mathrm{std}_t[\phi^{(h)}_{ij}(x_{t-h,j})]$.
 
-where $A \circ A$ denotes the Hadamard product. The condition $h(A)=0$ is satisfied if and only if $A$ is acyclic.
+\subsection{Constrained Optimization}
+\label{sec:opt}
 
-We formulate the training as a constrained optimization problem:
-
+\paragraph{Acyclicity on the contemporaneous block only.}
+Following the NOTEARS characterization \citep{Zheng2018}, a weighted matrix $W$ is
+acyclic iff
 \begin{equation}
-    \min_{\Theta, \Phi} \mathcal{L}_{\text{MSE}} + \lambda_{\text{sparse}} \|A\|_1 \quad \text{subject to} \quad h(A) = 0
+    h(W) = \operatorname{tr}\!\big(e^{\,W\circ W}\big) - d = 0 .
+    \label{eq:hnotears}
 \end{equation}
+Crucially, we apply Eq.~\eqref{eq:hnotears} \emph{only} to the contemporaneous
+block $W = \Theta^{(0)}$. Lagged blocks $\Theta^{(1)},\dots,\Theta^{(L)}$ are left
+unconstrained because temporal precedence already forbids cycles across time
+(assumption A4); constraining them would incorrectly penalize legitimate feedback
+such as $x_{t-1}\!\to\! y_t$ and $y_{t-1}\!\to\! x_t$. This block treatment
+mirrors DYNOTEARS \citep{Pamfil2020} and resolves a limitation of applying a
+single flat $d\times d$ constraint.
 
-We solve this using the Augmented Lagrangian Method (ALM). The objective function is:
-
+\paragraph{Objective.}
+We fit the edge coefficients $\Phi=\{c^{(ijh)}\}$ and biases $b$ by minimizing
+one-step forecasting error with a \emph{group-lasso} that treats each
+cause$\to$effect edge as a group,
 \begin{equation}
-    \mathcal{L}(\Theta, \Phi, \alpha, \rho) = \mathcal{L}_{\text{MSE}} + \lambda_{\text{sparse}} \|A\|_1 + \alpha h(A) + \frac{\rho}{2} h(A)^2
+    \min_{\Phi,b}\;\; \mathcal{L}_{\mathrm{MSE}}
+    \;+\; \lambda_{g}\sum_{i,j}\Big\lVert\, \mathrm{vec}\big(\{c^{(ijh)}\}_{h}\big)\,\Big\rVert_2
+    \quad \text{s.t.}\quad h(W^{(0)}) = 0 ,
+    \label{eq:constrained}
 \end{equation}
+where the group norm couples all lags of edge $(i,j)$ so that an entire edge
+either survives or vanishes---the mechanism that yields sparse, identifiable
+structure. The constraint $h(W^{(0)})=0$ (Eq.~\ref{eq:hnotears}), applied to the
+contemporaneous importance block $W^{(0)}_{ij}=\mathrm{std}_t[\phi^{(0)}_{ij}]$,
+is enforced only when instantaneous edges are modelled and is dualized with the
+Augmented Lagrangian Method:
+\begin{equation}
+    \mathcal{L}(\Phi,b;\alpha,\rho) = \mathcal{L}_{\mathrm{MSE}}
+    + \lambda_{g}\,\Omega_{\mathrm{group}}
+    + \alpha\, h(W^{(0)}) + \tfrac{\rho}{2}\, h(W^{(0)})^2 .
+    \label{eq:alm}
+\end{equation}
+For the purely-lagged benchmarks (all edges have $h\!\ge\!1$) the summary graph may
+contain cycles across time, so the DAG term is inactive; it becomes relevant only
+for datasets with instantaneous effects.
 
-where $\alpha$ is the Lagrange multiplier and $\rho$ is the penalty parameter. The training proceeds in a dual-loop fashion:
-\begin{itemize}
-    \item \textbf{Inner Loop}: Minimize $\mathcal{L}$ with respect to model parameters $\Theta$ (structure) and $\Phi$ (KAN weights).
-    \item \textbf{Outer Loop}: Update $\alpha \leftarrow \alpha + \rho h(A)$ and $\rho \leftarrow \beta \rho$ (where $\beta > 1$) if the constraint is not sufficiently satisfied.
-\end{itemize}
+\paragraph{On the choice of the sparsity penalty.} We deliberately avoid an
+$\ell_1$ penalty on stochastic gating logits, which recent work shows can bias
+continuous DAG learning toward many small-magnitude edges and which we found
+empirically unstable under temperature annealing \citep{Ng2024CALM,Bello2022}.
+The group-lasso acts at the granularity of whole edges, and our threshold-free
+evaluation (AUROC/AUPRC, Section~\ref{sec:synthetic}) reports ranking quality
+independently of any single sparsity level. An $\ell_0$-style gate is a natural
+extension.
 
-This rigorous optimization ensures that CD-KAN learns sparse, interpretable, and valid causal graphs while maximizing forecasting accuracy.
+\begin{algorithm}[t]
+\caption{CD-KAN training}
+\label{alg:cdkan}
+\begin{algorithmic}[1]
+\STATE \textbf{Input:} windows $\{(\mathbf{x}_{t-L:t},\mathbf{x}_t)\}$; group weight $\lambda_g$; (optional) $\rho_0{=}1,\alpha_0{=}0,\beta{=}2,K{=}10$
+\STATE Initialize edge coefficients $\Phi$, biases $b$
+\FOR{epoch $=1$ to $E$}
+    \STATE $\hat{\mathbf{x}} \leftarrow$ component-wise forecast (Eq.~\ref{eq:predict})
+    \STATE Adam step on $\mathcal{L}_{\mathrm{MSE}}+\lambda_g\,\Omega_{\mathrm{group}}$ (+ ALM terms if contemporaneous); gradient-clip at $5.0$
+    \IF{contemporaneous \textbf{and} epoch $\bmod\ K = 0$ \textbf{and} $h(W^{(0)})>10^{-8}$}
+        \STATE $\rho \leftarrow \min(\beta\rho,10^{16})$;\quad $\alpha \leftarrow \alpha + \rho\,h(W^{(0)})$
+    \ENDIF
+\ENDFOR
+\STATE Compute edge scores $S_{ij}$ (Eq.~\ref{eq:importance}) and lags $\mathbb{E}[h]_{ij}$
+\STATE \textbf{Return} scores $S$, expected lags, spline edge functions, forecaster
+\end{algorithmic}
+\end{algorithm}
+
+Algorithm~\ref{alg:cdkan} lists the procedure. Training is a single Adam loop on
+Eq.~\eqref{eq:constrained} with gradient clipping; when contemporaneous edges are
+modelled, an ALM outer step every $K$ epochs tightens the acyclicity penalty. We
+use $E{=}150$ epochs, learning rate $5\!\times\!10^{-3}$, grid size $G{=}8$, and
+$\lambda_g{=}10^{-2}$ throughout; a sensitivity analysis over $\lambda_g$ and $G$
+appears in Section~\ref{sec:sensitivity}.
+
+\subsection{Complexity}
+\label{sec:complexity}
+Per epoch, CD-KAN evaluates $O(d^2 L)$ edge splines, each $O(G)$, over $N$ windows,
+giving $O(N d^2 L G)$ cost that is \emph{linear in the number of samples} $N$. The
+optional acyclicity term adds an $O(d^3)$ matrix exponential of the
+contemporaneous block. Because the model is a single component-wise layer with no
+deep backbone, it is fast in practice (seconds at $d{=}5$; see
+Section~\ref{sec:scalability}) and suited to systems of moderate width; we
+quantify wall-clock and parameter growth with $d$ empirically and discuss high-$d$
+extensions in Section~\ref{sec:discussion}.

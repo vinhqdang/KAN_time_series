@@ -89,7 +89,8 @@ class CDKANForecaster(nn.Module):
 
     def __init__(self, in_features: int, hidden_dim: int = 64, out_features: int = 1,
                  max_lag: int = 10, n_layers: int = 3, dropout: float = 0.1,
-                 learn_structure: bool = True, grid_size: int = 10):
+                 learn_structure: bool = True, grid_size: int = 10,
+                 causal_bottleneck: bool = False):
         super().__init__()
 
         # 1. Reversible Instance Normalisation
@@ -103,18 +104,29 @@ class CDKANForecaster(nn.Module):
             learn_structure=learn_structure,
         )
 
-        # 3. Residual KAN backbone
-        self.backbone = nn.ModuleList()
-        self.backbone.append(
-            ResidualKANBlock(in_features, hidden_dim, grid_size=grid_size, dropout=dropout)
-        )
-        for _ in range(n_layers - 1):
+        # --- Causal-bottleneck mode -------------------------------------
+        # When enabled, each target variable's forecast flows ONLY through the
+        # edge-mask x edge-function aggregation of the causal layer, followed by
+        # a per-variable (diagonal) readout. There is NO cross-variable mixing
+        # backbone, so the adjacency A is the sole information bottleneck and
+        # therefore receives an identifying gradient signal. This makes the
+        # learned graph a faithful structural estimate (see paper Sec. 3).
+        self.causal_bottleneck = causal_bottleneck
+        if causal_bottleneck:
+            self.readout_w = nn.Parameter(torch.ones(in_features))
+            self.readout_b = nn.Parameter(torch.zeros(in_features))
+        else:
+            # 3. Residual KAN backbone (dense; higher capacity, non-identifiable A)
+            self.backbone = nn.ModuleList()
             self.backbone.append(
-                ResidualKANBlock(hidden_dim, hidden_dim, grid_size=grid_size, dropout=dropout)
+                ResidualKANBlock(in_features, hidden_dim, grid_size=grid_size, dropout=dropout)
             )
-
-        # 4. Output head
-        self.output_head = KANLayer(hidden_dim, out_features, grid_size=grid_size)
+            for _ in range(n_layers - 1):
+                self.backbone.append(
+                    ResidualKANBlock(hidden_dim, hidden_dim, grid_size=grid_size, dropout=dropout)
+                )
+            # 4. Output head
+            self.output_head = KANLayer(hidden_dim, out_features, grid_size=grid_size)
 
         self.out_features = out_features
 
@@ -128,16 +140,19 @@ class CDKANForecaster(nn.Module):
         # 1. Normalise (stats computed fresh — no leakage)
         x = self.revin(x, 'norm')
 
-        # 2. Causal extraction
+        # 2. Causal extraction: x_causal[i] = sum_j A[i,j] * phi_ij(lagged x_j)
         x_causal = self.cd_layer(x)         # [batch, in_features]
 
-        # 3. Deep reasoning
-        x_hidden = x_causal
-        for block in self.backbone:
-            x_hidden = block(x_hidden)
-
-        # 4. Predict
-        out = self.output_head(x_hidden)    # [batch, out_features]
+        if self.causal_bottleneck:
+            # Per-variable readout only — no cross-variable mixing.
+            out = x_causal * self.readout_w + self.readout_b
+        else:
+            # 3. Deep reasoning (dense residual KAN backbone)
+            x_hidden = x_causal
+            for block in self.backbone:
+                x_hidden = block(x_hidden)
+            # 4. Predict
+            out = self.output_head(x_hidden)    # [batch, out_features]
 
         # 5. Denormalise (only when output dimension matches input features)
         if out.shape[-1] == self.revin.num_features:
@@ -171,6 +186,15 @@ class CDKANForecaster(nn.Module):
     def get_expected_lags(self) -> torch.Tensor:
         """Expected lag per edge [in, in] — for managerial reporting."""
         return self.cd_layer.get_expected_lags()
+
+    def get_contribution_importance(self, x: torch.Tensor) -> torch.Tensor:
+        """Data-grounded structural importance [in, in]. Normalises x with RevIN
+        (as in the forward pass), then measures the std of each edge's
+        contribution to the forecast. This is the recommended structure readout
+        for the causal-bottleneck model."""
+        with torch.no_grad():
+            xn = self.revin(x, 'norm')
+            return self.cd_layer.get_contribution_importance(xn)
 
     def get_feature_importance(self) -> torch.Tensor:
         """Edge importance = adjacency_prob × spline_coef_magnitude [in, in]."""

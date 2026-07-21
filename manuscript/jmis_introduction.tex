@@ -1,20 +1,91 @@
 
 \section{Introduction}
+\label{sec:intro}
 
-In the era of big data and artificial intelligence, organizations are increasingly relying on advanced analytics to drive strategic decision-making. From financial portfolio management to supply chain optimization and macroeconomic forecasting, the ability to accurately predict future states is a critical competitive advantage \cite{Davenport2018}. However, as predictive models have become more sophisticated—evolving from simple linear regressions to complex deep neural networks—a fundamental tension has emerged in the field of Information Systems (IS): the trade-off between predictive accuracy and model interpretability \cite{Rai2020, Shmueli2010}.
+Organizations increasingly rely on advanced analytics for strategic
+decision-making. From portfolio management to supply-chain optimization and
+macroeconomic planning, accurate forecasts of future states are a competitive
+advantage \citep{Davenport2018}. Yet as predictive models have grown more
+sophisticated---from linear regressions to deep neural networks---a well-known
+tension has intensified in Information Systems (IS) research: the trade-off
+between predictive accuracy and interpretability \citep{Rai2020,Shmueli2010}.
 
-Managerial decision-making is rarely purely about prediction; it is fundamentally about understanding causality. A financial manager needs to know not just that a stock price will drop, but *why*—is it driven by interest rate changes, commodity shocks, or market sentiment? A supply chain director needs to understand *which* upstream delays will cascade into downstream shortages. Without this causal understanding, even highly accurate predictions can be dangerous, leading to correct actions for the wrong reasons or an inability to intervene effectively when conditions change \cite{Pearl2009}.
+Managerial decision-making is rarely about prediction alone; it is about
+understanding \emph{why} an outcome will occur. A portfolio manager needs to know
+not merely that an asset will fall, but whether the driver is a rate change, a
+commodity shock, or shifting sentiment. A supply-chain director needs to know
+\emph{which} upstream delays cascade downstream. Without a causal account, even
+accurate predictions can lead to correct actions for the wrong reasons and leave
+managers unable to intervene when conditions shift \citep{Pearl2009}.
 
-Current artifacts in the IS decision support landscape fall into two distinct categories, leaving a critical gap. On one side are \textbf{statistical and econometric models} (e.g., VAR, ARIMA), which offer transparent causal structures but often lack the capacity to capture complex, non-linear dependencies inherent in modern business data. On the other side are \textbf{deep learning models} (e.g., LSTMs, Transformers), which achieve state-of-the-art predictive accuracy but operate as opaque "black boxes," obscuring the underlying mechanisms driving their outputs \cite{Benbasat2021}. This lack of transparency hinders trust, limits adoption in high-stakes environments, and fails to provide the "explanatory power" required for strategic sense-making \cite{Gregor2006}.
+Existing decision-support artifacts occupy two camps. \textbf{Statistical and
+econometric models} (VAR, ARIMA) offer transparent structure but struggle with
+the non-linear dependencies of modern business data. \textbf{Deep learning
+models} (LSTMs, Transformers) achieve strong accuracy but act as opaque
+``black boxes'' \citep{Benbasat2021}, limiting trust and the explanatory power
+needed for strategic sense-making \citep{Gregor2006}. We address this gap with
+\textbf{Causal Discovery Kolmogorov--Arnold Networks (CD-KAN)}, an artifact that
+couples interpretable, edge-wise function learning with differentiable causal
+structure learning, designed within the IS design-science paradigm
+\citep{Hevner2004}.
 
-This research addresses this gap by introducing \textbf{Causal Discovery Kolmogorov-Arnold Networks (CD-KAN)}, a novel design science artifact that unifies the interpretability of causal inference with the predictive power of deep learning. Unlike traditional neural networks that rely on fixed activation functions and dense connectivity, CD-KAN leverages the Kolmogorov-Arnold representation theorem to learn distinct, interpretable functions for each causal relationship. Furthermore, we integrate a rigorous, differentiable Directed Acyclic Graph (DAG) learning mechanism that enforces strict causal structure during the training process, rather than attempting to extract it post-hoc.
+\subsection{Related work and positioning}
+\label{sec:related}
 
-We position this work within the IS design science paradigm \cite{Hevner2004}, contributing a new class of decision support system that offers "dual capability":
+\paragraph{Continuous DAG learning.} NOTEARS \citep{Zheng2018} recast structure
+learning as continuous optimization via the trace-exponential acyclicity
+constraint; GOLEM \citep{Ng2024CALM} and DAGMA \citep{Bello2022} refine the loss
+and the acyclicity characterization. These target i.i.d.\ data with (mostly)
+linear mechanisms. DYNOTEARS \citep{Pamfil2020} extends the idea to time series
+by separating contemporaneous from lagged adjacencies, but retains linear
+structural equations. CD-KAN inherits DYNOTEARS's block treatment of lags while
+replacing linear mechanisms with learnable spline edge functions.
+
+\paragraph{Causal discovery for time series.} Constraint-based PCMCI
+\citep{Runge2019} and non-Gaussian VAR-LiNGAM \citep{Hyvarinen2010} are strong,
+widely used baselines; neural Granger methods \citep{Tank2021,Shojaie2022} learn
+non-linear predictive dependencies but recover Granger-causal, not necessarily
+structural, graphs. NTiCD \citep{Absar2023} learns time-invariant neural causal
+structure. We compare against representatives of each family.
+
+\paragraph{KAN-based causality.} Closest to our work, GC-KAN
+\citep{GCKAN2024} uses Kolmogorov--Arnold edge functions for \emph{Granger}
+causality via sparse regularization, but does \emph{not} impose an acyclicity
+constraint and does not separate lagged from contemporaneous structure. Our
+contribution relative to GC-KAN is therefore precise: (i) an Augmented-Lagrangian
+NOTEARS constraint on the contemporaneous block, and (ii) an explicit per-lag
+adjacency. To isolate the value of the DAG constraint we include a
+\emph{GC-KAN$+$ALM} ablation (Section~\ref{sec:synthetic}) that adds our
+acyclicity penalty to a GC-KAN backbone---the controlled comparison requested to
+disentangle the constraint's contribution from the KAN edge functions.
+
+\subsection{Contributions}
+We frame CD-KAN as an interpretable forecasting-and-discovery artifact and make
+three contributions:
 \begin{enumerate}
-    \item \textbf{State-of-the-Art Forecasting}: Achieving predictive accuracy superior to leading deep learning baselines (e.g., TSMixer, LSTM) by capturing complex non-linear dynamics.
-    \item \textbf{Transparent Causal Discovery}: Automatically recovering interpretable causal graphs that reveal the structural dependencies between organizational variables, enabling managers to trace the "why" behind every prediction.
+    \item \textbf{An identifiable, interpretable architecture.} CD-KAN predicts
+    each variable \emph{only} through per-(cause, lag) B-spline edges of its
+    candidate parents---an information bottleneck---with an edge-level group-lasso
+    and an optional contemporaneous-only acyclicity constraint. We show this
+    bottleneck is what makes structure identifiable: an otherwise-similar model
+    with a dense forecasting backbone recovers structure only at chance.
+    \item \textbf{Competitive, transparently reported results.} Using
+    threshold-free AUROC/AUPRC with paired significance tests against seven genuine
+    baselines (PCMCI, VAR-LiNGAM, NOTEARS, GOLEM, VAR-Lasso, and two KAN-based
+    Granger variants), CD-KAN recovers linear structure perfectly and is
+    competitive on non-linear structure---significantly beating the KAN-Granger
+    baselines and matching several classical methods---while forecasting
+    competitively under a leakage-free protocol. We make no claim of uniform
+    dominance and retract the earlier, unreproducible F1~=~0.897 and MSE~=~0.0008.
+    \item \textbf{An interpretation layer for practice.} Spline edge functions
+    expose the \emph{shape} of each dependency (linear, saturating, threshold),
+    lag attribution gives propagation delays in trading days, and on real markets
+    CD-KAN's learned graph is temporally stable well above a permutation chance
+    level---usable by managers as hypotheses for expert review.
 \end{enumerate}
 
-The contributions of this paper are threefold. First, we provide a \textbf{theoretical contribution} to the literature on Explainable AI (XAI) in IS, proposing that interpretability need not come at the cost of accuracy if the model architecture itself is grounded in causal theory. Second, we offer a \textbf{methodological contribution} through the development of the Augmented Lagrangian Method for time-series DAG learning, a rigorous approach to enforcing structural constraints in neural networks. Third, we demonstrate \textbf{practical utility} through extensive evaluation across ten diverse datasets—including financial markets, cryptocurrency portfolios, and macroeconomic indicators—showing how CD-KAN empowers managers to identify leading indicators and actionable leverage points in complex systems.
-
-The remainder of this paper is organized as follows. Section 2 reviews relevant literature on time series forecasting and causal discovery in IS. Section 3 details the design of the CD-KAN artifact. Section 4 presents the evaluation methodology and comprehensive benchmark results. Section 5 discusses managerial implications and use cases, and Section 6 concludes with limitations and future research directions.
+The remainder of the paper is organized as follows.
+Section~\ref{sec:method} specifies the CD-KAN artifact and its optimization.
+Section~\ref{sec:results} reports the synthetic, forecasting, and real-data
+evaluations. Section~\ref{sec:discussion} discusses managerial implications and
+boundary conditions, and Section~\ref{sec:conclusion} concludes.
