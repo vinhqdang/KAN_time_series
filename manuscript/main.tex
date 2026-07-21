@@ -19,7 +19,7 @@
 % headline number filled in from experimental_results/NUMBERS.json
 \newcommand{\forecastmse}{0.044}
 
-\title{Causal discovery Kolmogorov--Arnold networks: interpretable nonlinear causal structure learning for managerial decision support}
+\title{{SPADE}: spline additive-noise {DAG} estimation for interpretable nonlinear causal discovery in managerial decision support}
 \author{Quang-Vinh Dang \and Dat Le \and Minh Ngoc Dinh}
 \date{\today}
 
@@ -30,22 +30,22 @@
 \begin{abstract}
 Understanding causal relationships in organizational time-series data is critical
 for managerial decision-making, yet forecasting systems often trade
-interpretability for accuracy. We introduce \textbf{Causal Discovery
-Kolmogorov--Arnold Networks (CD-KAN)}, an information-systems artifact that, from
-a single differentiable model, jointly produces a one-step forecast and an
-interpretable, lag-resolved causal graph. CD-KAN predicts each variable \emph{only} through per-(cause, lag) B-spline edge
+interpretability for accuracy. We introduce \textbf{SPADE} (SPline Additive-noise
+DAG Estimation), an information-systems artifact built on Kolmogorov--Arnold
+networks that, from a single differentiable model, jointly discovers interpretable
+non-linear causal structure and produces one-step forecasts. SPADE predicts each variable \emph{only} through per-(cause, lag) B-spline edge
 functions of its candidate parents---an information bottleneck that makes the
 learned structure identifiable---with an edge-level group-lasso for sparsity and
 an optional acyclicity constraint on contemporaneous edges. We evaluate it
 transparently against seven genuine baselines (PCMCI, VAR-LiNGAM, NOTEARS, GOLEM,
 VAR-Lasso, and two KAN-based Granger variants) using threshold-free AUROC/AUPRC
 with paired significance tests. Our headline result is on \emph{non-linear} causal discovery: on instantaneous
-additive-noise DAGs, CD-KAN attains AUROC~$\approx$~0.88 across widths
+additive-noise DAGs, SPADE attains AUROC~$\approx$~0.88 across widths
 $d\in\{6,10,20\}$, \textbf{decisively outperforming the strongest DAG learners}---
 DAGMA-nonlinear and NOTEARS-MLP ($\approx$0.6) and linear NOTEARS/DAGMA---because
 its learnable spline edges capture non-linear mechanisms that fixed-architecture
 learners miss. We show this identifiability hinges on an information bottleneck: a
-variant with a dense forecasting backbone collapses to chance. CD-KAN also handles
+variant with a dense forecasting backbone collapses to chance. SPADE also handles
 lagged (temporal) structure competitively---perfect on linear graphs and, on
 non-linear graphs, beating KAN-Granger baselines and NOTEARS while trailing the
 best conditioning-based methods (PCMCI, VAR-LiNGAM)---and scales to $d{=}50$ in

@@ -24,10 +24,10 @@ the non-linear dependencies of modern business data. \textbf{Deep learning
 models} (LSTMs, Transformers) achieve strong accuracy but act as opaque
 ``black boxes'' \citep{Benbasat2021}, limiting trust and the explanatory power
 needed for strategic sense-making \citep{Gregor2006}. We address this gap with
-\textbf{Causal Discovery Kolmogorov--Arnold Networks (CD-KAN)}, an artifact that
-couples interpretable, edge-wise function learning with differentiable causal
-structure learning, designed within the IS design-science paradigm
-\citep{Hevner2004}.
+\textbf{SPADE} (SPline Additive-noise DAG Estimation), a Kolmogorov--Arnold-network
+artifact that couples interpretable, edge-wise function learning with
+differentiable causal structure learning, designed within the IS design-science
+paradigm \citep{Hevner2004}.
 
 \subsection{Related work and positioning}
 \label{sec:related}
@@ -38,7 +38,7 @@ constraint; GOLEM \citep{Ng2024CALM} and DAGMA \citep{Bello2022} refine the loss
 and the acyclicity characterization. These target i.i.d.\ data with (mostly)
 linear mechanisms. DYNOTEARS \citep{Pamfil2020} extends the idea to time series
 by separating contemporaneous from lagged adjacencies, but retains linear
-structural equations. CD-KAN inherits DYNOTEARS's block treatment of lags while
+structural equations. SPADE inherits DYNOTEARS's block treatment of lags while
 replacing linear mechanisms with learnable spline edge functions.
 
 \paragraph{Causal discovery for time series.} Constraint-based PCMCI
@@ -48,7 +48,7 @@ baselines; neural Granger methods \citep{Tank2021,Shojaie2022} learn non-linear
 predictive dependencies but recover Granger-causal, not necessarily structural,
 graphs. Recent deep approaches---NTiCD \citep{Absar2023}, CUTS
 \citep{Cheng2023CUTS}, and Rhino \citep{Gong2023Rhino}---push accuracy further but
-are largely black-box. CD-KAN's distinguishing aim is to deliver competitive
+are largely black-box. SPADE's distinguishing aim is to deliver competitive
 recovery \emph{with} per-edge interpretable mechanisms; we benchmark against
 representatives of the classical and KAN-based families and position against these
 neural methods.
@@ -65,17 +65,17 @@ acyclicity penalty to a GC-KAN backbone---the controlled comparison requested to
 disentangle the constraint's contribution from the KAN edge functions.
 
 \subsection{Contributions}
-We frame CD-KAN as an interpretable non-linear causal-discovery artifact and make
+We frame SPADE as an interpretable non-linear causal-discovery artifact and make
 three contributions:
 \begin{enumerate}
-    \item \textbf{An identifiable, interpretable architecture.} CD-KAN predicts
+    \item \textbf{An identifiable, interpretable architecture.} SPADE predicts
     each variable \emph{only} through per-(cause, lag) B-spline edges of its
     candidate parents---an information bottleneck---with an edge-level group-lasso
     and an optional contemporaneous-only acyclicity constraint. We show this
     bottleneck is what makes structure identifiable: an otherwise-similar model
     with a dense forecasting backbone recovers structure only at chance.
     \item \textbf{A decisive result on non-linear instantaneous structure.} On
-    additive-noise instantaneous DAGs, CD-KAN attains AUROC~$\approx$~0.88 across
+    additive-noise instantaneous DAGs, SPADE attains AUROC~$\approx$~0.88 across
     $d\in\{6,10,20\}$, substantially outperforming the strongest DAG learners---
     DAGMA (linear and non-linear) and NOTEARS/NOTEARS-MLP---because learnable
     spline edges capture non-linear mechanisms that fixed-architecture learners
@@ -92,11 +92,11 @@ three contributions:
     a known structural break and recovers both regime graphs. We also report
     candidly that documented real-world policy shocks are \emph{not} cleanly
     recoverable from observational macro data---an honest limit of the setting.
-    CD-KAN scales to $d{=}50$ in seconds via a vectorized implementation.
+    SPADE scales to $d{=}50$ in seconds via a vectorized implementation.
 \end{enumerate}
 
 The remainder of the paper is organized as follows.
-Section~\ref{sec:method} specifies the CD-KAN artifact and its optimization.
+Section~\ref{sec:method} specifies the SPADE artifact and its optimization.
 Section~\ref{sec:results} reports the synthetic, forecasting, and real-data
 evaluations. Section~\ref{sec:discussion} discusses managerial implications and
 boundary conditions, and Section~\ref{sec:conclusion} concludes.

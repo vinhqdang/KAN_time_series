@@ -1,8 +1,9 @@
 
-\section{The CD-KAN Artifact}
+\section{The SPADE Artifact}
 \label{sec:method}
 
-We present Causal Discovery Kolmogorov--Arnold Networks (CD-KAN), a design-science
+We present SPADE (SPline Additive-noise DAG Estimation), built on
+Kolmogorov--Arnold networks, a design-science
 artifact that jointly performs multivariate time-series forecasting and causal
 structure learning. This section gives the complete specification needed for
 reproduction: the problem formulation and its identifiability assumptions
@@ -59,10 +60,10 @@ We make these explicit (following \citealt{Pearl2009,Runge2019}):
 These assumptions delimit the boundary conditions of the artifact and are
 revisited in the Discussion.
 
-\subsection{The CD-KAN Architecture}
+\subsection{The SPADE Architecture}
 \label{sec:arch}
 
-The central design principle of CD-KAN is an \emph{information bottleneck}: the
+The central design principle of SPADE is an \emph{information bottleneck}: the
 forecast of each target variable must flow \emph{only} through per-edge functions
 of its candidate causes, with no shared network that re-mixes variables
 afterwards. This is what makes the learned structure identifiable---the edge
@@ -76,7 +77,7 @@ regardless of the adjacency (Section~\ref{sec:ablation}).
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.98\textwidth]{figures/cdkan_architecture.png}
-    \caption{The CD-KAN pipeline. RevIN removes per-window level/scale shifts;
+    \caption{The SPADE pipeline. RevIN removes per-window level/scale shifts;
     the component-wise causal layer predicts each target $i$ as a sum of
     B-spline edge functions of its lagged causes---one spline per (effect, cause,
     lag)---and nothing else. Structure is read from each edge's contribution to
@@ -148,7 +149,7 @@ $y_{t-1}\!\to\! x_t$. This block treatment mirrors DYNOTEARS \citep{Pamfil2020}
 and resolves the limitation of a single flat $d\times d$ constraint.
 
 \paragraph{Instantaneous variant (self-masked SEM).} When instantaneous effects
-are modelled, CD-KAN realizes a non-linear structural equation model: it predicts
+are modelled, SPADE realizes a non-linear structural equation model: it predicts
 $x_{t,i}$ from its \emph{contemporaneous} parents $x_{t,j\neq i}$ (self-loops
 masked) in addition to its lags, with $W_0$ the contemporaneous edge-importance
 matrix scored as in Eq.~\eqref{eq:importance}. The ALM then drives
@@ -193,7 +194,7 @@ independently of any single sparsity level. An $\ell_0$-style gate is a natural
 extension.
 
 \begin{algorithm}[t]
-\caption{CD-KAN training}
+\caption{SPADE training}
 \label{alg:cdkan}
 \begin{algorithmic}[1]
 \STATE \textbf{Input:} windows $\{(\mathbf{x}_{t-L:t},\mathbf{x}_t)\}$; group weight $\lambda_g$; (optional) $\rho_0{=}1,\alpha_0{=}0,\beta{=}2,K{=}10$
@@ -219,7 +220,7 @@ appears in Section~\ref{sec:sensitivity}.
 
 \subsection{Complexity}
 \label{sec:complexity}
-Per epoch, CD-KAN evaluates $O(d^2 L)$ edge splines, each $O(G)$, over $N$ windows,
+Per epoch, SPADE evaluates $O(d^2 L)$ edge splines, each $O(G)$, over $N$ windows,
 giving $O(N d^2 L G)$ cost that is \emph{linear in the number of samples} $N$. The
 optional acyclicity term adds an $O(d^3)$ matrix exponential of the
 contemporaneous block. Because the model is a single component-wise layer with no

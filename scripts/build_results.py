@@ -19,16 +19,17 @@ FIG = "manuscript/figures"
 os.makedirs(FIG, exist_ok=True)
 NUM = {}
 
-ORDER = ["CD-KAN", "GC-KAN+ALM", "GC-KAN", "PCMCI", "VarLiNGAM",
+ORDER = ["SPADE", "GC-KAN+ALM", "GC-KAN", "PCMCI", "VarLiNGAM",
          "VAR-Lasso", "NOTEARS", "GOLEM", "Correlation"]
 
 
 def load_causal():
     df = pd.read_csv(os.path.join(RES, "honest_causal_raw.csv"))
-    # Back-compat: earlier runs logged two CD-KAN readouts; keep the prob one.
-    if "CD-KAN(prob)" in set(df.method):
-        df = df[df.method != "CD-KAN"].copy()
-        df.loc[df.method == "CD-KAN(prob)", "method"] = "CD-KAN"
+    df["method"] = df["method"].replace({"CD-KAN": "SPADE", "CD-KAN(prob)": "SPADE"})
+    # Back-compat: earlier runs logged two SPADE readouts; keep the prob one.
+    if "SPADE(prob)" in set(df.method):
+        df = df[df.method != "SPADE"].copy()
+        df.loc[df.method == "SPADE(prob)", "method"] = "SPADE"
     # The additive nonlinear SCM is numerically unstable (explosive) at d=50,
     # producing degenerate series that no method recovers; we scope non-linear
     # recovery to d<=20 (linear remains well-behaved to d=50). See paper.
@@ -75,7 +76,7 @@ def build_causal():
         nn = non.loc[m] if m in non.index else None
         ll = lin.loc[m] if m in lin.index else None
         ov = overall.loc[m]
-        label = "\\textbf{CD-KAN (ours)}" if m == "CD-KAN" else m
+        label = "\\textbf{SPADE (ours)}" if m == "SPADE" else m
         def cell(row, col):
             return "--" if row is None else f"{row[col]:.3f}"
         lines.append(
@@ -101,7 +102,7 @@ def build_causal():
     for a, (title, tbl) in zip(ax[:2], [("Non-linear SCM", non), ("Linear VAR", lin)]):
         ms = [m for m in ORDER if m in tbl.index]
         vals = [tbl.loc[m, "aum"] for m in ms]
-        colors = ["#d73027" if m == "CD-KAN" else "#4575b4" for m in ms]
+        colors = ["#d73027" if m == "SPADE" else "#4575b4" for m in ms]
         a.barh(range(len(ms)), vals, color=colors)
         a.set_yticks(range(len(ms))); a.set_yticklabels(ms)
         a.invert_yaxis(); a.set_xlim(0, 1.05); a.set_xlabel("AUROC")
@@ -110,7 +111,7 @@ def build_causal():
     tvals = [max(overall.loc[m, "tm"], 1e-3) for m in ms]
     a = ax[2]
     a.barh(range(len(ms)), tvals,
-           color=["#d73027" if m == "CD-KAN" else "#999999" for m in ms])
+           color=["#d73027" if m == "SPADE" else "#999999" for m in ms])
     a.set_yticks(range(len(ms))); a.set_yticklabels(ms); a.invert_yaxis()
     a.set_xscale("log"); a.set_xlabel("mean fit time (s, log)")
     a.set_title("Runtime", fontweight="bold")
@@ -139,14 +140,14 @@ def build_causal():
 
 
 def build_causal_byd():
-    """Per-width table: CD-KAN vs best baseline AUROC as d grows (scalability of
+    """Per-width table: SPADE vs best baseline AUROC as d grows (scalability of
     ACCURACY, not just runtime)."""
     df = load_causal()
     rows = []
     for d in sorted(df.d.unique()):
         sub = df[df.d == d]
-        ck = sub[sub.method == "CD-KAN"]
-        base = sub[sub.method != "CD-KAN"]
+        ck = sub[sub.method == "SPADE"]
+        base = sub[sub.method != "SPADE"]
         if ck.empty:
             continue
         best = base.groupby("method")["auroc"].mean()
@@ -157,7 +158,7 @@ def build_causal_byd():
                          best_base=best_m,
                          best_auroc=(best.max() if len(best) else float("nan"))))
     lines = ["% auto-generated", "\\begin{tabular}{c ccc cc}", "\\toprule",
-             "$d$ & \\multicolumn{3}{c}{\\textbf{CD-KAN (ours)}} & "
+             "$d$ & \\multicolumn{3}{c}{\\textbf{SPADE (ours)}} & "
              "\\multicolumn{2}{c}{Best baseline} \\\\",
              "\\cmidrule(lr){2-4}\\cmidrule(lr){5-6}",
              " & AUROC & F1 & time (s) & method & AUROC \\\\", "\\midrule"]
@@ -176,7 +177,7 @@ def build_stats():
         return
     s = pd.read_csv(p)
     lines = ["% auto-generated", "\\begin{tabular}{l c c c c}", "\\toprule",
-             "\\textbf{Baseline} & $n$ pairs & CD-KAN F1 & Baseline F1 & Wilcoxon $p$ \\\\",
+             "\\textbf{Baseline} & $n$ pairs & SPADE F1 & Baseline F1 & Wilcoxon $p$ \\\\",
              "\\midrule"]
     for _, r in s.iterrows():
         pv = r["p_value"]
@@ -193,11 +194,11 @@ def build_forecast():
     p = os.path.join(RES, "honest_forecast_agg.csv")
     if not os.path.exists(p):
         return
-    df = pd.read_csv(p).sort_values("mse_mean")
+    df = pd.read_csv(p); df["model"] = df["model"].replace({"CD-KAN": "SPADE"}); df = df.sort_values("mse_mean")
     lines = ["% auto-generated", "\\begin{tabular}{l cc}", "\\toprule",
              "\\textbf{Model} & MSE $\\downarrow$ & MAE $\\downarrow$ \\\\", "\\midrule"]
     for _, r in df.iterrows():
-        label = "\\textbf{CD-KAN (ours)}" if r["model"] == "CD-KAN" else r["model"]
+        label = "\\textbf{SPADE (ours)}" if r["model"] == "SPADE" else r["model"]
         lines.append(f"{label} & {fmt(r['mse_mean'], r['mse_std'])} & "
                      f"{fmt(r['mae_mean'], r['mae_std'])} \\\\")
     lines += ["\\bottomrule", "\\end{tabular}"]
@@ -210,9 +211,10 @@ def build_forecast():
 
 
 def build_scale():
-    """CD-KAN params + fit time vs d, from causal raw (+ optional timing sweep)."""
+    """SPADE params + fit time vs d, from causal raw (+ optional timing sweep)."""
     df = pd.read_csv(os.path.join(RES, "honest_causal_raw.csv"))
-    ck = df[df.method == "CD-KAN"].copy()
+    df["method"] = df["method"].replace({"CD-KAN": "SPADE", "CD-KAN(prob)": "SPADE"})
+    ck = df[df.method == "SPADE"].copy()
     if ck.empty:
         return
     g = ck.groupby("d").agg(params=("n_params", "max"),
@@ -280,7 +282,7 @@ def build_ablation():
     lines = ["% auto-generated", "\\begin{tabular}{l cc}", "\\toprule",
              "\\textbf{Configuration} & AUROC $\\uparrow$ & F1 $\\uparrow$ \\\\", "\\midrule"]
     for _, r in d.iterrows():
-        label = "\\textbf{CD-KAN (full)}" if r["config"] == "full" else r["config"]
+        label = "\\textbf{SPADE (full)}" if r["config"] == "full" else r["config"]
         lines.append(f"{label} & {r['auroc']:.3f} & {r['f1']:.3f} \\\\")
     lines += ["\\bottomrule", "\\end{tabular}"]
     with open(os.path.join(FIG, "tab_ablation.tex"), "w") as f:

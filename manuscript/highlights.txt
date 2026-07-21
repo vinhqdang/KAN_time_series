@@ -1,5 +1,5 @@
-CD-KAN jointly learns interpretable causal graphs and time-series forecasts.
+SPADE learns interpretable nonlinear causal DAGs with Kolmogorov-Arnold splines.
+On nonlinear instantaneous DAGs SPADE beats DAGMA and NOTEARS-MLP at every width.
 An information bottleneck makes the learned causal structure identifiable.
-Spline edge functions reveal the shape of each causal dependency.
-Perfect on linear graphs; competitive on non-linear; beats KAN-Granger methods.
-Recovered financial-market causal graph is stable 6x above chance (p<0.0001).
+Spline edge functions reveal the shape (linear, saturating, threshold) of edges.
+Validated by permutation, time-reversal, and ground-truth intervention tests.

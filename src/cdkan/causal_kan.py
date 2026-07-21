@@ -1,5 +1,7 @@
 """
-CausalKAN: an identifiable, scalable causal-discovery KAN for time series.
+SPADE (SPline Additive-noise DAG Estimation): an identifiable, scalable
+causal-discovery KAN for time series. The headline instantaneous-DAG learner is
+CausalKANInstant, exported below as the public alias ``SPADE``.
 
 Design (see the manuscript, Sec. 3):
   * **Information bottleneck / component-wise.** Each target i is predicted ONLY
@@ -119,7 +121,7 @@ class CausalKAN(nn.Module):
 
 class CausalKANContemp(nn.Module):
     """
-    Full SVAR CD-KAN with INSTANTANEOUS (contemporaneous) edges.
+    Full SVAR SPADE model with INSTANTANEOUS (contemporaneous) edges.
 
     Predicts each variable via a nonlinear structural equation:
         x_{t,i} = b_i + sum_{j != i} phi0_{ij}(x_{t,j})          (instantaneous)
@@ -223,3 +225,12 @@ class CausalKANInstant(nn.Module):
     def importance(self, x):
         c = torch.einsum("bjk,ijk->bij", self._bases(x), self.coef * self.selfmask)
         return c.std(0)                                    # [effect, cause]
+
+
+# ---------------------------------------------------------------------------
+# Public method name. SPADE (SPline Additive-noise DAG Estimation) is the name
+# used in the manuscript and README for the headline non-linear instantaneous
+# DAG learner. The class remains CausalKANInstant for backward-compatible
+# imports; SPADE is its canonical public alias.
+# ---------------------------------------------------------------------------
+SPADE = CausalKANInstant

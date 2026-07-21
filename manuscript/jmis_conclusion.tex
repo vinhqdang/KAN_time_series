@@ -2,27 +2,27 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-We presented CD-KAN, an information-systems artifact that couples
+We presented SPADE, an information-systems artifact that couples
 Kolmogorov--Arnold edge functions with differentiable, lag-aware DAG learning to
 produce, from one differentiable model, both a one-step forecast and an
-interpretable causal graph. Methodologically, CD-KAN separates lagged from
+interpretable causal graph. Methodologically, SPADE separates lagged from
 contemporaneous adjacencies and enforces acyclicity only on the contemporaneous
 block via an Augmented Lagrangian scheme---a formulation we specify in full,
 including its hyperparameter schedule and convergence criteria.
 
 Our evaluation is deliberately candid. The headline result is on \emph{non-linear
-instantaneous} causal discovery, where CD-KAN's learnable spline edges recover
+instantaneous} causal discovery, where SPADE's learnable spline edges recover
 additive-noise DAGs at AUROC~$\approx$~0.88 across $d\in\{6,10,20\}$, decisively
 beating both the SOTA non-linear DAG learners (DAGMA-nonlinear, NOTEARS-MLP,
 $\approx$0.6) and the linear ones---the regime where the KAN edge functions confer
-a real, distinctive advantage. On lagged structure CD-KAN is competitive (perfect
+a real, distinctive advantage. On lagged structure SPADE is competitive (perfect
 on linear; on non-linear it beats KAN-Granger baselines and NOTEARS but trails
 conditioning-based PCMCI/VAR-LiNGAM). The key design lesson is that
 identifiability hinges on an information bottleneck: predicting each variable only
 through its incoming edges, not a dense backbone (which collapses to chance). We
 retract the earlier, unreproducible F1~=~0.897 in favour of these honest numbers,
 and likewise corrected a forecasting artifact ($\approx$0.0008 from test-leaking
-normalization), reporting leakage-free results under which CD-KAN is competitive. On real financial data, CD-KAN recovers a directed graph with plausible,
+normalization), reporting leakage-free results under which SPADE is competitive. On real financial data, SPADE recovers a directed graph with plausible,
 lag-resolved structure whose stability exceeds a permutation-based chance level
 by roughly six-fold ($p<0.0001$), and whose spline edge functions expose the
 shape of each dependency.
@@ -32,10 +32,10 @@ as a self-masked non-linear SEM whose contemporaneous graph is kept acyclic by t
 ALM; on data with a known instantaneous DAG it recovers the graph and outperforms
 linear NOTEARS on non-linear mechanisms. We also validate the recovered structure
 beyond self-consistency---via a permutation test, a time-reversal placebo, and a
-ground-truth structural-change experiment in which CD-KAN both detects a known
+ground-truth structural-change experiment in which SPADE both detects a known
 regime break and recovers the two distinct graphs.
 
-CD-KAN's contribution is therefore best understood as a \emph{unified,
+SPADE's contribution is therefore best understood as a \emph{unified,
 interpretable decision-support artifact} that delivers competitive structure
 recovery (lagged and instantaneous) \emph{together} with interpretable mechanisms,
 coupled forecasting, and scaling to $d{=}50$. Its main limitations---the per-edge
@@ -45,5 +45,5 @@ edges causally---define a clear agenda: (1) low-rank/log-det acyclicity for high
 $d$; (2) $\ell_0$-style gates as an alternative to the group-lasso; and
 (3) expert user studies to quantify, rather than assert, interpretability. As
 organizations lean further on AI for strategy, artifacts that are simultaneously
-predictive, transparent, and honest about their boundaries are essential; CD-KAN
+predictive, transparent, and honest about their boundaries are essential; SPADE
 is a step in that direction.

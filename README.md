@@ -1,4 +1,4 @@
-# CD-KAN: Causal Discovery Kolmogorov-Arnold Networks
+# SPADE: Causal Discovery Kolmogorov-Arnold Networks
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
@@ -6,7 +6,7 @@
 
 > **An interpretable forecasting artifact that unifies time-series prediction with lag-resolved causal structure learning.**
 
-CD-KAN combines Kolmogorov-Arnold (B-spline) edge functions with differentiable,
+SPADE combines Kolmogorov-Arnold (B-spline) edge functions with differentiable,
 lag-aware DAG learning. It produces a one-step forecast and an interpretable
 candidate causal graph from a single differentiable model.
 
@@ -23,7 +23,7 @@ genuine baselines (real PCMCI/tigramite, VAR-LiNGAM/lingam, NOTEARS, GOLEM,
 VAR-Lasso, KAN-Granger):
 
 - **Causal discovery** (AUROC, mean over seeds; `honest_causal_benchmark.py`):
-  linear **0.96** (≈1.0 up to d=20), non-linear **0.76**. CD-KAN **significantly
+  linear **0.96** (≈1.0 up to d=20), non-linear **0.76**. SPADE **significantly
   beats** the KAN-Granger baselines and NOTEARS (Wilcoxon p<0.05) and ties the
   correlation baseline; the strongest classical methods (PCMCI, VAR-LiNGAM ≈0.94)
   still lead. It is thus *competitive and interpretable*, not a uniform SOTA.
@@ -110,13 +110,13 @@ print("Causal Adjacency Matrix:", adjacency.shape)
 
 | Method | d=6 | d=10 | d=20 |
 |--------|:---:|:---:|:---:|
-| **CD-KAN (ours)** | **0.88** | **0.89** | **0.89** |
+| **SPADE (ours)** | **0.88** | **0.89** | **0.89** |
 | NOTEARS-linear | 0.70 | 0.79 | 0.88 |
 | NOTEARS-MLP | 0.61 | 0.61 | 0.64 |
 | DAGMA-nonlinear | 0.60 | 0.58 | 0.58 |
 | DAGMA-linear | 0.40 | 0.60 | 0.51 |
 
-On nonlinear additive-noise DAGs, CD-KAN's learnable spline edges **decisively beat
+On nonlinear additive-noise DAGs, SPADE's learnable spline edges **decisively beat
 the SOTA nonlinear DAG learners** (DAGMA-nonlinear, NOTEARS-MLP) at every width.
 Reproduce: `python scripts/instantaneous_dag_benchmark.py`.
 
@@ -131,7 +131,7 @@ Reproduce: `python scripts/instantaneous_dag_benchmark.py`.
 ```
 KAN_time_series/
 ├── src/
-│   ├── cdkan/              # CD-KAN implementation
+│   ├── cdkan/              # SPADE implementation
 │   │   ├── model.py        # CDKANForecaster
 │   │   ├── layers.py       # CausalStructure, CDKANLayer
 │   │   ├── trainer.py      # Augmented Lagrangian Method
@@ -156,7 +156,7 @@ KAN_time_series/
 
 ### Architecture
 
-CD-KAN v2 employs a multi-stage architecture:
+SPADE v2 employs a multi-stage architecture:
 
 1. **Input Normalization**: RevIN for handling distribution shifts
 2. **Causal Discovery Layer**: Learns sparse adjacency matrix with temporal lags
@@ -179,11 +179,11 @@ the contemporaneous adjacency block** (lagged edges are acyclic by temporal orde
 
 ## 📖 Citation
 
-If you use CD-KAN in your research, please cite:
+If you use SPADE in your research, please cite:
 
 ```bibtex
 @software{cdkan2025,
-  title = {CD-KAN: Causal Discovery Kolmogorov-Arnold Networks},
+  title = {SPADE: Causal Discovery Kolmogorov-Arnold Networks},
   author = {Dang, Vinh Quang},
   year = {2025},
   url = {https://github.com/vinhqdang/KAN_time_series}

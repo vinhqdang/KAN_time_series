@@ -1,7 +1,7 @@
 """
 HEADLINE experiment: non-linear INSTANTANEOUS DAG discovery.
 
-CD-KAN's distinctive strength is recovering non-linear additive-noise DAGs, where
+SPADE's distinctive strength is recovering non-linear additive-noise DAGs, where
 its learnable B-spline edges + acyclicity constraint beat both linear DAG learners
 and fixed-architecture non-linear learners. Baselines:
   - linear NOTEARS (ours), DAGMA-linear      (linear score-based)
@@ -37,7 +37,7 @@ def score(S, A):                         # S, A indexed [cause, effect]
     return au, ap, f1
 
 
-# ---- CD-KAN (ours) : returns [cause, effect] ----
+# ---- SPADE (ours) : returns [cause, effect] ----
 def cdkan(X, seed, ep=400):
     torch.set_default_dtype(torch.float32)
     torch.manual_seed(seed); np.random.seed(seed)
@@ -107,7 +107,7 @@ def notears_linear(X, seed=0, ep=200):
 
 
 METHODS = {
-    "CD-KAN": lambda X, s: cdkan(X, s),
+    "SPADE": lambda X, s: cdkan(X, s),
     "DAGMA-nonlinear": lambda X, s: dagma_nonlinear(X),
     "NOTEARS-MLP": lambda X, s: notears_mlp(X, s),
     "DAGMA-linear": lambda X, s: dagma_linear(X),
@@ -136,7 +136,7 @@ def main():
     agg = df.groupby(["method"]).agg(auroc=("auroc", "mean"), auprc=("auprc", "mean"),
                                      f1=("f1", "mean"), t=("time_s", "mean"))
     byd = df.pivot_table(index="method", columns="d", values="auroc")
-    order = ["CD-KAN", "DAGMA-nonlinear", "NOTEARS-MLP", "DAGMA-linear", "NOTEARS-linear"]
+    order = ["SPADE", "DAGMA-nonlinear", "NOTEARS-MLP", "DAGMA-linear", "NOTEARS-linear"]
     agg = agg.reindex([m for m in order if m in agg.index]); byd = byd.reindex(agg.index)
     print("\n", agg.round(3).to_string()); print("\nby d:\n", byd.round(3).to_string())
     agg.to_csv(os.path.join(RES, "instdag_agg.csv"))
@@ -148,7 +148,7 @@ def main():
              "\\midrule"]
     for m in agg.index:
         cells = " & ".join(f"{byd.loc[m, dd]:.3f}" for dd in ds)
-        lab = "\\textbf{CD-KAN (ours)}" if m == "CD-KAN" else m
+        lab = "\\textbf{SPADE (ours)}" if m == "SPADE" else m
         lines.append(f"{lab} & {cells} & {agg.loc[m,'f1']:.3f} \\\\")
     lines += ["\\bottomrule", "\\end{tabular}"]
     open(os.path.join(FIG, "tab_instdag.tex"), "w").write("\n".join(lines))
@@ -156,7 +156,7 @@ def main():
     fig, ax = plt.subplots(figsize=(7, 4.3))
     for m in agg.index:
         ax.plot(ds, [byd.loc[m, dd] for dd in ds], "-o",
-                lw=2.4 if m == "CD-KAN" else 1.3, label=m)
+                lw=2.4 if m == "SPADE" else 1.3, label=m)
     ax.set_xlabel("number of variables $d$"); ax.set_ylabel("AUROC"); ax.set_xticks(ds)
     ax.axhline(0.5, color="gray", ls=":"); ax.set_ylim(0.45, 1.02)
     ax.set_title("Non-linear instantaneous-DAG recovery", fontweight="bold"); ax.legend(fontsize=8)

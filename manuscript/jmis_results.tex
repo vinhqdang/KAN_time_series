@@ -2,7 +2,7 @@
 \section{Evaluation}
 \label{sec:results}
 
-We evaluate CD-KAN on (i) synthetic data with known ground-truth graphs, (ii) a
+We evaluate SPADE on (i) synthetic data with known ground-truth graphs, (ii) a
 leakage-free forecasting protocol, and (iii) real financial markets where no
 ground truth exists. All code and configurations are released for reproduction;
 every number below is produced by the accompanying scripts rather than reported
@@ -35,10 +35,10 @@ LSTM.
 \paragraph{Metrics.} Because thresholding confounds structural-ranking quality
 with a chosen operating point, we report \textbf{AUROC} and \textbf{AUPRC}
 (threshold-free) as primary metrics, and F1/SHD at each method's own best-F1
-threshold---the identical selection procedure applied to every method, CD-KAN
+threshold---the identical selection procedure applied to every method, SPADE
 included, so no method is advantaged. All causal metrics are computed only on
 synthetic data with known ground truth; on real data we use stability-based
-validation (Section~\ref{sec:real}). For CD-KAN we use the edge-probability
+validation (Section~\ref{sec:real}). For SPADE we use the edge-probability
 (summary-adjacency) readout; a coefficient-magnitude readout performed markedly
 worse and is not used.
 
@@ -51,7 +51,7 @@ rolling folds and seeds.
 \subsection{Headline: non-linear instantaneous causal discovery}
 \label{sec:instdag}
 
-CD-KAN's central strength is recovering \emph{non-linear} causal structure. We
+SPADE's central strength is recovering \emph{non-linear} causal structure. We
 test this directly on the classic instantaneous-DAG setting: i.i.d.\ data from a
 non-linear additive-noise structural causal model
 ($x_e=\sum_{c\in\mathrm{pa}(e)}f_{ce}(x_c)+\varepsilon_e$ over a random DAG, with
@@ -64,30 +64,30 @@ DAGMA \citep{Bello2022}, a NOTEARS-MLP, and linear NOTEARS
 \begin{table}[t]
 \centering
 \caption{Non-linear instantaneous-DAG recovery (AUROC by width $d$; F1 overall;
-mean over seeds). CD-KAN substantially outperforms both the SOTA non-linear DAG
+mean over seeds). SPADE substantially outperforms both the SOTA non-linear DAG
 learners (DAGMA-nonlinear, NOTEARS-MLP) and the linear learners, and its accuracy
 is stable as $d$ grows.}
 \label{tab:instdag}
 \input{figures/tab_instdag}
 \end{table}
 
-Table~\ref{tab:instdag} and Figure~\ref{fig:instdag} show the result. \textbf{CD-KAN
+Table~\ref{tab:instdag} and Figure~\ref{fig:instdag} show the result. \textbf{SPADE
 attains AUROC~$\approx$~0.88 uniformly across $d$, decisively ahead of the
 fixed-architecture non-linear learners} (DAGMA-nonlinear $\approx$0.59,
 NOTEARS-MLP $\approx$0.61) and the linear learners (DAGMA-linear $\approx$0.50).
 Strikingly, the neural DAG baselines underperform even linear NOTEARS on this
 task---fixed MLP mechanisms plus the NOTEARS/DAGMA optimization struggle with
-these additive-noise nonlinearities---whereas CD-KAN's learnable per-edge splines
+these additive-noise nonlinearities---whereas SPADE's learnable per-edge splines
 recover them reliably. This is the regime where the KAN edge functions provide a
 genuine, and to our knowledge distinctive, advantage over the incumbents. (We note
 candidly that linear NOTEARS closes the gap at $d{=}20$, where sparse graphs make
-the linear component of each mechanism increasingly detectable; CD-KAN's edge is
+the linear component of each mechanism increasingly detectable; SPADE's edge is
 clearest at small-to-moderate $d$ and against the non-linear learners at all $d$.)
 
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.7\textwidth]{figures/instdag.png}
-    \caption{Non-linear instantaneous-DAG recovery vs.\ width $d$. CD-KAN (bold)
+    \caption{Non-linear instantaneous-DAG recovery vs.\ width $d$. SPADE (bold)
     holds AUROC~$\approx$~0.88 across $d$; the non-linear DAG learners
     (DAGMA-nonlinear, NOTEARS-MLP) sit near 0.6.}
     \label{fig:instdag}
@@ -98,21 +98,21 @@ clearest at small-to-moderate $d$ and against the non-linear learners at all $d$
 
 Table~\ref{tab:causal} reports results split by regime (aggregated over
 $d\in\{5,10,20\}$ for non-linear and $d\in\{5,10,20,50\}$ for linear). On
-\textbf{linear} structure CD-KAN is very strong (AUROC~$=$~0.96, essentially
+\textbf{linear} structure SPADE is very strong (AUROC~$=$~0.96, essentially
 perfect up to $d{=}20$ and 0.80 at $d{=}50$), close to the mature estimators
 (VAR-Lasso, NOTEARS, GOLEM, PCMCI, VAR-LiNGAM, all $\approx$1.0). On
-\textbf{non-linear} structure CD-KAN attains AUROC~$=$~0.76 (F1~$=$~0.64),
+\textbf{non-linear} structure SPADE attains AUROC~$=$~0.76 (F1~$=$~0.64),
 above the KAN-based Granger baselines (0.70) and NOTEARS (0.72), comparable to
 the correlation baseline (0.76); the strongest constraint- and
 non-Gaussianity-based methods (PCMCI~0.94, VAR-LiNGAM~0.94, VAR-Lasso~0.93) lead.
-On the cleaner low-$d$ settings CD-KAN reaches AUROC~$\approx$~0.90--0.97.
+On the cleaner low-$d$ settings SPADE reaches AUROC~$\approx$~0.90--0.97.
 
 \paragraph{Statistical significance.} Paired Wilcoxon signed-rank tests
 (Table~\ref{tab:causal_stats}, F1 over matched configuration/seed pairs) show
-CD-KAN significantly \emph{outperforms} GC-KAN ($p{=}0.031$), GC-KAN$+$ALM
+SPADE significantly \emph{outperforms} GC-KAN ($p{=}0.031$), GC-KAN$+$ALM
 ($p{=}0.031$), and NOTEARS ($p{=}0.006$), and is statistically indistinguishable
 from the correlation baseline ($p{=}0.30$); PCMCI, VAR-LiNGAM, VAR-Lasso, and
-GOLEM remain ahead ($p<0.05$). CD-KAN is thus a \emph{competitive}
+GOLEM remain ahead ($p<0.05$). SPADE is thus a \emph{competitive}
 causal-discovery method---the strongest of the KAN-based approaches---rather than
 a uniform state-of-the-art; we make no such claim and explicitly retract the
 earlier, unreproducible F1~=~0.897. Its distinctive value (interpretable
@@ -125,9 +125,9 @@ variant that feeds the causal layer into a dense residual KAN backbone (the
 chance (AUROC~$\approx$~0.5): the backbone minimizes forecasting error regardless
 of the adjacency, so structure is not identified. Enforcing the information
 bottleneck---each target predicted \emph{only} through its incoming edges---is
-what makes CD-KAN's structure faithful, and the edge-level group-lasso is what
+what makes SPADE's structure faithful, and the edge-level group-lasso is what
 makes it sparse. GC-KAN, which shares the B-spline edges but lacks per-lag
-resolution, sits below CD-KAN, and adding our acyclicity term to it
+resolution, sits below SPADE, and adding our acyclicity term to it
 (GC-KAN$+$ALM) changes little on these purely-lagged graphs---confirming that the
 gains come from the identifiable architecture, not the DAG penalty alone.
 
@@ -142,8 +142,8 @@ F1 uses each method's best threshold. Higher is better.}
 
 \begin{table}[t]
 \centering
-\caption{Paired Wilcoxon signed-rank tests (CD-KAN vs.\ each baseline, F1 across
-matched configuration/seed pairs). CD-KAN significantly beats the KAN-Granger
+\caption{Paired Wilcoxon signed-rank tests (SPADE vs.\ each baseline, F1 across
+matched configuration/seed pairs). SPADE significantly beats the KAN-Granger
 baselines and ties NOTEARS/Correlation.}
 \label{tab:causal_stats}
 \input{figures/tab_causal_stats}
@@ -156,7 +156,7 @@ runtime of each method; Figure~\ref{fig:heatmap} shows per-dataset AUROC.
     \centering
     \includegraphics[width=\textwidth]{figures/cdkan_sota_comprehensive_results.png}
     \caption{Left/middle: causal-discovery AUROC on non-linear and linear
-    synthetic data. Right: mean fit time (log scale). CD-KAN's advantage is
+    synthetic data. Right: mean fit time (log scale). SPADE's advantage is
     confined to the non-linear regime and comes at a substantial runtime cost.}
     \label{fig:comprehensive}
 \end{figure}
@@ -175,13 +175,13 @@ runtime of each method; Figure~\ref{fig:heatmap} shows per-dataset AUROC.
 
 The headline experiment (Section~\ref{sec:instdag}) is purely instantaneous and
 the lagged experiment (Section~\ref{sec:synthetic}) purely temporal. Here we
-confirm CD-KAN handles the \emph{combined} SVAR case: data with both a known
-instantaneous DAG \emph{and} lagged edges, fit by the contemporaneous CD-KAN
+confirm SPADE handles the \emph{combined} SVAR case: data with both a known
+instantaneous DAG \emph{and} lagged edges, fit by the contemporaneous SPADE
 variant (Section~\ref{sec:opt}) that predicts each variable from its instantaneous
 parents (self-masked) and its lags, with the NOTEARS penalty on the contemporaneous
 block $W_0$ dualized by ALM---a non-linear, KAN-based analogue of DYNOTEARS.
 
-Table~\ref{tab:contemp} reports recovery of both blocks. CD-KAN recovers the
+Table~\ref{tab:contemp} reports recovery of both blocks. SPADE recovers the
 instantaneous DAG well at $d{=}6$ (AUROC~0.89) and---crucially, since the edges
 are non-linear---\emph{substantially outperforms a linear instantaneous-NOTEARS
 baseline} (0.89 vs.\ 0.67), while simultaneously recovering the lagged block
@@ -194,7 +194,7 @@ that KAN edges add value precisely where mechanisms are non-linear.
 \begin{table}[t]
 \centering
 \caption{Instantaneous-DAG recovery on SVAR data with a known contemporaneous DAG
-$+$ lagged edges (mean over 5 seeds). CD-KAN recovers both blocks and keeps
+$+$ lagged edges (mean over 5 seeds). SPADE recovers both blocks and keeps
 $h(W_0)\!\to\!0$; on these non-linear instantaneous edges it beats linear NOTEARS.}
 \label{tab:contemp}
 \input{figures/tab_contemp}
@@ -203,35 +203,35 @@ $h(W_0)\!\to\!0$; on these non-linear instantaneous edges it beats linear NOTEAR
 \subsection{Scalability and runtime}
 \label{sec:scalability}
 
-The component-wise design is inexpensive: CD-KAN fits in seconds at $d{=}5$
+The component-wise design is inexpensive: SPADE fits in seconds at $d{=}5$
 (vs.\ minutes for the discarded coupled variant), though its edge-wise spline
 evaluation still makes it slower than the highly optimized classical baselines
 (Figure~\ref{fig:comprehensive}, right; seconds vs.\ sub-second). Cost grows with
 $d$ as the $O(d^2 L)$ edge count increases (Table~\ref{tab:scale}, reporting
 parameter count and fit time at $d\in\{5,10\}$ from the main benchmark and at
-$d\in\{15,20\}$ from a dedicated timing sweep). CD-KAN is thus well suited to
+$d\in\{15,20\}$ from a dedicated timing sweep). SPADE is thus well suited to
 moderate-width systems (tens of variables); the thousands-of-series regime would
 require vectorized spline evaluation and low-rank acyclicity
 (Section~\ref{sec:limits}).
 
 \begin{table}[t]
 \centering
-\caption{CD-KAN parameter count and fit time vs.\ graph width $d$
+\caption{SPADE parameter count and fit time vs.\ graph width $d$
 (150 epochs, 4-core CPU). The vectorized implementation fits $d{=}50$ in seconds.}
 \label{tab:scale}
 \input{figures/tab_scale}
 \end{table}
 
 Crucially, \emph{accuracy}---not merely runtime---scales: Table~\ref{tab:causal_byd}
-reports CD-KAN and the best baseline as $d$ grows from 5 to 50. This directly
+reports SPADE and the best baseline as $d$ grows from 5 to 50. This directly
 addresses the concern that a $d{=}5$-only evaluation is uninformative;
-CD-KAN remains competitive with the strongest baseline at every width we tested,
+SPADE remains competitive with the strongest baseline at every width we tested,
 while the vectorized model keeps fit time in the single-digit seconds.
 
 \begin{table}[t]
 \centering
 \caption{Scaling of causal-discovery accuracy with graph width $d$
-(mean over linear/non-linear settings, 3 seeds). CD-KAN stays competitive with the
+(mean over linear/non-linear settings, 3 seeds). SPADE stays competitive with the
 best baseline at each width.}
 \label{tab:causal_byd}
 \input{figures/tab_causal_byd}
@@ -241,21 +241,21 @@ best baseline at each width.}
 \label{sec:forecast}
 
 Table~\ref{tab:forecast} reports one-step-ahead forecasting on the 8-asset
-financial dataset under the leakage-free rolling-origin protocol. CD-KAN attains
-the lowest error (MSE~$=$~0.044). We are careful about interpretation: CD-KAN's
+financial dataset under the leakage-free rolling-origin protocol. SPADE attains
+the lowest error (MSE~$=$~0.044). We are careful about interpretation: SPADE's
 RevIN wrapper removes per-window level and scale, which is decisive on strongly
 non-stationary financial \emph{levels}---the deep baselines here lack built-in
 normalization and degrade badly (LSTM and PatchTST perform worse than a naive
 predictor). The comparison should therefore be read as evidence for coupling the
 interpretable causal edge-functions \emph{with} reversible normalization, not as a
-claim that the CD-KAN structure module alone beats Transformers; a
+claim that the SPADE structure module alone beats Transformers; a
 normalization-matched forecasting study is future work.
 
 \begin{table}[t]
 \centering
 \caption{Forecasting on the financial dataset ($N{=}1{,}827$, $d{=}8$),
 leakage-free rolling-origin, matched-epoch budget, mean$\pm$std over folds and
-seeds. CD-KAN uses RevIN; the deep baselines have no built-in normalization
+seeds. SPADE uses RevIN; the deep baselines have no built-in normalization
 (see text). Lower is better.}
 \label{tab:forecast}
 \input{figures/tab_forecast}
@@ -275,7 +275,7 @@ and all abstract and conclusion statements are updated accordingly.
 
 \begin{table}[t]
 \centering
-\caption{Leak demonstration: identical CD-KAN model, single 80/20 split, global
+\caption{Leak demonstration: identical SPADE model, single 80/20 split, global
 (test-leaking) vs.\ train-only normalization. Leaking test statistics into the
 scaler lowers the reported MSE---the artifact behind the retracted figure.}
 \label{tab:leak}
@@ -285,7 +285,7 @@ scaler lowers the reported MSE---the artifact behind the retracted figure.}
 \subsection{Ablation and sensitivity}
 \label{sec:ablation}
 
-Table~\ref{tab:ablation} isolates CD-KAN's design choices on non-linear synthetic
+Table~\ref{tab:ablation} isolates SPADE's design choices on non-linear synthetic
 data. The decisive factor is the \textbf{information bottleneck}: replacing the
 component-wise readout with a dense residual KAN backbone (the ``coupled''
 variant) collapses recovery to chance (AUROC~$0.58$), because the backbone can fit
@@ -296,7 +296,7 @@ sparse graph, which matters more as $d$ grows and the true graph becomes sparser
 
 \begin{table}[t]
 \centering
-\caption{Ablation of CD-KAN on non-linear synthetic data (mean over 3 seeds).
+\caption{Ablation of SPADE on non-linear synthetic data (mean over 3 seeds).
 The information bottleneck is decisive; the dense-backbone variant collapses to
 chance.}
 \label{tab:ablation}
@@ -313,7 +313,7 @@ $\lambda_g{=}0.01$, $G{=}8$ throughout.
 
 \begin{table}[t]
 \centering
-\caption{Sensitivity of CD-KAN to the group-lasso weight $\lambda_g$ and spline
+\caption{Sensitivity of SPADE to the group-lasso weight $\lambda_g$ and spline
 grid size $G$ on non-linear synthetic data (mean over 3 seeds).}
 \label{tab:sensitivity}
 \input{figures/tab_sensitivity}
@@ -322,7 +322,7 @@ grid size $G$ on non-linear synthetic data (mean over 3 seeds).}
 \subsection{Real-world causal insights: financial markets 2020--2025}
 \label{sec:real}
 
-We apply CD-KAN to daily closing prices of eight assets: gold (GLD), WTI crude
+We apply SPADE to daily closing prices of eight assets: gold (GLD), WTI crude
 oil (WTI), the U.S. dollar index (DXY), the S\&P~500 (SPX), Bitcoin (BTC), silver
 (SLV), copper (COPPER), and natural gas (NG), over 2020--2025 ($N{=}1{,}827$).
 No ground-truth graph exists, so we treat the output as \emph{candidate}
@@ -341,7 +341,7 @@ test the structure beyond narrative.
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.78\textwidth]{figures/real_causal_adjacency.png}
-    \caption{CD-KAN learned edge importance across eight financial assets
+    \caption{SPADE learned edge importance across eight financial assets
     (averaged over three rolling folds). Row = effect; column = cause. Tickers:
     GLD gold, WTI crude oil, DXY US dollar index, SPX S\&P~500, BTC Bitcoin, SLV
     silver, COPPER copper, NG natural gas.}
@@ -359,7 +359,7 @@ test the structure beyond narrative.
 
 \begin{table}[t]
 \centering
-\caption{Significant causal edges learned by CD-KAN on the financial panel
+\caption{Significant causal edges learned by SPADE on the financial panel
 (normalized importance $\geq 0.50$, averaged over three folds). Interpretations
 are post-hoc plausibility readings for expert review.}
 \label{tab:real_edges}
@@ -396,7 +396,7 @@ returns to further exposure).
     \label{fig:splines}
 \end{figure}
 
-\paragraph{Lag attribution.} On synthetic data with \emph{known} lags, CD-KAN's
+\paragraph{Lag attribution.} On synthetic data with \emph{known} lags, SPADE's
 contribution-weighted lag estimate is accurate---mean absolute error 0.43 trading
 days, correctly separating lag-1 from lag-3 edges. On the financial \emph{price
 levels}, by contrast, the estimated lags concentrate near the middle of the
@@ -433,17 +433,17 @@ requested by Reviewers.
 \paragraph{Time-reversal placebo.} A genuine temporal causal method should recover
 the true (forward) graph far better from forward data than from time-reversed
 data; invariance to reversal would indicate spurious correlation. On non-linear
-synthetic data ($d{=}10$, 3 seeds), CD-KAN's recovery AUROC drops from
+synthetic data ($d{=}10$, 3 seeds), SPADE's recovery AUROC drops from
 \textbf{0.94} (forward) to \textbf{0.64} (reversed)---a 0.30 gap---confirming that
 it exploits temporal precedence rather than symmetric association.
 
 \paragraph{Ground-truth structural change (intervention).} The most direct
-version of the Reviewer's request---``does CD-KAN recover the \emph{expected
+version of the Reviewer's request---``does SPADE recover the \emph{expected
 change} in causal structure?''---requires a known change. We concatenate two SVAR
 regimes with \emph{different} graphs at a known break ($t{=}1500$) and slide
-CD-KAN across the series (Figure~\ref{fig:intervention}A). The graph-dissimilarity
-signal between adjacent windows peaks around the break, and CD-KAN recovers the
-correct regime graph on each side (AUROC~0.89 before, 1.00 after). Thus CD-KAN
+SPADE across the series (Figure~\ref{fig:intervention}A). The graph-dissimilarity
+signal between adjacent windows peaks around the break, and SPADE recovers the
+correct regime graph on each side (AUROC~0.89 before, 1.00 after). Thus SPADE
 detects the intervention \emph{and} recovers the two distinct structures---not
 merely a stable graph.
 
@@ -462,7 +462,7 @@ the synthetic experiment.
     \includegraphics[width=\textwidth]{figures/intervention.png}
     \caption{Structural-change detection. \textbf{(A)} On two concatenated SVAR
     regimes with a known break ($t{=}1500$, dashed), the sliding-window graph
-    dissimilarity spikes near the break and CD-KAN recovers each regime's graph
+    dissimilarity spikes near the break and SPADE recovers each regime's graph
     (AUROC 0.89/1.00). \textbf{(B)} On real financial data, the detected shifts
     coincide with the 2020 COVID and 2021--2022 rate-hike eras.}
     \label{fig:intervention}
@@ -491,11 +491,11 @@ honestly, because it is instructive:
     by the 2020 COVID rate shock, when Fed actions drove markets most strongly.
 \end{itemize}
 We draw a deliberate, honest conclusion: on purely \emph{observational} macro
-data, CD-KAN's graph does not cleanly recover documented interventions in a
+data, SPADE's graph does not cleanly recover documented interventions in a
 direction simple economic priors predict, and single-event attribution is not
 statistically distinguishable from chance. This is a genuine limitation of
-observational causal discovery (not specific to CD-KAN), and it is precisely why
+observational causal discovery (not specific to SPADE), and it is precisely why
 we anchor the intervention claim on the \emph{controlled synthetic} experiment
-(Figure~\ref{fig:intervention}A), where the ground-truth change is known and CD-KAN
+(Figure~\ref{fig:intervention}A), where the ground-truth change is known and SPADE
 recovers it cleanly. We prefer to report this null candidly rather than
 over-interpret a learned macro graph.

@@ -2,16 +2,16 @@
 \section{Discussion: managerial implications and boundary conditions}
 \label{sec:discussion}
 
-The evaluations position CD-KAN not as a uniformly dominant algorithm but as an
+The evaluations position SPADE not as a uniformly dominant algorithm but as an
 artifact that unifies forecasting with interpretable, lag-resolved structure
 learning. We discuss what this affords managers, and---equally important---where
 the artifact should not be trusted.
 
 \subsection{From prediction to strategic sense-making}
 Traditional forecasting systems act as ``oracles,'' returning predictions without
-context. CD-KAN instead supports \emph{sense-making} \citep{Weick1995}: the
+context. SPADE instead supports \emph{sense-making} \citep{Weick1995}: the
 learned graph and its edge functions let managers ask \emph{why} a movement is
-expected. In the financial application, CD-KAN surfaced lagged dependencies
+expected. In the financial application, SPADE surfaced lagged dependencies
 (e.g., a USD-index effect on gold at a one-day lag) together with the
 \emph{shape} of the mechanism from the spline (Section~\ref{sec:splines}).
 Whether a driver is linear, saturating, or threshold-like changes the managerial
@@ -21,7 +21,7 @@ imply diminishing returns to further exposure.
 \subsection{Risk management and intervention}
 A causal (rather than merely correlational) map identifies candidate leverage
 points: if $X$ and $Y$ are both driven by a confounder $Z$, intervening on $X$
-will not move $Y$. CD-KAN's contemporaneous-DAG constraint and lag attribution
+will not move $Y$. SPADE's contemporaneous-DAG constraint and lag attribution
 help distinguish plausible directional drivers from co-movement. We stress
 \emph{candidate}: under observational data and assumption A1 (causal
 sufficiency), unobserved confounders may still induce spurious edges, so the
@@ -30,7 +30,7 @@ controlled experiments or natural-experiment identification.
 
 \subsection{Fostering trust through structural transparency}
 The ``black box'' nature of deep models impedes adoption in high-stakes settings
-\citep{Benbasat2021}. CD-KAN offers a ``glass box'': an inspectable adjacency,
+\citep{Benbasat2021}. SPADE offers a ``glass box'': an inspectable adjacency,
 explicit per-edge functions, and propagation lags that can be audited against
 domain knowledge. Counter-intuitive edges are visible and can be flagged,
 supporting a human-in-the-loop workflow rather than opaque automation. We
@@ -51,7 +51,7 @@ Several boundary conditions delimit responsible use:
     (Section~\ref{sec:stability}) quantifies, rather than assumes, temporal
     constancy; it also shows that window design (length and overlap) materially
     affects apparent stability, which practitioners must report.
-    \item \textbf{Where CD-KAN stands vs.\ classical methods.} CD-KAN is
+    \item \textbf{Where SPADE stands vs.\ classical methods.} SPADE is
     competitive---near-perfect on linear structure (AUROC~$\approx$~1.0 up to
     $d{=}20$) and, on non-linear structure, beating NOTEARS and the KAN-Granger
     baselines (Wilcoxon $p<0.05$) and matching the correlation baseline---but the
@@ -59,7 +59,7 @@ Several boundary conditions delimit responsible use:
     VAR-Lasso, GOLEM) retain an edge, and all classical methods are far faster
     (Section~\ref{sec:synthetic}). When \emph{only} a structure estimate is needed
     and interpretability of mechanisms is not required, a fast classical method may
-    suffice; CD-KAN's advantage is delivering competitive structure \emph{together}
+    suffice; SPADE's advantage is delivering competitive structure \emph{together}
     with interpretable edge shapes and a coupled forecaster.
     \item \textbf{The $\ell_1$ penalty.} Consistent with recent critiques
     \citep{Ng2024CALM,Bello2022}, the $\ell_1$ sparsity term can bias structure
@@ -67,7 +67,7 @@ Several boundary conditions delimit responsible use:
     not eliminate this.
     \item \textbf{Scalability.} The acyclicity term is $O(d^3)$ and the Python
     edge-wise spline evaluation adds constant overhead per edge, so wall-clock
-    grows steeply with $d$ (Section~\ref{sec:scalability}). CD-KAN currently
+    grows steeply with $d$ (Section~\ref{sec:scalability}). SPADE currently
     suits moderate-width systems (dozens of variables---departmental KPIs,
     macro indicators, asset baskets), not thousands of high-frequency series.
     Kernelized or low-rank acyclicity and vectorized spline evaluation are
