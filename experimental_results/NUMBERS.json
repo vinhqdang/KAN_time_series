@@ -14,78 +14,85 @@
     44
   ],
   "causal_all": {
-    "CD-KAN": {
-      "f1": 0.757,
-      "auroc": 0.872,
-      "auprc": 0.746,
-      "shd": 20.29,
-      "time": 2.82
-    },
     "Correlation": {
       "f1": 0.776,
       "auroc": 0.895,
       "auprc": 0.797,
       "shd": 15.62,
-      "time": 0.03
+      "time": 0.04
     },
     "GC-KAN": {
-      "f1": 0.792,
-      "auroc": 0.847,
-      "auprc": 0.774,
-      "shd": 17.75,
-      "time": 16.96
+      "f1": 0.799,
+      "auroc": 0.848,
+      "auprc": 0.777,
+      "shd": 17.67,
+      "time": 22.02
     },
     "GC-KAN+ALM": {
-      "f1": 0.788,
-      "auroc": 0.849,
-      "auprc": 0.777,
-      "shd": 17.92,
-      "time": 16.69
+      "f1": 0.795,
+      "auroc": 0.851,
+      "auprc": 0.78,
+      "shd": 17.83,
+      "time": 23.07
     },
     "GOLEM": {
       "f1": 0.869,
       "auroc": 0.909,
       "auprc": 0.85,
       "shd": 13.29,
-      "time": 0.2
+      "time": 0.23
     },
     "NOTEARS": {
       "f1": 0.676,
       "auroc": 0.801,
       "auprc": 0.651,
       "shd": 24.48,
-      "time": 0.13
+      "time": 0.14
+    },
+    "NTS-NOTEARS": {
+      "f1": 0.827,
+      "auroc": 0.863,
+      "auprc": 0.795,
+      "shd": 13.42,
+      "time": 21.06
+    },
+    "Neural-GC": {
+      "f1": 0.428,
+      "auroc": 0.694,
+      "auprc": 0.333,
+      "shd": 52.06,
+      "time": 21.73
     },
     "PCMCI": {
       "f1": 0.955,
       "auroc": 0.978,
       "auprc": 0.952,
       "shd": 3.93,
-      "time": 2.16
+      "time": 2.64
+    },
+    "SPADE": {
+      "f1": 0.757,
+      "auroc": 0.872,
+      "auprc": 0.746,
+      "shd": 20.29,
+      "time": 4.44
     },
     "VAR-Lasso": {
       "f1": 0.939,
       "auroc": 0.976,
       "auprc": 0.941,
       "shd": 4.61,
-      "time": 0.11
+      "time": 0.16
     },
     "VarLiNGAM": {
       "f1": 0.944,
       "auroc": 0.975,
       "auprc": 0.94,
       "shd": 5.0,
-      "time": 1.9
+      "time": 1.88
     }
   },
   "causal_nonlinear": {
-    "CD-KAN": {
-      "f1": 0.64,
-      "auroc": 0.759,
-      "auprc": 0.621,
-      "shd": 32.33,
-      "time": 1.5
-    },
     "Correlation": {
       "f1": 0.595,
       "auroc": 0.764,
@@ -98,114 +105,149 @@
       "auroc": 0.7,
       "auprc": 0.573,
       "shd": 34.67,
-      "time": 17.3
+      "time": 22.21
     },
     "GC-KAN+ALM": {
       "f1": 0.627,
       "auroc": 0.705,
       "auprc": 0.578,
       "shd": 34.83,
-      "time": 16.74
+      "time": 21.95
     },
     "GOLEM": {
       "f1": 0.693,
       "auroc": 0.789,
       "auprc": 0.65,
       "shd": 31.0,
-      "time": 0.17
+      "time": 0.2
     },
     "NOTEARS": {
       "f1": 0.63,
       "auroc": 0.723,
       "auprc": 0.595,
       "shd": 32.56,
-      "time": 0.07
+      "time": 0.09
+    },
+    "NTS-NOTEARS": {
+      "f1": 0.654,
+      "auroc": 0.726,
+      "auprc": 0.591,
+      "shd": 26.83,
+      "time": 25.66
+    },
+    "Neural-GC": {
+      "f1": 0.518,
+      "auroc": 0.68,
+      "auprc": 0.417,
+      "shd": 46.44,
+      "time": 22.13
     },
     "PCMCI": {
       "f1": 0.887,
       "auroc": 0.944,
       "auprc": 0.879,
       "shd": 9.83,
-      "time": 3.17
+      "time": 3.83
+    },
+    "SPADE": {
+      "f1": 0.64,
+      "auroc": 0.759,
+      "auprc": 0.621,
+      "shd": 32.33,
+      "time": 2.37
     },
     "VAR-Lasso": {
       "f1": 0.816,
       "auroc": 0.928,
       "auprc": 0.823,
       "shd": 13.83,
-      "time": 0.1
+      "time": 0.13
     },
     "VarLiNGAM": {
       "f1": 0.859,
       "auroc": 0.938,
       "auprc": 0.849,
       "shd": 12.5,
-      "time": 2.43
+      "time": 2.46
     }
   },
   "causal_linear": {
-    "CD-KAN": {
-      "f1": 0.846,
-      "auroc": 0.956,
-      "auprc": 0.841,
-      "shd": 11.25,
-      "time": 3.8
-    },
     "Correlation": {
       "f1": 0.912,
       "auroc": 0.993,
       "auprc": 0.951,
       "shd": 4.5,
-      "time": 0.05
+      "time": 0.07
     },
     "GC-KAN": {
-      "f1": 0.954,
-      "auroc": 0.994,
-      "auprc": 0.975,
-      "shd": 0.83,
-      "time": 16.61
+      "f1": 0.969,
+      "auroc": 0.996,
+      "auprc": 0.98,
+      "shd": 0.67,
+      "time": 21.83
     },
     "GC-KAN+ALM": {
-      "f1": 0.949,
-      "auroc": 0.994,
-      "auprc": 0.976,
-      "shd": 1.0,
-      "time": 16.63
+      "f1": 0.964,
+      "auroc": 0.996,
+      "auprc": 0.982,
+      "shd": 0.83,
+      "time": 24.19
     },
     "GOLEM": {
       "f1": 1.0,
       "auroc": 1.0,
       "auprc": 1.0,
       "shd": 0.0,
-      "time": 0.22
+      "time": 0.26
     },
     "NOTEARS": {
       "f1": 0.711,
       "auroc": 0.86,
       "auprc": 0.692,
       "shd": 18.42,
-      "time": 0.17
+      "time": 0.19
+    },
+    "NTS-NOTEARS": {
+      "f1": 1.0,
+      "auroc": 1.0,
+      "auprc": 1.0,
+      "shd": 0.0,
+      "time": 16.47
+    },
+    "Neural-GC": {
+      "f1": 0.339,
+      "auroc": 0.709,
+      "auprc": 0.249,
+      "shd": 57.67,
+      "time": 21.32
     },
     "PCMCI": {
       "f1": 1.0,
       "auroc": 1.0,
       "auprc": 1.0,
       "shd": 0.0,
-      "time": 1.49
+      "time": 1.85
+    },
+    "SPADE": {
+      "f1": 0.846,
+      "auroc": 0.956,
+      "auprc": 0.841,
+      "shd": 11.25,
+      "time": 6.0
     },
     "VAR-Lasso": {
       "f1": 1.0,
       "auroc": 1.0,
       "auprc": 1.0,
       "shd": 0.0,
-      "time": 0.12
+      "time": 0.17
     },
     "VarLiNGAM": {
       "f1": 1.0,
       "auroc": 1.0,
       "auprc": 1.0,
       "shd": 0.0,
-      "time": 1.55
+      "time": 1.5
     }
   },
   "causal_byd": [
@@ -213,7 +255,7 @@
       "d": 5,
       "ck_auroc": 0.9703030303030303,
       "ck_f1": 0.9363636363636364,
-      "ck_time": 0.7605,
+      "ck_time": 1.0210000000000001,
       "best_base": "PCMCI",
       "best_auroc": 1.0
     },
@@ -221,7 +263,7 @@
       "d": 10,
       "ck_auroc": 0.7404071879867226,
       "ck_f1": 0.692889536540141,
-      "ck_time": 1.4420000000000002,
+      "ck_time": 1.8186666666666664,
       "best_base": "PCMCI",
       "best_auroc": 1.0
     },
@@ -229,7 +271,7 @@
       "d": 20,
       "ck_auroc": 0.9259577843301198,
       "ck_f1": 0.8034617887575254,
-      "ck_time": 2.4888333333333335,
+      "ck_time": 4.396333333333334,
       "best_base": "PCMCI",
       "best_auroc": 0.9441390981814646
     },
@@ -237,12 +279,68 @@
       "d": 50,
       "ck_auroc": 0.8289122283074274,
       "ck_f1": 0.4360678395205249,
-      "ck_time": 10.330333333333334,
+      "ck_time": 16.62066666666667,
       "best_base": "GOLEM",
       "best_auroc": 1.0
     }
   ],
   "causal_stats": [
+    {
+      "baseline": "Correlation",
+      "n_pairs": 24,
+      "cdkan_mean": 0.688,
+      "base_mean": 0.715,
+      "wilcoxon_W": 69.0,
+      "p_value": 0.4722941755398442
+    },
+    {
+      "baseline": "GC-KAN",
+      "n_pairs": 12,
+      "cdkan_mean": 0.815,
+      "base_mean": 0.799,
+      "wilcoxon_W": 0.0,
+      "p_value": 0.0625
+    },
+    {
+      "baseline": "GC-KAN+ALM",
+      "n_pairs": 12,
+      "cdkan_mean": 0.815,
+      "base_mean": 0.795,
+      "wilcoxon_W": 0.0,
+      "p_value": 0.0625
+    },
+    {
+      "baseline": "GOLEM",
+      "n_pairs": 24,
+      "cdkan_mean": 0.688,
+      "base_mean": 0.794,
+      "wilcoxon_W": 1.0,
+      "p_value": 0.001871432910247
+    },
+    {
+      "baseline": "NOTEARS",
+      "n_pairs": 24,
+      "cdkan_mean": 0.688,
+      "base_mean": 0.605,
+      "wilcoxon_W": 6.0,
+      "p_value": 0.0035103636715041
+    },
+    {
+      "baseline": "NTS-NOTEARS",
+      "n_pairs": 12,
+      "cdkan_mean": 0.815,
+      "base_mean": 0.827,
+      "wilcoxon_W": 5.0,
+      "p_value": 0.15625
+    },
+    {
+      "baseline": "Neural-GC",
+      "n_pairs": 18,
+      "cdkan_mean": 0.811,
+      "base_mean": 0.428,
+      "wilcoxon_W": 0.0,
+      "p_value": 0.0006533107814151
+    },
     {
       "baseline": "PCMCI",
       "n_pairs": 15,
@@ -252,64 +350,24 @@
       "p_value": 0.0076324416482055
     },
     {
+      "baseline": "VAR-Lasso",
+      "n_pairs": 19,
+      "cdkan_mean": 0.798,
+      "base_mean": 0.922,
+      "wilcoxon_W": 1.0,
+      "p_value": 0.0028734139278525
+    },
+    {
       "baseline": "VarLiNGAM",
       "n_pairs": 15,
       "cdkan_mean": 0.893,
       "base_mean": 0.944,
       "wilcoxon_W": 1.0,
       "p_value": 0.0107927821633881
-    },
-    {
-      "baseline": "VAR-Lasso",
-      "n_pairs": 18,
-      "cdkan_mean": 0.817,
-      "base_mean": 0.939,
-      "wilcoxon_W": 1.0,
-      "p_value": 0.0044390926567921
-    },
-    {
-      "baseline": "GOLEM",
-      "n_pairs": 21,
-      "cdkan_mean": 0.757,
-      "base_mean": 0.869,
-      "wilcoxon_W": 0.0,
-      "p_value": 0.0033456181158508
-    },
-    {
-      "baseline": "GC-KAN",
-      "n_pairs": 12,
-      "cdkan_mean": 0.815,
-      "base_mean": 0.792,
-      "wilcoxon_W": 0.0,
-      "p_value": 0.03125
-    },
-    {
-      "baseline": "GC-KAN+ALM",
-      "n_pairs": 12,
-      "cdkan_mean": 0.815,
-      "base_mean": 0.788,
-      "wilcoxon_W": 0.0,
-      "p_value": 0.03125
-    },
-    {
-      "baseline": "Correlation",
-      "n_pairs": 21,
-      "cdkan_mean": 0.757,
-      "base_mean": 0.776,
-      "wilcoxon_W": 48.0,
-      "p_value": 0.3008925710547009
-    },
-    {
-      "baseline": "NOTEARS",
-      "n_pairs": 21,
-      "cdkan_mean": 0.757,
-      "base_mean": 0.676,
-      "wilcoxon_W": 4.0,
-      "p_value": 0.0060395590486568
     }
   ],
   "forecast": {
-    "CD-KAN": {
+    "SPADE": {
       "mse_mean": 0.0442,
       "mse_std": 0.0,
       "mae_mean": 0.1454,
@@ -363,22 +421,22 @@
     {
       "d": 5,
       "params": 830.0,
-      "t": 0.76
+      "t": 1.02
     },
     {
       "d": 10,
       "params": 3310.0,
-      "t": 1.44
+      "t": 1.82
     },
     {
       "d": 20,
       "params": 13220.0,
-      "t": 2.49
+      "t": 4.4
     },
     {
       "d": 50,
       "params": 82550.0,
-      "t": 10.07
+      "t": 15.88
     }
   ],
   "sensitivity": [

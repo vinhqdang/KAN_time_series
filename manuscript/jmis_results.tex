@@ -27,7 +27,7 @@ classical and recent methods. Classical/econometric: VAR-Lasso
 (lingam, \citealt{Hyvarinen2010}), and a lagged-correlation threshold.
 Differentiable DAG learning: linear NOTEARS \citep{Zheng2018} and GOLEM
 \citep{ng2020golem}. \emph{Recent} deep temporal causal discovery: \textbf{Neural
-Granger Causality} (cMLP, \citealt{tank2021neural}, IEEE~TPAMI~2021) and
+Granger Causality} (cMLP, \citealt{Tank2021}, IEEE~TPAMI~2021) and
 \textbf{NTS-NOTEARS} \citep{sun2023ntsnotears} (AISTATS~2023), both run from the
 authors' vendored code. Within the KAN family: GC-KAN \citep{GCKAN2024} with
 genuine B-spline edge functions, plus a \textbf{GC-KAN$+$ALM} ablation that adds
@@ -115,26 +115,33 @@ variance-ordering artifact.
 
 Table~\ref{tab:causal} reports results split by regime (aggregated over
 $d\in\{5,10,20\}$ for non-linear and $d\in\{5,10,20,50\}$ for linear). On
-\textbf{linear} structure SPADE is very strong (AUROC~$=$~0.96, essentially
-perfect up to $d{=}20$ and 0.80 at $d{=}50$), close to the mature estimators
-(VAR-Lasso, NOTEARS, GOLEM, PCMCI, VAR-LiNGAM, all $\approx$1.0). On
-\textbf{non-linear} structure SPADE attains AUROC~$=$~0.76 (F1~$=$~0.64),
-above the KAN-based Granger baselines (0.70) and NOTEARS (0.72), comparable to
-the correlation baseline (0.76); the strongest constraint- and
-non-Gaussianity-based methods (PCMCI~0.94, VAR-LiNGAM~0.94, VAR-Lasso~0.93) lead.
-On the cleaner low-$d$ settings SPADE reaches AUROC~$\approx$~0.90--0.97.
+\textbf{linear} structure SPADE is very strong (AUROC~$=$~0.96), close to the
+mature estimators (VAR-Lasso, GOLEM, PCMCI, VAR-LiNGAM, all $1.0$) and well above
+linear NOTEARS (0.86) and Neural-GC (0.71). On \textbf{non-linear} structure SPADE
+attains AUROC~$=$~0.76 (F1~$=$~0.64), which---among the \emph{non-linear} learners---
+is the strongest: it edges out the recent temporal methods NTS-NOTEARS (0.73) and
+Neural-GC (0.68), the KAN-Granger baselines GC-KAN/GC-KAN$+$ALM (0.70), and
+nonlinear NOTEARS (0.72), and is comparable to the correlation baseline (0.76).
+The constraint- and non-Gaussianity-based methods (PCMCI~0.94, VAR-LiNGAM~0.94,
+VAR-Lasso~0.93) still lead this regime, as they classically do on additive-noise
+temporal data. The reading is consistent and honest: on \emph{lagged} structure
+SPADE is the best of the flexible neural/KAN learners but does not overtake the
+mature conditioning-based estimators---its decisive advantage is the
+\emph{instantaneous} regime of Section~\ref{sec:instdag}.
 
 \paragraph{Statistical significance.} Paired Wilcoxon signed-rank tests
 (Table~\ref{tab:causal_stats}, F1 over matched configuration/seed pairs) show
-SPADE significantly \emph{outperforms} GC-KAN ($p{=}0.031$), GC-KAN$+$ALM
-($p{=}0.031$), and NOTEARS ($p{=}0.006$), and is statistically indistinguishable
-from the correlation baseline ($p{=}0.30$); PCMCI, VAR-LiNGAM, VAR-Lasso, and
+SPADE significantly \emph{outperforms} Neural-GC ($p<0.001$) and NOTEARS
+($p{=}0.004$), and is statistically \emph{indistinguishable} from NTS-NOTEARS
+($p{=}0.16$), GC-KAN and GC-KAN$+$ALM ($p{=}0.06$), and the correlation baseline
+($p{=}0.47$); the conditioning-based estimators PCMCI, VAR-LiNGAM, VAR-Lasso, and
 GOLEM remain ahead ($p<0.05$). SPADE is thus a \emph{competitive}
-causal-discovery method---the strongest of the KAN-based approaches---rather than
-a uniform state-of-the-art; we make no such claim and explicitly retract the
-earlier, unreproducible F1~=~0.897. Its distinctive value (interpretable
-mechanisms, lag attribution, coupled forecasting, and scaling to $d{=}50$) is
-developed in the sections that follow.
+causal-discovery method---the strongest of the flexible neural/KAN family and on
+par with the recent NTS-NOTEARS---rather than a uniform state-of-the-art; we make
+no such claim and explicitly retract the earlier, unreproducible F1~=~0.897. Its
+distinctive value (the instantaneous-DAG win, interpretable mechanisms, lag
+attribution, coupled forecasting, and scaling to $d{=}50$) is developed in the
+sections that follow.
 
 \paragraph{Why the component-wise design matters.} A revealing contrast is with a
 variant that feeds the causal layer into a dense residual KAN backbone (the
