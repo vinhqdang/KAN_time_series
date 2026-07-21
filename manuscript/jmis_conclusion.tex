@@ -25,17 +25,23 @@ lag-resolved structure whose stability exceeds a permutation-based chance level
 by roughly six-fold ($p<0.0001$), and whose spline edge functions expose the
 shape of each dependency.
 
+Beyond lagged structure, the model handles \emph{instantaneous} causal structure
+as a self-masked non-linear SEM whose contemporaneous graph is kept acyclic by the
+ALM; on data with a known instantaneous DAG it recovers the graph and outperforms
+linear NOTEARS on non-linear mechanisms. We also validate the recovered structure
+beyond self-consistency---via a permutation test, a time-reversal placebo, and a
+ground-truth structural-change experiment in which CD-KAN both detects a known
+regime break and recovers the two distinct graphs.
+
 CD-KAN's contribution is therefore best understood as a \emph{unified,
 interpretable decision-support artifact} that delivers competitive structure
-recovery \emph{together} with interpretable mechanisms and coupled forecasting for
-moderate-dimensional, non-linear settings. Its main limitations---the per-edge
-spline evaluation cost (and the $O(d^3)$ acyclicity term when contemporaneous
-edges are modelled), and the causal-sufficiency and stationarity assumptions
-required to read edges causally---define a clear agenda: (1) vectorized spline
-evaluation and low-rank/log-det acyclicity for higher $d$; (2) $\ell_0$-style
-gates as an alternative to the group-lasso; (3) intervention- and event-based
-validation (e.g., policy-announcement windows) to test recovered structure beyond
-stability; and (4) expert user studies to quantify, rather than assert,
-interpretability. As organizations lean further on AI for strategy, artifacts that
-are simultaneously predictive, transparent, and honest about their boundaries are
-essential; CD-KAN is a step in that direction.
+recovery (lagged and instantaneous) \emph{together} with interpretable mechanisms,
+coupled forecasting, and scaling to $d{=}50$. Its main limitations---the per-edge
+spline evaluation cost (and the $O(d^3)$ acyclicity term for instantaneous
+graphs), and the causal-sufficiency and stationarity assumptions required to read
+edges causally---define a clear agenda: (1) low-rank/log-det acyclicity for higher
+$d$; (2) $\ell_0$-style gates as an alternative to the group-lasso; and
+(3) expert user studies to quantify, rather than assert, interpretability. As
+organizations lean further on AI for strategy, artifacts that are simultaneously
+predictive, transparent, and honest about their boundaries are essential; CD-KAN
+is a step in that direction.

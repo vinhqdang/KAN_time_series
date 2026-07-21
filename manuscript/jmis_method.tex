@@ -141,12 +141,21 @@ acyclic iff
     \label{eq:hnotears}
 \end{equation}
 Crucially, we apply Eq.~\eqref{eq:hnotears} \emph{only} to the contemporaneous
-block $W = \Theta^{(0)}$. Lagged blocks $\Theta^{(1)},\dots,\Theta^{(L)}$ are left
-unconstrained because temporal precedence already forbids cycles across time
-(assumption A4); constraining them would incorrectly penalize legitimate feedback
-such as $x_{t-1}\!\to\! y_t$ and $y_{t-1}\!\to\! x_t$. This block treatment
-mirrors DYNOTEARS \citep{Pamfil2020} and resolves a limitation of applying a
-single flat $d\times d$ constraint.
+block $W_0$. Lagged blocks are left unconstrained because temporal precedence
+already forbids cycles across time (assumption A4); constraining them would
+incorrectly penalize legitimate feedback such as $x_{t-1}\!\to\! y_t$ and
+$y_{t-1}\!\to\! x_t$. This block treatment mirrors DYNOTEARS \citep{Pamfil2020}
+and resolves the limitation of a single flat $d\times d$ constraint.
+
+\paragraph{Instantaneous variant (self-masked SEM).} When instantaneous effects
+are modelled, CD-KAN realizes a non-linear structural equation model: it predicts
+$x_{t,i}$ from its \emph{contemporaneous} parents $x_{t,j\neq i}$ (self-loops
+masked) in addition to its lags, with $W_0$ the contemporaneous edge-importance
+matrix scored as in Eq.~\eqref{eq:importance}. The ALM then drives
+$h(W_0)\!\to\!0$, guaranteeing the instantaneous graph is a DAG so the SEM is
+identifiable. This yields a non-linear, KAN-based analogue of DYNOTEARS; we
+validate it on data with a known instantaneous DAG in Section~\ref{sec:contemp},
+where it recovers the DAG and outperforms linear NOTEARS on non-linear mechanisms.
 
 \paragraph{Objective.}
 We fit the edge coefficients $\Phi=\{c^{(ijh)}\}$ and biases $b$ by minimizing

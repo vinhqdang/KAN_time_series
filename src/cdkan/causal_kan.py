@@ -115,3 +115,66 @@ class CausalKAN(nn.Module):
             return torch.zeros((), device=self.coef.device)
         c = self._edge_contrib(x_hist)[:, :, :, 0].std(dim=0)  # [d, d] lag-0
         return _h_notears(c)
+
+
+class CausalKANContemp(nn.Module):
+    """
+    Full SVAR CD-KAN with INSTANTANEOUS (contemporaneous) edges.
+
+    Predicts each variable via a nonlinear structural equation:
+        x_{t,i} = b_i + sum_{j != i} phi0_{ij}(x_{t,j})          (instantaneous)
+                       + sum_{h>=1} sum_j phih_{ij}(x_{t-h,j})    (lagged)
+    Self-loops are masked; the contemporaneous block W0 is constrained to be a DAG
+    by the NOTEARS acyclicity penalty h(W0)=tr(e^{W0 o W0})-d, dualized with the
+    Augmented Lagrangian Method. This is a nonlinear, KAN-based analogue of
+    DYNOTEARS: the acyclicity constraint is exercised on the instantaneous graph,
+    while lagged edges are unconstrained (ordered by time). Vectorized; fast.
+    """
+    def __init__(self, d, max_lag=2, grid_size=8, spline_order=3, grid_range=(-3.0, 3.0)):
+        super().__init__()
+        self.d = d; self.max_lag = max_lag; self.k = spline_order
+        self.n_basis = grid_size + spline_order
+        lo, hi = grid_range; step = (hi - lo) / grid_size
+        g = torch.arange(-spline_order, grid_size + spline_order + 1) * step + lo
+        self.register_buffer("grid", g); self.grid_range = (lo, hi)
+        self.c0 = nn.Parameter(0.1 * (torch.rand(d, d, self.n_basis) - 0.5))
+        self.cl = nn.Parameter(0.1 * (torch.rand(d, d, max_lag, self.n_basis) - 0.5))
+        self.bias = nn.Parameter(torch.zeros(d))
+        self.register_buffer("selfmask", (1 - torch.eye(d)).unsqueeze(-1))
+
+    def _bases(self, x):
+        x = x.clamp(*self.grid_range).unsqueeze(-1); g = self.grid
+        b = ((x >= g[:-1]) & (x < g[1:])).to(x.dtype)
+        for i in range(1, self.k + 1):
+            b = ((x - g[:-(i + 1)]) / (g[i:-1] - g[:-(i + 1)] + 1e-8)) * b[..., :-1] \
+                + ((g[i + 1:] - x) / (g[i + 1:] - g[1:-i] + 1e-8)) * b[..., 1:]
+        return b
+
+    def forward(self, x_cur, x_lag):
+        """x_cur:[B,d] current step; x_lag:[B,max_lag,d] lags 1..L."""
+        b0 = self._bases(x_cur)
+        pred = torch.einsum("bjk,ijk->bi", b0, self.c0 * self.selfmask) + self.bias
+        bl = self._bases(x_lag)
+        pred = pred + torch.einsum("bhjk,ijhk->bi", bl, self.cl)
+        return pred
+
+    def group_lasso(self):
+        g0 = torch.linalg.vector_norm(self.c0 * self.selfmask, dim=2)
+        gl = torch.linalg.vector_norm(self.cl, dim=(2, 3))
+        return g0.sum() + gl.sum()
+
+    def h0(self):
+        """Differentiable NOTEARS acyclicity residual on the contemporaneous
+        coefficient-magnitude matrix (=0 iff the instantaneous graph is a DAG)."""
+        W = torch.linalg.vector_norm(self.c0 * self.selfmask, dim=2)
+        return _h_notears(W)
+
+    @torch.no_grad()
+    def contemp_importance(self, x_cur):
+        c = torch.einsum("bjk,ijk->bij", self._bases(x_cur), self.c0 * self.selfmask)
+        return c.std(0)                                    # [d, d]
+
+    @torch.no_grad()
+    def lagged_importance(self, x_lag):
+        c = torch.einsum("bhjk,ijhk->bij", self._bases(x_lag), self.cl)
+        return c.std(0)                                    # [d, d]

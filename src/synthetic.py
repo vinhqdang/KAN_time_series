@@ -71,6 +71,55 @@ def generate_nonlinear_scm(n_samples=1000, n_nodes=5, density=0.2, max_lag=3, se
     
     return data, adj_matrix, lags_matrix
 
+def generate_svar_contemp(n_samples=2000, n_nodes=6, contemp_density=0.3,
+                          lag_density=0.15, max_lag=2, seed=0):
+    """
+    Generate a non-linear SVAR with a KNOWN instantaneous (contemporaneous) DAG
+    plus lagged edges. Used to validate CD-KAN's acyclicity constraint.
+
+    x_{t,i} = sum_{j: j precedes i} f0_ij(x_{t,j})            # instantaneous DAG
+              + sum_{h>=1} sum_j fh_ij(x_{t-h,j}) + eps        # lagged
+    The contemporaneous graph B0 is acyclic by construction (random topological
+    order); functions are contractive to keep the recursion stable.
+
+    Returns: data [n_samples, d], B0 [d,d] contemporaneous adjacency (effect<-cause),
+             BL [d,d] summary lagged adjacency.
+    """
+    rng = np.random.RandomState(seed)
+    d = n_nodes
+    perm = rng.permutation(d)
+    B0 = np.zeros((d, d), int)
+    for a in range(d):
+        for b in range(a):
+            if rng.rand() < contemp_density:
+                B0[perm[a], perm[b]] = 1          # perm[b] -> perm[a]
+    BL_lags = [(rng.rand(d, d) < lag_density).astype(int) for _ in range(max_lag)]
+    for L in BL_lags:
+        np.fill_diagonal(L, 0)
+    fns = [lambda x: 0.7 * x, lambda x: 0.6 * np.tanh(x), lambda x: 0.5 * np.sin(2 * x)]
+    f0, fl = {}, {}
+    for i in range(d):
+        for j in range(d):
+            if B0[i, j]:
+                f0[(i, j)] = fns[rng.randint(len(fns))]
+            for h in range(max_lag):
+                if BL_lags[h][i, j]:
+                    fl[(i, j, h)] = fns[rng.randint(len(fns))]
+    burn = 100
+    X = np.zeros((n_samples + burn, d))
+    for t in range(max_lag, n_samples + burn):
+        for i in perm:                             # topological order
+            v = rng.normal(0, 0.3)
+            for j in range(d):
+                if B0[i, j]:
+                    v += f0[(i, j)](X[t, j])
+                for h in range(max_lag):
+                    if BL_lags[h][i, j]:
+                        v += fl[(i, j, h)](X[t - 1 - h, j])
+            X[t, i] = v
+    return X[burn:], B0, np.clip(sum(BL_lags), 0, 1)
+
+
 def visualize_ground_truth(adj, labels=None, filename="ground_truth_graph.png"):
     import matplotlib.pyplot as plt
     

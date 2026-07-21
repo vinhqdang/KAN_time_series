@@ -125,6 +125,36 @@ runtime of each method; Figure~\ref{fig:heatmap} shows per-dataset AUROC.
     \label{fig:heatmap}
 \end{figure}
 
+\subsection{Instantaneous (contemporaneous) structure and the acyclicity constraint}
+\label{sec:contemp}
+
+The experiments above are purely lagged, so the acyclicity constraint is inactive
+(temporal order already forbids cycles). To exercise it, we generate SVAR data
+with a \emph{known instantaneous DAG} plus lagged edges, and fit the
+contemporaneous CD-KAN variant (Section~\ref{sec:opt}), which predicts each
+variable from its instantaneous parents (self-masked) and its lags, with the
+NOTEARS penalty on the contemporaneous block $W_0$ dualized by ALM. This is a
+non-linear, KAN-based analogue of DYNOTEARS.
+
+Table~\ref{tab:contemp} reports recovery of both blocks. CD-KAN recovers the
+instantaneous DAG well at $d{=}6$ (AUROC~0.89) and---crucially, since the edges
+are non-linear---\emph{substantially outperforms a linear instantaneous-NOTEARS
+baseline} (0.89 vs.\ 0.67), while simultaneously recovering the lagged block
+(AUROC~0.92) and driving the acyclicity residual to $h(W_0)\!\approx\!2\times10^{-3}$
+(i.e.\ an essentially acyclic contemporaneous graph). Recovery is harder at
+$d{=}10$ (fewer samples per instantaneous relation) but still matches or exceeds
+the linear baseline. This confirms the acyclicity machinery works as designed and
+that KAN edges add value precisely where mechanisms are non-linear.
+
+\begin{table}[t]
+\centering
+\caption{Instantaneous-DAG recovery on SVAR data with a known contemporaneous DAG
+$+$ lagged edges (mean over 5 seeds). CD-KAN recovers both blocks and keeps
+$h(W_0)\!\to\!0$; on these non-linear instantaneous edges it beats linear NOTEARS.}
+\label{tab:contemp}
+\input{figures/tab_contemp}
+\end{table}
+
 \subsection{Scalability and runtime}
 \label{sec:scalability}
 
@@ -362,11 +392,33 @@ synthetic data ($d{=}10$, 3 seeds), CD-KAN's recovery AUROC drops from
 \textbf{0.94} (forward) to \textbf{0.64} (reversed)---a 0.30 gap---confirming that
 it exploits temporal precedence rather than symmetric association.
 
-\paragraph{Event-anchored regime analysis.} We learn the financial graph
-separately on the pre-2022 and post-2022 windows, split at the onset of the US
-rate-hiking cycle. The top-quartile edge set changes substantially (Jaccard
-0.12), in an economically coherent direction: \emph{after} 2022, gold becomes a
-downstream hub (SPX$\to$GLD and BTC$\to$GLD flight-to-safety links appear), while
-several oil--equity links (SPX$\leftrightarrow$WTI, COPPER$\to$WTI) dissolve. That
-the recovered structure tracks a known macro regime shift---rather than staying
-fixed---is evidence the edges encode real, time-varying dependencies.
+\paragraph{Ground-truth structural change (intervention).} The most direct
+version of the Reviewer's request---``does CD-KAN recover the \emph{expected
+change} in causal structure?''---requires a known change. We concatenate two SVAR
+regimes with \emph{different} graphs at a known break ($t{=}1500$) and slide
+CD-KAN across the series (Figure~\ref{fig:intervention}A). The graph-dissimilarity
+signal between adjacent windows peaks around the break, and CD-KAN recovers the
+correct regime graph on each side (AUROC~0.89 before, 1.00 after). Thus CD-KAN
+detects the intervention \emph{and} recovers the two distinct structures---not
+merely a stable graph.
+
+\paragraph{Event-anchored regime analysis (real data).} Applying the same
+sliding-window analysis to the financial panel (Figure~\ref{fig:intervention}B),
+the largest structural shifts fall in documented turbulent periods (the 2020
+COVID era and the 2021--2022 inflation/rate-hike era). Splitting at the 2022
+rate-hike onset, the top-quartile edge set changes substantially (Jaccard 0.12) in
+an economically coherent direction: \emph{after} 2022, gold becomes a downstream
+hub (SPX$\to$GLD and BTC$\to$GLD flight-to-safety links appear), while several
+oil--equity links dissolve. That the structure tracks known macro regime shifts is
+evidence the edges encode real, time-varying dependencies.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{figures/intervention.png}
+    \caption{Structural-change detection. \textbf{(A)} On two concatenated SVAR
+    regimes with a known break ($t{=}1500$, dashed), the sliding-window graph
+    dissimilarity spikes near the break and CD-KAN recovers each regime's graph
+    (AUROC 0.89/1.00). \textbf{(B)} On real financial data, the detected shifts
+    coincide with the 2020 COVID and 2021--2022 rate-hike eras.}
+    \label{fig:intervention}
+\end{figure}
