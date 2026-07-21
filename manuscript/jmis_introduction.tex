@@ -125,13 +125,14 @@ three contributions:
     with a dense forecasting backbone recovers structure only at chance.
     \item \textbf{A decisive result on non-linear instantaneous structure.} On
     additive-noise instantaneous DAGs, SPADE attains AUROC~$\approx$~0.88 across
-    $d\in\{6,10,20\}$, substantially outperforming the strongest DAG learners---
-    DAGMA (linear and non-linear) and NOTEARS/NOTEARS-MLP---because learnable
-    spline edges capture non-linear mechanisms that fixed-architecture learners
-    miss. On lagged (temporal) structure it is competitive (perfect on linear,
-    beating KAN-Granger baselines and NOTEARS on non-linear) though the best
-    conditioning-based methods (PCMCI, VAR-LiNGAM) still lead there; we report this
-    honestly and retract the earlier, unreproducible F1~=~0.897 and MSE~=~0.0008.
+    $d\in\{6,10,20\}$, substantially outperforming the strongest modern DAG
+    learners---DAGMA (linear and non-linear), GraN-DAG, GOLEM, and
+    NOTEARS/NOTEARS-MLP---because learnable spline edges capture non-linear
+    mechanisms that fixed-architecture learners miss. On lagged (temporal)
+    structure it is competitive (perfect on linear, beating KAN-Granger baselines
+    and NOTEARS on non-linear) though the best conditioning-based methods (PCMCI,
+    VAR-LiNGAM) still lead there; we report this honestly and retract the earlier,
+    unreproducible F1~=~0.897 and MSE~=~0.0008.
     \item \textbf{Validation beyond stability, and an interpretation layer.}
     Spline edge functions expose the \emph{shape} of each dependency (linear,
     saturating, threshold) and lag attribution recovers known delays on synthetic

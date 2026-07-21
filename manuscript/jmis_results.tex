@@ -58,38 +58,49 @@ non-linear additive-noise structural causal model
 $f$ drawn from $\{\tanh,\sin,$ quadratic, rational$\}$ and non-Gaussian noise).
 Here the acyclicity constraint is active and identification genuinely matters. We
 compare against the strongest available DAG learners---linear and non-linear
-DAGMA \citep{Bello2022}, a NOTEARS-MLP, and linear NOTEARS
-\citep{Zheng2018}---across widths $d\in\{6,10,20\}$.
+DAGMA \citep{Bello2022}, GraN-DAG \citep{lachapelle2020grandag}, GOLEM
+\citep{ng2020golem}, a NOTEARS-MLP, and linear NOTEARS \citep{Zheng2018},
+the neural learners using their authors' reference implementations---across widths
+$d\in\{6,10,20\}$ with five random graphs each.
 
 \begin{table}[t]
 \centering
 \caption{Non-linear instantaneous-DAG recovery (AUROC by width $d$; F1 overall;
-mean over seeds). SPADE substantially outperforms both the SOTA non-linear DAG
-learners (DAGMA-nonlinear, NOTEARS-MLP) and the linear learners, and its accuracy
-is stable as $d$ grows.}
+mean over five random graphs per $d$). SPADE substantially outperforms the modern
+non-linear DAG learners (DAGMA-nonlinear, GraN-DAG, NOTEARS-MLP) and the linear
+learners (DAGMA-linear, GOLEM), and its accuracy is essentially flat as $d$ grows;
+only linear NOTEARS approaches it, and only at $d{=}20$.}
 \label{tab:instdag}
 \input{figures/tab_instdag}
 \end{table}
 
 Table~\ref{tab:instdag} and Figure~\ref{fig:instdag} show the result. \textbf{SPADE
-attains AUROC~$\approx$~0.88 uniformly across $d$, decisively ahead of the
-fixed-architecture non-linear learners} (DAGMA-nonlinear $\approx$0.59,
-NOTEARS-MLP $\approx$0.61) and the linear learners (DAGMA-linear $\approx$0.50).
-Strikingly, the neural DAG baselines underperform even linear NOTEARS on this
-task---fixed MLP mechanisms plus the NOTEARS/DAGMA optimization struggle with
-these additive-noise nonlinearities---whereas SPADE's learnable per-edge splines
-recover them reliably. This is the regime where the KAN edge functions provide a
-genuine, and to our knowledge distinctive, advantage over the incumbents. (We note
-candidly that linear NOTEARS closes the gap at $d{=}20$, where sparse graphs make
-the linear component of each mechanism increasingly detectable; SPADE's edge is
-clearest at small-to-moderate $d$ and against the non-linear learners at all $d$.)
+attains AUROC~$0.876$/$0.885$/$0.886$ at $d{=}6$/$10$/$20$---essentially flat as
+the graph grows---decisively ahead of every fixed-architecture non-linear
+learner}: DAGMA-nonlinear ($\approx$0.59), NOTEARS-MLP ($\approx$0.61), and
+GraN-DAG ($\approx$0.52, barely above chance). The linear score-based learners
+fare unevenly---DAGMA-linear hovers near chance ($\approx$0.50) while GOLEM reaches
+$\approx$0.72---confirming that a fixed functional form, whether a shallow MLP or a
+linear map, cannot reliably orient these additive-noise mechanisms, whereas SPADE's
+learnable per-edge splines recover them. That the \emph{neural} DAG learners
+(DAGMA-nonlinear, GraN-DAG, NOTEARS-MLP) sit \emph{below} even a linear NOTEARS is
+itself telling: expressive but architecturally rigid mechanisms, coupled to the
+NOTEARS/DAGMA objective, struggle here. This is the regime where KAN edge functions
+provide a genuine and, to our knowledge, distinctive advantage. We are candid about
+one boundary: linear NOTEARS strengthens with $d$ (0.70/0.79/0.88) and matches
+SPADE at $d{=}20$, where sparse graphs make each mechanism's linear component
+increasingly detectable; SPADE's margin is therefore largest at small-to-moderate
+$d$ and against the non-linear learners at \emph{all} $d$. Because all series are
+standardized (Remark~\ref{rem:varsort}), none of this advantage can be a
+variance-ordering artifact.
 
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.7\textwidth]{figures/instdag.png}
     \caption{Non-linear instantaneous-DAG recovery vs.\ width $d$. SPADE (bold)
     holds AUROC~$\approx$~0.88 across $d$; the non-linear DAG learners
-    (DAGMA-nonlinear, NOTEARS-MLP) sit near 0.6.}
+    (DAGMA-nonlinear, GraN-DAG, NOTEARS-MLP) sit near or below 0.6, and only the
+    linear NOTEARS approaches SPADE, and only at $d{=}20$.}
     \label{fig:instdag}
 \end{figure}
 
