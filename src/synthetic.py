@@ -120,6 +120,42 @@ def generate_svar_contemp(n_samples=2000, n_nodes=6, contemp_density=0.3,
     return X[burn:], B0, np.clip(sum(BL_lags), 0, 1)
 
 
+def generate_instantaneous_anm(n_samples=1500, n_nodes=6, density=None, seed=0):
+    """
+    Pure i.i.d. non-linear Additive-Noise-Model DAG (no time structure).
+        x_e = sum_{c in pa(e)} f_ce(x_c) + noise,  generated in topological order.
+    Returns: X [n, d], A [d, d] with A[c, e]=1 iff cause c -> effect e (a DAG).
+    Mechanisms are strongly non-linear (tanh, sin, quadratic, rational) and noise
+    is non-Gaussian (uniform) so the model is ANM-identifiable.
+    """
+    r = np.random.RandomState(seed)
+    d = n_nodes
+    density = density if density is not None else 2.0 / (d - 1)
+    perm = r.permutation(d)
+    A = np.zeros((d, d), int)
+    for a in range(d):
+        for b in range(a):
+            if r.rand() < density:
+                A[perm[b], perm[a]] = 1                     # perm[b] -> perm[a]
+    fns = [lambda x: 0.8 * np.tanh(1.5 * x),
+           lambda x: 0.7 * np.sin(1.5 * x),
+           lambda x: 0.3 * (x ** 2 - 1.0),
+           lambda x: 0.8 * x / (1.0 + np.abs(x))]
+    f = {}
+    for c in range(d):
+        for e in range(d):
+            if A[c, e]:
+                f[(c, e)] = fns[r.randint(len(fns))]
+    X = np.zeros((n_samples, d))
+    for e in perm:                                          # topological order
+        v = r.uniform(-0.7, 0.7, n_samples)                 # non-Gaussian noise
+        for c in range(d):
+            if A[c, e]:
+                v = v + f[(c, e)](X[:, c])
+        X[:, e] = v
+    return X.astype(np.float32), A
+
+
 def visualize_ground_truth(adj, labels=None, filename="ground_truth_graph.png"):
     import matplotlib.pyplot as plt
     

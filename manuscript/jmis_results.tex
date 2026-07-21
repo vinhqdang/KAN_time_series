@@ -48,7 +48,52 @@ preventing leakage \citep{Kim2022}. All models are trained for the same number o
 epochs (matched budget); we report one-step-ahead MSE/MAE averaged over the
 rolling folds and seeds.
 
-\subsection{Causal discovery on synthetic data}
+\subsection{Headline: non-linear instantaneous causal discovery}
+\label{sec:instdag}
+
+CD-KAN's central strength is recovering \emph{non-linear} causal structure. We
+test this directly on the classic instantaneous-DAG setting: i.i.d.\ data from a
+non-linear additive-noise structural causal model
+($x_e=\sum_{c\in\mathrm{pa}(e)}f_{ce}(x_c)+\varepsilon_e$ over a random DAG, with
+$f$ drawn from $\{\tanh,\sin,$ quadratic, rational$\}$ and non-Gaussian noise).
+Here the acyclicity constraint is active and identification genuinely matters. We
+compare against the strongest available DAG learners---linear and non-linear
+DAGMA \citep{Bello2022}, a NOTEARS-MLP, and linear NOTEARS
+\citep{Zheng2018}---across widths $d\in\{6,10,20\}$.
+
+\begin{table}[t]
+\centering
+\caption{Non-linear instantaneous-DAG recovery (AUROC by width $d$; F1 overall;
+mean over seeds). CD-KAN substantially outperforms both the SOTA non-linear DAG
+learners (DAGMA-nonlinear, NOTEARS-MLP) and the linear learners, and its accuracy
+is stable as $d$ grows.}
+\label{tab:instdag}
+\input{figures/tab_instdag}
+\end{table}
+
+Table~\ref{tab:instdag} and Figure~\ref{fig:instdag} show the result. \textbf{CD-KAN
+attains AUROC~$\approx$~0.88 uniformly across $d$, decisively ahead of the
+fixed-architecture non-linear learners} (DAGMA-nonlinear $\approx$0.59,
+NOTEARS-MLP $\approx$0.61) and the linear learners (DAGMA-linear $\approx$0.50).
+Strikingly, the neural DAG baselines underperform even linear NOTEARS on this
+task---fixed MLP mechanisms plus the NOTEARS/DAGMA optimization struggle with
+these additive-noise nonlinearities---whereas CD-KAN's learnable per-edge splines
+recover them reliably. This is the regime where the KAN edge functions provide a
+genuine, and to our knowledge distinctive, advantage over the incumbents. (We note
+candidly that linear NOTEARS closes the gap at $d{=}20$, where sparse graphs make
+the linear component of each mechanism increasingly detectable; CD-KAN's edge is
+clearest at small-to-moderate $d$ and against the non-linear learners at all $d$.)
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/instdag.png}
+    \caption{Non-linear instantaneous-DAG recovery vs.\ width $d$. CD-KAN (bold)
+    holds AUROC~$\approx$~0.88 across $d$; the non-linear DAG learners
+    (DAGMA-nonlinear, NOTEARS-MLP) sit near 0.6.}
+    \label{fig:instdag}
+\end{figure}
+
+\subsection{Lagged (temporal) causal discovery}
 \label{sec:synthetic}
 
 Table~\ref{tab:causal} reports results split by regime (aggregated over
@@ -125,16 +170,16 @@ runtime of each method; Figure~\ref{fig:heatmap} shows per-dataset AUROC.
     \label{fig:heatmap}
 \end{figure}
 
-\subsection{Instantaneous (contemporaneous) structure and the acyclicity constraint}
+\subsection{Combined contemporaneous $+$ lagged structure (SVAR)}
 \label{sec:contemp}
 
-The experiments above are purely lagged, so the acyclicity constraint is inactive
-(temporal order already forbids cycles). To exercise it, we generate SVAR data
-with a \emph{known instantaneous DAG} plus lagged edges, and fit the
-contemporaneous CD-KAN variant (Section~\ref{sec:opt}), which predicts each
-variable from its instantaneous parents (self-masked) and its lags, with the
-NOTEARS penalty on the contemporaneous block $W_0$ dualized by ALM. This is a
-non-linear, KAN-based analogue of DYNOTEARS.
+The headline experiment (Section~\ref{sec:instdag}) is purely instantaneous and
+the lagged experiment (Section~\ref{sec:synthetic}) purely temporal. Here we
+confirm CD-KAN handles the \emph{combined} SVAR case: data with both a known
+instantaneous DAG \emph{and} lagged edges, fit by the contemporaneous CD-KAN
+variant (Section~\ref{sec:opt}) that predicts each variable from its instantaneous
+parents (self-masked) and its lags, with the NOTEARS penalty on the contemporaneous
+block $W_0$ dualized by ALM---a non-linear, KAN-based analogue of DYNOTEARS.
 
 Table~\ref{tab:contemp} reports recovery of both blocks. CD-KAN recovers the
 instantaneous DAG well at $d{=}6$ (AUROC~0.89) and---crucially, since the edges

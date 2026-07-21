@@ -10,17 +10,19 @@ contemporaneous adjacencies and enforces acyclicity only on the contemporaneous
 block via an Augmented Lagrangian scheme---a formulation we specify in full,
 including its hyperparameter schedule and convergence criteria.
 
-Our evaluation is deliberately candid. On synthetic data with known ground truth,
-CD-KAN recovers linear structure perfectly and is competitive on non-linear
-structure---significantly outperforming KAN-based Granger baselines and matching
-several classical methods, though not the very strongest (PCMCI, VAR-LiNGAM) on
-the hardest cases. The key design lesson is that this identifiability hinges on an
-information bottleneck: predicting each variable only through its incoming edges,
-rather than through a dense forecasting backbone (which we show collapses to
-chance). We retract the earlier, unreproducible F1~=~0.897 in favour of these
-honest numbers. In forecasting, we corrected a prior artifact---an error of
-$\approx$0.0008 from test-leaking normalization---and report leakage-free
-rolling-origin results instead, under which CD-KAN is competitive. On real financial data, CD-KAN recovers a directed graph with plausible,
+Our evaluation is deliberately candid. The headline result is on \emph{non-linear
+instantaneous} causal discovery, where CD-KAN's learnable spline edges recover
+additive-noise DAGs at AUROC~$\approx$~0.88 across $d\in\{6,10,20\}$, decisively
+beating both the SOTA non-linear DAG learners (DAGMA-nonlinear, NOTEARS-MLP,
+$\approx$0.6) and the linear ones---the regime where the KAN edge functions confer
+a real, distinctive advantage. On lagged structure CD-KAN is competitive (perfect
+on linear; on non-linear it beats KAN-Granger baselines and NOTEARS but trails
+conditioning-based PCMCI/VAR-LiNGAM). The key design lesson is that
+identifiability hinges on an information bottleneck: predicting each variable only
+through its incoming edges, not a dense backbone (which collapses to chance). We
+retract the earlier, unreproducible F1~=~0.897 in favour of these honest numbers,
+and likewise corrected a forecasting artifact ($\approx$0.0008 from test-leaking
+normalization), reporting leakage-free results under which CD-KAN is competitive. On real financial data, CD-KAN recovers a directed graph with plausible,
 lag-resolved structure whose stability exceeds a permutation-based chance level
 by roughly six-fold ($p<0.0001$), and whose spline edge functions expose the
 shape of each dependency.

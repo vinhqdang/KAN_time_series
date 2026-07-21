@@ -106,24 +106,25 @@ print("Causal Adjacency Matrix:", adjacency.shape)
 
 ## 📊 Benchmark Results
 
-### Causal discovery, synthetic ground truth (AUROC; d ∈ {5,10,20,50}, 3 seeds)
+### Headline: nonlinear INSTANTANEOUS-DAG recovery (AUROC; d ∈ {6,10,20})
 
-| Method | Non-linear | Linear |
-|--------|:---:|:---:|
-| PCMCI | 0.94 | 1.00 |
-| VAR-LiNGAM | 0.94 | 1.00 |
-| VAR-Lasso | 0.93 | 1.00 |
-| GOLEM | 0.79 | 1.00 |
-| **CD-KAN (ours)** | **0.76** | **0.96** |
-| Correlation | 0.76 | 0.99 |
-| NOTEARS | 0.72 | 0.86 |
-| GC-KAN / +ALM | 0.70 | 0.99 |
+| Method | d=6 | d=10 | d=20 |
+|--------|:---:|:---:|:---:|
+| **CD-KAN (ours)** | **0.88** | **0.89** | **0.89** |
+| NOTEARS-linear | 0.70 | 0.79 | 0.88 |
+| NOTEARS-MLP | 0.61 | 0.61 | 0.64 |
+| DAGMA-nonlinear | 0.60 | 0.58 | 0.58 |
+| DAGMA-linear | 0.40 | 0.60 | 0.51 |
 
-CD-KAN is competitive and interpretable: it significantly beats the KAN-Granger
-baselines and NOTEARS (Wilcoxon p<0.05) and ties correlation; PCMCI/VAR-LiNGAM
-lead. Reproduce with `python scripts/honest_causal_benchmark.py`. Forecasting uses
-a leakage-free rolling-origin protocol (`scripts/honest_forecast_benchmark.py`);
-`scripts/validation_tests.py` runs the time-reversal and regime-shift checks.
+On nonlinear additive-noise DAGs, CD-KAN's learnable spline edges **decisively beat
+the SOTA nonlinear DAG learners** (DAGMA-nonlinear, NOTEARS-MLP) at every width.
+Reproduce: `python scripts/instantaneous_dag_benchmark.py`.
+
+**Lagged (temporal) discovery** is competitive but not SOTA: linear ~0.96, nonlinear
+~0.76 — beats KAN-Granger baselines/NOTEARS (Wilcoxon p<0.05), trails PCMCI/VAR-LiNGAM
+(`scripts/honest_causal_benchmark.py`). Forecasting uses a leakage-free protocol;
+`validation_tests.py` / `fred_policy_shock.py` run the structural-validation checks
+(time-reversal, ground-truth intervention, and an honest-null real macro shock test).
 
 ## 📁 Project Structure
 

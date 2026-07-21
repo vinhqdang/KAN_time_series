@@ -178,3 +178,48 @@ class CausalKANContemp(nn.Module):
     def lagged_importance(self, x_lag):
         c = torch.einsum("bhjk,ijhk->bij", self._bases(x_lag), self.cl)
         return c.std(0)                                    # [d, d]
+
+
+class CausalKANInstant(nn.Module):
+    """
+    Pure instantaneous (i.i.d.) non-linear DAG discovery with KAN edges.
+
+    Self-masked structural equation model x_i = sum_{j!=i} phi_ij(x_j) + e_i, with
+    the NOTEARS acyclicity h(W)=tr(e^{W o W})-d applied (via ALM) to the
+    edge-importance matrix so the learned graph is a DAG. Learnable B-spline edges
+    identify NON-LINEAR additive-noise mechanisms that linear DAG learners miss and
+    that fixed-architecture nonlinear learners (NOTEARS-MLP, DAGMA-MLP) capture less
+    accurately. importance() returns [effect, cause].
+    """
+    def __init__(self, d, grid_size=8, spline_order=3, grid_range=(-3.0, 3.0)):
+        super().__init__()
+        self.d = d; self.k = spline_order; self.n_basis = grid_size + spline_order
+        lo, hi = grid_range; step = (hi - lo) / grid_size
+        self.register_buffer("grid", torch.arange(-spline_order, grid_size + spline_order + 1) * step + lo)
+        self.grid_range = (lo, hi)
+        self.coef = nn.Parameter(0.1 * (torch.rand(d, d, self.n_basis) - 0.5))
+        self.bias = nn.Parameter(torch.zeros(d))
+        self.register_buffer("selfmask", (1 - torch.eye(d)).unsqueeze(-1))
+
+    def _bases(self, x):
+        x = x.clamp(*self.grid_range).unsqueeze(-1); g = self.grid
+        b = ((x >= g[:-1]) & (x < g[1:])).to(x.dtype)
+        for i in range(1, self.k + 1):
+            b = ((x - g[:-(i + 1)]) / (g[i:-1] - g[:-(i + 1)] + 1e-8)) * b[..., :-1] \
+                + ((g[i + 1:] - x) / (g[i + 1:] - g[1:-i] + 1e-8)) * b[..., 1:]
+        return b
+
+    def forward(self, x):
+        return torch.einsum("bjk,ijk->bi", self._bases(x), self.coef * self.selfmask) + self.bias
+
+    def group_lasso(self):
+        return torch.linalg.vector_norm(self.coef * self.selfmask, dim=2).sum()
+
+    def h(self):
+        W = torch.linalg.vector_norm(self.coef * self.selfmask, dim=2)
+        return _h_notears(W)
+
+    @torch.no_grad()
+    def importance(self, x):
+        c = torch.einsum("bjk,ijk->bij", self._bases(x), self.coef * self.selfmask)
+        return c.std(0)                                    # [effect, cause]

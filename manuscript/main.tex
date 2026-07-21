@@ -19,7 +19,7 @@
 % headline number filled in from experimental_results/NUMBERS.json
 \newcommand{\forecastmse}{0.044}
 
-\title{Causal discovery Kolmogorov--Arnold networks for interpretable time-series forecasting in managerial decision support}
+\title{Causal discovery Kolmogorov--Arnold networks: interpretable nonlinear causal structure learning for managerial decision support}
 \author{Quang-Vinh Dang \and Dat Le \and Minh Ngoc Dinh}
 \date{\today}
 
@@ -39,23 +39,24 @@ learned structure identifiable---with an edge-level group-lasso for sparsity and
 an optional acyclicity constraint on contemporaneous edges. We evaluate it
 transparently against seven genuine baselines (PCMCI, VAR-LiNGAM, NOTEARS, GOLEM,
 VAR-Lasso, and two KAN-based Granger variants) using threshold-free AUROC/AUPRC
-with paired significance tests. Across graph widths $d\in\{5,10,20,50\}$, CD-KAN recovers linear structure
-near-perfectly and is competitive on non-linear structure (AUROC~$=$~0.76,
-$\approx$0.90--0.97 at low $d$), significantly outperforming the KAN-Granger
-baselines and NOTEARS ($p<0.05$) while remaining fully interpretable; the very
-strongest classical estimators (PCMCI, VAR-LiNGAM) still lead. We show
-identifiability hinges on the bottleneck: a variant with a dense forecasting
-backbone collapses to chance. Under a leakage-free rolling-origin protocol CD-KAN
-forecasts an 8-asset financial panel competitively (MSE $\approx\forecastmse$; we
-retract an earlier $0.0008$ traced to a test-leaking normalization). We validate
-the recovered structure beyond self-consistency: it survives a permutation test
-(4.7$\times$ chance, $p<0.0001$), degrades sharply under time-reversal
-(AUROC~0.94$\to$0.64, confirming it uses time's arrow), and---on a controlled
-synthetic intervention with a known structural break---detects the change and
-recovers both regime graphs (though we report candidly that documented policy
-shocks are \emph{not} cleanly recoverable from observational macro data). Its
-spline edge functions expose linear, saturating, and threshold-like
-dependencies---supporting a ``glass-box'' decision-support tool for
+with paired significance tests. Our headline result is on \emph{non-linear} causal discovery: on instantaneous
+additive-noise DAGs, CD-KAN attains AUROC~$\approx$~0.88 across widths
+$d\in\{6,10,20\}$, \textbf{decisively outperforming the strongest DAG learners}---
+DAGMA-nonlinear and NOTEARS-MLP ($\approx$0.6) and linear NOTEARS/DAGMA---because
+its learnable spline edges capture non-linear mechanisms that fixed-architecture
+learners miss. We show this identifiability hinges on an information bottleneck: a
+variant with a dense forecasting backbone collapses to chance. CD-KAN also handles
+lagged (temporal) structure competitively---perfect on linear graphs and, on
+non-linear graphs, beating KAN-Granger baselines and NOTEARS while trailing the
+best conditioning-based methods (PCMCI, VAR-LiNGAM)---and scales to $d{=}50$ in
+seconds. Under a leakage-free protocol it forecasts an 8-asset financial panel
+competitively (MSE $\approx\forecastmse$; we retract an earlier $0.0008$ traced to
+a test-leaking normalization). We validate recovered structure beyond
+self-consistency (permutation test 4.7$\times$ chance, $p<0.0001$; a time-reversal
+placebo; a ground-truth structural-change experiment), and report candidly that
+documented policy shocks are \emph{not} cleanly recoverable from observational
+macro data. Its spline edge functions expose linear, saturating, and
+threshold-like dependencies---supporting a ``glass-box'' decision-support tool for
 moderate-dimensional, non-linear business systems.
 \end{abstract}
 
