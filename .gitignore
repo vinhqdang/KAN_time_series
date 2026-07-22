@@ -220,3 +220,4 @@ manuscript/main.pdf
 SPADE_manuscript.pdf
 manuscript/*.pdf
 SPADE_DSS_*.pdf
+*.spl
