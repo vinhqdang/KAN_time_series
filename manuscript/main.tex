@@ -1,11 +1,15 @@
-\documentclass[12pt]{article}
-\usepackage[utf8]{inputenc}
-\usepackage[round,authoryear]{natbib}
+%% Elsevier article (elsarticle) — formatted for Decision Support Systems.
+%% Single-column preprint with author-year citations.
+\documentclass[preprint,12pt,authoryear]{elsarticle}
+
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsthm}
-\usepackage{times}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{url}
 
 % theorem environments
 \newtheorem{theorem}{Theorem}
@@ -20,27 +24,23 @@
 \newcommand{\pa}{\mathrm{pa}}
 \newcommand{\Real}{\mathbb{R}}
 \newcommand{\indep}{\perp\!\!\!\perp}
-\usepackage{booktabs}
-\usepackage{algorithm}
-\usepackage{algorithmic}
-\usepackage{geometry}
-\geometry{
- a4paper,
- total={170mm,257mm},
- left=20mm,
- top=20mm,
-}
 
 % headline number filled in from experimental_results/NUMBERS.json
 \newcommand{\forecastmse}{0.044}
 
-\title{{SPADE}: spline additive-noise {DAG} estimation for interpretable nonlinear causal discovery in managerial decision support}
-\author{Quang-Vinh Dang \and Dat Le \and Minh Ngoc Dinh}
-\date{\today}
+\journal{Decision Support Systems}
 
 \begin{document}
 
-\maketitle
+\begin{frontmatter}
+
+\title{{SPADE}: spline additive-noise {DAG} estimation for interpretable
+nonlinear causal discovery in managerial decision support}
+
+%% DOUBLE-BLIND VERSION: author details are intentionally omitted here.
+%% This file is the ``Manuscript without author details''. Author names,
+%% affiliations, and the corresponding-author email are on the separate
+%% ``Title page with author details'' (title_page.tex).
 
 \begin{abstract}
 Understanding causal relationships in organizational time-series data is critical
@@ -77,19 +77,23 @@ threshold-like dependencies---supporting a ``glass-box'' decision-support tool f
 moderate-dimensional, non-linear business systems.
 \end{abstract}
 
-% Include the Introduction Section
+\begin{keyword}
+Causal discovery \sep Kolmogorov--Arnold networks \sep Interpretable machine
+learning \sep Time-series forecasting \sep Decision support systems \sep
+Directed acyclic graphs
+\end{keyword}
+
+\end{frontmatter}
+
 % Include the Introduction Section
 \input{jmis_introduction}
 
 % Include the Method Section
-% Include the Method Section
 \input{jmis_method}
 
 % Include the Results Section
-% Include the Results Section
 \input{jmis_results}
 
-% Include the Discussion Section
 % Include the Discussion Section
 \input{jmis_discussion}
 
@@ -99,7 +103,7 @@ moderate-dimensional, non-linear business systems.
 \appendix
 \input{jmis_appendix}
 
-\bibliographystyle{apalike}
+\bibliographystyle{elsarticle-harv}
 \bibliography{references}
 
 \end{document}

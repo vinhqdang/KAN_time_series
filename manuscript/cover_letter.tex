@@ -1,0 +1,56 @@
+%% Cover letter for Decision Support Systems submission.
+\documentclass[11pt]{letter}
+\usepackage[margin=1in]{geometry}
+\usepackage{times}
+\signature{Quang-Vinh Dang \\ (on behalf of all authors)}
+\address{[Author address] \\ \texttt{dqvinh87@gmail.com}}
+\begin{document}
+
+\begin{letter}{The Editors-in-Chief \\ \emph{Decision Support Systems}}
+
+\opening{Dear Editors,}
+
+We are pleased to submit our manuscript, \emph{``SPADE: spline additive-noise DAG
+estimation for interpretable nonlinear causal discovery in managerial decision
+support,''} for consideration as a research article in \emph{Decision Support
+Systems}.
+
+Managers increasingly need not just accurate forecasts but an account of
+\emph{why} an outcome will occur---which drivers to act on, and how. Yet the
+methods that dominate practice force a choice between transparent-but-linear
+econometrics and accurate-but-opaque deep networks. Our paper contributes a
+decision-support artifact that dissolves this trade-off for
+moderate-dimensional, non-linear business systems.
+
+We believe the work fits the journal's scope for three reasons:
+\begin{itemize}
+  \item \textbf{A genuine methodological advance with a clear decision-support
+  purpose.} SPADE couples Kolmogorov--Arnold spline edge functions with
+  differentiable causal-structure learning so that a single model yields both a
+  forecast and an interpretable, lag-resolved causal graph whose edge functions
+  expose the \emph{shape} of each dependency (linear, saturating, threshold).
+  \item \textbf{A decisive, rigorously evaluated result.} On non-linear
+  instantaneous additive-noise DAGs, SPADE attains AUROC~$\approx$~0.88 and
+  substantially outperforms the strongest modern DAG learners (DAGMA-nonlinear,
+  GraN-DAG, NOTEARS-MLP). We ground the method in additive-noise identifiability
+  theory and evaluate with threshold-free metrics and paired significance tests
+  against recent baselines run from their authors' implementations.
+  \item \textbf{Transparency and reproducibility.} We report null and negative
+  results candidly (a documented macro policy shock is \emph{not} cleanly
+  recoverable from observational data), correct and openly retract two
+  unreproducible figures from earlier drafts, and release all code and data.
+\end{itemize}
+
+The manuscript is original, is not under consideration elsewhere, and all authors
+approve its submission. We have no conflicts of interest to declare. In
+accordance with the journal's double-blind policy, we provide an anonymized
+manuscript together with a separate title page containing author details.
+
+We suggest the manuscript may be handled under the areas of business analytics,
+machine learning for decision support, and explainable AI. Thank you for your
+consideration.
+
+\closing{Sincerely,}
+
+\end{letter}
+\end{document}

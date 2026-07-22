@@ -1,0 +1,63 @@
+%% Title page WITH author details (Decision Support Systems, double-blind).
+%% Upload this as "Title page with author details".
+\documentclass[preprint,12pt,authoryear]{elsarticle}
+\usepackage{graphicx}
+\journal{Decision Support Systems}
+
+\begin{document}
+\begin{frontmatter}
+
+\title{{SPADE}: spline additive-noise {DAG} estimation for interpretable
+nonlinear causal discovery in managerial decision support}
+
+%% NOTE: affiliation details below are placeholders --- complete
+%% organization / address / city / country before submission.
+\author[inst1]{Quang-Vinh Dang\corref{cor1}}
+\ead{dqvinh87@gmail.com}
+\author[inst1]{Dat Le}
+\author[inst1]{Minh Ngoc Dinh}
+
+\affiliation[inst1]{organization={[Affiliation to be completed by authors]},
+            addressline={},
+            city={},
+            postcode={},
+            country={}}
+
+\cortext[cor1]{Corresponding author.}
+
+\begin{abstract}
+Understanding causal relationships in organizational time-series data is critical
+for managerial decision-making, yet forecasting systems often trade
+interpretability for accuracy. We introduce \textbf{SPADE} (SPline Additive-noise
+DAG Estimation), an information-systems artifact built on Kolmogorov--Arnold
+networks that jointly discovers interpretable non-linear causal structure and
+produces one-step forecasts from a single differentiable model. Its headline
+result is on non-linear instantaneous causal discovery, where learnable spline
+edges recover additive-noise DAGs at AUROC~$\approx$~0.88 across
+$d\in\{6,10,20\}$, decisively outperforming the strongest modern DAG learners
+(DAGMA-nonlinear, GraN-DAG, NOTEARS-MLP). We ground the design in the
+identifiability theory of additive-noise models, evaluate transparently against
+recent baselines with threshold-free metrics, and report all limitations candidly.
+\end{abstract}
+
+\begin{keyword}
+Causal discovery \sep Kolmogorov--Arnold networks \sep Interpretable machine
+learning \sep Time-series forecasting \sep Decision support systems \sep
+Directed acyclic graphs
+\end{keyword}
+
+\end{frontmatter}
+
+\section*{Author details}
+\noindent\textbf{Quang-Vinh Dang} (corresponding author) --- [affiliation];
+\texttt{dqvinh87@gmail.com}.\\
+\textbf{Dat Le} --- [affiliation].\\
+\textbf{Minh Ngoc Dinh} --- [affiliation].
+
+\section*{Declarations}
+\noindent\textbf{Funding.} [To be completed --- state any funding, or ``none''.]\\
+\textbf{Conflict of interest.} The authors declare no competing interests.\\
+\textbf{Data and code availability.} Code and data to reproduce all results are
+available in the accompanying repository.
+
+\end{document}
