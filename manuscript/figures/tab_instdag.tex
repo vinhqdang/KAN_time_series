@@ -3,12 +3,15 @@
 \toprule
 \textbf{Method} & $d{=}6$ & $d{=}10$ & $d{=}20$ & F1 \\
 \midrule
-\textbf{SPADE (ours)} & 0.876 & 0.885 & 0.886 & 0.770 \\
-DAGMA-nonlinear & 0.603 & 0.581 & 0.581 & 0.482 \\
-GraN-DAG & 0.518 & 0.510 & 0.520 & 0.239 \\
-NOTEARS-MLP & 0.605 & 0.608 & 0.639 & 0.350 \\
-GOLEM & 0.705 & 0.729 & 0.746 & 0.449 \\
-DAGMA-linear & 0.396 & 0.603 & 0.506 & 0.364 \\
-NOTEARS-linear & 0.697 & 0.791 & 0.882 & 0.568 \\
+\textbf{SPADE (ours)} & 0.876$\pm$0.105 & 0.885$\pm$0.038 & 0.886$\pm$0.030 & 0.770$\pm$0.124 \\
+DAGMA-nonlinear & 0.603$\pm$0.230 & 0.581$\pm$0.215 & 0.581$\pm$0.106 & 0.482$\pm$0.151 \\
+SCORE & 0.804$\pm$0.153 & 0.887$\pm$0.069 & 0.821$\pm$0.023 & 0.682$\pm$0.183 \\
+NoGAM & 0.917$\pm$0.077 & 0.955$\pm$0.058 & 0.906$^\dagger$ & 0.859$\pm$0.124 \\
+GraN-DAG & 0.518$\pm$0.073 & 0.510$\pm$0.029 & 0.520$\pm$0.011 & 0.239$\pm$0.111 \\
+NOTEARS-MLP & 0.605$\pm$0.122 & 0.608$\pm$0.080 & 0.639$\pm$0.039 & 0.350$\pm$0.114 \\
+GOLEM & 0.705$\pm$0.144 & 0.729$\pm$0.065 & 0.746$\pm$0.049 & 0.449$\pm$0.159 \\
+DAGMA-linear & 0.396$\pm$0.226 & 0.603$\pm$0.120 & 0.506$\pm$0.019 & 0.364$\pm$0.143 \\
+NOTEARS-linear & 0.697$\pm$0.105 & 0.791$\pm$0.051 & 0.882$\pm$0.025 & 0.568$\pm$0.066 \\
 \bottomrule
+\multicolumn{5}{l}{\footnotesize $^\dagger$single seed only (no std); see text for why.} \\
 \end{tabular}

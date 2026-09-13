@@ -225,17 +225,33 @@ def aggregate_and_write(df):
     print("\nby d (std):\n", byd_std.round(3).to_string())
     agg.to_csv(os.path.join(RES, "instdag_agg.csv"))
 
-    # LaTeX table: AUROC (mean +/- std across seeds) by d + overall F1 (mean +/- std)
+    # LaTeX table: AUROC (mean +/- std across seeds) by d + overall F1 (mean +/- std).
+    # A method/d cell backed by only 1 seed has an undefined (NaN) std -- render it as a
+    # single flagged number ($^\dagger$) instead of "nan" rather than fabricate a spread.
+    def cell(mean_tbl, std_tbl, m, dd, n_tbl=None):
+        mu, sd = mean_tbl.loc[m, dd], std_tbl.loc[m, dd]
+        if pd.isna(sd):
+            return f"{mu:.3f}$^\\dagger$"
+        return f"{mu:.3f}$\\pm${sd:.3f}"
+
+    n_by_d = df.groupby(["method", "d"]).size().unstack("d")
     ds = sorted(df.d.unique())
+    any_single_seed = bool((n_by_d.reindex(agg.index) == 1).any().any())
     lines = ["% auto-generated", "\\begin{tabular}{l" + "c" * len(ds) + "c}", "\\toprule",
              "\\textbf{Method} & " + " & ".join(f"$d{{=}}{dd}$" for dd in ds) + " & F1 \\\\",
              "\\midrule"]
     for m in agg.index:
-        cells = " & ".join(
-            f"{byd_mean.loc[m, dd]:.3f}$\\pm${byd_std.loc[m, dd]:.3f}" for dd in ds)
+        cells = " & ".join(cell(byd_mean, byd_std, m, dd) for dd in ds)
         lab = "\\textbf{SPADE (ours)}" if m == "SPADE" else m
-        lines.append(f"{lab} & {cells} & {agg.loc[m,'f1']:.3f}$\\pm${agg.loc[m,'f1_std']:.3f} \\\\")
-    lines += ["\\bottomrule", "\\end{tabular}"]
+        f1_cell = (f"{agg.loc[m,'f1']:.3f}$^\\dagger$" if pd.isna(agg.loc[m, "f1_std"])
+                   else f"{agg.loc[m,'f1']:.3f}$\\pm${agg.loc[m,'f1_std']:.3f}")
+        lines.append(f"{lab} & {cells} & {f1_cell} \\\\")
+    lines += ["\\bottomrule"]
+    if any_single_seed:
+        lines.append(
+            "\\multicolumn{" + str(len(ds) + 2) + "}{l}{\\footnotesize $^\\dagger$single "
+            "seed only (no std); see text for why.} \\\\")
+    lines += ["\\end{tabular}"]
     open(os.path.join(FIG, "tab_instdag.tex"), "w").write("\n".join(lines))
 
     fig, ax = plt.subplots(figsize=(7, 4.3))
