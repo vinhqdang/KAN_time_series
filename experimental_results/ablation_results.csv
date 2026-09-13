@@ -1,4 +1,5 @@
-config,auroc,f1
-CD-KAN (component-wise),0.971,0.886
-w/ dense backbone (coupled),0.579,0.467
-w/o group-lasso,0.984,0.952
+config,auroc,f1,fit_time_s
+CD-KAN (component-wise),0.902,0.867,65.81
+w/ dense backbone (coupled),0.579,0.467,
+w/o group-lasso,0.984,0.952,
+CD-KAN w/ MLP edges (matched capacity),0.889,0.878,38.64

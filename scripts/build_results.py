@@ -290,8 +290,10 @@ def build_ablation():
     for _, r in d.iterrows():
         label = "\\textbf{SPADE (full)}" if r["config"] == "full" else r["config"]
         if has_time:
+            t = r["fit_time_s"]
+            t_str = f"{t:.2f}" if pd.notna(t) else "--"
             lines.append(f"{label} & {r['auroc']:.3f} & {r['f1']:.3f} & "
-                         f"{r['fit_time_s']:.2f} \\\\")
+                         f"{t_str} \\\\")
         else:
             lines.append(f"{label} & {r['auroc']:.3f} & {r['f1']:.3f} \\\\")
     lines += ["\\bottomrule", "\\end{tabular}"]
