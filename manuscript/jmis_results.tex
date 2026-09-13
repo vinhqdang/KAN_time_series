@@ -241,8 +241,16 @@ The component-wise design is inexpensive: SPADE fits in seconds at $d{=}5$
 evaluation still makes it slower than the highly optimized classical baselines
 (Table~\ref{tab:scale}; seconds vs.\ sub-second). Cost grows with
 $d$ as the $O(d^2 L)$ edge count increases (Table~\ref{tab:scale}, reporting
-parameter count and fit time at $d\in\{5,10\}$ from the main benchmark and at
-$d\in\{15,20\}$ from a dedicated timing sweep). SPADE is thus well suited to
+parameter count and fit time at $d\in\{5,10,20,50\}$, all under the identical
+trained-to-convergence protocol used throughout Section~\ref{sec:synthetic}).
+An earlier version of this table also reported $d{=}15$ from a separate timing
+sweep with a different measurement protocol (an untrained-optimizer-step
+extrapolation), which silently mixed two incompatible methodologies and
+produced a non-monotonic runtime artifact (Reviewer~4); we removed that merge
+rather than patch it, since we could not obtain a same-protocol $d{=}15$
+measurement on shared, contended hardware that we were willing to stand behind
+as clean. Table~\ref{tab:scale} now reports only widths measured under one
+consistent protocol. SPADE is thus well suited to
 moderate-width systems (tens of variables); the thousands-of-series regime would
 require vectorized spline evaluation and low-rank acyclicity
 (Section~\ref{sec:limits}).

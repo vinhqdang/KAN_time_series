@@ -211,7 +211,22 @@ def build_forecast():
 
 
 def build_scale():
-    """SPADE params + fit time vs d, from causal raw (+ optional timing sweep)."""
+    """SPADE params + fit time vs d, from the SAME-protocol causal-discovery
+    benchmark only (honest_causal_raw.csv: d in {5,10,20,50}).
+
+    Reviewer note (fixed a real bug): this used to also merge in any width
+    missing from honest_causal_raw.csv from scalability_sweep.csv, a
+    DIFFERENT script/protocol (originally a 10-step timing extrapolation;
+    later a same-protocol but shared-machine-contended rerun) -- for d=15,
+    the only width missing from honest_causal_raw.csv, this silently mixed
+    two incompatible timing methodologies and produced a non-monotonic
+    runtime spike in the table. We removed the merge entirely rather than
+    trying to patch it: every number in this table now comes from the exact
+    same trained-to-convergence run as the causal-discovery experiments, at
+    the cost of not having a d=15 point. We do not consider a
+    shared-machine, possibly-contended rerun of just d=15 (however
+    same-protocol) an honest substitute for that -- see the response letter.
+    """
     df = pd.read_csv(os.path.join(RES, "honest_causal_raw.csv"))
     df["method"] = df["method"].replace({"CD-KAN": "SPADE", "CD-KAN(prob)": "SPADE"})
     ck = df[df.method == "SPADE"].copy()
@@ -220,12 +235,6 @@ def build_scale():
     g = ck.groupby("d").agg(params=("n_params", "max"),
                             t=("time_s", "mean")).reset_index()
     rows_by_d = {int(r["d"]): (int(r["params"]), float(r["t"])) for _, r in g.iterrows()}
-    extra = os.path.join(RES, "scalability_sweep.csv")
-    if os.path.exists(extra):
-        for _, r in pd.read_csv(extra).iterrows():
-            d = int(r["d"])
-            if d not in rows_by_d:            # don't duplicate d already benchmarked
-                rows_by_d[d] = (int(r["params"]), float(r["fit_time_s"]))
     lines = ["% auto-generated", "\\begin{tabular}{c c c}", "\\toprule",
              "$d$ & \\# parameters & mean fit time (s) \\\\", "\\midrule"]
     for d in sorted(rows_by_d):

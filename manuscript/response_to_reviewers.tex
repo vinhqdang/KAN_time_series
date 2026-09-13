@@ -171,13 +171,20 @@ $d\in\{5,10,20,50\}$) from a \emph{different} script
 (\texttt{scripts/ablation\_scale.py}) that only extrapolates from 10 untrained
 optimizer steps $\times\,15$ --- an entirely different, much coarser
 measurement protocol for the one width, $d{=}15$, that the main benchmark
-never covered. We added
-\texttt{scripts/fix\_scalability\_sweep.py}, which times $d{=}15$ (and
-$d{=}10,20$ as a same-protocol cross-check) under the \emph{identical}
-trained-to-convergence protocol as the main benchmark
-(\texttt{fit\_cdkan()}), so Table~4 now reports a single consistent
-methodology across all widths. [NUMBER PENDING for the corrected $d{=}15$
-entry.] (ii) We also found that \texttt{src/config.py}'s \texttt{CDKANConfig}
+never covered. We attempted a same-protocol, same-machine re-measurement of $d{=}15$
+(\texttt{fit\_cdkan()}, identical to the main benchmark) as a fix, but this
+session's compute environment was shared with several other long-running
+reruns at the time, and the resulting wall-clock ($\approx$60s) was still
+inflated by contention relative to the isolated-run numbers already in
+\texttt{honest\_causal\_raw.csv} for the neighboring widths --- we did not
+consider that a number we could honestly stand behind as measured under the
+same conditions as the rest of the table. Rather than publish a
+still-uncertain re-measurement, we removed the cross-script merge entirely:
+Table~4 now reports \emph{only} $d\in\{5,10,20,50\}$, all measured in the one
+trained-to-convergence run that also produces every other causal-discovery
+number in the paper, and we say so explicitly in the text
+(Section~3.4) rather than silently drop the width. (ii) We also found that
+\texttt{src/config.py}'s \texttt{CDKANConfig}
 dataclass defaults (grid size 10, max lag 10, lr $10^{-3}$, 100 epochs) do
 not match the hyperparameters actually reported in the manuscript and used by
 every paper-facing experiment script (grid size 8, lr $5\times10^{-3}$, 150

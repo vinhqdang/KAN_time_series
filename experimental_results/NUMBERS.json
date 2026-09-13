@@ -556,18 +556,27 @@
   "ablation": [
     {
       "config": "CD-KAN (component-wise)",
-      "auroc": 0.971,
-      "f1": 0.886
+      "auroc": 0.902,
+      "f1": 0.867,
+      "fit_time_s": 65.81
     },
     {
       "config": "w/ dense backbone (coupled)",
       "auroc": 0.579,
-      "f1": 0.467
+      "f1": 0.467,
+      "fit_time_s": NaN
     },
     {
       "config": "w/o group-lasso",
       "auroc": 0.984,
-      "f1": 0.952
+      "f1": 0.952,
+      "fit_time_s": NaN
+    },
+    {
+      "config": "CD-KAN w/ MLP edges (matched capacity)",
+      "auroc": 0.889,
+      "f1": 0.878,
+      "fit_time_s": 38.64
     }
   ],
   "stability": {
