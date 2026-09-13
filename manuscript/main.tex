@@ -70,8 +70,8 @@ GraN-DAG, GOLEM, nonlinear NOTEARS), score-matching topological-ordering methods
 VAR-LiNGAM), using threshold-free AUROC/AUPRC with paired significance tests and
 guarding against known benchmark artifacts. Our headline result is on
 \emph{non-linear} causal discovery: on instantaneous additive-noise DAGs, SPADE
-attains AUROC~$\approx$~0.88 across widths $d\in\{6,10,20\}$, \textbf{decisively
-outperforming every fixed-architecture, gradient-based DAG learner we test}---DAGMA-nonlinear, GraN-DAG, and
+attains AUROC~$\approx$~0.88 across widths $d\in\{6,10,20\}$, decisively
+outperforming every fixed-architecture, gradient-based DAG learner we test---DAGMA-nonlinear, GraN-DAG, and
 NOTEARS-MLP---at a small fraction of their runtime, because its learnable spline edges capture non-linear mechanisms
 that fixed-architecture learners miss; we are equally candid that a
 score-matching method (NoGAM) attains higher AUROC still, at 300--800$\times$
@@ -86,9 +86,14 @@ a test-leaking normalization). We validate recovered structure beyond
 self-consistency (permutation test 4.7$\times$ chance, $p<0.0001$; a time-reversal
 placebo; a ground-truth structural-change experiment), and report candidly that
 documented policy shocks are \emph{not} cleanly recoverable from observational
-macro data. Its spline edge functions expose linear, saturating, and
+macro data, and that redoing the financial analysis on a stationary
+(log-return) representation---the check non-stationarity concerns demand---
+collapses the learned graph to an uninformative, fully-connected structure:
+the levels-based graph should be read as evidence of shared non-stationary
+co-movement, not validated short-horizon causal structure. Its spline edge functions expose linear, saturating, and
 threshold-like dependencies---supporting a ``glass-box'' decision-support tool for
-moderate-dimensional, non-linear business systems.
+moderate-dimensional, non-linear business systems, with the boundary
+conditions above named explicitly rather than left implicit.
 \end{abstract}
 
 \begin{keyword}

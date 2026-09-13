@@ -168,8 +168,15 @@ NOTEARS/Correlation''), a transcription error against the same underlying
 CSV (\texttt{experimental\_results/honest\_causal\_stats.csv}). The caption
 now reads: ``SPADE significantly beats Neural-GC and NOTEARS ($p<0.01$), ties
 the KAN-Granger baselines (GC-KAN/GC-KAN$+$ALM) and Correlation ($p>0.05$),
-and trails the conditioning-based estimators (PCMCI, VAR-LiNGAM, VAR-Lasso,
-GOLEM; $p<0.05$)'' --- consistent with both the CSV and the main text. We
+and trails PCMCI, VAR-LiNGAM, VAR-Lasso, and
+GOLEM ($p<0.05$)'' --- consistent with both the CSV and the main text. (We
+also caught, on our own subsequent internal review pass, that an earlier
+draft of this caption and of Section~3.1's Discussion mischaracterized GOLEM
+as a ``conditioning-based/non-Gaussianity-based'' method alongside PCMCI and
+VAR-LiNGAM; GOLEM is a continuous-optimization, likelihood-based linear DAG
+learner in the same family as NOTEARS/DAGMA, not a constraint- or
+non-Gaussianity-exploiting method, and we corrected the terminology
+throughout.) We
 also added standard deviation across seeds to
 Table~2 (the headline instantaneous-DAG table) for every method's AUROC/AUPRC/F1,
 computed from the existing per-seed raw results
@@ -306,8 +313,14 @@ grid size 8, order 3) with a $1\!\to\!3\!\to\!1$ tanh MLP edge (10
 coefficients, the closest capacity match). Table~6 (Ablation) now includes
 this row alongside the existing spline, dense-backbone, and no-group-lasso
 variants: AUROC~$0.889$/F1~$0.878$ for the MLP-edge variant versus
-AUROC~$0.902$/F1~$0.867$ for the B-spline variant --- statistically
-indistinguishable over three seeds, and the MLP-edge variant is in fact
+AUROC~$0.902$/F1~$0.867$ for the B-spline variant. On reflection (and per a
+finding from our own subsequent internal review pass) we retract the phrase
+``statistically indistinguishable'' here: with only three seeds we do not
+have the power for a meaningful significance test, and we should not have
+used language that implies one was run. We now report the point estimates
+plainly and note only that the gap is small relative to the seed-to-seed
+spread reported elsewhere in the paper --- suggestive, not conclusive. The
+MLP-edge variant is in fact
 somewhat \emph{cheaper} per training step (roughly 40--66\% of the
 B-spline's wall-clock at the same epoch count, so an equal-epoch comparison
 alone would not equalize training budget, which is why we now report
@@ -338,9 +351,14 @@ install dodiscover} --- documented in Appendix~A.2, not silently glossed
 over).
 
 \textbf{The result changes our headline framing, and we say so plainly
-rather than bury it.} NoGAM \emph{outperforms} SPADE at every width tested:
-AUROC~$0.917\pm0.077$/$0.955\pm0.058$/$0.906$ (single seed at $d{=}20$; see
-below) versus SPADE's $0.876$/$0.885$/$0.886$. SCORE is roughly on par with
+rather than bury it.} NoGAM \emph{clearly outperforms} SPADE at $d{=}6,10$
+(five seeds each: $0.917\pm0.077$/$0.955\pm0.058$ vs.\ SPADE's
+$0.876$/$0.885$); at $d{=}20$ its nominal edge ($0.906$ on a single seed vs.\
+SPADE's $0.886\pm0.030$ over three) is smaller than SPADE's own seed-to-seed
+spread there, so we report that one specifically as suggestive rather than
+established --- on our own subsequent internal review pass we caught
+ourselves initially stating this uniformly as ``at every width tested,''
+which overstated the $d{=}20$ evidence, and corrected it. SCORE is roughly on par with
 SPADE ($0.804\pm0.153$/$0.887\pm0.069$/$0.821\pm0.023$). We have revised the
 abstract, Contributions (Section~1.2), Section~3.3 (headline results, table,
 caption, and figure caption), the Discussion, and the Conclusion throughout

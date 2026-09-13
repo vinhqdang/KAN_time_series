@@ -142,6 +142,15 @@ $\lambda_g$. We do not claim this bias vanishes analytically; the sensitivity
 analysis (Section~\ref{sec:sensitivity}) is the empirical evidence that
 recovery is stable across a range of $\lambda_g$, and finite-sample consistency
 as $N\to\infty,\lambda_g\to 0$ is left as a formal question for future work.
+Third, and separately from the group-lasso, the hard constraint
+$h(W^{(0)})=0$ itself is never exactly satisfied in practice: the Augmented
+Lagrangian Method drives $h(W^{(0)})$ toward zero but only to a small residual
+(e.g.\ $\approx 2\times10^{-3}$ in Section~\ref{sec:contemp}'s combined
+SVAR experiment), not the exact equality the proposition assumes. Both
+departures from the idealized statement---the group-lasso's shrinkage bias
+and the ALM's residual acyclicity violation---are properties of the
+\emph{practical} estimator, not of the population-level identifiability
+argument, and neither is claimed to vanish without further analysis.
 \end{remark}
 
 \paragraph{Why the bottleneck is necessary.} Identifiability can be forfeited by

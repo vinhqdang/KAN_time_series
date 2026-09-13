@@ -16,7 +16,14 @@ expected. In the financial application, SPADE surfaced lagged dependencies
 \emph{shape} of the mechanism from the spline (Section~\ref{sec:splines}).
 Whether a driver is linear, saturating, or threshold-like changes the managerial
 response---linear drivers justify proportional hedging, whereas saturating ones
-imply diminishing returns to further exposure.
+imply diminishing returns to further exposure. \textbf{This illustration carries
+the caveat established in Section~\ref{sec:returns}, not only the boundary-
+conditions list below}: on this same panel, redoing the analysis on a
+stationary (returns) representation collapses the graph to an uninformative,
+fully-connected structure, so the specific edges cited here (and the hedging
+logic built on them) should be read as evidence of shared, likely
+non-stationary co-movement rather than a validated short-horizon causal
+driver a manager should act on directly.
 
 \subsection{Risk management and intervention}
 A causal (rather than merely correlational) map identifies candidate leverage
@@ -26,7 +33,13 @@ help distinguish plausible directional drivers from co-movement. We stress
 \emph{candidate}: under observational data and Assumption~\ref{as:suff} (causal
 sufficiency), unobserved confounders may still induce spurious edges, so the
 graph is a hypothesis generator for expert review, not a substitute for
-controlled experiments or natural-experiment identification.
+controlled experiments or natural-experiment identification. On the financial
+panel specifically, this is not a hypothetical caveat: Section~\ref{sec:returns}
+shows the levels-based graph does not survive a stationarity check, so before
+any leverage point identified here is used to justify an intervention, a
+practitioner should treat it as (at most) a candidate worth independent
+investigation, not as validated causal evidence---a distinction that matters
+most exactly where risk or capital-allocation decisions are on the line.
 
 \subsection{Fostering trust through structural transparency}
 The ``black box'' nature of deep models impedes adoption in high-stakes settings
@@ -65,8 +78,9 @@ Several boundary conditions delimit responsible use:
     lagged structure, the best of the flexible neural/KAN learners: it
     significantly beats NOTEARS and Neural-GC (Wilcoxon $p<0.01$) and is on par
     with the recent NTS-NOTEARS and the KAN-Granger baselines---but the strongest
-    constraint- and non-Gaussianity-based methods (PCMCI, VAR-LiNGAM, VAR-Lasso,
-    GOLEM) retain an edge on \emph{lagged} discovery, and all classical methods are far faster
+    conditioning-based, non-Gaussianity-exploiting, and sparse-linear methods
+    (PCMCI, VAR-LiNGAM, VAR-Lasso) and the continuous-optimization linear
+    learner GOLEM retain an edge on \emph{lagged} discovery, and all classical methods are far faster
     (Section~\ref{sec:synthetic}). On \emph{instantaneous} non-linear structure,
     SPADE decisively beats every fixed-architecture, gradient-based DAG learner
     but is itself outperformed by the score-matching method NoGAM (and roughly

@@ -120,9 +120,11 @@ $d{=}20$ (and five at $d{=}6,10$).
 F1 overall). SPADE substantially and consistently outperforms every
 fixed-architecture gradient-based DAG learner (DAGMA-nonlinear/-linear,
 GraN-DAG, NOTEARS-MLP, GOLEM, linear NOTEARS) at a fraction of their runtime.
-The score-matching method NoGAM \citep{montagna2023nogam} attains higher AUROC
-than SPADE at every width tested, at 300--800$\times$ SPADE's runtime and only
-a single seed at $d{=}20$ ($^\dagger$); SCORE \citep{rolland2022score} is
+The score-matching method NoGAM \citep{montagna2023nogam} attains clearly
+higher AUROC than SPADE at $d{=}6,10$ (five seeds each), at 300--800$\times$
+SPADE's runtime; its nominal edge at $d{=}20$ rests on a single seed
+($^\dagger$, gap smaller than SPADE's own seed-to-seed spread there) and is
+reported as suggestive, not established. SCORE \citep{rolland2022score} is
 roughly on par with SPADE throughout. See text.}
 \label{tab:instdag}
 \input{figures/tab_instdag}
@@ -146,9 +148,16 @@ this specific family---fixed-architecture learners trained by gradient descent
 on a NOTEARS/DAGMA-style penalized objective---SPADE's advantage is real and
 substantial, and is where we had previously (and incompletely) drawn the
 comparison. It is \emph{not} the full picture. NoGAM \citep{montagna2023nogam}
-attains AUROC~$0.917\pm0.077$/$0.955\pm0.058$ at $d{=}6$/$10$ (five seeds) and
-$0.906$ at $d{=}20$ (one seed)---\emph{higher than SPADE at every width
-tested}. SCORE \citep{rolland2022score} is roughly on par with SPADE
+attains AUROC~$0.917\pm0.077$/$0.955\pm0.058$ at $d{=}6$/$10$ (five seeds each)---
+\emph{clearly higher than SPADE's $0.876$/$0.885$ there}. At $d{=}20$ NoGAM's
+single-seed point estimate ($0.906$) is nominally above SPADE's three-seed
+mean ($0.886\pm0.030$), but the gap (0.02) is smaller than SPADE's own
+seed-to-seed spread at that width, so we report this as suggestive rather
+than established: NoGAM's $d{=}20$ advantage is not something we can claim
+with the same confidence as at $d{=}6,10$, and a fuller-seed measurement
+there is future work our compute budget did not permit this round (its
+kernel-ridge cross-validated pruning took over an hour for the single seed
+we ran). SCORE \citep{rolland2022score} is roughly on par with SPADE
 ($0.804\pm0.153$/$0.887\pm0.069$/$0.821\pm0.023$). We report this candidly: a
 non-gradient-based, score-matching topological-ordering method with CAM
 pruning recovers these additive-noise instantaneous DAGs at least as well as
@@ -176,8 +185,9 @@ variance-ordering artifact.
     holds AUROC~$\approx$~0.88 across $d$, well ahead of every fixed-architecture
     gradient-based DAG learner (DAGMA-nonlinear, GraN-DAG, NOTEARS-MLP sit near
     or below 0.6; linear NOTEARS approaches SPADE only at $d{=}20$). The
-    score-matching method NoGAM sits above SPADE at every width (at far higher
-    compute cost); SCORE is roughly on par.}
+    score-matching method NoGAM sits clearly above SPADE at $d{=}6,10$ (at far
+    higher compute cost); its single-seed $d{=}20$ point is only nominally
+    above SPADE's three-seed mean. SCORE is roughly on par.}
     \label{fig:instdag}
 \end{figure}
 
@@ -197,7 +207,7 @@ The constraint- and non-Gaussianity-based methods (PCMCI~0.94, VAR-LiNGAM~0.94,
 VAR-Lasso~0.93) still lead this regime, as they classically do on additive-noise
 temporal data. The reading is consistent and honest: on \emph{lagged} structure
 SPADE is the best of the flexible neural/KAN learners but does not overtake the
-mature conditioning-based estimators---its decisive advantage is the
+mature classical and linear baselines (PCMCI, VAR-LiNGAM, VAR-Lasso, GOLEM)---its decisive advantage is the
 \emph{instantaneous} regime of Section~\ref{sec:instdag}.
 
 \paragraph{Statistical significance.} Paired Wilcoxon signed-rank tests
@@ -205,8 +215,9 @@ mature conditioning-based estimators---its decisive advantage is the
 SPADE significantly \emph{outperforms} Neural-GC ($p<0.001$) and NOTEARS
 ($p{=}0.004$), and is statistically \emph{indistinguishable} from NTS-NOTEARS
 ($p{=}0.16$), GC-KAN and GC-KAN$+$ALM ($p{=}0.06$), and the correlation baseline
-($p{=}0.47$); the conditioning-based estimators PCMCI, VAR-LiNGAM, VAR-Lasso, and
-GOLEM remain ahead ($p<0.05$). SPADE is thus a \emph{competitive}
+($p{=}0.47$); PCMCI, VAR-LiNGAM, VAR-Lasso, and
+GOLEM (classical/conditioning-based and continuous-optimization linear baselines,
+respectively) remain ahead ($p<0.05$). SPADE is thus a \emph{competitive}
 causal-discovery method---the strongest of the flexible neural/KAN family and on
 par with the recent NTS-NOTEARS---rather than a uniform state-of-the-art; we make
 no such claim and explicitly retract the earlier, unreproducible F1~=~0.897. Its
@@ -240,9 +251,9 @@ F1 uses each method's best threshold. Higher is better.}
 \caption{Paired Wilcoxon signed-rank tests (two-sided; SPADE vs.\ each baseline,
 F1 across matched configuration/seed pairs). SPADE significantly beats
 Neural-GC and NOTEARS ($p<0.01$), ties the KAN-Granger baselines
-(GC-KAN/GC-KAN$+$ALM) and Correlation ($p>0.05$), and trails the
-conditioning-based estimators (PCMCI, VAR-LiNGAM, VAR-Lasso, GOLEM;
-$p<0.05$).}
+(GC-KAN/GC-KAN$+$ALM) and Correlation ($p>0.05$), and trails
+PCMCI, VAR-LiNGAM, VAR-Lasso, and GOLEM
+($p<0.05$).}
 \label{tab:causal_stats}
 \input{figures/tab_causal_stats}
 \end{table}
@@ -280,8 +291,11 @@ $h(W_0)\!\to\!0$; on these non-linear instantaneous edges it beats linear NOTEAR
 \subsection{Scalability and runtime}
 \label{sec:scalability}
 
-The component-wise design is inexpensive: SPADE fits in seconds at $d{=}5$
-(vs.\ minutes for the discarded coupled variant), though its edge-wise spline
+The component-wise design is inexpensive: SPADE fits in seconds at $d{=}5$;
+the discarded coupled (dense-backbone) variant is qualitatively slower given
+its extra residual layers and different trainer, but we do not have a clean
+wall-clock re-measurement for it this revision (Table~\ref{tab:ablation}
+marks its fit time ``--'' rather than assert an unverified figure), though its edge-wise spline
 evaluation still makes it slower than the highly optimized classical baselines
 (Table~\ref{tab:scale}; seconds vs.\ sub-second). Cost grows with
 $d$ as the $O(d^2 L)$ edge count increases (Table~\ref{tab:scale}, reporting
@@ -309,15 +323,24 @@ require vectorized spline evaluation and low-rank acyclicity
 
 Crucially, \emph{accuracy}---not merely runtime---scales: Table~\ref{tab:causal_byd}
 reports SPADE and the best baseline as $d$ grows from 5 to 50. This directly
-addresses the concern that a $d{=}5$-only evaluation is uninformative;
-SPADE remains competitive with the strongest baseline at every width we tested,
-while the vectorized model keeps fit time in the single-digit seconds.
+addresses the concern that a $d{=}5$-only evaluation is uninformative, but we
+correct an overclaim from an earlier draft: SPADE is \emph{not} competitive
+with the best baseline at every width. It is close at $d{=}5$ (0.970 vs.\
+1.000) and $d{=}20$ (0.926 vs.\ 0.944), but trails substantially at $d{=}10$
+(0.740 vs.\ PCMCI's 1.000, a 0.26 AUROC gap) and $d{=}50$ (0.829 vs.\ GOLEM's
+1.000). We show the honest picture rather than the flattering summary: SPADE's
+accuracy is not monotone in $d$ on this benchmark, and the best classical
+baseline (typically PCMCI or GOLEM) remains at or near ceiling across the same
+range. What does hold uniformly is that fit time stays low-double-digit
+seconds or better through $d{=}50$ (Table~\ref{tab:scale}), which is the
+scaling claim we can actually defend without qualification.
 
 \begin{table}[t]
 \centering
 \caption{Scaling of causal-discovery accuracy with graph width $d$
-(mean over linear/non-linear settings, 3 seeds). SPADE stays competitive with the
-best baseline at each width.}
+(mean over linear/non-linear settings, 3 seeds). SPADE is close to the best
+baseline at $d{=}5,20$ but trails substantially at $d{=}10,50$ (best baseline
+at or near ceiling throughout); see text.}
 \label{tab:causal_byd}
 \input{figures/tab_causal_byd}
 \end{table}
@@ -343,12 +366,14 @@ claim: SPADE is competitive in accuracy with the RevIN-matched deep baselines
 (within a factor of $\sim$2$\times$ MSE of the best), while being the
 \emph{only} model in the comparison that also produces an interpretable,
 lag-resolved causal graph from the same training run, and it does so roughly
-$16$--$21\times$ faster (mean training time 36s vs.\ 580--850s for the deep
-baselines under an identical epoch budget for the +RevIN variants). The
-correct reading of Table~\ref{tab:forecast} is therefore about what SPADE
-delivers \emph{jointly} (forecast $+$ causal structure $+$ interpretability
-$+$ speed), not a claim that its architecture is the more accurate
-forecaster in isolation.
+$16$--$24\times$ faster (mean training time 36s vs.\ 580--853s across the
+four +RevIN variants under an identical epoch budget). We read
+Table~\ref{tab:forecast} as being about what SPADE delivers \emph{jointly}
+(forecast $+$ causal structure $+$ interpretability $+$ speed); a reader
+who weights raw forecast MSE alone would reasonably conclude three of the
+four RevIN-matched baselines are simply better forecasters, and we do not
+dispute that reading---we are stating what we think the table is useful
+\emph{for}, not claiming it is the only defensible interpretation.
 
 \begin{table}[t]
 \centering
@@ -392,10 +417,19 @@ Table~\ref{tab:ablation} isolates SPADE's design choices on non-linear synthetic
 data. The decisive factor is the \textbf{information bottleneck}: replacing the
 component-wise readout with a dense residual KAN backbone (the ``coupled''
 variant) collapses recovery to chance (AUROC~$0.58$), because the backbone can fit
-the forecast irrespective of the adjacency. The edge-level group-lasso, by
-contrast, is not essential for ranking quality on these small dense graphs
-(AUROC is comparable with and without it); its role is to yield an explicitly
-sparse graph, which matters more as $d$ grows and the true graph becomes sparser.
+the forecast irrespective of the adjacency. The edge-level group-lasso tells a
+different, more nuanced story than we previously summarized: removing it
+\emph{raises} AUROC on these small, dense synthetic graphs (0.984 without the
+penalty vs.\ 0.902 with it) rather than leaving it unchanged---an 8-point gap
+we should not have called ``comparable.'' This is the usual shrinkage
+trade-off of an $\ell_1$-style penalty: on a graph this small and this dense,
+the penalty gives up some ranking quality (AUROC) in exchange for the sparse,
+thresholdable structure that matters at larger, sparser $d$ (Section~
+\ref{sec:scalability}) and for the finite-sample uniqueness argument in
+Proposition~\ref{prop:bottleneck}. We therefore no longer describe the
+group-lasso as ranking-quality-neutral; its cost in this regime is real and
+measurable, and its benefit (sparsity, and the tie-breaking role in
+Proposition~\ref{prop:bottleneck}) is what we are trading for.
 
 \paragraph{Isolating the spline edges themselves (Reviewer 2).} The ablation
 above isolates the bottleneck \emph{architecture} but does not, by itself, say
@@ -406,11 +440,22 @@ keeps the architecture, optimizer, learning rate, epoch budget, seeds, and
 group-lasso weight identical and replaces each B-spline edge (11 coefficients)
 with a matched-capacity $1\!\to\!3\!\to\!1$ tanh MLP edge (10 coefficients).
 The result: AUROC~$0.889$/F1~$0.878$ for the MLP-edge variant versus
-AUROC~$0.902$/F1~$0.867$ for the B-spline variant---statistically
-indistinguishable over these three seeds. On this ablation, the edge
-parameterization itself is \emph{not} what drives structure recovery; the
-component-wise bottleneck is (consistent with Remark~\ref{rem:whatprop1claims}
-and the fact that Proposition~\ref{prop:bottleneck} is architecture-agnostic).
+AUROC~$0.902$/F1~$0.867$ for the B-spline variant. We report the point
+estimates rather than claim a tested equivalence: with only three seeds we
+do not have the power to run a meaningful significance test (unlike the
+paired Wilcoxon comparisons in Table~\ref{tab:causal_stats}, which use many
+more matched configuration/seed pairs), and we did not run one here rather
+than report an underpowered $p$-value as if it settled the question. What
+we can say is that the gap between the two variants (0.013 AUROC) is small
+relative to the seed-to-seed spread we observe elsewhere in this paper
+(e.g.\ Table~\ref{tab:instdag}'s $\pm0.03$--$0.15$ AUROC across five seeds),
+which is suggestive, not conclusive, evidence that edge parameterization is
+not the primary driver of structure recovery here; the component-wise
+bottleneck is the more clearly load-bearing factor
+(Table~\ref{tab:ablation}'s dense-backbone row collapses to chance, a much
+larger and unambiguous effect), consistent with
+Remark~\ref{rem:whatprop1claims} and the fact that
+Proposition~\ref{prop:bottleneck} is architecture-agnostic.
 We report this honestly rather than as a negative result to bury: SPADE's
 distinctive contribution is not a structure-recovery advantage from splines
 per se, but (i) the \emph{interpretability} of the recovered edge shapes,
@@ -423,10 +468,11 @@ types---we report wall-clock time for exactly this reason.
 
 \begin{table}[t]
 \centering
-\caption{Ablation of SPADE on non-linear synthetic data (mean over 3 seeds).
-The information bottleneck is decisive (the dense-backbone variant collapses to
-chance); the B-spline edge parameterization itself is not (the matched-capacity
-MLP-edge variant is statistically indistinguishable from the B-spline variant).
+\caption{Ablation of SPADE on non-linear synthetic data (mean over 3 seeds; no
+formal significance test at this seed count). The information bottleneck is
+decisive (the dense-backbone variant collapses to chance); the matched-capacity
+MLP-edge variant's point estimate is close to the B-spline variant's, which we
+report as suggestive rather than as a tested equivalence.
 Fit time is per seed, same 150-epoch budget; ``--'' marks variants whose
 wall-clock was not re-measured in this revision.}
 \label{tab:ablation}

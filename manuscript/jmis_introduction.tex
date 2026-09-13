@@ -140,11 +140,13 @@ contributions:
     otherwise-similar model with a dense forecasting backbone recovers structure
     only at chance. We additionally isolate the spline edges from the bottleneck
     architecture itself via a matched-capacity, matched-training-budget ablation
-    against per-edge MLPs (Section~\ref{sec:ablation}): the two are
-    statistically indistinguishable on structure recovery (AUROC~$0.902$ vs.\
-    $0.889$), so the spline parameterization's distinctive value is
-    \emph{interpretability} of the recovered edge shapes, not a structure-recovery
-    advantage over an equally-sized MLP---we report this honestly rather than
+    against per-edge MLPs (Section~\ref{sec:ablation}): the point estimates are
+    close (AUROC~$0.902$ vs.\ $0.889$; we do not have the seeds to run a
+    meaningful significance test and say so rather than report an
+    underpowered one), suggestive that the spline parameterization's
+    distinctive value is \emph{interpretability} of the recovered edge shapes
+    rather than a clear structure-recovery advantage over an equally-sized
+    MLP---we report this honestly rather than
     only the comparisons favorable to SPADE.
     \item \textbf{A decisive result against gradient-based DAG learners, and an
     honest comparison beyond them.} On
@@ -155,9 +157,11 @@ contributions:
     NOTEARS/NOTEARS-MLP---at a fraction of their runtime, because learnable
     spline edges capture non-linear
     mechanisms that fixed-architecture learners miss. We also add the
-    score-matching methods SCORE and NoGAM (Reviewer~2): NoGAM in fact attains
-    \emph{higher} AUROC than SPADE at every width tested, at 300--800$\times$ the
-    compute cost and without SPADE's inspectable edge functions, and SCORE is
+    score-matching methods SCORE and NoGAM (Reviewer~2): NoGAM attains
+    clearly \emph{higher} AUROC than SPADE at $d{=}6,10$ (five seeds each), at
+    300--800$\times$ the compute cost and without SPADE's inspectable edge
+    functions; its nominal edge at $d{=}20$ rests on a single seed and is
+    suggestive rather than established. SCORE is
     roughly on par; we report this candidly rather than only the comparisons
     favorable to SPADE (Section~\ref{sec:instdag}). On lagged (temporal)
     structure it is competitive (perfect on linear, beating KAN-Granger baselines
