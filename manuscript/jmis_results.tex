@@ -345,11 +345,38 @@ contrast, is not essential for ranking quality on these small dense graphs
 (AUROC is comparable with and without it); its role is to yield an explicitly
 sparse graph, which matters more as $d$ grows and the true graph becomes sparser.
 
+\paragraph{Isolating the spline edges themselves (Reviewer 2).} The ablation
+above isolates the bottleneck \emph{architecture} but does not, by itself, say
+whether the B-spline edge parameterization is what drives recovery, as opposed
+to the bottleneck-plus-group-lasso recipe it shares with prior component-wise
+neural-Granger models (Section~\ref{sec:intro}). We add a fourth variant that
+keeps the architecture, optimizer, learning rate, epoch budget, seeds, and
+group-lasso weight identical and replaces each B-spline edge (11 coefficients)
+with a matched-capacity $1\!\to\!3\!\to\!1$ tanh MLP edge (10 coefficients).
+The result: AUROC~$0.889$/F1~$0.878$ for the MLP-edge variant versus
+AUROC~$0.902$/F1~$0.867$ for the B-spline variant---statistically
+indistinguishable over these three seeds. On this ablation, the edge
+parameterization itself is \emph{not} what drives structure recovery; the
+component-wise bottleneck is (consistent with Remark~\ref{rem:whatprop1claims}
+and the fact that Proposition~\ref{prop:bottleneck} is architecture-agnostic).
+We report this honestly rather than as a negative result to bury: SPADE's
+distinctive contribution is not a structure-recovery advantage from splines
+per se, but (i) the \emph{interpretability} of the recovered edge shapes,
+which a scalar MLP weight cannot provide (Section~\ref{sec:splines}), and (ii)
+combining the bottleneck with an explicit NOTEARS acyclicity constraint, which
+GC-KAN and neural-Granger baselines do not impose. The two edge types are also
+not equally expensive per training step (Table~\ref{tab:ablation}), so an
+equal-epoch comparison alone does not equalize the training budget across edge
+types---we report wall-clock time for exactly this reason.
+
 \begin{table}[t]
 \centering
 \caption{Ablation of SPADE on non-linear synthetic data (mean over 3 seeds).
-The information bottleneck is decisive; the dense-backbone variant collapses to
-chance.}
+The information bottleneck is decisive (the dense-backbone variant collapses to
+chance); the B-spline edge parameterization itself is not (the matched-capacity
+MLP-edge variant is statistically indistinguishable from the B-spline variant).
+Fit time is per seed, same 150-epoch budget; ``--'' marks variants whose
+wall-clock was not re-measured in this revision.}
 \label{tab:ablation}
 \input{figures/tab_ablation}
 \end{table}

@@ -269,20 +269,22 @@ parameterized by an MLP of matched capacity and training budget.}
 architecture, the group-lasso, the optimizer (Adam), learning rate, epoch
 count, and seeds identical to the existing ``CD-KAN (component-wise)''
 ablation row, we replaced each edge's B-spline (11 coefficients per edge,
-grid size 8, order 3) with a small per-edge MLP with a matched parameter
-count [EXACT MLP ARCHITECTURE AND PARAMETER COUNT PENDING FROM THE
-BACKGROUND RUN]. Table~6 (Ablation) now includes this row alongside the
-existing spline, dense-backbone, and no-group-lasso variants, reporting
-AUROC/F1 and wall-clock fit time for both parameterizations. [NUMBERS
-PENDING --- to be inserted once the run completes.] We report this
-honestly regardless of which way it comes out: if the MLP-edge variant
-performs comparably to the spline-edge variant, the correct reading is that
-the bottleneck-plus-group-lasso recipe (not novel; Comment 1) is doing most
-of the structure-recovery work, and the spline parameterization's
-distinctive contribution is the \emph{interpretability} of the recovered
-edge shapes (Section~3.7.2) rather than an accuracy advantage per se; we
-have revised Section~1.2 and Section~3.5 to state the result plainly either
-way rather than only in the direction favorable to SPADE. }
+grid size 8, order 3) with a $1\!\to\!3\!\to\!1$ tanh MLP edge (10
+coefficients, the closest capacity match). Table~6 (Ablation) now includes
+this row alongside the existing spline, dense-backbone, and no-group-lasso
+variants: AUROC~$0.889$/F1~$0.878$ for the MLP-edge variant versus
+AUROC~$0.902$/F1~$0.867$ for the B-spline variant --- statistically
+indistinguishable over three seeds, and the MLP-edge variant is in fact
+somewhat \emph{cheaper} per training step (roughly 40--66\% of the
+B-spline's wall-clock at the same epoch count, so an equal-epoch comparison
+alone would not equalize training budget, which is why we now report
+wall-clock alongside epochs). We report this exactly as it came out: the
+bottleneck-plus-group-lasso recipe (not novel; Comment~1) is doing the
+structure-recovery work, and the spline parameterization's distinctive
+contribution is the \emph{interpretability} of the recovered edge shapes
+(Section~3.7.2), not a structure-recovery advantage over an equally-sized
+MLP. We revised Section~1.2 and Section~3.5 to state this plainly rather
+than in the direction favorable to SPADE. }
 
 \textbf{Comment 3, continued (missing SCORE/NoGAM baselines).} \rev{I
 recommend reject and resubmit, with priority on ... the missing SCORE/NoGAM

@@ -138,9 +138,12 @@ contributions:
     otherwise-similar model with a dense forecasting backbone recovers structure
     only at chance. We additionally isolate the spline edges from the bottleneck
     architecture itself via a matched-capacity, matched-training-budget ablation
-    against per-edge MLPs (Section~\ref{sec:ablation}), reporting honestly
-    whether the spline parameterization itself adds value beyond the
-    bottleneck-plus-group-lasso recipe it shares with prior work.
+    against per-edge MLPs (Section~\ref{sec:ablation}): the two are
+    statistically indistinguishable on structure recovery (AUROC~$0.902$ vs.\
+    $0.889$), so the spline parameterization's distinctive value is
+    \emph{interpretability} of the recovered edge shapes, not a structure-recovery
+    advantage over an equally-sized MLP---we report this honestly rather than
+    only the comparisons favorable to SPADE.
     \item \textbf{A decisive result on non-linear instantaneous structure.} On
     additive-noise instantaneous DAGs, SPADE attains AUROC~$\approx$~0.88 across
     $d\in\{6,10,20\}$, substantially outperforming the strongest modern DAG
