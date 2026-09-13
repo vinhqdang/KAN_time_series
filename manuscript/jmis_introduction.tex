@@ -86,7 +86,9 @@ and \citet{peters2014causal} establishes the fact SPADE is built around: a
 the linear--Gaussian case provably is not. Score-matching methods exploit exactly
 this---SCORE \citep{rolland2022score} and NoGAM \citep{montagna2023nogam} order
 variables through the Hessian of the log-density---confirming that nonlinearity is
-the resource that makes orientation possible. Conversely,
+the resource that makes orientation possible. We include both as empirical
+baselines, not only cited theory, in Section~\ref{sec:instdag}; NoGAM in fact
+outperforms SPADE there, at substantially higher compute cost. Conversely,
 \citet{reisach2021beware,reisach2023scale} warn that continuous learners can
 ``cheat'' on simulated data by exploiting \emph{varsortability}, an artifact of
 marginal scale; we neutralize this by standardizing every series and reporting
@@ -144,12 +146,20 @@ contributions:
     \emph{interpretability} of the recovered edge shapes, not a structure-recovery
     advantage over an equally-sized MLP---we report this honestly rather than
     only the comparisons favorable to SPADE.
-    \item \textbf{A decisive result on non-linear instantaneous structure.} On
+    \item \textbf{A decisive result against gradient-based DAG learners, and an
+    honest comparison beyond them.} On
     additive-noise instantaneous DAGs, SPADE attains AUROC~$\approx$~0.88 across
-    $d\in\{6,10,20\}$, substantially outperforming the strongest modern DAG
-    learners---DAGMA (linear and non-linear), GraN-DAG, GOLEM, and
-    NOTEARS/NOTEARS-MLP---because learnable spline edges capture non-linear
-    mechanisms that fixed-architecture learners miss. On lagged (temporal)
+    $d\in\{6,10,20\}$, substantially outperforming every fixed-architecture,
+    gradient-based DAG
+    learner we test---DAGMA (linear and non-linear), GraN-DAG, GOLEM, and
+    NOTEARS/NOTEARS-MLP---at a fraction of their runtime, because learnable
+    spline edges capture non-linear
+    mechanisms that fixed-architecture learners miss. We also add the
+    score-matching methods SCORE and NoGAM (Reviewer~2): NoGAM in fact attains
+    \emph{higher} AUROC than SPADE at every width tested, at 300--800$\times$ the
+    compute cost and without SPADE's inspectable edge functions, and SCORE is
+    roughly on par; we report this candidly rather than only the comparisons
+    favorable to SPADE (Section~\ref{sec:instdag}). On lagged (temporal)
     structure it is competitive (perfect on linear, beating KAN-Granger baselines
     and NOTEARS on non-linear) though the best conditioning-based methods (PCMCI,
     VAR-LiNGAM) still lead there; we report this honestly and retract the earlier,

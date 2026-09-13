@@ -59,8 +59,15 @@ Several boundary conditions delimit responsible use:
     with the recent NTS-NOTEARS and the KAN-Granger baselines---but the strongest
     constraint- and non-Gaussianity-based methods (PCMCI, VAR-LiNGAM, VAR-Lasso,
     GOLEM) retain an edge on \emph{lagged} discovery, and all classical methods are far faster
-    (Section~\ref{sec:synthetic}). When \emph{only} a structure estimate is needed
-    and interpretability of mechanisms is not required, a fast classical method may
+    (Section~\ref{sec:synthetic}). On \emph{instantaneous} non-linear structure,
+    SPADE decisively beats every fixed-architecture, gradient-based DAG learner
+    but is itself outperformed by the score-matching method NoGAM (and roughly
+    matched by SCORE), both at far higher compute cost
+    (Section~\ref{sec:instdag})---so ``SPADE's advantage'' is scoped to a
+    particular family of alternatives, not a universal claim over every
+    non-linear ANM identification strategy. When \emph{only} a structure estimate is needed
+    and interpretability of mechanisms is not required, a fast classical method (or, when
+    compute is not a constraint, NoGAM) may
     suffice; SPADE's advantage is delivering competitive structure \emph{together}
     with interpretable edge shapes and a coupled forecaster.
     \item \textbf{The $\ell_1$ penalty.} Consistent with recent critiques

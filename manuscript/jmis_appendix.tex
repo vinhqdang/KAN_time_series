@@ -106,5 +106,14 @@ authors' reference implementations: DAGMA \citep{Bello2022} via the
 \texttt{dagma} package; GraN-DAG \citep{lachapelle2020grandag}, GOLEM
 \citep{ng2020golem}, and non-linear NOTEARS \citep{zheng2020sparse} via
 \texttt{gcastle}; PCMCI \citep{Runge2019} via \texttt{tigramite}; VAR-LiNGAM
-\citep{Hyvarinen2010} via \texttt{lingam}. Any baseline that failed to run in our
+\citep{Hyvarinen2010} via \texttt{lingam}; SCORE \citep{rolland2022score} and
+NoGAM \citep{montagna2023nogam} via \texttt{dodiscover} (the py-why project's
+\texttt{dodiscover.toporder} module, which the NoGAM authors' own repository
+identifies as its reference release; not distributed on PyPI under that name,
+so installed from a source clone of the project rather than \texttt{pip
+install dodiscover}). Any baseline that failed to run in our
 environment within the compute budget is reported as such rather than omitted.
+NoGAM's kernel-ridge cross-validated pruning step did not complete within
+budget for the full five-seed protocol at $d{=}20$; we report it there over a
+single seed, flagged in Table~\ref{tab:instdag}, rather than omit the width or
+extrapolate.

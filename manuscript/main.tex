@@ -65,14 +65,17 @@ learned structure identifiable---with an edge-level group-lasso for sparsity and
 an optional acyclicity constraint on contemporaneous edges, and we ground the
 design in the identifiability theory of nonlinear additive-noise models. We
 evaluate it transparently against recent differentiable DAG learners (DAGMA,
-GraN-DAG, GOLEM, nonlinear NOTEARS) and temporal causal-discovery methods (PCMCI,
+GraN-DAG, GOLEM, nonlinear NOTEARS), score-matching topological-ordering methods
+(SCORE, NoGAM), and temporal causal-discovery methods (PCMCI,
 VAR-LiNGAM), using threshold-free AUROC/AUPRC with paired significance tests and
 guarding against known benchmark artifacts. Our headline result is on
 \emph{non-linear} causal discovery: on instantaneous additive-noise DAGs, SPADE
 attains AUROC~$\approx$~0.88 across widths $d\in\{6,10,20\}$, \textbf{decisively
-outperforming the strongest modern DAG learners}---DAGMA-nonlinear, GraN-DAG, and
-NOTEARS-MLP---because its learnable spline edges capture non-linear mechanisms
-that fixed-architecture learners miss. We show this identifiability hinges on an information bottleneck: a
+outperforming every fixed-architecture, gradient-based DAG learner we test}---DAGMA-nonlinear, GraN-DAG, and
+NOTEARS-MLP---at a small fraction of their runtime, because its learnable spline edges capture non-linear mechanisms
+that fixed-architecture learners miss; we are equally candid that a
+score-matching method (NoGAM) attains higher AUROC still, at 300--800$\times$
+SPADE's compute cost and without SPADE's inspectable edge functions. We show this identifiability hinges on an information bottleneck: a
 variant with a dense forecasting backbone collapses to chance. SPADE also handles
 lagged (temporal) structure competitively---perfect on linear graphs and, on
 non-linear graphs, beating KAN-Granger baselines and NOTEARS while trailing the

@@ -13,9 +13,14 @@ including its hyperparameter schedule and convergence criteria.
 Our evaluation is deliberately candid. The headline result is on \emph{non-linear
 instantaneous} causal discovery, where SPADE's learnable spline edges recover
 additive-noise DAGs at AUROC~$\approx$~0.88 across $d\in\{6,10,20\}$, decisively
-beating the modern non-linear DAG learners (DAGMA-nonlinear, GraN-DAG,
-NOTEARS-MLP, all $\le$0.6) and matching or beating the linear ones---the regime
-where the KAN edge functions confer a real, distinctive advantage. On lagged structure SPADE is competitive (perfect
+beating every fixed-architecture, gradient-based non-linear DAG learner (DAGMA-nonlinear, GraN-DAG,
+NOTEARS-MLP, all $\le$0.6) and matching or beating the linear ones, at a
+fraction of their runtime---the regime
+where the KAN edge functions confer a real, distinctive advantage \emph{relative
+to that family}. We are equally candid that this is not the full comparison:
+the score-matching method NoGAM outperforms SPADE at every width we test, and
+SCORE is roughly on par, though both at far higher (NoGAM: 300--800$\times$)
+compute cost and without SPADE's inspectable edge functions. On lagged structure SPADE is competitive (perfect
 on linear; on non-linear it beats KAN-Granger baselines and NOTEARS but trails
 conditioning-based PCMCI/VAR-LiNGAM). The key design lesson is that
 identifiability hinges on an information bottleneck: predicting each variable only

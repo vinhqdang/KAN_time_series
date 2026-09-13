@@ -146,14 +146,16 @@ now reads: ``SPADE significantly beats Neural-GC and NOTEARS ($p<0.01$), ties
 the KAN-Granger baselines (GC-KAN/GC-KAN$+$ALM) and Correlation ($p>0.05$),
 and trails the conditioning-based estimators (PCMCI, VAR-LiNGAM, VAR-Lasso,
 GOLEM; $p<0.05$)'' --- consistent with both the CSV and the main text. We
-also added standard deviation across the five random-graph seeds to
+also added standard deviation across seeds to
 Table~2 (the headline instantaneous-DAG table) for every method's AUROC/AUPRC/F1,
 computed from the existing per-seed raw results
 (\texttt{experimental\_results/instdag\_raw.csv}) with no need to retrain any
-model. [NUMBERS PENDING for the two new SCORE/NoGAM rows and their std
-columns --- see Reviewer 2's recommendation, addressed below; the std columns
-for the existing methods do not require new training and are already
-computed.] }
+model, including the two new SCORE/NoGAM rows added in response to Reviewer 2's
+recommendation (see below) --- with one disclosed exception: NoGAM's $d{=}20$
+cell is a single seed (its cross-validated pruning did not complete the
+full three-seed protocol within budget there), so that one cell is marked
+$^\dagger$ and excluded from the std computation rather than reported with a
+fabricated or misleadingly narrow uncertainty. }
 
 \textbf{Comment 5.} \rev{There are some inconsistencies in reporting and
 reproducibility. The consistency of hyperparameter settings, runtime values,
@@ -303,15 +305,33 @@ were previously cited only as theory motivating our design (Section~1.1,
 baselines in the headline instantaneous-DAG experiment (Table~2), since both
 are, like SPADE, instantaneous non-linear-ANM structure learners. We added
 both to \texttt{scripts/instantaneous\_dag\_benchmark.py} under the same
-protocol, seeds, and scoring as the existing baselines there. [DETAILS
-PENDING FROM THE BACKGROUND RUN: whether an installed reference
-implementation (e.g.\ \texttt{dodiscover}) was available or we used a
-documented from-scratch implementation faithful to the papers' stated
-algorithms --- reported transparently either way in Appendix~A.2's
-reproducibility statement, since it affects the ``authors' reference
-implementation'' claim currently made there --- and the resulting
-AUROC/AUPRC/F1 at $d\in\{6,10,20\}$, reported honestly including if SCORE or
-NoGAM outperforms SPADE at some width.] }
+protocol, seeds, and scoring as the existing baselines there, using the
+authors'/maintainers' own reference implementation (\texttt{dodiscover}, the
+py-why project's \texttt{dodiscover.toporder} module, which the NoGAM
+authors' own repository identifies as its reference release; not on PyPI
+under that name, so installed from a source clone rather than \texttt{pip
+install dodiscover} --- documented in Appendix~A.2, not silently glossed
+over).
+
+\textbf{The result changes our headline framing, and we say so plainly
+rather than bury it.} NoGAM \emph{outperforms} SPADE at every width tested:
+AUROC~$0.917\pm0.077$/$0.955\pm0.058$/$0.906$ (single seed at $d{=}20$; see
+below) versus SPADE's $0.876$/$0.885$/$0.886$. SCORE is roughly on par with
+SPADE ($0.804\pm0.153$/$0.887\pm0.069$/$0.821\pm0.023$). We have revised the
+abstract, Contributions (Section~1.2), Section~3.3 (headline results, table,
+caption, and figure caption), the Discussion, and the Conclusion throughout
+to no longer claim SPADE is decisively ahead of every non-linear ANM
+identification strategy --- only of the fixed-architecture, gradient-based
+DAG-learner family (DAGMA, GraN-DAG, NOTEARS-MLP, GOLEM), against which the
+result is genuine and substantial. What SPADE retains against NoGAM
+specifically is cost (NoGAM's kernel-ridge cross-validated pruning runs
+300--800$\times$ slower per seed and scales roughly quadratically in $d$; a
+single $d{=}20$ seed took over an hour, versus SPADE's 2--4 seconds at every
+width, which is why we report NoGAM at $d{=}20$ over one seed rather than the
+three used elsewhere, flagged with $^\dagger$ in the table) and inspectable
+edge functions, which NoGAM's ordering-and-pruning procedure does not
+produce. We would rather publish an honest, narrower claim than an
+overstated one. }
 
 \textbf{Comment 4 (tightening: budgets, baseline tuning, collapse,
 runtime).} \rev{Equal epochs aren't equal training budgets, baseline tuning
