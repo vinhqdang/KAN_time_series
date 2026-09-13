@@ -447,7 +447,7 @@ def main():
         print(f'  Final h(W):    {final_h:.4e}')
 
         # ---- Save per-fold checkpoint immediately ----
-        fold_prefix = f'fold{fold+1}'
+        fold_prefix = f'fold{fold+1}{suffix}'
         adj_df  = pd.DataFrame(adj,    index=asset_names, columns=asset_names)
         lags_df = pd.DataFrame(e_lags, index=asset_names, columns=asset_names)
         adj_df.to_csv( os.path.join(OUT_DIR, f'real_causal_adjacency_{fold_prefix}.csv'))
@@ -479,7 +479,7 @@ def main():
             'edge_density': float((adj >= args.threshold).mean()),
             'n_epochs': len(hist['test_loss']),
         }
-        log_path = os.path.join(OUT_DIR, 'fold_summary.csv')
+        log_path = os.path.join(OUT_DIR, f'fold_summary{suffix}.csv')
         log_df = pd.DataFrame([log_row])
         if os.path.exists(log_path):
             existing = pd.read_csv(log_path)
@@ -501,33 +501,33 @@ def main():
     # ---- 1. Adjacency heatmap ----
     plot_adjacency_heatmap(
         primary_adj, asset_names,
-        os.path.join(OUT_DIR, 'real_causal_adjacency.png'),
+        os.path.join(OUT_DIR, f'real_causal_adjacency{suffix}.png'),
     )
 
     # ---- 2. Lag heatmap ----
     plot_lag_heatmap(
         primary_lags, primary_adj, asset_names, args.threshold,
-        os.path.join(OUT_DIR, 'real_causal_lag_heatmap.png'),
+        os.path.join(OUT_DIR, f'real_causal_lag_heatmap{suffix}.png'),
     )
 
     # ---- 3. Network graph ----
     plot_network_graph(
         primary_adj, asset_names, args.threshold,
-        os.path.join(OUT_DIR, 'real_causal_network.png'),
+        os.path.join(OUT_DIR, f'real_causal_network{suffix}.png'),
     )
 
     # ---- 4. Learned functional forms ----
     plot_top_edge_functions(
         primary_model, primary_adj, asset_names,
         args.threshold, args.top_k,
-        os.path.join(OUT_DIR, 'real_causal_functions.png'),
+        os.path.join(OUT_DIR, f'real_causal_functions{suffix}.png'),
     )
 
     # ---- 5. Stability (only if multi-fold) ----
     if len(fold_adjs) > 1:
         stability = plot_stability(
             fold_adjs, asset_names, args.threshold,
-            os.path.join(OUT_DIR, 'real_causal_stability.png'),
+            os.path.join(OUT_DIR, f'real_causal_stability{suffix}.png'),
         )
         print(f'  Graph stability (Jaccard): {stability["stability_jaccard"]:.3f}')
         print(f'  Mean edge density:         {stability["mean_edge_density"]:.3f}')
@@ -537,10 +537,10 @@ def main():
     # ---- 6. Save tables ----
     adj_df   = pd.DataFrame(primary_adj, index=asset_names, columns=asset_names)
     lags_df  = pd.DataFrame(primary_lags, index=asset_names, columns=asset_names)
-    adj_df.to_csv(os.path.join(OUT_DIR, 'real_causal_adjacency.csv'))
-    lags_df.to_csv(os.path.join(OUT_DIR, 'real_causal_expected_lags.csv'))
-    print(f'  Saved: real_causal_adjacency.csv')
-    print(f'  Saved: real_causal_expected_lags.csv')
+    adj_df.to_csv(os.path.join(OUT_DIR, f'real_causal_adjacency{suffix}.csv'))
+    lags_df.to_csv(os.path.join(OUT_DIR, f'real_causal_expected_lags{suffix}.csv'))
+    print(f'  Saved: real_causal_adjacency{suffix}.csv')
+    print(f'  Saved: real_causal_expected_lags{suffix}.csv')
 
     # ---- 7. Console insight summary ----
     print(f'\n{"="*60}')
