@@ -50,6 +50,19 @@ ASSETS = {
 @dataclass
 class CDKANConfig:
     """
+    Defaults for the exploratory/legacy scripts (evaluate_all.py,
+    evaluate_causal.py, baselines.py, download_data.py) ONLY.
+
+    Reviewer note (reproducibility): the numbers actually reported in the
+    manuscript (Appendix "Reproducibility": E=150 epochs, lr=5e-3, grid size
+    G=8, lambda_g=0.01, max_lag=3 or 5 depending on experiment) come from the
+    literal keyword arguments hardcoded in each paper-facing experiment script
+    (scripts/honest_causal_benchmark.py, honest_forecast_benchmark.py,
+    instantaneous_dag_benchmark.py, ablation_scale.py, extract_real_causal.py,
+    contemp_experiment.py) -- those scripts do NOT instantiate this dataclass,
+    so its defaults below are intentionally independent of the paper's numbers
+    and should not be read as the experiment configuration.
+
     Single source of truth for all CD-KAN tunable parameters.
 
     Architecture

@@ -38,6 +38,25 @@ incompatible with our environment; we report this rather than omit it silently.
 Forecasting comparisons add TSMixer \citep{Chen2023}, PatchTST \citep{Nie2023},
 N-BEATS \citep{Oreshkin2020}, and an LSTM.
 
+\paragraph{Baseline hyperparameters (honestly disclosed).} We run every baseline
+at its authors' reference-implementation defaults (architecture width/depth,
+acyclicity-penalty schedule, learning rate) rather than performing a
+dataset-specific hyperparameter search for each one; SPADE's own hyperparameters
+were selected once (Section~\ref{sec:sensitivity}) and then held fixed across
+all experiments, so neither side receives a per-dataset tuning advantage, but
+nor do we claim the baselines are individually tuned to their best possible
+performance on our data---doing an equally exhaustive search for every baseline
+across every $(d,\text{regime})$ cell was outside our compute budget, and we
+say so rather than imply otherwise. Where a baseline's collapse is large enough
+to need explanation (e.g.\ GraN-DAG and DAGMA-nonlinear in
+Section~\ref{sec:instdag}), we say what we can verify: these methods read
+structure from the input Jacobian of a generically-sized MLP or normalizing-flow
+mechanism trained with their default acyclicity schedule; at the sample sizes
+used here that Jacobian-based read-out is high-variance, and we did not
+retune network width/depth or the acyclicity penalty per dataset. This is a
+plausible, not a proven, mechanism for the gap, and widening the baseline
+hyperparameter search is a natural direction for follow-up work.
+
 \paragraph{Metrics.} Because thresholding confounds structural-ranking quality
 with a chosen operating point, we report \textbf{AUROC} and \textbf{AUPRC}
 (threshold-free) as primary metrics, and F1/SHD at each method's own best-F1
@@ -50,9 +69,17 @@ worse and is not used.
 
 \paragraph{Forecasting protocol.} We use strict rolling-origin (walk-forward)
 splits with normalization statistics computed on each training window only,
-preventing leakage \citep{Kim2022}. All models are trained for the same number of
-epochs (matched budget); we report one-step-ahead MSE/MAE averaged over the
-rolling folds and seeds.
+preventing leakage \citep{Kim2022}. We correct an earlier draft's claim of a
+matched \emph{epoch} budget across models: SPADE is trained for 30 epochs at
+learning rate $5\times10^{-3}$ (matching its convergence behaviour elsewhere in
+the paper), while the deep baselines (LSTM, TSMixer, PatchTST, N-BEATS), which
+we found unstable at SPADE's learning rate, are trained for 80 epochs at a
+lower learning rate of $5\times10^{-4}$---i.e.\ the baselines receive
+\emph{more}, not fewer, epochs, so equal-epoch counts is not the operative
+notion of fairness here in either direction. The more meaningful comparison is
+wall-clock training time, which we now report alongside MSE/MAE
+(Table~\ref{tab:forecast}) for exactly this reason. We report one-step-ahead
+MSE/MAE averaged over the rolling folds and seeds.
 
 \subsection{Headline: non-linear instantaneous causal discovery}
 \label{sec:instdag}
@@ -166,9 +193,12 @@ F1 uses each method's best threshold. Higher is better.}
 
 \begin{table}[t]
 \centering
-\caption{Paired Wilcoxon signed-rank tests (SPADE vs.\ each baseline, F1 across
-matched configuration/seed pairs). SPADE significantly beats the KAN-Granger
-baselines and ties NOTEARS/Correlation.}
+\caption{Paired Wilcoxon signed-rank tests (two-sided; SPADE vs.\ each baseline,
+F1 across matched configuration/seed pairs). SPADE significantly beats
+Neural-GC and NOTEARS ($p<0.01$), ties the KAN-Granger baselines
+(GC-KAN/GC-KAN$+$ALM) and Correlation ($p>0.05$), and trails the
+conditioning-based estimators (PCMCI, VAR-LiNGAM, VAR-Lasso, GOLEM;
+$p<0.05$).}
 \label{tab:causal_stats}
 \input{figures/tab_causal_stats}
 \end{table}

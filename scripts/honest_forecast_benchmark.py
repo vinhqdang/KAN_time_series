@@ -44,6 +44,24 @@ class CausalKANForecast(nn.Module):
     def group_lasso(self):
         return self.net.group_lasso()
 
+
+class RevINWrapped(nn.Module):
+    """Wraps an arbitrary forecasting baseline with the SAME RevIN
+    (per-window normalize -> model -> denormalize) SPADE uses, so the
+    normalization scheme is matched across all compared models rather than
+    being a SPADE-only advantage (Reviewer 4)."""
+    def __init__(self, base_model, d):
+        super().__init__()
+        from src.cdkan.model import RevIN
+        self.revin = RevIN(d)
+        self.base = base_model
+    def forward(self, x):
+        xn = self.revin(x, 'norm')
+        out = self.base(xn)
+        out2 = out if out.dim() == 2 else out[:, -1, :]
+        denorm = self.revin(out2.unsqueeze(1), 'denorm').squeeze(1)
+        return denorm
+
 RESULTS_DIR = os.path.join(os.path.dirname(__file__), "..", "experimental_results")
 DATA = os.path.join(os.path.dirname(__file__), "..", "data", "financial_2020_2025.csv")
 
@@ -85,12 +103,7 @@ def eval_torch(model, Xte, yte):
     return mse, mae
 
 
-def build(name, d, window):
-    if name == "CD-KAN":
-        return CausalKANForecast(d, max_lag=5, grid_size=8)
-    if name == "Naive KAN":
-        return CDKANForecaster(d, hidden_dim=32, out_features=d, max_lag=5,
-                               n_layers=2, grid_size=8, learn_structure=False)
+def _base_build(name, d, window):
     if name == "LSTM":
         m = BaselineLSTM(d, hidden_size=64, num_layers=2)
         m.fc = nn.Linear(64, d)                    # multivariate head
@@ -104,6 +117,20 @@ def build(name, d, window):
         return NBEATSBaseline(d, window, 1, n_stacks=2, n_blocks=2,
                               hidden_size=128, theta_size=32)
     raise ValueError(name)
+
+
+def build(name, d, window):
+    if name == "CD-KAN":
+        return CausalKANForecast(d, max_lag=5, grid_size=8)
+    if name == "Naive KAN":
+        return CDKANForecaster(d, hidden_dim=32, out_features=d, max_lag=5,
+                               n_layers=2, grid_size=8, learn_structure=False)
+    # "<Name>+RevIN" wraps the same baseline with SPADE's own RevIN so the
+    # normalization scheme is matched across models (Reviewer 4).
+    if name.endswith("+RevIN"):
+        base_name = name[:-len("+RevIN")]
+        return RevINWrapped(_base_build(base_name, d, window), d)
+    return _base_build(name, d, window)
 
 
 def main():
@@ -127,7 +154,8 @@ def main():
     folds = folds[:args.folds]
     print(f"{len(folds)} rolling-origin folds (n_train={n_train}, n_test={n_test})")
 
-    models = ["CD-KAN", "LSTM", "TSMixer", "PatchTST", "N-BEATS"]
+    base_models = ["LSTM", "TSMixer", "PatchTST", "N-BEATS"]
+    models = ["CD-KAN"] + base_models + [f"{m}+RevIN" for m in base_models]
     rows = []
     raw_path = os.path.join(RESULTS_DIR, "honest_forecast_raw.csv")
 

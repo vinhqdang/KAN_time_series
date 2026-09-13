@@ -22,10 +22,11 @@ identifiability hinges on an information bottleneck: predicting each variable on
 through its incoming edges, not a dense backbone (which collapses to chance). We
 retract the earlier, unreproducible F1~=~0.897 in favour of these honest numbers,
 and likewise corrected a forecasting artifact ($\approx$0.0008 from test-leaking
-normalization), reporting leakage-free results under which SPADE is competitive. On real financial data, SPADE recovers a directed graph with plausible,
-lag-resolved structure whose stability exceeds a permutation-based chance level
-by $4.7\times$ ($p<0.0001$), and whose spline edge functions expose the
-shape of each dependency.
+normalization), reporting leakage-free results under which SPADE is competitive. On real financial data---an observational setting where causal sufficiency cannot be
+verified---SPADE recovers a directed graph of \emph{candidate} mechanisms, not
+verified causal effects, whose stability exceeds a permutation-based chance
+level by $4.7\times$ ($p<0.0001$) and whose spline edge functions expose the
+shape of each candidate dependency for expert review.
 
 Beyond lagged structure, the model handles \emph{instantaneous} causal structure
 as a self-masked non-linear SEM whose contemporaneous graph is kept acyclic by the

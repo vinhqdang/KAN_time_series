@@ -279,11 +279,21 @@ def build_ablation():
                     "\\midrule \\multicolumn{3}{c}{(pending run)} \\\\\\bottomrule\\end{tabular}")
         return
     d = pd.read_csv(p)
-    lines = ["% auto-generated", "\\begin{tabular}{l cc}", "\\toprule",
-             "\\textbf{Configuration} & AUROC $\\uparrow$ & F1 $\\uparrow$ \\\\", "\\midrule"]
+    has_time = "fit_time_s" in d.columns
+    if has_time:
+        lines = ["% auto-generated", "\\begin{tabular}{l ccc}", "\\toprule",
+                 "\\textbf{Configuration} & AUROC $\\uparrow$ & F1 $\\uparrow$ & "
+                 "Fit time (s) \\\\", "\\midrule"]
+    else:
+        lines = ["% auto-generated", "\\begin{tabular}{l cc}", "\\toprule",
+                 "\\textbf{Configuration} & AUROC $\\uparrow$ & F1 $\\uparrow$ \\\\", "\\midrule"]
     for _, r in d.iterrows():
         label = "\\textbf{SPADE (full)}" if r["config"] == "full" else r["config"]
-        lines.append(f"{label} & {r['auroc']:.3f} & {r['f1']:.3f} \\\\")
+        if has_time:
+            lines.append(f"{label} & {r['auroc']:.3f} & {r['f1']:.3f} & "
+                         f"{r['fit_time_s']:.2f} \\\\")
+        else:
+            lines.append(f"{label} & {r['auroc']:.3f} & {r['f1']:.3f} \\\\")
     lines += ["\\bottomrule", "\\end{tabular}"]
     with open(os.path.join(FIG, "tab_ablation.tex"), "w") as f:
         f.write("\n".join(lines))

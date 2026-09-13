@@ -44,10 +44,15 @@ def score(pred, true):
     return au, f1
 
 
-def fit_component(X, seed, lg=0.01, epochs=150):
+def fit_component(X, seed, lg=0.01, epochs=150, edge_type="spline", mlp_hidden=3):
+    """The real SPADE training loop (component-wise, B-spline edges). Also
+    used for the matched-capacity MLP-edge ablation (Reviewer 2): passing
+    edge_type='mlp' swaps only the per-edge function, keeping the optimizer,
+    lr, epoch count, seed, group-lasso weight, and data identical, so the
+    comparison isolates the edge parameterization."""
     torch.manual_seed(seed); np.random.seed(seed)
     D = X.shape[1]; Xw, yw = windows(X, 4)
-    m = CausalKAN(D, max_lag=3, grid_size=8)
+    m = CausalKAN(D, max_lag=3, grid_size=8, edge_type=edge_type, mlp_hidden=mlp_hidden)
     opt = torch.optim.Adam(m.parameters(), lr=5e-3)
     for _ in range(epochs):
         opt.zero_grad()
@@ -70,23 +75,35 @@ def fit_dense(X, seed, epochs=60):
 
 
 def main():
+    # Matched-capacity MLP edge (Reviewer 2): 1->3->1 tanh MLP, 10 params/edge,
+    # vs. the B-spline's 11 (grid_size=8, spline_order=3) -- the closest match
+    # of the two capacity points considered (a 1->5->1 MLP would be 16, farther
+    # off). Everything else (optimizer, lr, epochs, seeds, lambda_g, data) is
+    # identical to "CD-KAN (component-wise)", via the shared fit_component().
     variants = {
         "CD-KAN (component-wise)": lambda X, s: fit_component(X, s, lg=0.01),
         "w/ dense backbone (coupled)": lambda X, s: fit_dense(X, s),
         "w/o group-lasso": lambda X, s: fit_component(X, s, lg=0.0),
+        "CD-KAN w/ MLP edges (matched capacity)":
+            lambda X, s: fit_component(X, s, lg=0.01, edge_type="mlp", mlp_hidden=3),
     }
     rows = []
     for name, fn in variants.items():
-        aus, f1s = [], []
+        aus, f1s, times = [], [], []
         for seed in [42, 43, 44]:
             X, adj, _ = generate_nonlinear_scm(n_samples=1500, n_nodes=5,
                                                density=0.2, seed=seed)
             X = zscore(X)
-            au, f1 = score(fn(X, seed), adj)
+            t0 = time.time()
+            imp = fn(X, seed)
+            times.append(time.time() - t0)
+            au, f1 = score(imp, adj)
             aus.append(au); f1s.append(f1)
         rows.append(dict(config=name, auroc=round(np.mean(aus), 3),
-                         f1=round(np.mean(f1s), 3)))
-        print(f"{name:28s} AUROC={np.mean(aus):.3f} F1={np.mean(f1s):.3f}", flush=True)
+                         f1=round(np.mean(f1s), 3),
+                         fit_time_s=round(np.mean(times), 2)))
+        print(f"{name:40s} AUROC={np.mean(aus):.3f} F1={np.mean(f1s):.3f} "
+              f"fit_time={np.mean(times):.2f}s", flush=True)
     pd.DataFrame(rows).to_csv(os.path.join(RES, "ablation_results.csv"), index=False)
 
     # scalability

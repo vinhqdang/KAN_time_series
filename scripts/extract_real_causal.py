@@ -56,8 +56,16 @@ os.makedirs(OUT_DIR, exist_ok=True)
 # Data loading
 # ---------------------------------------------------------------------------
 
-def load_financial_data():
-    """Load and clean the financial CSV, returning (data_np, asset_names, dates)."""
+def load_financial_data(returns: bool = False):
+    """Load and clean the financial CSV, returning (data_np, asset_names, dates).
+
+    Reviewer note (non-stationarity): daily price *levels* are strongly
+    non-stationary (near-integrated/random-walk-like), which the manuscript
+    already flags as the reason lag attribution is uninformative on levels
+    (Section "Lag attribution"). Passing ``returns=True`` instead returns
+    log-returns (a standard stationary representation for financial series),
+    dropping the first row (no return is defined for it).
+    """
     # The CSV has two header rows (Price / Ticker); flatten to just asset columns
     df = pd.read_csv(DATA_PATH, index_col=0, skiprows=[1, 2])
     df.index = pd.to_datetime(df.index, errors='coerce')
@@ -65,6 +73,8 @@ def load_financial_data():
     # Forward fill missing days natively. Do NOT backward fill to avoid future leakage.
     df = df.apply(pd.to_numeric, errors='coerce').ffill().dropna()
     asset_names = df.columns.tolist()
+    if returns:
+        df = np.log(df).diff().dropna()
     return df.values.astype(np.float32), asset_names, df
 
 
@@ -370,18 +380,23 @@ def main():
                         help='Number of top edges to plot functions for (default=9)')
     parser.add_argument('--fast', action='store_true',
                         help='Quick run: 30 epochs, 1 fold only')
+    parser.add_argument('--returns', action='store_true',
+                        help='Use log-returns (stationary) instead of price levels '
+                             '(Reviewer non-stationarity check); outputs get a '
+                             '"_returns" suffix so the price-level results are not overwritten.')
     args = parser.parse_args()
 
     if args.fast:
         args.epochs = 30
+    suffix = '_returns' if args.returns else ''
 
     print('=' * 60)
     print('CD-KAN Real-Data Causal Discovery')
-    print('Dataset: Financial Assets 2020-2025')
+    print(f'Dataset: Financial Assets 2020-2025 ({"log-returns" if args.returns else "price levels"})')
     print('=' * 60)
 
     # Load data
-    raw_data, asset_names, df = load_financial_data()
+    raw_data, asset_names, df = load_financial_data(returns=args.returns)
     n_assets = len(asset_names)
     print(f'Assets ({n_assets}): {asset_names}')
     print(f'Time steps: {len(raw_data)}')

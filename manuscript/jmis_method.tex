@@ -123,6 +123,27 @@ with Gaussian noise are the textbook non-identifiable case, which is exactly why
 a method built for the \emph{non-linear} regime (SPADE) can succeed where its
 target is identifiable, while purely linear learners cannot orient such edges.
 
+\begin{remark}[What the proposition does, and does not, claim]\label{rem:whatprop1claims}
+Assumptions~\ref{as:suff}--\ref{as:stat} are \emph{posited} boundary conditions
+on the data-generating process, not something the optimizer verifies or
+derives: Proposition~\ref{prop:identif} is a conditional statement (``if the
+data satisfy these assumptions, the population target is identified''), and no
+amount of fitting the training objective can establish that a given real-world
+process actually satisfies them---that is a modeling judgment external to the
+estimator (Assumption~\ref{as:suff} in particular, which we address by treating
+real-data edges as candidates, not verified causes; Section~\ref{sec:real}).
+Second, the population statement above concerns the risk minimizer over the
+B-spline class \emph{subject to the hard constraint} $h(W^{(0)})=0$; the
+estimator we actually optimize (Eq.~\ref{eq:constrained}) additionally carries
+a group-lasso penalty $\lambda_g\Omega_{\mathrm{group}}$ for finite-sample
+sparsity, which is not part of the idealized population statement and
+introduces the usual shrinkage bias of any regularized estimator at finite
+$\lambda_g$. We do not claim this bias vanishes analytically; the sensitivity
+analysis (Section~\ref{sec:sensitivity}) is the empirical evidence that
+recovery is stable across a range of $\lambda_g$, and finite-sample consistency
+as $N\to\infty,\lambda_g\to 0$ is left as a formal question for future work.
+\end{remark}
+
 \paragraph{Why the bottleneck is necessary.} Identifiability can be forfeited by
 the estimator even when the population target is well posed. The following makes
 precise the empirical collapse we document in Section~\ref{sec:ablation}.
@@ -134,13 +155,21 @@ fitted predictor. Then the reconstruction risk depends on the fitted function
 alone and not on $\hat A$; hence every adjacency consistent with the unconstrained
 optimum attains the minimum risk, and $\hat A$ is \emph{not} identified by risk
 minimization. Restricting the hypothesis class so that the adjacency indexes the
-function---predicting each target \emph{only} through per-parent edges---is
-sufficient to make the risk-minimizing structure unique.
+function---predicting each target \emph{only} through per-parent edges---together
+with a sparsity preference that breaks ties toward the \emph{minimal} such
+adjacency (any superset of the true parents attains the same population risk,
+since the extra edges can be zeroed), is sufficient to make the risk-minimizing
+structure unique.
 \end{proposition}
-The proof (Appendix~\ref{app:proofs}) is elementary but consequential: it is the
-formal reason a ``dense-backbone'' KAN forecaster recovers structure only at
-chance (AUROC~$\approx 0.5$; Section~\ref{sec:ablation}), whereas the
-component-wise SPADE does not.
+The bottleneck restriction is necessary---without it, as the first half of the
+proposition shows, risk minimization does not identify $\hat A$ at all---but it
+is not, by itself, sufficient for uniqueness: the tie-breaker is doing real
+work, and in SPADE this is exactly the role played by the edge-level
+group-lasso of Eq.~\eqref{eq:constrained} (Appendix~\ref{app:proofs} makes this
+precise). The proof is elementary but consequential: it is the formal reason a
+``dense-backbone'' KAN forecaster recovers structure only at chance
+(AUROC~$\approx 0.5$; Section~\ref{sec:ablation}), whereas the component-wise
+SPADE---bottleneck \emph{and} group-lasso together---does not.
 
 \begin{remark}[Guarding against benchmark artifacts]\label{rem:varsort}
 Continuous DAG learners can exploit \emph{varsortability}---an accidental

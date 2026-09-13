@@ -114,15 +114,33 @@ penalty to a GC-KAN backbone, disentangling the constraint's contribution from
 that of the KAN edge functions.
 
 \subsection{Contributions}
-We frame SPADE as an interpretable non-linear causal-discovery artifact and make
-three contributions:
+We are explicit about what in SPADE is genuinely new and what is not.
+The component-wise information bottleneck itself is \emph{not} our invention---it
+is the same restriction used by component-wise neural-Granger models
+\citep{Tank2021,Shojaie2022} and by GC-KAN \citep{GCKAN2024}; Remark~\ref{rem:whatprop1claims}
+and Appendix~\ref{app:proofs} state plainly that Proposition~\ref{prop:bottleneck}
+is a property of \emph{any} such architecture, not of KANs specifically. What we
+contribute is the combination of that bottleneck with (i) learnable per-edge
+\emph{B-spline} mechanisms in place of the fixed convolutional or MLP mechanisms
+used by prior temporal learners, (ii) an explicit block-structured NOTEARS
+acyclicity constraint applied only to the contemporaneous edges (distinguishing
+it from purely-Granger KAN baselines that impose no DAG constraint at all), and
+(iii) an experimental design that isolates \emph{which} of these ingredients does
+the work, rather than reporting only an end-to-end comparison. We make three
+contributions:
 \begin{enumerate}
-    \item \textbf{An identifiable, interpretable architecture.} SPADE predicts
-    each variable \emph{only} through per-(cause, lag) B-spline edges of its
-    candidate parents---an information bottleneck---with an edge-level group-lasso
-    and an optional contemporaneous-only acyclicity constraint. We show this
-    bottleneck is what makes structure identifiable: an otherwise-similar model
-    with a dense forecasting backbone recovers structure only at chance.
+    \item \textbf{An identifiable, interpretable architecture, with its
+    ingredients isolated.} SPADE predicts each variable \emph{only} through
+    per-(cause, lag) B-spline edges of its candidate parents---an information
+    bottleneck (not novel in itself, see above)---with an edge-level group-lasso
+    and an optional contemporaneous-only acyclicity constraint (the part that
+    \emph{is} new relative to GC-KAN). We show the bottleneck is necessary: an
+    otherwise-similar model with a dense forecasting backbone recovers structure
+    only at chance. We additionally isolate the spline edges from the bottleneck
+    architecture itself via a matched-capacity, matched-training-budget ablation
+    against per-edge MLPs (Section~\ref{sec:ablation}), reporting honestly
+    whether the spline parameterization itself adds value beyond the
+    bottleneck-plus-group-lasso recipe it shares with prior work.
     \item \textbf{A decisive result on non-linear instantaneous structure.} On
     additive-noise instantaneous DAGs, SPADE attains AUROC~$\approx$~0.88 across
     $d\in\{6,10,20\}$, substantially outperforming the strongest modern DAG
