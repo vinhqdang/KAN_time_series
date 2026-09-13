@@ -91,13 +91,20 @@ protocol: every deep baseline (LSTM, TSMixer, PatchTST, N-BEATS) is now also
 evaluated wrapped in the identical RevIN module SPADE uses (same per-window
 statistics, same invertible affine transform), reported as a new
 \texttt{+RevIN} row alongside its original (unnormalized) version in
-Table~5. [NUMBERS PENDING --- to be inserted once the rerun completes:
-MSE/MAE for each baseline with and without RevIN, and SPADE's rank once
-baselines are normalization-matched.] Section~3.6 (``Forecasting'') has been
-rewritten to report both variants and to state plainly whether SPADE's
-advantage survives normalization-matching or is (wholly or partly)
-attributable to RevIN itself --- we do not adjudicate this in advance of the
-real numbers. }
+Table~5. The result corrects our original claim: once normalization is
+matched, TSMixer$+$RevIN (MSE~$=$~0.024), PatchTST$+$RevIN (0.028), and
+N-BEATS$+$RevIN (0.030) all \emph{outperform} SPADE (0.048); only
+LSTM$+$RevIN (0.053) remains worse. RevIN, not SPADE's causal architecture,
+was doing most of the work in the original comparison, exactly as the
+reviewer suspected. Section~3.6 now reports this plainly and reframes
+SPADE's forecasting-side claim to what actually survives: SPADE is
+competitive in accuracy (within $\sim2\times$ MSE of the best
+normalization-matched baseline) while being the only model in the
+comparison that also yields an interpretable causal graph from the same
+training run, and it trains roughly 16--21$\times$ faster (36s vs.\
+580--850s mean wall-clock). Table~5 now also reports mean training time
+for exactly this reason. We did not soften this finding: it is a real,
+if partial, correction to our original forecasting claim. }
 
 \textbf{Comment 3.} \rev{Further treatment of non-stationarity is needed in
 the real financial causal analysis. The authors should explain why they have
