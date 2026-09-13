@@ -116,18 +116,42 @@ differences.}
 (\texttt{scripts/extract\_real\_causal.py --returns}, a new flag added for
 this revision) on log-returns of the eight-asset panel instead of price
 levels, keeping every other setting (window, folds, hyperparameters)
-identical. [NUMBERS PENDING --- to be inserted: overlap/Jaccard between the
-levels-based and returns-based learned graphs, and the returns-based
-stability statistic.] We also clarify explicitly, in the new
-Section~3.7 paragraph, \emph{why} the main analysis originally used levels:
-it lets the lag-attribution result (Section~3.7.2) illustrate concretely
-\emph{why} non-stationarity degrades lag attribution (lags concentrate at
-the window midpoint on levels, as already reported), which is itself
-evidence for the reviewer's concern rather than an oversight --- but we agree
-the primary causal-graph reading should not rest on a non-stationary
-representation, and the returns-based rerun is now the analysis we
-recommend for causal interpretation, with the levels-based run retained as
-the diagnostic illustrating the non-stationarity failure mode. }
+identical. \textbf{The honest result is a negative one, and we report it
+plainly rather than a more flattering alternative.} Validation MSE on returns
+is $0.51$/$0.79$/$0.98$ across the three rolling folds---at or above the unit
+variance of the standardized target, i.e.\ barely better than predicting the
+mean, consistent with daily returns on these liquid assets being close to
+informationally efficient and largely unpredictable one day ahead. With
+essentially no forecasting signal for the group-lasso to concentrate on, the
+learned graph does not become sparser; it becomes a fully-connected,
+undifferentiated graph (edge density $1.00$ in every fold), and the
+rolling-window Jaccard stability is consequently a trivial $1.00$ (a graph
+that is always everything is identical to itself across folds by
+construction, not because it found real structure). New
+Section~3.7.3 (``Robustness to a stationary representation'') reports this in
+full and draws two conclusions we state plainly: (i) this is itself evidence
+\emph{for} the reviewer's concern --- the sparse, stable graph found on price
+levels most plausibly reflects shared non-stationary co-movement across these
+assets, not validated short-horizon causal dependence, and should be read
+with that caveat rather than as a result that survived a stationarity check
+it did not; (ii) it delimits SPADE's (and any forecasting-based
+structure-learner's) applicability honestly: at daily granularity on
+efficiently-priced liquid assets, the one-step-ahead forecasting problem may
+carry too little signal for this class of method, regardless of algorithm.
+We updated the Discussion, Contributions, and Conclusion to reference this
+negative result alongside the existing FRED policy-shock negative result,
+consistent with how the manuscript already treats null findings. We also
+clarify explicitly, in the same section, \emph{why} the main analysis
+originally used levels: it lets the lag-attribution result (Section~3.7.2)
+illustrate concretely \emph{why} non-stationarity degrades lag attribution
+(lags concentrate at the window midpoint on levels, as already reported),
+which is itself evidence for the reviewer's concern rather than an
+oversight --- but we agree the primary causal-graph reading should not rest
+on a non-stationary representation without this caveat attached, and the
+returns-based rerun's negative result is now reported as the operative
+finding for causal interpretation, with the levels-based run retained as the
+diagnostic illustrating the non-stationarity failure mode it was always
+intended to illustrate. }
 
 \textbf{Comment 4.} \rev{Care should be taken to review the statistical
 reporting. The Wilcoxon p-values seem to contradict with the caption for

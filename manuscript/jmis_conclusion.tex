@@ -44,7 +44,16 @@ regime break and recovers the two distinct graphs.
 SPADE's contribution is therefore best understood as a \emph{unified,
 interpretable decision-support artifact} that delivers competitive structure
 recovery (lagged and instantaneous) \emph{together} with interpretable mechanisms,
-coupled forecasting, and scaling to $d{=}50$. Its main limitations---the per-edge
+coupled forecasting, and scaling to $d{=}50$. We report two candid negative
+results rather than omit them: documented real-world policy shocks are not
+cleanly recoverable from observational macro data (Section~\ref{sec:real}),
+and redoing the real-data causal analysis on a stationary (returns) rather
+than a levels representation collapses the learned graph to an
+uninformative, fully-connected structure, because daily returns on these
+assets carry little one-step-ahead predictive signal
+(Section~\ref{sec:returns})---the levels-based graph should therefore be read
+as evidence of shared non-stationary co-movement, not validated short-horizon
+causal structure. Its main limitations---the per-edge
 spline evaluation cost (and the $O(d^3)$ acyclicity term for instantaneous
 graphs), and the causal-sufficiency and stationarity assumptions required to read
 edges causally---define a clear agenda: (1) low-rank/log-det acyclicity for higher

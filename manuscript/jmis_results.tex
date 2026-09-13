@@ -535,7 +535,42 @@ dynamics of prices where all recent lags are similarly predictive---consistent
 with the non-stationarity concern; lag attribution is therefore most informative
 on stationary or differenced series.
 
-\subsubsection{Rolling-window stability and its significance}
+\subsubsection{Robustness to a stationary representation: a candid negative
+result on returns}
+\label{sec:returns}
+Reviewer~4 asked the direct question this section has so far only motivated:
+what happens if the causal analysis is redone on a genuinely stationary
+representation (log-returns) instead of price levels? We reran the identical
+pipeline (\texttt{scripts/extract\_real\_causal.py --returns}, same
+architecture, hyperparameters, window, and three rolling folds) on daily
+log-returns of the same eight assets. The honest answer is a negative result,
+and we report it rather than the more flattering levels-based graph alone.
+Validation MSE on returns is $0.51$/$0.79$/$0.98$ across the three folds---close
+to or above the unit variance of the standardized target, i.e.\ barely better
+than predicting the unconditional mean---consistent with daily returns on
+liquid, actively-traded assets being close to informationally efficient and
+largely unpredictable one day ahead. With essentially no predictive signal for
+the group-lasso to concentrate on, the learned graph does not degenerate to
+sparsity; it degenerates the \emph{other} way, to a fully-connected,
+undifferentiated graph (edge density~$1.00$ in every fold, and consequently a
+rolling-window Jaccard stability of exactly $1.00$---perfect but meaningless,
+since a graph that is always everything is trivially identical to itself
+across folds). This is not a software bug: it is what a forecasting-based
+structure-learning method should honestly report when the forecasting problem
+itself carries near-zero signal. Two conclusions follow, and we state both
+plainly. First, this is itself evidence \emph{for} the reviewer's concern: it
+shows the sparse, stable graph reported on price levels
+(Sections~\ref{sec:real}--\ref{sec:stability}) most plausibly reflects shared
+non-stationary trends and slower co-movement across these assets, not
+validated short-horizon (one-day) causal dependence---the levels-based graph
+should be read with that caveat, not as if it survived a stationarity check it
+did not. Second, it delimits SPADE's applicability honestly: forecasting-based
+causal discovery of the kind SPADE performs requires a data regime where
+one-step-ahead structure is genuinely learnable; at daily granularity on
+efficiently-priced liquid assets, that regime may not hold, and a coarser
+horizon, an intraday frequency, or exogenous instruments would be needed to
+say more. We did not have a positive stationary-representation result to
+report, and choose to say so rather than not run the check.
 \label{sec:stability}
 We estimate the graph on three rolling windows and measure the mean off-diagonal
 Jaccard overlap of the binarized graphs (Figure~\ref{fig:stability}), obtaining

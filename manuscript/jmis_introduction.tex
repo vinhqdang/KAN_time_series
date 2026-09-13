@@ -172,7 +172,12 @@ contributions:
     it uses temporal precedence); on a controlled synthetic intervention it detects
     a known structural break and recovers both regime graphs. We also report
     candidly that documented real-world policy shocks are \emph{not} cleanly
-    recoverable from observational macro data---an honest limit of the setting.
+    recoverable from observational macro data, and that redoing the real-data
+    analysis on a stationary (returns) representation---the check Reviewer~4
+    requested---collapses the learned graph to an uninformative,
+    fully-connected structure, since daily returns on these assets carry
+    little one-step-ahead signal: two honest limits of the setting, not of
+    the method alone.
     SPADE scales to $d{=}50$ in seconds via a vectorized implementation.
 \end{enumerate}
 

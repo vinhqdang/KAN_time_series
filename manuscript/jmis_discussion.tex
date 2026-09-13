@@ -51,7 +51,15 @@ Several boundary conditions delimit responsible use:
     estimation window. Our rolling-window stability test
     (Section~\ref{sec:stability}) quantifies, rather than assumes, temporal
     constancy; it also shows that window design (length and overlap) materially
-    affects apparent stability, which practitioners must report.
+    affects apparent stability, which practitioners must report. More
+    fundamentally, Section~\ref{sec:returns} shows that redoing the real-data
+    analysis on a genuinely stationary representation (log-returns rather than
+    price levels) collapses the learned graph to an uninformative,
+    fully-connected structure, because daily returns on these assets carry
+    little one-step-ahead predictive signal: the sparse, stable graph reported
+    on price levels should be read as evidence of shared non-stationary
+    co-movement, not as a validated short-horizon causal structure that
+    survives a stationarity check.
     \item \textbf{Where SPADE stands vs.\ classical methods.} SPADE is
     competitive---strong on linear structure (AUROC~0.96) and, on non-linear
     lagged structure, the best of the flexible neural/KAN learners: it
