@@ -195,12 +195,12 @@ def build_forecast():
     if not os.path.exists(p):
         return
     df = pd.read_csv(p); df["model"] = df["model"].replace({"CD-KAN": "SPADE"}); df = df.sort_values("mse_mean")
-    lines = ["% auto-generated", "\\begin{tabular}{l cc}", "\\toprule",
-             "\\textbf{Model} & MSE $\\downarrow$ & MAE $\\downarrow$ \\\\", "\\midrule"]
+    lines = ["% auto-generated", "\\begin{tabular}{l ccc}", "\\toprule",
+             "\\textbf{Model} & MSE $\\downarrow$ & MAE $\\downarrow$ & mean train time (s) \\\\", "\\midrule"]
     for _, r in df.iterrows():
         label = "\\textbf{SPADE (ours)}" if r["model"] == "SPADE" else r["model"]
         lines.append(f"{label} & {fmt(r['mse_mean'], r['mse_std'])} & "
-                     f"{fmt(r['mae_mean'], r['mae_std'])} \\\\")
+                     f"{fmt(r['mae_mean'], r['mae_std'])} & {r['time_mean']:.1f} \\\\")
     lines += ["\\bottomrule", "\\end{tabular}"]
     with open(os.path.join(FIG, "tab_forecast.tex"), "w") as f:
         f.write("\n".join(lines))

@@ -274,22 +274,40 @@ best baseline at each width.}
 \label{sec:forecast}
 
 Table~\ref{tab:forecast} reports one-step-ahead forecasting on the 8-asset
-financial dataset under the leakage-free rolling-origin protocol. SPADE attains
-the lowest error (MSE~$=$~0.044). We are careful about interpretation: SPADE's
-RevIN wrapper removes per-window level and scale, which is decisive on strongly
-non-stationary financial \emph{levels}---the deep baselines here lack built-in
-normalization and degrade badly (LSTM and PatchTST perform worse than a naive
-predictor). The comparison should therefore be read as evidence for coupling the
-interpretable causal edge-functions \emph{with} reversible normalization, not as a
-claim that the SPADE structure module alone beats Transformers; a
-normalization-matched forecasting study is future work.
+financial dataset under the leakage-free rolling-origin protocol, now with a
+\textbf{normalization-matched} rerun requested by Reviewer~4: every deep
+baseline (LSTM, TSMixer, PatchTST, N-BEATS) is reported both in its original
+form and wrapped in the identical RevIN module SPADE uses (\texttt{+RevIN}
+rows). The result corrects our earlier claim. Without normalization matching,
+SPADE had the lowest error and the unnormalized deep baselines degraded badly
+(LSTM and PatchTST worse than a naive predictor); \emph{once normalization is
+matched}, that ordering mostly reverses: TSMixer$+$RevIN
+(MSE~$=$~0.024), PatchTST$+$RevIN (0.028), and N-BEATS$+$RevIN (0.030) all
+\emph{outperform} SPADE (0.048), and only LSTM$+$RevIN (0.053) remains worse.
+RevIN, not SPADE's causal architecture, was therefore doing most of the work
+in the original comparison, exactly as Reviewer~4 suspected --- we say this
+plainly rather than soften it. What survives is a narrower but still genuine
+claim: SPADE is competitive in accuracy with the RevIN-matched deep baselines
+(within a factor of $\sim$2$\times$ MSE of the best), while being the
+\emph{only} model in the comparison that also produces an interpretable,
+lag-resolved causal graph from the same training run, and it does so roughly
+$16$--$21\times$ faster (mean training time 36s vs.\ 580--850s for the deep
+baselines under an identical epoch budget for the +RevIN variants). The
+correct reading of Table~\ref{tab:forecast} is therefore about what SPADE
+delivers \emph{jointly} (forecast $+$ causal structure $+$ interpretability
+$+$ speed), not a claim that its architecture is the more accurate
+forecaster in isolation.
 
 \begin{table}[t]
 \centering
 \caption{Forecasting on the financial dataset ($N{=}1{,}827$, $d{=}8$),
-leakage-free rolling-origin, matched-epoch budget, mean$\pm$std over folds and
-seeds. SPADE uses RevIN; the deep baselines have no built-in normalization
-(see text). Lower is better.}
+leakage-free rolling-origin, mean$\pm$std over folds and seeds, plus mean
+training wall-clock. \texttt{+RevIN} rows wrap the same baseline in SPADE's
+own RevIN module (normalization-matched, per Reviewer~4); unmarked baseline
+rows use no normalization. MSE/MAE: lower is better. Once normalization is
+matched, three of four deep baselines outperform SPADE on raw forecast
+error; SPADE's advantage is joint forecast$+$structure$+$speed, not forecast
+accuracy alone (see text).}
 \label{tab:forecast}
 \input{figures/tab_forecast}
 \end{table}

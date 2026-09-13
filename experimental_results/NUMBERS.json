@@ -367,54 +367,82 @@
     }
   ],
   "forecast": {
+    "TSMixer+RevIN": {
+      "mse_mean": 0.0245,
+      "mse_std": 0.0019,
+      "mae_mean": 0.1032,
+      "mae_std": 0.0051,
+      "time_mean": 579.5667
+    },
+    "PatchTST+RevIN": {
+      "mse_mean": 0.0284,
+      "mse_std": 0.0005,
+      "mae_mean": 0.1127,
+      "mae_std": 0.0006,
+      "time_mean": 623.5
+    },
+    "N-BEATS+RevIN": {
+      "mse_mean": 0.0301,
+      "mse_std": 0.0003,
+      "mae_mean": 0.1189,
+      "mae_std": 0.0005,
+      "time_mean": 771.6
+    },
     "SPADE": {
-      "mse_mean": 0.0442,
-      "mse_std": 0.0,
-      "mae_mean": 0.1454,
-      "mae_std": 0.0002,
-      "time_mean": 47.95
+      "mse_mean": 0.048,
+      "mse_std": 0.0007,
+      "mae_mean": 0.1509,
+      "mae_std": 0.0004,
+      "time_mean": 36.3
+    },
+    "LSTM+RevIN": {
+      "mse_mean": 0.0535,
+      "mse_std": 0.0028,
+      "mae_mean": 0.1585,
+      "mae_std": 0.0034,
+      "time_mean": 852.4667
     },
     "TSMixer": {
-      "mse_mean": 0.2438,
-      "mse_std": 0.0159,
-      "mae_mean": 0.373,
-      "mae_std": 0.0335,
-      "time_mean": 8.1
+      "mse_mean": 0.2252,
+      "mse_std": 0.0342,
+      "mae_mean": 0.3562,
+      "mae_std": 0.0376,
+      "time_mean": 555.6
     },
     "N-BEATS": {
-      "mse_mean": 1.2007,
-      "mse_std": 0.3684,
-      "mae_mean": 0.7624,
-      "mae_std": 0.0941,
-      "time_mean": 1.65
+      "mse_mean": 1.071,
+      "mse_std": 0.3439,
+      "mae_mean": 0.7382,
+      "mae_std": 0.0786,
+      "time_mean": 676.3333
     },
     "PatchTST": {
-      "mse_mean": 2.3056,
-      "mse_std": 0.0173,
-      "mae_mean": 0.9693,
-      "mae_std": 0.0062,
-      "time_mean": 6.85
+      "mse_mean": 2.2711,
+      "mse_std": 0.061,
+      "mae_mean": 0.9611,
+      "mae_std": 0.0148,
+      "time_mean": 599.9667
     },
     "LSTM": {
-      "mse_mean": 3.3092,
-      "mse_std": 0.1003,
-      "mae_mean": 1.2696,
-      "mae_std": 0.0351,
-      "time_mean": 5.55
+      "mse_mean": 3.3448,
+      "mse_std": 0.0939,
+      "mae_mean": 1.2502,
+      "mae_std": 0.0418,
+      "time_mean": 705.2
     }
   },
   "forecast_leak": [
     {
       "scaling": "global_leak",
       "split": "single_80_20",
-      "mse": 0.01587,
-      "mae": 0.09204
+      "mse": 0.01622,
+      "mae": 0.09419
     },
     {
       "scaling": "train_only",
       "split": "single_80_20",
-      "mse": 0.02807,
-      "mae": 0.11745
+      "mse": 0.02929,
+      "mae": 0.12069
     }
   ],
   "scale": [
