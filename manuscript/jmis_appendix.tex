@@ -122,7 +122,7 @@ budget for the full five-seed protocol at $d{=}20$; we report it there over a
 single seed, flagged in Table~\ref{tab:instdag}, rather than omit the width or
 extrapolate.
 
-Two further settings were corrected during this revision, each via a
+Three further settings were corrected during this revision, each via a
 held-out procedure that never touched the seeds used for a reported number
 before the setting was fixed. First, SPADE's forecasting head
 (Section~\ref{sec:forecast}) originally trained for only 30 epochs against
@@ -140,4 +140,13 @@ silently dropped by the benchmark's error handling) while gradient-based
 methods, including SPADE, trained on silently without producing a finite,
 informative fit. We added a finite-and-bounded check with deterministic
 reseeding, scoped to \texttt{scripts/honest\_causal\_benchmark.py} only, and
-reran the affected configurations once.
+reran the affected configurations once. Third, in the same benchmark's
+\emph{linear} configuration at $d{=}50$, the group-lasso weight
+$\lambda_g{=}0.01$ (which works well at $d\le20$) proved severely
+over-regularized: the penalty sums a per-edge norm over all
+$d(d{-}1)\times\text{max\_lag}$ candidate edges, so the same $\lambda_g$
+grows relatively stronger as $d$ increases. A sweep on held-out validation
+seeds found $\lambda_g\le0.003$ recovers AUROC$=1.0$ at this width, and we
+adopted $\lambda_g{=}0.002$ (width-dependent choice documented in
+\texttt{fit\_cdkan}'s docstring), rerunning only the $d{=}50$ rows on the
+official seeds.

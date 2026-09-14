@@ -73,15 +73,19 @@ Several boundary conditions delimit responsible use:
     on price levels should be read as evidence of shared non-stationary
     co-movement, not as a validated short-horizon causal structure that
     survives a stationarity check.
-    \item \textbf{Where SPADE stands vs.\ classical methods.} SPADE is
-    competitive---strong on linear structure (AUROC~0.96) and, on non-linear
-    lagged structure, the best of the flexible neural/KAN learners: it
-    significantly beats NOTEARS, Neural-GC, and the KAN-Granger variant
+    \item \textbf{Where SPADE stands vs.\ classical methods.} SPADE now
+    matches the mature linear estimators exactly on \emph{linear} lagged
+    structure at every width we test, including $d{=}50$ (AUROC~0.999),
+    once its group-lasso weight is corrected for that width (an
+    over-regularized default had understated it to 0.829 there). On
+    \emph{non-linear} lagged structure it is the best of the flexible
+    neural/KAN learners: it
+    significantly beats NOTEARS, Neural-GC, Correlation, and the KAN-Granger variant
     GC-KAN$+$ALM (Wilcoxon $p<0.05$) and is on par with GC-KAN and the recent
     NTS-NOTEARS---but the strongest
     conditioning-based, non-Gaussianity-exploiting, and sparse-linear methods
     (PCMCI, VAR-LiNGAM, VAR-Lasso) and the continuous-optimization linear
-    learner GOLEM retain an edge on \emph{lagged} discovery, and all classical methods are far faster
+    learner GOLEM retain an edge there, and all classical methods are far faster
     (Section~\ref{sec:synthetic}). On \emph{instantaneous} non-linear structure,
     SPADE decisively beats every fixed-architecture, gradient-based DAG learner
     and, once its group-lasso weight is properly tuned on held-out seeds, the

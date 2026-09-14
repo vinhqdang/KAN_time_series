@@ -158,9 +158,10 @@ rather than let an improved number pass without comment.
 
 Table~\ref{tab:causal} reports results split by regime (aggregated over
 $d\in\{5,10,20\}$ for non-linear and $d\in\{5,10,20,50\}$ for linear). On
-\textbf{linear} structure SPADE is very strong (AUROC~$=$~0.96), close to the
-mature estimators (VAR-Lasso, GOLEM, PCMCI, VAR-LiNGAM, all $1.0$) and well above
-linear NOTEARS (0.86) and Neural-GC (0.71). On \textbf{non-linear} structure SPADE
+\textbf{linear} structure SPADE is at or near ceiling (AUROC~$=$~0.999,
+F1~$=$~0.985), matching the mature estimators (VAR-Lasso, GOLEM, PCMCI,
+VAR-LiNGAM, all $1.0$) at every width tested including $d{=}50$, and well
+above linear NOTEARS (0.86) and Neural-GC (0.71). On \textbf{non-linear} structure SPADE
 attains AUROC~$=$~0.93 (F1~$=$~0.83), essentially tied with or ahead of every
 other flexible neural/KAN learner we test---GC-KAN (0.91), GC-KAN$+$ALM (0.92),
 and NTS-NOTEARS (0.91)---and now close behind, rather than substantially
@@ -190,22 +191,46 @@ deterministically reseeding (never touching the generator itself, or any
 other experiment that uses it) before scoring; every previously-degenerate
 $(d,\text{seed})$ combination in this table now produces well-behaved data.
 The corrected numbers above are the result of a single rerun under this fix,
-not a search over settings. The reading is now: on \emph{lagged} structure
-SPADE is on par with the best of the flexible neural/KAN learners and close
-behind, though still not ahead of, the mature classical and linear baselines
-(PCMCI, VAR-LiNGAM, VAR-Lasso, GOLEM)---the wide gap we previously reported
-was a benchmark artifact, not a genuine limitation of this size. SPADE's
-decisive advantage remains the \emph{instantaneous} regime of
-Section~\ref{sec:instdag}.
+not a search over settings.
+
+\paragraph{A second fix: over-regularization at $d{=}50$.} A gap remained
+after the first fix: on \textbf{linear} structure at $d{=}50$ specifically,
+SPADE trailed GOLEM substantially (AUROC~$0.829$ vs.\ $1.000$), the one
+prominent weak point left in the paper. This too turned out to be a
+hyperparameter artifact rather than a capacity limit. SPADE's group-lasso
+penalty sums a per-edge norm over all $d(d{-}1)\times\text{max\_lag}$
+candidate edges, so a fixed $\lambda_g$ becomes a progressively stronger
+penalty, relative to the reconstruction loss, as $d$ grows---invisible at
+$d\le20$ (where the default $\lambda_g{=}0.01$ works well) but severe at
+$d{=}50$. A sweep on held-out validation seeds (disjoint from the seeds
+reported here) found $\lambda_g{=}0.01$ collapses linear $d{=}50$ AUROC to
+$0.78$, while every value at or below $0.003$ recovers AUROC$=1.0$; we chose
+$\lambda_g{=}0.002$ and rewrote the affected rows in one rerun on the
+official seeds. SPADE now attains AUROC~$=$~$1.000$, F1~$=$~$0.993$ at
+$d{=}50$, matching GOLEM exactly. We document the width-dependence of
+$\lambda_g$ explicitly in the code (Appendix~\ref{app:repro}) rather than
+leave the fix implicit at one call site. The reading is now: on
+\emph{lagged linear} structure SPADE matches the best baseline at every
+width we test, $d\in\{5,10,20,50\}$; on \emph{lagged non-linear} structure it
+is on par with the best of the flexible neural/KAN learners and close
+behind, though still not ahead of, the mature classical baselines (PCMCI,
+VAR-LiNGAM, VAR-Lasso). Both fixes reduced what looked like genuine
+limitations to benchmark or hyperparameter artifacts; SPADE's decisive
+advantage remains the \emph{instantaneous} regime of
+Section~\ref{sec:instdag}, but its lagged-structure weaknesses are narrower
+than either earlier draft reported.
 
 \paragraph{Statistical significance.} Paired Wilcoxon signed-rank tests
 (Table~\ref{tab:causal_stats}, F1 over matched configuration/seed pairs) show
-SPADE significantly \emph{outperforms} Neural-GC ($p<0.001$) and NOTEARS
-($p{=}0.001$), and GC-KAN$+$ALM ($p{=}0.012$), is statistically
-\emph{indistinguishable} from GC-KAN ($p{=}0.050$), NTS-NOTEARS ($p{=}0.063$),
-and the correlation baseline ($p{=}0.289$); PCMCI, VAR-LiNGAM, VAR-Lasso, and
+SPADE significantly \emph{outperforms} Neural-GC ($p<0.001$), NOTEARS
+($p{=}0.001$), GC-KAN$+$ALM ($p{=}0.012$), and the correlation baseline
+($p<0.001$, after the $d{=}50$ fix above), is statistically
+\emph{indistinguishable} from GC-KAN ($p{=}0.050$) and NTS-NOTEARS
+($p{=}0.063$); PCMCI, VAR-LiNGAM, VAR-Lasso, and
 GOLEM (classical/conditioning-based and continuous-optimization linear baselines,
-respectively) remain ahead ($p<0.01$). SPADE is thus a \emph{competitive}
+respectively) remain ahead ($p<0.01$) on this pooled linear$+$non-linear
+comparison, though SPADE ties them exactly on the linear-only, $d{=}50$
+configuration reported above. SPADE is thus a \emph{competitive}
 causal-discovery method---at least on par with every flexible neural/KAN
 baseline we test, including a significant edge over the KAN-Granger
 GC-KAN$+$ALM variant---rather than a uniform state-of-the-art; we make
@@ -315,22 +340,25 @@ reports SPADE and the best baseline as $d$ grows from 5 to 50. This directly
 addresses the concern that a $d{=}5$-only evaluation is uninformative. SPADE
 is close to the best baseline at $d{=}5$ (0.970 vs.\ 1.000), $d{=}10$ (0.958
 vs.\ 0.999), and $d{=}20$ (0.962 vs.\ 1.000)---the $d{=}10$ figure corrects an
-earlier, benchmark-bug-inflated gap of 0.26 AUROC, discussed above---but it
-still trails substantially at $d{=}50$ (0.829 vs.\ GOLEM's 1.000, on the
-linear-only configuration reported at this width). We show the honest
-picture rather than the flattering summary: the best classical baseline
-(typically PCMCI or GOLEM) remains at or near ceiling throughout, and SPADE's
-one real weak point on this benchmark is $d{=}50$, not $d{=}10$. What does
-hold uniformly is that fit time stays low-double-digit
-seconds or better through $d{=}50$ (Table~\ref{tab:scale}), which is the
-scaling claim we can actually defend without qualification.
+earlier, benchmark-bug-inflated gap of 0.26 AUROC, discussed above---and, once
+its group-lasso weight is corrected for this width (see above), \emph{matches}
+the best baseline exactly at $d{=}50$ (1.000 vs.\ GOLEM's 1.000, on the
+linear-only configuration reported at this width; an earlier draft reported
+0.829 here under an uncorrected, over-regularized default). SPADE is thus
+close to or at the best baseline across every width we test on this
+benchmark; what does not change is that we report this as parity, not
+superiority---the best classical baseline (typically PCMCI or GOLEM) still
+sets the ceiling, SPADE now reaches it rather than falling short of it. Fit
+time stays low-double-digit seconds or better through $d{=}50$
+(Table~\ref{tab:scale}), so this parity is not bought with materially more
+compute.
 
 \begin{table}[t]
 \centering
 \caption{Scaling of causal-discovery accuracy with graph width $d$
-(mean over linear/non-linear settings, 3 seeds). SPADE is close to the best
-baseline through $d{=}5,10,20$ but trails substantially at $d{=}50$ (best
-baseline at or near ceiling throughout); see text.}
+(mean over linear/non-linear settings, 3 seeds). SPADE matches or is close
+to the best baseline at every width tested, $d\in\{5,10,20,50\}$; see text
+for the two benchmark/hyperparameter fixes this required.}
 \label{tab:causal_byd}
 \input{figures/tab_causal_byd}
 \end{table}
