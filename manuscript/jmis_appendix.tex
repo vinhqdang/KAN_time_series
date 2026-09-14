@@ -98,7 +98,11 @@ learners approximate poorly (Section~\ref{sec:instdag}).
 All experiments use the released code and fixed seeds. Unless stated otherwise,
 SPADE uses $E{=}150$ epochs (400 for the instantaneous-DAG study), learning rate
 $5\times10^{-3}$, spline grid $G{=}8$ of cubic ($p{=}3$) B-splines on
-$[-3,3]$, group-lasso weight $\lambda_g{=}10^{-2}$, gradient clipping at $5.0$,
+$[-3,3]$, group-lasso weight $\lambda_g{=}10^{-2}$ (headline instantaneous-DAG
+study: $\lambda_g{=}5\times10^{-3}$, selected via a sensitivity sweep on
+held-out validation seeds disjoint from the seeds reported in
+Table~\ref{tab:instdag}, after finding the earlier $\lambda_g{=}0.02$ was
+over-regularized for this task---see Section~\ref{sec:instdag}), gradient clipping at $5.0$,
 and---when contemporaneous edges are modelled---an Augmented-Lagrangian schedule
 $(\rho_0,\alpha_0,\beta,K)=(1,0,2,50)$ with $\rho$ capped at $10^{10}$. Series are
 $z$-scored per training window (Remark~\ref{rem:varsort}). Baselines use their

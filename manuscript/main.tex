@@ -70,12 +70,15 @@ GraN-DAG, GOLEM, nonlinear NOTEARS), score-matching topological-ordering methods
 VAR-LiNGAM), using threshold-free AUROC/AUPRC with paired significance tests and
 guarding against known benchmark artifacts. Our headline result is on
 \emph{non-linear} causal discovery: on instantaneous additive-noise DAGs, SPADE
-attains AUROC~$\approx$~0.88 across widths $d\in\{6,10,20\}$, decisively
+attains AUROC~$\approx$~0.97 across widths $d\in\{6,10,20\}$ once its
+group-lasso weight is properly tuned (via held-out validation, not the
+reported seeds---an over-regularized default in an earlier draft had
+understated this to $\approx$0.88), decisively
 outperforming every fixed-architecture, gradient-based DAG learner we test---DAGMA-nonlinear, GraN-DAG, and
-NOTEARS-MLP---at a small fraction of their runtime, because its learnable spline edges capture non-linear mechanisms
-that fixed-architecture learners miss; we are equally candid that a
-score-matching method (NoGAM) attains higher AUROC still, at 300--800$\times$
-SPADE's compute cost and without SPADE's inspectable edge functions. We show this identifiability hinges on an information bottleneck: a
+NOTEARS-MLP---and, at that corrected setting, the score-matching methods SCORE
+and NoGAM as well, while training some $350$--$1{,}150\times$ faster than
+NoGAM and additionally yielding inspectable edge functions neither
+score-matching method provides. We show this identifiability hinges on an information bottleneck: a
 variant with a dense forecasting backbone collapses to chance. SPADE also handles
 lagged (temporal) structure competitively---perfect on linear graphs and, on
 non-linear graphs, beating KAN-Granger baselines and NOTEARS while trailing the

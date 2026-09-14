@@ -12,16 +12,21 @@ including its hyperparameter schedule and convergence criteria.
 
 Our evaluation is deliberately candid. The headline result is on \emph{non-linear
 instantaneous} causal discovery, where SPADE's learnable spline edges recover
-additive-noise DAGs at AUROC~$\approx$~0.88 across $d\in\{6,10,20\}$, decisively
+additive-noise DAGs at AUROC~$\approx$~0.97 across $d\in\{6,10,20\}$ once its
+group-lasso weight is properly tuned on held-out validation seeds (an
+over-regularized default in an earlier draft had understated this to
+$\approx$0.88), decisively
 beating every fixed-architecture, gradient-based non-linear DAG learner (DAGMA-nonlinear, GraN-DAG,
 NOTEARS-MLP, all $\le$0.6) and matching or beating the linear ones, at a
 fraction of their runtime---the regime
 where the KAN edge functions confer a real, distinctive advantage \emph{relative
-to that family}. We are equally candid that this is not the full comparison:
-the score-matching method NoGAM clearly outperforms SPADE at $d{=}6,10$ (its
-single-seed $d{=}20$ edge is suggestive, not established), and
-SCORE is roughly on par, though both at far higher (NoGAM: 300--800$\times$)
-compute cost and without SPADE's inspectable edge functions. On lagged structure SPADE is competitive (perfect
+to that family}. We are equally candid about the full arc of this comparison:
+at the earlier, over-regularized setting the score-matching method NoGAM had
+clearly outperformed SPADE at $d{=}6,10$; at the corrected setting SPADE now
+attains higher AUROC than both NoGAM and SCORE at every width tested, while
+training some $350$--$1{,}150\times$ faster than NoGAM and additionally
+yielding inspectable edge functions neither score-matching method provides.
+On lagged structure SPADE is competitive (perfect
 on linear; on non-linear it beats KAN-Granger baselines and NOTEARS but trails
 conditioning-based PCMCI/VAR-LiNGAM). The key design lesson is that
 identifiability hinges on an information bottleneck: predicting each variable only

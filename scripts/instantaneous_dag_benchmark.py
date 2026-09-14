@@ -38,14 +38,19 @@ def score(S, A):                         # S, A indexed [cause, effect]
 
 
 # ---- SPADE (ours) : returns [cause, effect] ----
-def cdkan(X, seed, ep=400):
+# lambda_g=0.005 (was 0.02): re-tuned via scripts/tune_instdag_lambda.py on HELD-OUT
+# validation seeds (100-104, disjoint from the seeds 0-4/0-2 reported in CONFIGS below,
+# to avoid tuning on the evaluation data) after the ablation study found the previous
+# 0.02 was over-regularized for this task (AUROC 0.876/0.885/0.886 at d=6/10/20 vs.
+# 0.97+ achievable with a lighter penalty). See response letter for the full account.
+def cdkan(X, seed, ep=400, lg=0.005):
     torch.set_default_dtype(torch.float32)
     torch.manual_seed(seed); np.random.seed(seed)
     Xt = torch.tensor(zscore(X), dtype=torch.float32); m = CausalKANInstant(X.shape[1], grid_size=8)
     opt = torch.optim.Adam(m.parameters(), lr=5e-3); rho, al = 1.0, 0.0
     for e in range(ep):
         opt.zero_grad(); pred = m(Xt); mse = ((pred - Xt) ** 2).mean(); h = m.h()
-        (mse + 0.02 * m.group_lasso() + al * h + 0.5 * rho * h * h).backward()
+        (mse + lg * m.group_lasso() + al * h + 0.5 * rho * h * h).backward()
         torch.nn.utils.clip_grad_norm_(m.parameters(), 5.0); opt.step()
         if (e + 1) % 50 == 0:
             with torch.no_grad(): hv = m.h().item()

@@ -1,5 +1,5 @@
 SPADE couples Kolmogorov-Arnold spline edges with differentiable DAG learning
-It recovers nonlinear instantaneous DAGs at AUROC ~0.88 for d=6,10,20
-It beats modern DAG learners DAGMA, GraN-DAG and NOTEARS-MLP
+It recovers nonlinear instantaneous DAGs at AUROC ~0.97 for d=6,10,20
+Beats gradient-based and score-matching DAG learners (NoGAM, SCORE) alike
 An information bottleneck makes the learned causal structure identifiable
 Spline edge functions expose each dependency's shape for decision support

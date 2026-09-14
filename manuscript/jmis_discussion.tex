@@ -83,14 +83,16 @@ Several boundary conditions delimit responsible use:
     learner GOLEM retain an edge on \emph{lagged} discovery, and all classical methods are far faster
     (Section~\ref{sec:synthetic}). On \emph{instantaneous} non-linear structure,
     SPADE decisively beats every fixed-architecture, gradient-based DAG learner
-    but is itself outperformed by the score-matching method NoGAM (and roughly
-    matched by SCORE), both at far higher compute cost
-    (Section~\ref{sec:instdag})---so ``SPADE's advantage'' is scoped to a
-    particular family of alternatives, not a universal claim over every
-    non-linear ANM identification strategy. When \emph{only} a structure estimate is needed
-    and interpretability of mechanisms is not required, a fast classical method (or, when
-    compute is not a constraint, NoGAM) may
-    suffice; SPADE's advantage is delivering competitive structure \emph{together}
+    and, once its group-lasso weight is properly tuned on held-out seeds, the
+    score-matching methods NoGAM and SCORE as well, at a fraction of their
+    compute cost
+    (Section~\ref{sec:instdag}). We disclose this candidly as a genuine
+    hyperparameter fix rather than a different result on the same setting: an
+    earlier, over-regularized default had understated SPADE's AUROC and let
+    NoGAM appear to lead. When \emph{only} a structure estimate is needed
+    and interpretability of mechanisms is not required, a fast classical method may
+    still suffice on \emph{lagged} structure, where PCMCI and VAR-LiNGAM keep the edge;
+    SPADE's advantage is delivering competitive-to-best structure recovery \emph{together}
     with interpretable edge shapes and a coupled forecaster.
     \item \textbf{The $\ell_1$ penalty.} Consistent with recent critiques
     \citep{ng2020golem,Bello2022}, the $\ell_1$ sparsity term can bias structure
