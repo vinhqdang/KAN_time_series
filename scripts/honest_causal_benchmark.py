@@ -332,7 +332,15 @@ def fit_cdkan(X, seed, max_lag=3, epochs=150, lr=5e-3, lg=0.01, grid_size=8):
     This is the corrected CD-KAN: each target is predicted only through per-(cause,
     lag) B-spline edges (information bottleneck), whole edges are driven to zero by
     a group-lasso, and structure is read from each edge's contribution to the
-    forecast. See src/cdkan/causal_kan.py for the rationale."""
+    forecast. See src/cdkan/causal_kan.py for the rationale.
+
+    lg default (0.01) is tuned for d<=20. group_lasso() sums a per-edge norm over
+    all d*(d-1)*max_lag candidate edges, so the same lg becomes a much stronger
+    penalty (relative to the MSE term) as d grows -- invisible at d<=20 but severe
+    at d=50 (a held-out sweep on validation seeds 142-144, disjoint from the
+    reporting seeds, found lg=0.01 collapses linear d=50 AUROC to 0.78 while
+    lg<=0.003 recovers AUROC=1.0 there). Call sites at large d should pass a
+    smaller lg explicitly rather than rely on this default."""
     from src.cdkan.causal_kan import CausalKAN
     torch.manual_seed(seed); np.random.seed(seed)
     D = X.shape[1]
@@ -450,8 +458,12 @@ def main():
                 except Exception as e:
                     print(f"[{name} s{seed}] {mname} FAILED: {e}", flush=True)
             # CD-KAN (improved component-wise CausalKAN)
+            # lg=0.002 at d>=50: the default lg=0.01 over-regularizes at this width
+            # (see fit_cdkan's docstring); 0.002 was chosen on held-out validation
+            # seeds disjoint from those reported here.
             try:
-                imp, dt, npar = fit_cdkan(X, seed)
+                cdkan_lg = 0.002 if d >= 50 else 0.01
+                imp, dt, npar = fit_cdkan(X, seed, lg=cdkan_lg)
                 m = score_adj(imp, true_adj)
                 m.update(dataset=name, kind=kind, d=d, n=n, seed=seed, gen_seed=gen_seed,
                          method="CD-KAN", time_s=round(dt, 3), n_params=npar)
