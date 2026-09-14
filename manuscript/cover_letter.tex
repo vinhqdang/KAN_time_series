@@ -29,10 +29,11 @@ We believe the work fits the journal's scope for three reasons:
   forecast and an interpretable, lag-resolved causal graph whose edge functions
   expose the \emph{shape} of each dependency (linear, saturating, threshold).
   \item \textbf{A decisive, rigorously evaluated result.} On non-linear
-  instantaneous additive-noise DAGs, SPADE attains AUROC~$\approx$~0.97 and
+  instantaneous additive-noise DAGs, SPADE attains AUROC~$\approx$~0.92--0.95 and
   substantially outperforms the strongest modern DAG learners (DAGMA-nonlinear,
-  GraN-DAG, NOTEARS-MLP) as well as the score-matching methods SCORE and
-  NoGAM, the latter at a fraction of NoGAM's compute cost. We ground the
+  GraN-DAG, NOTEARS-MLP) and the score-matching method SCORE at every width; it
+  also beats the score-matching method NoGAM at two of three widths, at a
+  fraction of NoGAM's compute cost throughout. We ground the
   method in additive-noise identifiability
   theory and evaluate with threshold-free metrics and paired significance tests
   against recent baselines run from their authors' implementations.

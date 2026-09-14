@@ -88,8 +88,10 @@ this---SCORE \citep{rolland2022score} and NoGAM \citep{montagna2023nogam} order
 variables through the Hessian of the log-density---confirming that nonlinearity is
 the resource that makes orientation possible. We include both as empirical
 baselines, not only cited theory, in Section~\ref{sec:instdag}; once SPADE's
-group-lasso weight is properly tuned on held-out seeds, it in fact outperforms
-both at every width tested, at a fraction of their compute cost. Conversely,
+group-lasso weight is properly tuned on genuinely held-out seeds, it
+outperforms SCORE at every width tested and outperforms NoGAM at two of the
+three widths (trailing it at $d{=}10$), at a fraction of their compute cost.
+Conversely,
 \citet{reisach2021beware,reisach2023scale} warn that continuous learners can
 ``cheat'' on simulated data by exploiting \emph{varsortability}, an artifact of
 marginal scale; we neutralize this by standardizing every series and reporting
@@ -149,25 +151,30 @@ contributions:
     rather than a clear structure-recovery advantage over an equally-sized
     MLP---we report this honestly rather than
     only the comparisons favorable to SPADE.
-    \item \textbf{A decisive result against gradient-based DAG learners and the
-    score-matching family alike.} On
-    additive-noise instantaneous DAGs, SPADE attains AUROC~$\approx$~0.97 across
-    $d\in\{6,10,20\}$ once its group-lasso weight is properly tuned on
-    held-out validation seeds (an over-regularized default in an earlier
-    draft had understated this to $\approx$0.88), substantially outperforming
-    every fixed-architecture, gradient-based DAG
+    \item \textbf{A decisive result against gradient-based DAG learners, and an
+    honest, mixed result against the score-matching family.} On
+    additive-noise instantaneous DAGs, SPADE attains AUROC~$\approx$~0.92--0.95
+    across $d\in\{6,10,20\}$ once its group-lasso weight is properly tuned on
+    genuinely held-out validation seeds (an over-regularized default in an
+    earlier draft had understated this to $\approx$0.88; a seed-leakage bug in
+    the tuning script itself, found on independent review, had briefly and
+    incorrectly inflated it to $\approx$0.97---see below), substantially
+    outperforming every fixed-architecture, gradient-based DAG
     learner we test---DAGMA (linear and non-linear), GraN-DAG, GOLEM, and
     NOTEARS/NOTEARS-MLP---at a fraction of their runtime, because learnable
     spline edges capture non-linear
     mechanisms that fixed-architecture learners miss. We also add the
-    score-matching methods SCORE and NoGAM (Reviewer~2): at the corrected
-    setting, SPADE now attains higher AUROC than both at every width tested,
-    while training some $350$--$1{,}150\times$ faster than NoGAM and
-    additionally yielding SPADE's inspectable edge functions, which neither
-    score-matching method provides. We report the full arc of this finding
-    candidly---including the earlier, over-regularized setting under which
-    NoGAM had the edge---rather than only the comparisons
-    favorable to SPADE (Section~\ref{sec:instdag}). On lagged (temporal)
+    score-matching methods SCORE and NoGAM (Reviewer~2): SPADE beats SCORE at
+    every width and beats NoGAM at two of three widths, but trails NoGAM at
+    $d{=}10$, while still training some $275$--$930\times$ faster than
+    NoGAM and additionally yielding SPADE's inspectable edge functions, which
+    neither score-matching method provides. We report the full arc of this
+    finding candidly, including a hyperparameter-tuning bug an independent
+    review pass found in our own code---one that had, unbeknownst to us,
+    tuned $\lambda_g$ on the same seeds used to report the result, and that we
+    corrected once identified, arriving at the more modest, mixed comparison
+    above rather than the cleaner-looking one it had produced
+    (Section~\ref{sec:instdag}). On lagged (temporal)
     structure it is competitive (perfect on linear, beating KAN-Granger baselines
     and NOTEARS on non-linear) though the best conditioning-based methods (PCMCI,
     VAR-LiNGAM) still lead there; we report this honestly and retract the earlier,

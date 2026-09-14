@@ -88,13 +88,17 @@ Several boundary conditions delimit responsible use:
     learner GOLEM retain an edge there, and all classical methods are far faster
     (Section~\ref{sec:synthetic}). On \emph{instantaneous} non-linear structure,
     SPADE decisively beats every fixed-architecture, gradient-based DAG learner
-    and, once its group-lasso weight is properly tuned on held-out seeds, the
-    score-matching methods NoGAM and SCORE as well, at a fraction of their
-    compute cost
-    (Section~\ref{sec:instdag}). We disclose this candidly as a genuine
-    hyperparameter fix rather than a different result on the same setting: an
+    and, once its group-lasso weight is properly tuned on genuinely held-out
+    seeds, the score-matching method SCORE as well, at a fraction of the
+    compute cost; against NoGAM the honest result is mixed---SPADE ahead at
+    $d{=}6,20$, behind at $d{=}10$---though still at a fraction of NoGAM's
+    compute cost throughout
+    (Section~\ref{sec:instdag}). We disclose the full history candidly: an
     earlier, over-regularized default had understated SPADE's AUROC and let
-    NoGAM appear to lead. When \emph{only} a structure estimate is needed
+    NoGAM lead at every width; a subsequent tuning pass fixed that but, we
+    later found, had itself leaked the evaluation seeds into the hyperparameter
+    choice, briefly and wrongly suggesting SPADE led at every width instead.
+    Correcting that leak is what produces the mixed result reported here. When \emph{only} a structure estimate is needed
     and interpretability of mechanisms is not required, a fast classical method may
     still suffice on \emph{lagged} structure, where PCMCI and VAR-LiNGAM keep the edge;
     SPADE's advantage is delivering competitive-to-best structure recovery \emph{together}

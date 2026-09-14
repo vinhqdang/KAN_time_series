@@ -66,11 +66,11 @@ abstract = (
  "discovers interpretable non-linear causal structure and produces one-step forecasts "
  "from a single differentiable model. Its headline result is on non-linear instantaneous "
  "causal discovery, where learnable spline edges recover additive-noise DAGs at "
- "AUROC ≈ 0.97 across d ∈ {6, 10, 20} once its group-lasso weight is properly tuned "
- "on held-out validation seeds, decisively outperforming the strongest "
- "modern DAG learners (DAGMA-nonlinear, GraN-DAG, NOTEARS-MLP) and, at that corrected "
- "setting, the score-matching methods SCORE and NoGAM as well, while training some "
- "350-1,150x faster than NoGAM. We ground the design in "
+ "AUROC ≈ 0.92-0.95 across d ∈ {6, 10, 20} once its group-lasso weight is properly tuned "
+ "on genuinely held-out validation seeds, decisively outperforming the strongest "
+ "modern DAG learners (DAGMA-nonlinear, GraN-DAG, NOTEARS-MLP) and the score-matching "
+ "method SCORE at every width, and beating the score-matching method NoGAM at two of "
+ "three widths, while training some 275-930x faster than NoGAM. We ground the design in "
  "the identifiability theory of additive-noise models, evaluate transparently against "
  "recent baselines with threshold-free metrics, and report all limitations candidly.")
 doc.add_paragraph(abstract)

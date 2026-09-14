@@ -117,39 +117,43 @@ $d{=}20$ (and five at $d{=}6,10$).
 \begin{table}[t]
 \centering
 \caption{Non-linear instantaneous-DAG recovery (AUROC$\,\pm\,$std by width $d$;
-F1 overall). SPADE, with its group-lasso weight re-tuned on held-out validation
-seeds (see text), now attains the highest AUROC of every method at every width
-tested, including the score-matching methods SCORE and NoGAM, at a small
-fraction of NoGAM's runtime and a fraction of every gradient-based
-fixed-architecture learner's error rate (DAGMA-nonlinear/-linear, GraN-DAG,
-NOTEARS-MLP, GOLEM, linear NOTEARS).}
+F1 overall). SPADE decisively beats every fixed-architecture gradient-based
+learner (DAGMA-nonlinear/-linear, GraN-DAG, NOTEARS-MLP, GOLEM, linear
+NOTEARS) at every width, and beats the score-matching methods SCORE and
+NoGAM at $d{=}6,20$; NoGAM leads at $d{=}10$ (see text for why, and for a
+correction to an earlier, over-optimistic version of this table).}
 \label{tab:instdag}
 \input{figures/tab_instdag}
 \end{table}
 
 Table~\ref{tab:instdag} and Figure~\ref{fig:instdag} show the result.
-\textbf{SPADE attains AUROC~$0.974$/$0.972$/$0.971$ at $d{=}6$/$10$/$20$---essentially
-flat as the graph grows---the highest of every method compared, including the
-score-matching methods and every fixed-architecture gradient-based
-learner.} This is a materially different, and better, result than an earlier
-draft reported (AUROC~$0.876$/$0.885$/$0.886$), and we explain exactly why,
-rather than let an improved number pass without comment.
+\textbf{SPADE attains AUROC~$0.947$/$0.926$/$0.915$ at $d{=}6$/$10$/$20$,
+decisively ahead of every fixed-architecture gradient-based learner we test at
+every width, ahead of NoGAM and SCORE at $d{=}6$ and $d{=}20$, and behind
+NoGAM specifically at $d{=}10$ (0.926 vs.\ 0.955).} This is a different, and
+more modest, result than an earlier revision of this paper reported
+(AUROC~$0.974$/$0.972$/$0.971$, beating NoGAM/SCORE at every width), and we
+explain exactly why, because the reason matters as much as the number.
 
-\paragraph{Why the number changed: a genuine hyperparameter fix, not a different result on the same setting.} While isolating the spline-vs-MLP edge contribution (Section~\ref{sec:ablation}), we found that removing SPADE's edge-level group-lasso penalty substantially \emph{raised} AUROC on that (different) ablation benchmark---evidence the penalty was trading ranking quality for sparsity there. That result prompted us to check whether the same was true on the headline instantaneous-DAG task, where SPADE had used $\lambda_g=0.02$ throughout our original submission and first revision. It was: sweeping $\lambda_g$ on \emph{held-out validation seeds} (distinct from the seeds reported in Table~\ref{tab:instdag}, so the hyperparameter is not chosen using the evaluation data) showed $\lambda_g=0.02$ was clearly over-regularized for this task, and a lighter penalty ($\lambda_g=5\times10^{-3}$) consistently recovered substantially higher AUROC across $d\in\{6,10,20\}$ on the validation seeds. We then re-ran the full official protocol (the same seeds reported throughout this paper) with $\lambda_g=5\times10^{-3}$ fixed in advance, and Table~\ref{tab:instdag} reports the result of that single, pre-registered re-run---not a best-of-several-attempts number. The acyclicity constraint is unaffected by this change ($h(W^{(0)})$ residual $\approx 10^{-3}$, consistent with the rest of the paper); only the group-lasso weight changed. We flag this transparently as what it is: a hyperparameter that was not adequately tuned for this specific experiment in earlier drafts, now corrected using a methodology (held-out tuning) that guards against tuning on the test data.
+\paragraph{Why the number changed a second time: a seed-leakage bug in our own tuning script, found on independent review.} The previous revision reported $\lambda_g=5\times10^{-3}$, chosen (we said) via a sweep on ``held-out validation seeds, disjoint from the seeds reported in Table~\ref{tab:instdag}.'' That claim was false as implemented: the sweep script committed alongside it hardcoded seeds $0$--$4$ for its $d{=}6$ sweep---identical to the official reporting seeds used throughout this benchmark. The hyperparameter had, in fact, been selected on the same data used to report the result, precisely the failure mode held-out tuning is meant to prevent. This was caught by an independent review pass on this manuscript (not by us), verified directly against the repository (the sweep script's committed seed list is unambiguous), and corrected immediately: the tuning script now uses genuinely disjoint seeds ($100$--$104$), and re-sweeping on those seeds finds $\lambda_g=0.01$---not $5\times10^{-3}$---is the best-performing value there (AUROC $0.988\pm0.022$ vs.\ $5\times10^{-3}$'s $0.970\pm0.038$, itself a margin inside one standard deviation, which we note rather than paper over). Applying $\lambda_g=0.01$ to the official seeds, in one pre-registered re-run, gives the numbers reported above.
 
-\paragraph{The comparison in full.} Against the fixed-architecture, gradient-based family, SPADE's advantage is now larger than previously reported: DAGMA-nonlinear ($\approx$0.59), NOTEARS-MLP ($\approx$0.61), and GraN-DAG ($\approx$0.52, barely above chance) all remain far behind, as do the linear score-based learners (DAGMA-linear $\approx$0.50, GOLEM $\approx$0.72) and, notably, linear NOTEARS ($0.70$/$0.79$/$0.88$), which previously matched SPADE at $d{=}20$ and no longer does. Against the score-matching methods---the theoretically-motivated comparison class we added per Reviewer~2---SPADE now leads as well: NoGAM \citep{montagna2023nogam} attains AUROC~$0.917\pm0.077$/$0.955\pm0.058$/$0.906$ (single seed at $d{=}20$; its kernel-ridge cross-validated pruning took over an hour there, so we did not extend it to the full three-seed protocol) and SCORE \citep{rolland2022score} attains $0.804\pm0.153$/$0.887\pm0.069$/$0.821\pm0.023$---both below SPADE's $0.974$/$0.972$/$0.971$ at every width. SPADE additionally trains roughly $660\times$ faster than NoGAM on average (2.2s vs.\ 1422s mean per seed) and yields inspectable edge functions (Section~\ref{sec:splines}), which NoGAM's ordering-plus-pruning procedure does not produce at all. We do not claim this settles every possible comparison---NoGAM and SCORE were run at their default settings, without the same held-out-validation tuning pass we gave SPADE, so a fully symmetric comparison would also retune their hyperparameters; we did not have the compute budget to do this for NoGAM specifically given its cost, and we say so rather than imply the comparison is perfectly matched in tuning effort on both sides. Because all series are standardized (Remark~\ref{rem:varsort}), none of SPADE's advantage can be a variance-ordering artifact.
+We are explicit about what this means: the previous claim that SPADE beats NoGAM and SCORE \emph{at every width} was an artifact of tuning $\lambda_g$ on the evaluation seeds, not a genuine result. The honest number is more modest---SPADE now trails NoGAM at $d{=}10$---and we report it as such rather than revert to the more flattering, leakage-derived figure. We also note, for full transparency, that with only five held-out seeds the gap between $\lambda_g=0.01$ and $5\times10^{-3}$ on the validation sweep itself is not large relative to its own noise; a different, equally defensible reading of the same held-out sweep could have selected a value near $5\times10^{-3}$ instead. We report the value the corrected, disjoint-seed procedure actually selected, and the result that procedure actually produced on the official seeds, rather than the version of events that would have kept the earlier, cleaner-looking claim intact. The acyclicity constraint is unaffected by any of this ($h(W^{(0)})$ residual $\approx 10^{-3}$ throughout); only the group-lasso weight changed.
+
+\paragraph{The comparison in full.} Against the fixed-architecture, gradient-based family, SPADE's advantage is unaffected by the correction above and remains decisive: DAGMA-nonlinear ($\approx$0.59), NOTEARS-MLP ($\approx$0.61), and GraN-DAG ($\approx$0.52, barely above chance) all remain far behind, as do the linear score-based learners (DAGMA-linear $\approx$0.50, GOLEM $\approx$0.72) and, notably, linear NOTEARS ($0.70$/$0.79$/$0.88$), which SPADE now beats at $d{=}6,10$ and ties at $d{=}20$. Against the score-matching methods---the theoretically-motivated comparison class we added per Reviewer~2---the honest picture is mixed rather than a clean sweep: NoGAM \citep{montagna2023nogam} attains AUROC~$0.917\pm0.077$/$0.955\pm0.058$/$0.906$ (single seed at $d{=}20$; its kernel-ridge cross-validated pruning took over an hour there, so we did not extend it to the full three-seed protocol) and SCORE \citep{rolland2022score} attains $0.804\pm0.153$/$0.887\pm0.069$/$0.821\pm0.023$. SPADE beats both at $d{=}6$ ($0.947$) and $d{=}20$ ($0.915$ vs.\ NoGAM's single-seed $0.906$), and beats SCORE at $d{=}10$ ($0.926$ vs.\ $0.887$), but trails NoGAM at $d{=}10$ ($0.926$ vs.\ $0.955$). SPADE still trains roughly $532\times$ faster than NoGAM on average (2.7s vs.\ 1422s mean per seed, unaffected by the $\lambda_g$ correction above, since group-lasso weight does not change training cost) and yields inspectable edge functions (Section~\ref{sec:splines}), which NoGAM's ordering-plus-pruning procedure does not produce at all---so even at $d{=}10$, where NoGAM leads on AUROC, it does so at roughly $860\times$ the compute cost and without an interpretable mechanism. We do not claim this settles every possible comparison---NoGAM and SCORE were run at their default settings, without the same held-out-validation tuning pass we gave SPADE (a pass whose own seed-leakage bug we have just described correcting), so a fully symmetric comparison would also retune their hyperparameters; we did not have the compute budget to do this for NoGAM specifically given its cost, and we say so rather than imply the comparison is perfectly matched in tuning effort on both sides. Because all series are standardized (Remark~\ref{rem:varsort}), none of SPADE's advantage (or its $d{=}10$ shortfall) can be a variance-ordering artifact.
 
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.7\textwidth]{figures/instdag.png}
     \caption{Non-linear instantaneous-DAG recovery vs.\ width $d$. SPADE (bold),
-    with its group-lasso weight tuned on held-out validation seeds, holds
-    AUROC~$\approx$~0.97 across $d$, well ahead of every fixed-architecture
-    gradient-based DAG learner (DAGMA-nonlinear, GraN-DAG, NOTEARS-MLP sit near
-    or below 0.6; linear NOTEARS approaches SPADE only at $d{=}20$) and above
-    the score-matching methods SCORE and NoGAM at every width, the latter at
-    far higher compute cost; NoGAM's $d{=}20$ point rests on a single seed
-    (flagged $\dagger$).}
+    with its group-lasso weight tuned on genuinely held-out validation seeds
+    (see text for a seed-leakage bug in an earlier tuning pass, found and
+    corrected), holds AUROC~$\approx$~0.92--0.95 across $d$, well ahead of
+    every fixed-architecture gradient-based DAG learner (DAGMA-nonlinear,
+    GraN-DAG, NOTEARS-MLP sit near or below 0.6; linear NOTEARS approaches
+    SPADE only at $d{=}20$). Against the score-matching methods, SPADE leads
+    SCORE at every width and leads NoGAM at $d{=}6,20$ but trails it at
+    $d{=}10$; NoGAM's $d{=}20$ point rests on a single seed (flagged
+    $\dagger$) and its lead is at far higher compute cost throughout.}
     \label{fig:instdag}
 \end{figure}
 

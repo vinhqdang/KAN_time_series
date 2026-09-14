@@ -99,10 +99,29 @@ All experiments use the released code and fixed seeds. Unless stated otherwise,
 SPADE uses $E{=}150$ epochs (400 for the instantaneous-DAG study), learning rate
 $5\times10^{-3}$, spline grid $G{=}8$ of cubic ($p{=}3$) B-splines on
 $[-3,3]$, group-lasso weight $\lambda_g{=}10^{-2}$ (headline instantaneous-DAG
-study: $\lambda_g{=}5\times10^{-3}$, selected via a sensitivity sweep on
-held-out validation seeds disjoint from the seeds reported in
-Table~\ref{tab:instdag}, after finding the earlier $\lambda_g{=}0.02$ was
-over-regularized for this task---see Section~\ref{sec:instdag}), gradient clipping at $5.0$,
+study: $\lambda_g{=}10^{-2}$, selected via a sensitivity sweep on
+held-out validation seeds (100--104/100--102) disjoint from the seeds reported in
+Table~\ref{tab:instdag} (0--4/0--2), after finding the earlier $\lambda_g{=}0.02$ was
+over-regularized for this task---see Section~\ref{sec:instdag}. An
+intermediate value, $\lambda_g{=}5\times10^{-3}$, was reported in an earlier
+revision but was selected by a tuning script that, we later found on
+independent review, had erroneously swept the same seeds used to report
+Table~\ref{tab:instdag} rather than the disjoint validation seeds its own
+comment claimed; \texttt{scripts/tune\_instdag\_lambda.py} now uses the
+disjoint seeds it always claimed to, and the value above is what that
+corrected script selects. Because the initial disjoint sweep used only five
+held-out seeds, we then expanded it to twenty (seeds 100--119) to check
+whether $\lambda_g{=}0.01$ was a confident choice or an artifact of a small
+sample: AUROC across $\lambda_g\in\{0.005,0.008,0.01,0.012,0.015,0.02\}$ was
+$0.955/0.969/0.969/0.959/0.948/0.940$ respectively, with a paired Wilcoxon
+test of $\lambda_g=0.01$ against $\lambda_g=5\times10^{-3}$ over the same
+twenty seeds giving $p=0.39$---not a statistically confident difference.
+$\lambda_g=0.01$ sits inside this broad, statistically indistinguishable
+plateau (its peak is at $0.008$, itself not distinguishable from $0.01$),
+while $\lambda_g=0.02$ is clearly outside it; we therefore keep
+$\lambda_g=0.01$, the value already applied and reported throughout this
+paper, rather than make a further change for a difference too small to
+support one), gradient clipping at $5.0$,
 and---when contemporaneous edges are modelled---an Augmented-Lagrangian schedule
 $(\rho_0,\alpha_0,\beta,K)=(1,0,2,50)$ with $\rho$ capped at $10^{10}$. Series are
 $z$-scored per training window (Remark~\ref{rem:varsort}). Baselines use their

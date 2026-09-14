@@ -410,34 +410,67 @@ ablation study (Section~3.7.2, a different 5-node lagged benchmark): removing
 the group-lasso term there raised AUROC substantially ($0.902\to0.984$),
 suggesting the sparsity penalty can trade away ranking quality for sparsity.
 We treated this as a clue worth checking directly on the actual headline
-benchmark, not an excuse to keep tuning until SPADE won. We swept $\lambda_g$
-at $d{=}6$ on validation seeds \emph{disjoint from} the seeds used for every
-reported metric in the paper (seeds 100--104, versus the reporting seeds
-0--4/0--2), to rule out tuning the hyperparameter on the evaluation data
-itself --- a leakage risk we caught in our own process before it reached the
-manuscript. That sweep showed $\lambda_g{=}0.02$ was substantially
-over-regularized for this task, and $\lambda_g{=}5\times10^{-3}$ recovered
-AUROC~$\approx$~0.97 at $d{=}6$. We then applied this single corrected
-setting, chosen before looking at the reporting seeds, in one pre-registered
-rerun on the official seeds used throughout the paper (not a best-of-several
-selection): SPADE now attains AUROC
-$0.974\pm0.048$/$0.972\pm0.020$/$0.971\pm0.025$ at $d{=}6,10,20$, ahead of
-NoGAM ($0.917\pm0.077$/$0.955\pm0.058$/$0.906^\dagger$) and SCORE
-($0.804\pm0.153$/$0.887\pm0.069$/$0.821\pm0.023$) at every width, while
-training some $350$--$1{,}150\times$ faster than NoGAM per seed (NoGAM's
-kernel-ridge cross-validated pruning scales roughly quadratically in $d$; a
-single $d{=}20$ seed took over an hour, versus SPADE's few seconds at every
-width, which is also why we report NoGAM at $d{=}20$ over one seed rather
-than the three used elsewhere, flagged with $^\dagger$ in the table) and
-additionally yielding inspectable edge functions, which NoGAM's
-ordering-and-pruning procedure does not produce. We have revised the
+benchmark, not an excuse to keep tuning until SPADE won. We intended to sweep
+$\lambda_g$ at $d{=}6$ on validation seeds \emph{disjoint from} the seeds
+used for every reported metric in the paper (seeds 100--104, versus the
+reporting seeds 0--4/0--2), to rule out tuning the hyperparameter on the
+evaluation data itself. That sweep showed $\lambda_g{=}0.02$ was
+substantially over-regularized for this task, and $\lambda_g{=}5\times10^{-3}$
+recovered AUROC~$\approx$~0.97 at $d{=}6$; applying that setting to the
+official seeds gave SPADE AUROC $0.974\pm0.048$/$0.972\pm0.020$/$0.971\pm0.025$
+at $d{=}6,10,20$ --- ahead of both NoGAM and SCORE at every width. We reported
+this in the prior version of this response.
+
+\textbf{That number was wrong, and not for a subtle reason: our own tuning
+script did not do what we said it did.} An independent review pass on this
+revision (not initiated by us) checked our claim against the actual code and
+found that \texttt{scripts/tune\_instdag\_lambda.py}, as committed alongside
+that claim, hardcoded seeds $0$--$4$ for its $d{=}6$ sweep --- identical to
+the official reporting seeds, not the disjoint $100$--$104$ we described in
+both the manuscript and this letter. We verified this ourselves by reading
+the file: the claim was false as implemented. The $\lambda_g=5\times10^{-3}$
+figure had, in fact, been selected on the same data used to report the
+headline result --- exactly the failure mode a held-out sweep exists to
+prevent, and exactly the accusation a skeptical reviewer would be right to
+level at an unverified ``we used held-out seeds'' claim. We are not
+characterizing this as a documentation lag or a stale comment: it was an
+error in our process that produced a materially more flattering number than
+a correctly-executed held-out sweep does, and we would rather report that
+plainly than leave it standing.
+
+We fixed the script so it actually uses seeds $100$--$104$, as always
+claimed, and re-ran the sweep. On those genuinely disjoint seeds,
+$\lambda_g=0.01$ --- not $5\times10^{-3}$ --- is the best-performing value
+(AUROC $0.988\pm0.022$ vs.\ $5\times10^{-3}$'s $0.970\pm0.038$, a gap inside
+one standard deviation, which we note rather than treat as decisive with only
+five held-out seeds). Applying $\lambda_g=0.01$ to the official seeds, in one
+further pre-registered re-run, gives SPADE AUROC $0.947\pm0.032$/
+$0.926\pm0.036$/$0.915\pm0.071$ at $d{=}6,10,20$ --- lower than the
+leakage-derived $0.974$/$0.972$/$0.971$, as a correctly-executed
+held-out procedure should be expected to produce relative to a
+seed-leaking one. Against NoGAM ($0.917\pm0.077$/$0.955\pm0.058$/
+$0.906^\dagger$) and SCORE ($0.804\pm0.153$/$0.887\pm0.069$/$0.821\pm0.023$),
+the honest comparison is mixed: SPADE beats both at $d{=}6$ and $d{=}20$,
+and beats SCORE at $d{=}10$, but trails NoGAM at $d{=}10$ ($0.926$ vs.\
+$0.955$). We are not reverting to the more flattering, leakage-derived
+figure, and we are not describing this as a tie or a wash: SPADE now loses
+one of six pairwise width$\times$baseline comparisons in this block, and we
+say so. SPADE still trains some $275$--$930\times$ faster than NoGAM per
+seed (NoGAM's kernel-ridge cross-validated pruning scales roughly
+quadratically in $d$; a single $d{=}20$ seed took over an hour, versus
+SPADE's few seconds at every width, which is also why we report NoGAM at
+$d{=}20$ over one seed rather than the three used elsewhere, flagged with
+$^\dagger$ in the table) and additionally yields inspectable edge functions,
+which NoGAM's ordering-and-pruning procedure does not produce --- including
+at $d{=}10$, where NoGAM's accuracy edge comes at that far higher cost and
+without an interpretable mechanism. We have revised the
 abstract, Contributions (Section~1.2), Section~3.3 (headline results, table,
-caption, and figure caption), the Discussion, and the Conclusion throughout
-to reflect this corrected setting, and we disclose in the text itself
-(Section~3.3, Appendix~A.2) both the earlier over-regularized number and the
-held-out-seed methodology used to find and validate the fix, so a reader can
-see exactly what changed and why, rather than only the more favorable final
-figure. One asymmetry we flag rather than hide: SCORE and NoGAM were not
+caption, and figure caption), the Discussion, the Conclusion, and Appendix~A.2
+throughout to reflect this corrected setting, and we disclose in the text
+itself both the earlier over-regularized number, the intermediate,
+leakage-affected number, and the seed-leakage bug and its correction, so a
+reader can see exactly what changed, twice, and why. One asymmetry we flag
+rather than hide: SCORE and NoGAM were not
 given the same held-out hyperparameter-tuning treatment, since neither
 exposes an equivalent regularization knob in the reference implementation we
 used; the comparison is therefore fair in protocol (identical seeds, data,
