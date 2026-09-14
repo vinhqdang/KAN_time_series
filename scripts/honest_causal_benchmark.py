@@ -52,8 +52,26 @@ def _sparse_density(d):
     return min(0.3, 2.0 / (d - 1))
 
 
-def make_dataset(kind, n, d, seed):
-    """Return (X_standardised [T,d], true_adj [d,d] binary effect<-cause)."""
+# generate_nonlinear_scm allows cycles in its lagged summary graph, and one of its
+# mechanisms (signed square, x -> 0.5*x^2*sign(x)) is unbounded; in a minority of
+# (d, seed) draws the resulting feedback loop diverges to NaN/Inf or an extreme-scale
+# regime that swamps the additive noise entirely (verified directly: at d=10, 2 of the
+# 3 reporting seeds are fully NaN under the un-guarded generator; at d=20, one reporting
+# seed runs at |x|~300-1700 throughout instead of the O(1) scale of the other seeds).
+# Silently training or evaluating on such a draw is not a genuine difficulty --
+# it is numerical failure, and previously went undetected because classical baselines
+# simply raised (and were dropped by main()'s try/except) while gradient-based methods
+# guarded against non-finite loss and were left at a random-init, chance-level fit.
+NONLINEAR_MAX_ABS = 20.0
+
+
+def make_dataset(kind, n, d, seed, _max_reseed=20):
+    """Return (X_standardised [T,d], true_adj [d,d] binary effect<-cause, generator_seed).
+
+    generator_seed equals `seed` unless the nonlinear generator's draw at that seed was
+    degenerate (non-finite, or |x| beyond NONLINEAR_MAX_ABS), in which case we
+    deterministically reseed (seed+10000, seed+20000, ...) and report the seed actually
+    used -- see the note above and Appendix A.2."""
     dens = _sparse_density(d)
     if kind == "linear":
         np.random.seed(seed)
@@ -63,12 +81,25 @@ def make_dataset(kind, n, d, seed):
         for t in range(1, n):
             X[t] = coeffs @ X[t - 1] + np.random.normal(0, 0.1, size=d)
         true_adj = adj
+        gen_seed = seed
     elif kind == "nonlinear":
-        X, true_adj, _ = generate_nonlinear_scm(n_samples=n, n_nodes=d,
-                                                density=dens, max_lag=3, seed=seed)
+        gen_seed = None
+        for attempt in range(_max_reseed):
+            trial_seed = seed + attempt * 10000
+            X, true_adj, _ = generate_nonlinear_scm(n_samples=n, n_nodes=d,
+                                                    density=dens, max_lag=3, seed=trial_seed)
+            if np.isfinite(X).all() and np.abs(X).max() < NONLINEAR_MAX_ABS:
+                gen_seed = trial_seed
+                break
+        if gen_seed is None:
+            raise RuntimeError(f"no stable draw for kind=nonlinear d={d} seed={seed} "
+                               f"after {_max_reseed} reseed attempts")
+        if gen_seed != seed:
+            print(f"[make_dataset] nonlinear d={d} seed={seed}: degenerate draw "
+                  f"(non-finite or |x|>{NONLINEAR_MAX_ABS}), reseeded to {gen_seed}", flush=True)
     else:
         raise ValueError(kind)
-    return zscore(X.astype(np.float64)), true_adj.astype(int)
+    return zscore(X.astype(np.float64)), true_adj.astype(int), gen_seed
 
 
 def make_windows(data, window, horizon=1):
@@ -378,7 +409,7 @@ def main():
 
     raw_path = os.path.join(RESULTS_DIR, "honest_causal_raw.csv")
     import pandas as pd
-    _cols = ["dataset", "kind", "d", "n", "seed", "method",
+    _cols = ["dataset", "kind", "d", "n", "seed", "gen_seed", "method",
              "auroc", "auprc", "f1", "shd", "time_s", "n_params"]
 
     def _flush(rows):
@@ -400,7 +431,7 @@ def main():
     rows = []
     for kind, name, n, d in configs:
         for seed in args.seeds:
-            X, true_adj = make_dataset(kind, n, d, seed)
+            X, true_adj, gen_seed = make_dataset(kind, n, d, seed)
             # baselines
             for mname, fn in methods.items():
                 if d > SLOW_MAXD.get(mname, 999):
@@ -410,7 +441,7 @@ def main():
                     adj, _, _ = fn(X)
                     dt = time.time() - t0
                     m = score_adj(adj, true_adj)
-                    m.update(dataset=name, kind=kind, d=d, n=n, seed=seed,
+                    m.update(dataset=name, kind=kind, d=d, n=n, seed=seed, gen_seed=gen_seed,
                              method=mname, time_s=round(dt, 3), n_params="")
                     rows.append(m)
                     print(f"[{name} s{seed}] {mname:12s} "
@@ -422,7 +453,7 @@ def main():
             try:
                 imp, dt, npar = fit_cdkan(X, seed)
                 m = score_adj(imp, true_adj)
-                m.update(dataset=name, kind=kind, d=d, n=n, seed=seed,
+                m.update(dataset=name, kind=kind, d=d, n=n, seed=seed, gen_seed=gen_seed,
                          method="CD-KAN", time_s=round(dt, 3), n_params=npar)
                 rows.append(m)
                 print(f"[{name} s{seed}] {'CD-KAN':12s} "
