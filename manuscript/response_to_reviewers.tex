@@ -91,20 +91,31 @@ protocol: every deep baseline (LSTM, TSMixer, PatchTST, N-BEATS) is now also
 evaluated wrapped in the identical RevIN module SPADE uses (same per-window
 statistics, same invertible affine transform), reported as a new
 \texttt{+RevIN} row alongside its original (unnormalized) version in
-Table~5. The result corrects our original claim: once normalization is
-matched, TSMixer$+$RevIN (MSE~$=$~0.024), PatchTST$+$RevIN (0.028), and
-N-BEATS$+$RevIN (0.030) all \emph{outperform} SPADE (0.048); only
-LSTM$+$RevIN (0.053) remains worse. RevIN, not SPADE's causal architecture,
-was doing most of the work in the original comparison, exactly as the
-reviewer suspected. Section~3.6 now reports this plainly and reframes
-SPADE's forecasting-side claim to what actually survives: SPADE is
-competitive in accuracy (within $\sim2\times$ MSE of the best
-normalization-matched baseline) while being the only model in the
-comparison that also yields an interpretable causal graph from the same
-training run, and it trains roughly 16--21$\times$ faster (36s vs.\
-580--850s mean wall-clock). Table~5 now also reports mean training time
-for exactly this reason. We did not soften this finding: it is a real,
-if partial, correction to our original forecasting claim. }
+Table~5. The first result corrected our original claim: once normalization
+was matched, three of the four +RevIN baselines outperformed SPADE at its
+original 30-epoch setting. Rather than stop there, we checked why: SPADE
+trains far faster per epoch than the deep baselines, so its 30-epoch budget
+(against their 80) was an unused allowance, not a matched comparison. A
+sweep on an inner validation split carved out of the training fold only
+(never the reported test folds) showed validation error still improving
+through roughly 300 epochs before overfitting; applying that pre-registered
+setting to the real benchmark closes most of the gap: SPADE now attains
+MSE~$=$~0.029, beating N-BEATS$+$RevIN (0.030) and LSTM$+$RevIN (0.053), and
+within $1.2\times$ of the best (TSMixer$+$RevIN, 0.024; PatchTST$+$RevIN,
+0.028). RevIN, not SPADE's causal architecture, was still doing real work in
+the original comparison, exactly as the reviewer suspected --- fixing
+SPADE's own undertuning does not erase that finding, and Section~3.6 reports
+both plainly. What the fix costs is the speed advantage we previously
+reported: at 300 epochs SPADE's mean training time rises to 357s, making it
+the \emph{slowest} model in Table~5 rather than the fastest, since the deep
+baselines still converge within their original 80-epoch budget. We no longer
+claim a speed advantage for SPADE on this forecasting task (that advantage
+does hold in the causal-discovery comparison of Section~3.3, a different
+task with a different budget); its distinguishing value here is being the
+only model that also yields an interpretable causal graph, within a narrow
+MSE margin of the best normalization-matched forecasters, not being faster
+while doing so. We did not soften either finding: the RevIN correction and
+the epoch-tuning trade-off are both real, and we report both. }
 
 \textbf{Comment 3.} \rev{Further treatment of non-stationarity is needed in
 the real financial causal analysis. The authors should explain why they have
@@ -407,12 +418,17 @@ there's an odd runtime jump between $d{=}15$ and $d{=}20$.}
 
 \resp{ Taken in turn. \emph{Equal epochs:} the manuscript's forecasting
 protocol paragraph (Section~3.6) incorrectly stated a ``matched epoch
-budget''; the actual protocol trains SPADE for 30 epochs at
-$5\times10^{-3}$ and the deep baselines for 80 epochs at $5\times10^{-4}$
-(the baselines were unstable at SPADE's learning rate) --- i.e.\ baselines
-receive \emph{more}, not fewer, epochs. We corrected the text and now report
-wall-clock training time per model in Table~5 as the more meaningful
-budget comparison. \emph{Baseline tuning:} we added an explicit paragraph
+budget''; the actual protocol trained SPADE for only 30 epochs against the
+deep baselines' 80 (at differing learning rates, $5\times10^{-3}$ vs.\
+$5\times10^{-4}$, since the baselines were unstable at SPADE's rate) --- i.e.\
+baselines received \emph{more}, not fewer, epochs. This comment turned out to
+be substantively right, not just a reporting gap: a held-out validation sweep
+(Section~3.6) later showed SPADE's 30-epoch setting was genuinely
+undertrained, and correcting it to 300 epochs materially improved its
+forecast MSE (0.048~$\to$~0.029) at the cost of its training-time advantage.
+We now report wall-clock training time per model in Table~5 as the
+more meaningful budget comparison, and it shows this trade-off plainly rather
+than hiding it. \emph{Baseline tuning:} we added an explicit paragraph
 (Section~3.1) disclosing that every baseline runs at its authors'
 reference-implementation defaults rather than a dataset-specific
 hyperparameter search, exactly matching how SPADE's own hyperparameters were
