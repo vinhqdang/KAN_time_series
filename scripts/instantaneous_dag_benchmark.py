@@ -38,12 +38,17 @@ def score(S, A):                         # S, A indexed [cause, effect]
 
 
 # ---- SPADE (ours) : returns [cause, effect] ----
-# lambda_g=0.005 (was 0.02): re-tuned via scripts/tune_instdag_lambda.py on HELD-OUT
+# lambda_g=0.01 (was 0.02): re-tuned via scripts/tune_instdag_lambda.py on HELD-OUT
 # validation seeds (100-104, disjoint from the seeds 0-4/0-2 reported in CONFIGS below,
 # to avoid tuning on the evaluation data) after the ablation study found the previous
-# 0.02 was over-regularized for this task (AUROC 0.876/0.885/0.886 at d=6/10/20 vs.
-# 0.97+ achievable with a lighter penalty). See response letter for the full account.
-def cdkan(X, seed, ep=400, lg=0.005):
+# 0.02 was over-regularized for this task. NOTE: an earlier version of this comment,
+# and of tune_instdag_lambda.py's committed default, claimed this sweep but the script
+# actually swept seeds 0-4 (identical to the reporting seeds) -- a real bug, found on
+# independent review. tune_instdag_lambda.py's default seeds are now 100-104 as
+# claimed; re-running the sweep on those genuinely held-out seeds finds lambda_g=0.01
+# (not the previously-applied 0.005) as the best-performing value (AUROC 0.988+/-0.022
+# vs. 0.005's 0.970+/-0.038 there), so that is the value applied here.
+def cdkan(X, seed, ep=400, lg=0.01):
     torch.set_default_dtype(torch.float32)
     torch.manual_seed(seed); np.random.seed(seed)
     Xt = torch.tensor(zscore(X), dtype=torch.float32); m = CausalKANInstant(X.shape[1], grid_size=8)

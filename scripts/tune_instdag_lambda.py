@@ -1,5 +1,5 @@
 """
-Quick sweep of the group-lasso weight lambda_g for the headline instantaneous-DAG
+Held-out sweep of the group-lasso weight lambda_g for the headline instantaneous-DAG
 task (Section "Headline" of the manuscript, scripts/instantaneous_dag_benchmark.py).
 
 Motivation: the ablation study (scripts/ablation_scale.py, on a different 5-node
@@ -8,7 +8,20 @@ lagged benchmark) found that removing the group-lasso raises AUROC substantially
 instantaneous_dag_benchmark.py's cdkan()) may be trading away ranking quality
 (AUROC/AUPRC) for sparsity on this style of benchmark too. This script checks
 that directly on the ACTUAL headline benchmark (not the ablation's benchmark),
-at d=6, across several lambda_g values and seeds, before committing to any change.
+at d=6, across several lambda_g values, using seeds disjoint from the official
+reporting seeds (0-4 for d=6/10, 0-2 for d=20 in instantaneous_dag_benchmark.py's
+CONFIGS) so the choice is not tuned on the evaluation data.
+
+CORRECTION (found on independent review of this revision): an earlier version of
+this script hardcoded seeds=[0,1,2,3,4] -- identical to the official reporting
+seeds -- which contradicted the "held-out validation seeds 100-104" claim made in
+the manuscript text and in instantaneous_dag_benchmark.py's comment. That was a
+real bug, not a documentation lag: the lambda_g=0.005 value actually applied had
+been chosen on the leaked (reporting-seed) sweep, not a genuine held-out one. This
+script's default seeds are now 100-104 as the text always claimed, and re-running
+the sweep on those seeds finds lambda_g=0.01 (not 0.005) is the best-performing
+value -- see the printed sweep below. instantaneous_dag_benchmark.py's cdkan() now
+uses lg=0.01 accordingly.
 """
 import os, sys, time
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
@@ -49,9 +62,9 @@ def cdkan(X, seed, lg, ep=400):
 
 if __name__ == "__main__":
     d = 6
-    lambdas = [0.0, 0.005, 0.01, 0.02, 0.04]
-    seeds = [0, 1, 2, 3, 4]
-    print(f"Sweeping lambda_g at d={d}, seeds={seeds}\n")
+    lambdas = [0.0, 0.002, 0.005, 0.01, 0.02, 0.04]
+    seeds = [100, 101, 102, 103, 104]  # held out; disjoint from the official reporting seeds 0-4/0-2
+    print(f"Sweeping lambda_g at d={d}, held-out seeds={seeds}\n")
     for lg in lambdas:
         aus, aps, f1s, ts = [], [], [], []
         for s in seeds:
