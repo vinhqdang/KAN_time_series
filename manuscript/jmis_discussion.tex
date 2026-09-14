@@ -76,8 +76,9 @@ Several boundary conditions delimit responsible use:
     \item \textbf{Where SPADE stands vs.\ classical methods.} SPADE is
     competitive---strong on linear structure (AUROC~0.96) and, on non-linear
     lagged structure, the best of the flexible neural/KAN learners: it
-    significantly beats NOTEARS and Neural-GC (Wilcoxon $p<0.01$) and is on par
-    with the recent NTS-NOTEARS and the KAN-Granger baselines---but the strongest
+    significantly beats NOTEARS, Neural-GC, and the KAN-Granger variant
+    GC-KAN$+$ALM (Wilcoxon $p<0.05$) and is on par with GC-KAN and the recent
+    NTS-NOTEARS---but the strongest
     conditioning-based, non-Gaussianity-exploiting, and sparse-linear methods
     (PCMCI, VAR-LiNGAM, VAR-Lasso) and the continuous-optimization linear
     learner GOLEM retain an edge on \emph{lagged} discovery, and all classical methods are far faster

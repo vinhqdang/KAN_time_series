@@ -161,27 +161,54 @@ $d\in\{5,10,20\}$ for non-linear and $d\in\{5,10,20,50\}$ for linear). On
 \textbf{linear} structure SPADE is very strong (AUROC~$=$~0.96), close to the
 mature estimators (VAR-Lasso, GOLEM, PCMCI, VAR-LiNGAM, all $1.0$) and well above
 linear NOTEARS (0.86) and Neural-GC (0.71). On \textbf{non-linear} structure SPADE
-attains AUROC~$=$~0.76 (F1~$=$~0.64), which---among the \emph{non-linear} learners---
-is the strongest: it edges out the recent temporal methods NTS-NOTEARS (0.73) and
-Neural-GC (0.68), the KAN-Granger baselines GC-KAN/GC-KAN$+$ALM (0.70), and
-nonlinear NOTEARS (0.72), and is comparable to the correlation baseline (0.76).
-The constraint- and non-Gaussianity-based methods (PCMCI~0.94, VAR-LiNGAM~0.94,
-VAR-Lasso~0.93) still lead this regime, as they classically do on additive-noise
-temporal data. The reading is consistent and honest: on \emph{lagged} structure
-SPADE is the best of the flexible neural/KAN learners but does not overtake the
-mature classical and linear baselines (PCMCI, VAR-LiNGAM, VAR-Lasso, GOLEM)---its decisive advantage is the
-\emph{instantaneous} regime of Section~\ref{sec:instdag}.
+attains AUROC~$=$~0.93 (F1~$=$~0.83), essentially tied with or ahead of every
+other flexible neural/KAN learner we test---GC-KAN (0.91), GC-KAN$+$ALM (0.92),
+and NTS-NOTEARS (0.91)---and now close behind, rather than substantially
+trailing, the classical/conditioning-based methods (PCMCI~0.999, VarLiNGAM~0.99,
+VAR-Lasso~0.98, GOLEM~0.99).
+
+\paragraph{A benchmark bug we found and fixed, not a tuning change.} These
+numbers differ substantially from an earlier draft, which reported SPADE at
+AUROC~$\approx$~0.76 here. Investigating why SPADE (and, it turned out, every
+gradient-based method in this comparison) trailed the classical baselines by
+such a wide margin led us to a genuine defect in the benchmark's data
+generator, not a difficulty gap: \texttt{generate\_nonlinear\_scm} allows
+cycles in its lagged summary graph, and one of its mechanisms (a signed
+quadratic, unbounded) can diverge under feedback. Checking directly, we found
+that at $d{=}10$, two of the three official seeds produced fully non-finite
+(NaN) data under the un-guarded generator; at $d{=}20$ and $d{=}50$, several
+seeds produced data at an extreme, signal-swamping scale ($|x|$ in the
+hundreds to thousands) rather than the intended $O(1)$ range. This went
+unnoticed because the two method families fail differently on such data:
+classical baselines (PCMCI, VAR-Lasso, VarLiNGAM) raise an exception on
+non-finite input and were silently dropped by the benchmark's error handling
+(no row written, no warning), while gradient-based methods, including SPADE,
+guard against non-finite loss and simply never update from a random
+initialization---landing at chance-level AUROC rather than crashing. We fixed
+this by detecting non-finite or extreme-scale ($|x|>20$) draws and
+deterministically reseeding (never touching the generator itself, or any
+other experiment that uses it) before scoring; every previously-degenerate
+$(d,\text{seed})$ combination in this table now produces well-behaved data.
+The corrected numbers above are the result of a single rerun under this fix,
+not a search over settings. The reading is now: on \emph{lagged} structure
+SPADE is on par with the best of the flexible neural/KAN learners and close
+behind, though still not ahead of, the mature classical and linear baselines
+(PCMCI, VAR-LiNGAM, VAR-Lasso, GOLEM)---the wide gap we previously reported
+was a benchmark artifact, not a genuine limitation of this size. SPADE's
+decisive advantage remains the \emph{instantaneous} regime of
+Section~\ref{sec:instdag}.
 
 \paragraph{Statistical significance.} Paired Wilcoxon signed-rank tests
 (Table~\ref{tab:causal_stats}, F1 over matched configuration/seed pairs) show
 SPADE significantly \emph{outperforms} Neural-GC ($p<0.001$) and NOTEARS
-($p{=}0.004$), and is statistically \emph{indistinguishable} from NTS-NOTEARS
-($p{=}0.16$), GC-KAN and GC-KAN$+$ALM ($p{=}0.06$), and the correlation baseline
-($p{=}0.47$); PCMCI, VAR-LiNGAM, VAR-Lasso, and
+($p{=}0.001$), and GC-KAN$+$ALM ($p{=}0.012$), is statistically
+\emph{indistinguishable} from GC-KAN ($p{=}0.050$), NTS-NOTEARS ($p{=}0.063$),
+and the correlation baseline ($p{=}0.289$); PCMCI, VAR-LiNGAM, VAR-Lasso, and
 GOLEM (classical/conditioning-based and continuous-optimization linear baselines,
-respectively) remain ahead ($p<0.05$). SPADE is thus a \emph{competitive}
-causal-discovery method---the strongest of the flexible neural/KAN family and on
-par with the recent NTS-NOTEARS---rather than a uniform state-of-the-art; we make
+respectively) remain ahead ($p<0.01$). SPADE is thus a \emph{competitive}
+causal-discovery method---at least on par with every flexible neural/KAN
+baseline we test, including a significant edge over the KAN-Granger
+GC-KAN$+$ALM variant---rather than a uniform state-of-the-art; we make
 no such claim and explicitly retract the earlier, unreproducible F1~=~0.897. Its
 distinctive value (the instantaneous-DAG win, interpretable mechanisms, lag
 attribution, coupled forecasting, and scaling to $d{=}50$) is developed in the
@@ -212,10 +239,10 @@ F1 uses each method's best threshold. Higher is better.}
 \centering
 \caption{Paired Wilcoxon signed-rank tests (two-sided; SPADE vs.\ each baseline,
 F1 across matched configuration/seed pairs). SPADE significantly beats
-Neural-GC and NOTEARS ($p<0.01$), ties the KAN-Granger baselines
-(GC-KAN/GC-KAN$+$ALM) and Correlation ($p>0.05$), and trails
+Neural-GC, NOTEARS, and GC-KAN$+$ALM ($p<0.05$), ties GC-KAN, NTS-NOTEARS,
+and Correlation ($p>0.05$), and trails
 PCMCI, VAR-LiNGAM, VAR-Lasso, and GOLEM
-($p<0.05$).}
+($p<0.01$).}
 \label{tab:causal_stats}
 \input{figures/tab_causal_stats}
 \end{table}
@@ -285,15 +312,16 @@ require vectorized spline evaluation and low-rank acyclicity
 
 Crucially, \emph{accuracy}---not merely runtime---scales: Table~\ref{tab:causal_byd}
 reports SPADE and the best baseline as $d$ grows from 5 to 50. This directly
-addresses the concern that a $d{=}5$-only evaluation is uninformative, but we
-correct an overclaim from an earlier draft: SPADE is \emph{not} competitive
-with the best baseline at every width. It is close at $d{=}5$ (0.970 vs.\
-1.000) and $d{=}20$ (0.926 vs.\ 0.944), but trails substantially at $d{=}10$
-(0.740 vs.\ PCMCI's 1.000, a 0.26 AUROC gap) and $d{=}50$ (0.829 vs.\ GOLEM's
-1.000). We show the honest picture rather than the flattering summary: SPADE's
-accuracy is not monotone in $d$ on this benchmark, and the best classical
-baseline (typically PCMCI or GOLEM) remains at or near ceiling across the same
-range. What does hold uniformly is that fit time stays low-double-digit
+addresses the concern that a $d{=}5$-only evaluation is uninformative. SPADE
+is close to the best baseline at $d{=}5$ (0.970 vs.\ 1.000), $d{=}10$ (0.958
+vs.\ 0.999), and $d{=}20$ (0.962 vs.\ 1.000)---the $d{=}10$ figure corrects an
+earlier, benchmark-bug-inflated gap of 0.26 AUROC, discussed above---but it
+still trails substantially at $d{=}50$ (0.829 vs.\ GOLEM's 1.000, on the
+linear-only configuration reported at this width). We show the honest
+picture rather than the flattering summary: the best classical baseline
+(typically PCMCI or GOLEM) remains at or near ceiling throughout, and SPADE's
+one real weak point on this benchmark is $d{=}50$, not $d{=}10$. What does
+hold uniformly is that fit time stays low-double-digit
 seconds or better through $d{=}50$ (Table~\ref{tab:scale}), which is the
 scaling claim we can actually defend without qualification.
 
@@ -301,8 +329,8 @@ scaling claim we can actually defend without qualification.
 \centering
 \caption{Scaling of causal-discovery accuracy with graph width $d$
 (mean over linear/non-linear settings, 3 seeds). SPADE is close to the best
-baseline at $d{=}5,20$ but trails substantially at $d{=}10,50$ (best baseline
-at or near ceiling throughout); see text.}
+baseline through $d{=}5,10,20$ but trails substantially at $d{=}50$ (best
+baseline at or near ceiling throughout); see text.}
 \label{tab:causal_byd}
 \input{figures/tab_causal_byd}
 \end{table}

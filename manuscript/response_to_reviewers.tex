@@ -238,7 +238,27 @@ number in the paper, but it could confuse a reader auditing reproducibility,
 so we added an explicit docstring note pointing to the Appendix and to the
 actual scripts as the source of truth. We also re-examined the runtime jump
 between $d{=}15$ and $d{=}20$ raised directly in Reviewer 2's comments,
-addressed together with (i) above since both stem from the same root cause. }
+addressed together with (i) above since both stem from the same root cause.
+(iii) Investigating why SPADE trailed the classical baselines by an
+unexpectedly wide margin on \emph{lagged} non-linear structure
+(Section~3.4) led us to a genuine bug, not a difficulty gap: the benchmark's
+data generator (\texttt{generate\_nonlinear\_scm}) allows cycles in its
+lagged summary graph and contains an unbounded mechanism that can diverge
+under feedback. At $d{=}10$, two of the three official reporting seeds
+produced fully non-finite data; at $d{=}20$ and $d{=}50$, several seeds
+produced data at an extreme, signal-swamping scale. This went undetected
+because classical baselines raised an exception on the degenerate input and
+were silently dropped by the benchmark's error handling, while
+gradient-based methods (SPADE included) guard against non-finite loss and
+simply never update from a random initialization --- landing at chance-level
+AUROC rather than crashing loudly. We fixed this with a scoped check
+(reseed on non-finite or extreme-scale draws) in the benchmark script only,
+leaving the shared generator and every other experiment that uses it
+untouched, and reran the affected configurations once. SPADE's non-linear
+AUROC on this benchmark rises from 0.76 to 0.93 as a result --- now on par
+with or ahead of every other flexible neural/KAN baseline, rather than
+trailing them --- and Section~3.4 now explains this in the text rather than
+just updating the number silently. }
 
 \textbf{Comment 6.} \rev{Causal claims on real-world data should be
 conservative. ... the recovered relationships should not be considered as
