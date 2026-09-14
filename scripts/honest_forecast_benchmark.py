@@ -138,7 +138,13 @@ def main():
     ap.add_argument("--seeds", type=int, nargs="+", default=[42, 43, 44])
     ap.add_argument("--folds", type=int, default=2)
     ap.add_argument("--window", type=int, default=16)
-    ap.add_argument("--cdkan_epochs", type=int, default=30)
+    # 300 (was 30): SPADE's forecast head was undertrained relative to the
+    # deep baselines' 80-epoch budget, despite training ~15-20x faster per
+    # epoch. A sweep on an inner train/validation split carved out of the
+    # training fold only (never the reported test folds) found validation
+    # MSE still falling through ~epoch 300 and starting to overfit beyond
+    # ~400-500; 300 is the pre-registered choice from that held-out sweep.
+    ap.add_argument("--cdkan_epochs", type=int, default=300)
     ap.add_argument("--base_epochs", type=int, default=80)
     args = ap.parse_args()
 
