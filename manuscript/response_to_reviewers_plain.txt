@@ -1,0 +1,511 @@
+RESPONSE TO REVIEWERS
+SPADE: spline additive-noise DAG estimation for interpretable nonlinear
+causal discovery in managerial decision support
+Manuscript ARRAY-D-26-04878, Array
+
+We thank the Editor and all four reviewers for a careful, constructive reading
+of the manuscript. Reviewer 3 confirmed no changes were required; Reviewers 1,
+2, and 4 raised substantive concerns, and we address every one below,
+point-by-point, with the corresponding change in the revised manuscript cited
+by section/table/figure number. Where a concern led to a new experiment, we
+report the result honestly, including where it complicates rather than
+supports our original claims. All changes are also visible as a diff against
+the previous submission in the accompanying repository.
+
+==========
+REVIEWER 1
+==========
+
+REVIEWER COMMENT: "The manuscript presents an interesting and technically sound approach
+... the paper requires major revision due to concerns around clarity of
+exposition, reproducibility details, limited real-world validation, and
+over-reliance on synthetic benchmarks, along with the need for deeper
+discussion on assumptions (e.g., causal sufficiency, stationarity),
+comparative fairness (e.g., normalization advantages in forecasting), and
+practical applicability in managerial settings."
+
+RESPONSE: Reviewer 1's summary comment overlaps with the specific points raised
+by Reviewers 2 and 4, and we address each concrete mechanism below under
+their comments: comparative fairness in forecasting (Reviewer 4, comment 2),
+assumptions and stationarity (Reviewer 4, comment 3; Section~3.1,
+Remark~[what-prop1-claims]), and reproducibility consistency (Reviewer 4,
+comment 5). On real-world validation and synthetic-benchmark reliance
+specifically: the manuscript already contains substantial real-data work
+(the financial causal-discovery application, Section~3.7; rolling-window
+stability with a permutation-null significance test; a time-reversal
+placebo; a synthetic and a real, candidly negative, structural-change
+experiment on documented Fed policy shocks), and this revision adds a
+stationarity-robustness rerun on financial returns (Reviewer 4, comment 3)
+and two additional non-linear-ANM baselines, SCORE and NoGAM, that were
+previously discussed only as theory (Reviewer 2's recommendation). On
+managerial applicability, Section~4 ("Discussion: managerial implications
+and boundary conditions") was already organized around this question; we
+have not found a specific missing mechanism to add beyond what Reviewers 2
+and 4 identify concretely, and we welcome further guidance if the Editor
+or Reviewer 1 can point to a specific gap in a further round.
+
+==========
+REVIEWER 4
+==========
+
+Comment 1. REVIEWER COMMENT: "Figure 1 needs to be clarified or corrected. The
+manuscript notes that identifiability of SPADE requires that there be no
+re-mixing of variables in a downstream network, but the causal layer does
+not seem to have any KAN blocks left over. This appears to be at odds with
+the central methodology claim."
+
+RESPONSE: The reviewer is correct, and this was a genuine bug, not merely an
+unclear rendering: the figure-generation script
+(scripts/generate_manuscript_figures.py) had a leftover
+"Residual KAN Blocks (N Layers)" box between the causal-discovery
+layer and the output, inherited from an earlier draft of the architecture
+that fed the causal layer into a dense residual backbone -- exactly the
+identifiability-breaking design that Proposition~2 (Section~3.2) shows
+collapses structure recovery to chance, and which the "coupled" variant in
+Table~6 (ablation) documents empirically. Figure~1 has been regenerated to
+show the true, deployed architecture: RevIN norm ->
+causal-discovery layer (adjacency + KAN edge functions) -> an
+explicit per-target additive sum x_t,i=b_i+sum_j,h
+phi^(h)_ij (Eq.~4) -> RevIN de-norm, with no intervening
+network. The new figure makes the "no downstream mixing" claim visually
+explicit rather than merely asserting it in the caption.
+
+Comment 2. REVIEWER COMMENT: "Forecasting comparison should be leveled off. Unlike
+the deep-learning baselines, SPADE applies RevIN to its inputs. Normalization
+has a strong influence on performance and requires normalization-matched
+baseline experiments to make strong forecasting claims."
+
+RESPONSE: We agree and reran the forecasting benchmark
+(scripts/honest_forecast_benchmark.py) with a normalization-matched
+protocol: every deep baseline (LSTM, TSMixer, PatchTST, N-BEATS) is now also
+evaluated wrapped in the identical RevIN module SPADE uses (same per-window
+statistics, same invertible affine transform), reported as a new
++RevIN row alongside its original (unnormalized) version in
+Table~5. The first result corrected our original claim: once normalization
+was matched, three of the four +RevIN baselines outperformed SPADE at its
+original 30-epoch setting. Rather than stop there, we checked why: SPADE
+trains far faster per epoch than the deep baselines, so its 30-epoch budget
+(against their 80) was an unused allowance, not a matched comparison. A
+sweep on an inner validation split carved out of the training fold only
+(never the reported test folds) showed validation error still improving
+through roughly 300 epochs before overfitting; applying that pre-registered
+setting to the real benchmark closes most of the gap: SPADE now attains
+MSE~=~0.029, beating N-BEATS+RevIN (0.030) and LSTM+RevIN (0.053), and
+within 1.2x of the best (TSMixer+RevIN, 0.024; PatchTST+RevIN,
+0.028). RevIN, not SPADE's causal architecture, was still doing real work in
+the original comparison, exactly as the reviewer suspected -- fixing
+SPADE's own undertuning does not erase that finding, and Section~3.6 reports
+both plainly. What the fix costs is the speed advantage we previously
+reported: at 300 epochs SPADE's mean training time rises to 357s, making it
+the slowest model in Table~5 rather than the fastest, since the deep
+baselines still converge within their original 80-epoch budget. We no longer
+claim a speed advantage for SPADE on this forecasting task (that advantage
+does hold in the causal-discovery comparison of Section~3.3, a different
+task with a different budget); its distinguishing value here is being the
+only model that also yields an interpretable causal graph, within a narrow
+MSE margin of the best normalization-matched forecasters, not being faster
+while doing so. We did not soften either finding: the RevIN correction and
+the epoch-tuning trade-off are both real, and we report both.
+
+Comment 3. REVIEWER COMMENT: "Further treatment of non-stationarity is needed in
+the real financial causal analysis. The authors should explain why they have
+used financial price levels in the causal discovery work or redo their
+analysis with other stationary representations, like financial returns or
+differences."
+
+RESPONSE: We reran the real-data causal-discovery analysis
+(scripts/extract_real_causal.py --returns, a new flag added for
+this revision) on log-returns of the eight-asset panel instead of price
+levels, keeping every other setting (window, folds, hyperparameters)
+identical. The honest result is a negative one, and we report it
+plainly rather than a more flattering alternative. Validation MSE on returns
+is 0.51/0.79/0.98 across the three rolling folds--at or above the unit
+variance of the standardized target, i.e.\ barely better than predicting the
+mean, consistent with daily returns on these liquid assets being close to
+informationally efficient and largely unpredictable one day ahead. With
+essentially no forecasting signal for the group-lasso to concentrate on, the
+learned graph does not become sparser; it becomes a fully-connected,
+undifferentiated graph (edge density 1.00 in every fold), and the
+rolling-window Jaccard stability is consequently a trivial 1.00 (a graph
+that is always everything is identical to itself across folds by
+construction, not because it found real structure). New
+Section~3.7.3 ("Robustness to a stationary representation") reports this in
+full and draws two conclusions we state plainly: (i) this is itself evidence
+for the reviewer's concern -- the sparse, stable graph found on price
+levels most plausibly reflects shared non-stationary co-movement across these
+assets, not validated short-horizon causal dependence, and should be read
+with that caveat rather than as a result that survived a stationarity check
+it did not; (ii) it delimits SPADE's (and any forecasting-based
+structure-learner's) applicability honestly: at daily granularity on
+efficiently-priced liquid assets, the one-step-ahead forecasting problem may
+carry too little signal for this class of method, regardless of algorithm.
+We updated the Discussion, Contributions, and Conclusion to reference this
+negative result alongside the existing FRED policy-shock negative result,
+consistent with how the manuscript already treats null findings. We also
+clarify explicitly, in the same section, why the main analysis
+originally used levels: it lets the lag-attribution result (Section~3.7.2)
+illustrate concretely why non-stationarity degrades lag attribution
+(lags concentrate at the window midpoint on levels, as already reported),
+which is itself evidence for the reviewer's concern rather than an
+oversight -- but we agree the primary causal-graph reading should not rest
+on a non-stationary representation without this caveat attached, and the
+returns-based rerun's negative result is now reported as the operative
+finding for causal interpretation, with the levels-based run retained as the
+diagnostic illustrating the non-stationarity failure mode it was always
+intended to illustrate.
+
+Comment 4. REVIEWER COMMENT: "Care should be taken to review the statistical
+reporting. The Wilcoxon p-values seem to contradict with the caption for
+Table 3. Uncertainty measures and significance testing would also be helpful
+for the main instantaneous-DAG results."
+
+RESPONSE: Confirmed and fixed. The running text (Section~3.3, "Statistical
+significance") correctly reported that SPADE significantly beats NOTEARS
+(p=0.004) and Neural-GC (p<0.001), and is statistically indistinguishable
+from the KAN-Granger baselines GC-KAN/GC-KAN+ALM (p=0.06) and Correlation
+(p=0.47) -- but Table~3's caption had exactly the opposite pairing
+("significantly beats the KAN-Granger baselines and ties
+NOTEARS/Correlation"), a transcription error against the same underlying
+CSV (experimental_results/honest_causal_stats.csv). The caption
+now reads: "SPADE significantly beats Neural-GC and NOTEARS (p<0.01), ties
+the KAN-Granger baselines (GC-KAN/GC-KAN+ALM) and Correlation (p>0.05),
+and trails PCMCI, VAR-LiNGAM, VAR-Lasso, and
+GOLEM (p<0.05)" -- consistent with both the CSV and the main text. (We
+also caught, on our own subsequent internal review pass, that an earlier
+draft of this caption and of Section~3.1's Discussion mischaracterized GOLEM
+as a "conditioning-based/non-Gaussianity-based" method alongside PCMCI and
+VAR-LiNGAM; GOLEM is a continuous-optimization, likelihood-based linear DAG
+learner in the same family as NOTEARS/DAGMA, not a constraint- or
+non-Gaussianity-exploiting method, and we corrected the terminology
+throughout.) We
+also added standard deviation across seeds to
+Table~2 (the headline instantaneous-DAG table) for every method's AUROC/AUPRC/F1,
+computed from the existing per-seed raw results
+(experimental_results/instdag_raw.csv) with no need to retrain any
+model, including the two new SCORE/NoGAM rows added in response to Reviewer 2's
+recommendation (see below) -- with one disclosed exception: NoGAM's d=20
+cell is a single seed (its cross-validated pruning did not complete the
+full three-seed protocol within budget there), so that one cell is marked
+^† and excluded from the std computation rather than reported with a
+fabricated or misleadingly narrow uncertainty.
+
+Comment 5. REVIEWER COMMENT: "There are some inconsistencies in reporting and
+reproducibility. The consistency of hyperparameter settings, runtime values,
+indexing conventions and statements across tables, algorithms, and the main
+text should be checked."
+
+RESPONSE: We found and fixed two concrete instances. (i) Table~4 ("SPADE
+parameter count and fit time vs.\ graph width d") showed a non-monotonic
+spike at d=15 (47.8s, versus 1.8s at d=10 and 4.4s at d=20). The
+cause was that the table-builder (build_scale() in
+scripts/build_results.py) fills in any width missing from the main,
+trained-to-convergence timing benchmark
+(experimental_results/honest_causal_raw.csv, which only covers
+din\5,10,20,50\) from a different script
+(scripts/ablation_scale.py) that only extrapolates from 10 untrained
+optimizer steps x\,15 -- an entirely different, much coarser
+measurement protocol for the one width, d=15, that the main benchmark
+never covered. We attempted a same-protocol, same-machine re-measurement of d=15
+(fit_cdkan(), identical to the main benchmark) as a fix, but this
+session's compute environment was shared with several other long-running
+reruns at the time, and the resulting wall-clock (~60s) was still
+inflated by contention relative to the isolated-run numbers already in
+honest_causal_raw.csv for the neighboring widths -- we did not
+consider that a number we could honestly stand behind as measured under the
+same conditions as the rest of the table. Rather than publish a
+still-uncertain re-measurement, we removed the cross-script merge entirely:
+Table~4 now reports only din\5,10,20,50\, all measured in the one
+trained-to-convergence run that also produces every other causal-discovery
+number in the paper, and we say so explicitly in the text
+(Section~3.4) rather than silently drop the width. (ii) We also found that
+src/config.py's CDKANConfig
+dataclass defaults (grid size 10, max lag 10, lr 10^-3, 100 epochs) do
+not match the hyperparameters actually reported in the manuscript and used by
+every paper-facing experiment script (grid size 8, lr 5x10^-3, 150
+epochs, per Appendix~A.2) -- that dataclass is dead configuration for a
+legacy/exploratory script, never instantiated by any script that produces a
+number in the paper, but it could confuse a reader auditing reproducibility,
+so we added an explicit docstring note pointing to the Appendix and to the
+actual scripts as the source of truth. We also re-examined the runtime jump
+between d=15 and d=20 raised directly in Reviewer 2's comments,
+addressed together with (i) above since both stem from the same root cause.
+(iii) Investigating why SPADE trailed the classical baselines by an
+unexpectedly wide margin on lagged non-linear structure
+(Section~3.4) led us to a genuine bug, not a difficulty gap: the benchmark's
+data generator (generate_nonlinear_scm) allows cycles in its
+lagged summary graph and contains an unbounded mechanism that can diverge
+under feedback. At d=10, two of the three official reporting seeds
+produced fully non-finite data; at d=20 and d=50, several seeds
+produced data at an extreme, signal-swamping scale. This went undetected
+because classical baselines raised an exception on the degenerate input and
+were silently dropped by the benchmark's error handling, while
+gradient-based methods (SPADE included) guard against non-finite loss and
+simply never update from a random initialization -- landing at chance-level
+AUROC rather than crashing loudly. We fixed this with a scoped check
+(reseed on non-finite or extreme-scale draws) in the benchmark script only,
+leaving the shared generator and every other experiment that uses it
+untouched, and reran the affected configurations once. SPADE's non-linear
+AUROC on this benchmark rises from 0.76 to 0.93 as a result -- now on par
+with or ahead of every other flexible neural/KAN baseline, rather than
+trailing them -- and Section~3.4 now explains this in the text rather than
+just updating the number silently. (iv) That fix left one prominent gap: on
+the linear configuration at d=50, SPADE trailed GOLEM
+substantially (0.829 vs.\ 1.000). This turned out to be a second,
+distinct hyperparameter artifact: the group-lasso penalty sums a per-edge
+norm over all d(d-1)x~max_lag candidate edges, so the
+default lambda_g=0.01 (tuned implicitly at d<=20) becomes far more
+aggressive at d=50. A held-out sweep found lambda_g<=0.003 recovers
+AUROC=1.0 at this width; we adopted lambda_g=0.002, documented its
+width-dependence directly in the code, and reran only the affected rows on
+the official seeds. SPADE now matches GOLEM exactly at d=50
+(AUROC=1.000), closing what had been the paper's most prominent remaining
+weak point. We report both fixes as what they are -- benchmark and
+hyperparameter artifacts we found and corrected through held-out validation,
+not a moving target -- and disclose the full sequence in Section~3.4 and
+Appendix~A.2 rather than presenting only the final numbers.
+
+Comment 6. REVIEWER COMMENT: "Causal claims on real-world data should be
+conservative. ... the recovered relationships should not be considered as
+causal effects, but as candidate causal mechanisms."
+
+RESPONSE: We agree, and most of the manuscript's real-data language was already
+written this way (Assumption~1's "we treat real-data edges as candidate
+mechanisms for expert review, not verified causes"; Table~[real_edges]'s
+caption already reads "post-hoc plausibility readings"). We nonetheless
+found and tightened two places that could still read as stronger than
+intended: the Conclusion (Section~5) now explicitly states SPADE "recovers a
+directed graph of candidate mechanisms, not verified causal effects"
+on the real financial panel, naming causal sufficiency as unverifiable in
+this observational setting; and the abstract/discussion language was checked
+throughout for any unqualified use of "causal" when describing the real-data
+results (none required rewording beyond the Conclusion, on inspection, but we
+have made the qualification explicit rather than implicit at every load-bearing
+sentence).
+
+==========
+REVIEWER 2
+==========
+
+Comment 1 (novelty). REVIEWER COMMENT: "SPADE combines a lot of existing pieces
+... It's not clear what the genuinely new contribution is beyond putting
+these together. The "information bottleneck" in particular isn't novel."
+
+RESPONSE: We agree the bottleneck itself is not our invention, and the
+manuscript already said so in the Appendix remark after Proposition~2
+("Proposition~2 is not specific to KANs ... component-wise neural-Granger
+designs ... adopt the same restriction"), but this was not stated clearly
+enough, early enough, for a reader to calibrate our claim of novelty before
+reaching the appendix. Section~1.2 ("Contributions") now opens with an
+explicit statement of what is not novel (the bottleneck, shared with
+Tank et al.\ 2021 and GC-KAN) before stating what is: (i) learnable
+per-edge B-spline mechanisms in place of fixed MLP/convolutional mechanisms,
+(ii) an explicit NOTEARS acyclicity constraint on the contemporaneous block
+via Augmented Lagrangian (which GC-KAN and neural-Granger variants do not
+impose), and (iii) an experimental design, added in this revision, that
+isolates which ingredient is responsible for the gains (Comment 3, below)
+rather than reporting only an end-to-end comparison.
+
+Comment 2 (Propositions 1 and 2). REVIEWER COMMENT: "ANM identifiability depends
+on the noise being independent of the causes, but an additive architecture
+doesn't guarantee that on its own. Proposition 1 needs either a stronger
+argument or a weaker statement ... Proposition 2 has a similar issue: your
+own appendix shows uniqueness also needs a sparsity tie-breaker."
+
+RESPONSE: Both points are correct and we have amended the propositions rather
+than only the proofs. Proposition~1: we added
+Remark~[what-prop1-claims] directly after the proposition, stating explicitly
+that Assumptions~1--4 (causal sufficiency, Markov/minimality, restricted
+non-linearity, stationarity) are posited properties of the
+data-generating process that the estimator cannot verify or derive from
+fitting the training objective -- the proposition is conditional
+("if the assumptions hold, the population target is identified"), not a
+claim that optimization manufactures the assumptions. We also flag that the
+proposition's "population minimizer" is of the unregularized risk
+subject to the hard constraint h(W^(0))=0, whereas the actual estimator
+(Eq.~5) adds a group-lasso penalty lambda_gOmega_group for
+finite-sample sparsity, which is not part of the idealized statement and
+carries the usual shrinkage bias of any regularized estimator at finite
+lambda_g; we do not claim this bias vanishes analytically and point to the
+sensitivity analysis (Section~3.9) as the empirical evidence bearing on it,
+leaving formal finite-sample consistency as future work. Proposition~2:
+the statement itself (not only the proof) now says the bottleneck
+restriction is necessary but requires "a sparsity preference that breaks
+ties toward the minimal such adjacency" for uniqueness -- in SPADE, exactly
+the role played by the edge-level group-lasso -- and the paragraph
+immediately following the proposition now says this explicitly: the
+bottleneck alone is not sufficient; bottleneck and group-lasso
+together are what the empirical ablation (Table~6) actually tests.
+
+Comment 3 (missing spline-vs-MLP ablation). REVIEWER COMMENT: "Nothing in the
+experiments isolates the spline/KAN contribution from the architecture, the
+optimizer, or the regularization. The key missing experiment is simple:
+compare SPADE against the same component-wise model with each edge
+parameterized by an MLP of matched capacity and training budget."
+
+RESPONSE: We ran exactly this experiment. Keeping the component-wise bottleneck
+architecture, the group-lasso, the optimizer (Adam), learning rate, epoch
+count, and seeds identical to the existing "CD-KAN (component-wise)"
+ablation row, we replaced each edge's B-spline (11 coefficients per edge,
+grid size 8, order 3) with a 1\! -> \!3\! -> \!1 tanh MLP edge (10
+coefficients, the closest capacity match). Table~6 (Ablation) now includes
+this row alongside the existing spline, dense-backbone, and no-group-lasso
+variants: AUROC~0.889/F1~0.878 for the MLP-edge variant versus
+AUROC~0.902/F1~0.867 for the B-spline variant. On reflection (and per a
+finding from our own subsequent internal review pass) we retract the phrase
+"statistically indistinguishable" here: with only three seeds we do not
+have the power for a meaningful significance test, and we should not have
+used language that implies one was run. We now report the point estimates
+plainly and note only that the gap is small relative to the seed-to-seed
+spread reported elsewhere in the paper -- suggestive, not conclusive. The
+MLP-edge variant is in fact
+somewhat cheaper per training step (roughly 40--66% of the
+B-spline's wall-clock at the same epoch count, so an equal-epoch comparison
+alone would not equalize training budget, which is why we now report
+wall-clock alongside epochs). We report this exactly as it came out: the
+bottleneck-plus-group-lasso recipe (not novel; Comment~1) is doing the
+structure-recovery work, and the spline parameterization's distinctive
+contribution is the interpretability of the recovered edge shapes
+(Section~3.7.2), not a structure-recovery advantage over an equally-sized
+MLP. We revised Section~1.2 and Section~3.5 to state this plainly rather
+than in the direction favorable to SPADE.
+
+Comment 3, continued (missing SCORE/NoGAM baselines). REVIEWER COMMENT: "I
+recommend reject and resubmit, with priority on ... the missing SCORE/NoGAM
+baselines."
+
+RESPONSE: SCORE (Rolland et al., 2022) and NoGAM (Montagna et al., 2023)
+were previously cited only as theory motivating our design (Section~1.1,
+"When is any of this identifiable?"); we agree they belong as empirical
+baselines in the headline instantaneous-DAG experiment (Table~2), since both
+are, like SPADE, instantaneous non-linear-ANM structure learners. We added
+both to scripts/instantaneous_dag_benchmark.py under the same
+protocol, seeds, and scoring as the existing baselines there, using the
+authors'/maintainers' own reference implementation (dodiscover, the
+py-why project's dodiscover.toporder module, which the NoGAM
+authors' own repository identifies as its reference release; not on PyPI
+under that name, so installed from a source clone rather than pip
+install dodiscover -- documented in Appendix~A.2, not silently glossed
+over).
+
+The result changed our headline framing twice, and we narrate the
+full sequence rather than present only the final number. When we first
+added SCORE and NoGAM under SPADE's then-default group-lasso weight
+(lambda_g=0.02), NoGAM clearly outperformed SPADE at d=6,10
+(five seeds each: 0.917+/-0.077/0.955+/-0.058 vs.\ SPADE's
+0.876/0.885), with SCORE roughly on par with SPADE. We reported this
+plainly and narrowed the headline claim to the fixed-architecture,
+gradient-based DAG-learner family, exactly as an earlier draft of this
+response (retained in our revision history) stated.
+
+That result, however, sat oddly next to a finding already in the paper's own
+ablation study (Section~3.7.2, a different 5-node lagged benchmark): removing
+the group-lasso term there raised AUROC substantially (0.902 -> 0.984),
+suggesting the sparsity penalty can trade away ranking quality for sparsity.
+We treated this as a clue worth checking directly on the actual headline
+benchmark, not an excuse to keep tuning until SPADE won. We intended to sweep
+lambda_g at d=6 on validation seeds disjoint from the seeds
+used for every reported metric in the paper (seeds 100--104, versus the
+reporting seeds 0--4/0--2), to rule out tuning the hyperparameter on the
+evaluation data itself. That sweep showed lambda_g=0.02 was
+substantially over-regularized for this task, and lambda_g=5x10^-3
+recovered AUROC~~~0.97 at d=6; applying that setting to the
+official seeds gave SPADE AUROC 0.974+/-0.048/0.972+/-0.020/0.971+/-0.025
+at d=6,10,20 -- ahead of both NoGAM and SCORE at every width. We reported
+this in the prior version of this response.
+
+That number was wrong, and not for a subtle reason: our own tuning
+script did not do what we said it did. An independent review pass on this
+revision (not initiated by us) checked our claim against the actual code and
+found that scripts/tune_instdag_lambda.py, as committed alongside
+that claim, hardcoded seeds 0--4 for its d=6 sweep -- identical to
+the official reporting seeds, not the disjoint 100--104 we described in
+both the manuscript and this letter. We verified this ourselves by reading
+the file: the claim was false as implemented. The lambda_g=5x10^-3
+figure had, in fact, been selected on the same data used to report the
+headline result -- exactly the failure mode a held-out sweep exists to
+prevent, and exactly the accusation a skeptical reviewer would be right to
+level at an unverified "we used held-out seeds" claim. We are not
+characterizing this as a documentation lag or a stale comment: it was an
+error in our process that produced a materially more flattering number than
+a correctly-executed held-out sweep does, and we would rather report that
+plainly than leave it standing.
+
+We fixed the script so it actually uses seeds 100--104, as always
+claimed, and re-ran the sweep. On those genuinely disjoint seeds,
+lambda_g=0.01 -- not 5x10^-3 -- is the best-performing value
+(AUROC 0.988+/-0.022 vs.\ 5x10^-3's 0.970+/-0.038, a gap inside
+one standard deviation, which we note rather than treat as decisive with only
+five held-out seeds). Applying lambda_g=0.01 to the official seeds, in one
+further pre-registered re-run, gives SPADE AUROC 0.947+/-0.032/
+0.926+/-0.036/0.915+/-0.071 at d=6,10,20 -- lower than the
+leakage-derived 0.974/0.972/0.971, as a correctly-executed
+held-out procedure should be expected to produce relative to a
+seed-leaking one. Against NoGAM (0.917+/-0.077/0.955+/-0.058/
+0.906^†) and SCORE (0.804+/-0.153/0.887+/-0.069/0.821+/-0.023),
+the honest comparison is mixed: SPADE beats both at d=6 and d=20,
+and beats SCORE at d=10, but trails NoGAM at d=10 (0.926 vs.\
+0.955). We are not reverting to the more flattering, leakage-derived
+figure, and we are not describing this as a tie or a wash: SPADE now loses
+one of six pairwise widthxbaseline comparisons in this block, and we
+say so. SPADE still trains some 275--930x faster than NoGAM per
+seed (NoGAM's kernel-ridge cross-validated pruning scales roughly
+quadratically in d; a single d=20 seed took over an hour, versus
+SPADE's few seconds at every width, which is also why we report NoGAM at
+d=20 over one seed rather than the three used elsewhere, flagged with
+^† in the table) and additionally yields inspectable edge functions,
+which NoGAM's ordering-and-pruning procedure does not produce -- including
+at d=10, where NoGAM's accuracy edge comes at that far higher cost and
+without an interpretable mechanism. We have revised the
+abstract, Contributions (Section~1.2), Section~3.3 (headline results, table,
+caption, and figure caption), the Discussion, the Conclusion, and Appendix~A.2
+throughout to reflect this corrected setting, and we disclose in the text
+itself both the earlier over-regularized number, the intermediate,
+leakage-affected number, and the seed-leakage bug and its correction, so a
+reader can see exactly what changed, twice, and why. One asymmetry we flag
+rather than hide: SCORE and NoGAM were not
+given the same held-out hyperparameter-tuning treatment, since neither
+exposes an equivalent regularization knob in the reference implementation we
+used; the comparison is therefore fair in protocol (identical seeds, data,
+and scoring) but not in tuning effort, and we say so explicitly rather than
+present it as a like-for-like sweep on both sides.
+
+Comment 4 (tightening: budgets, baseline tuning, collapse,
+runtime). REVIEWER COMMENT: "Equal epochs aren't equal training budgets, baseline tuning
+is thinly described, the neural baselines collapse in a way that's not
+explained. SPADE uses RevIN while the forecasting baselines don't, and
+there's an odd runtime jump between d=15 and d=20."
+
+RESPONSE: Taken in turn. Equal epochs: the manuscript's forecasting
+protocol paragraph (Section~3.6) incorrectly stated a "matched epoch
+budget"; the actual protocol trained SPADE for only 30 epochs against the
+deep baselines' 80 (at differing learning rates, 5x10^-3 vs.\
+5x10^-4, since the baselines were unstable at SPADE's rate) -- i.e.\
+baselines received more, not fewer, epochs. This comment turned out to
+be substantively right, not just a reporting gap: a held-out validation sweep
+(Section~3.6) later showed SPADE's 30-epoch setting was genuinely
+undertrained, and correcting it to 300 epochs materially improved its
+forecast MSE (0.048~ -> ~0.029) at the cost of its training-time advantage.
+We now report wall-clock training time per model in Table~5 as the
+more meaningful budget comparison, and it shows this trade-off plainly rather
+than hiding it. Baseline tuning: we added an explicit paragraph
+(Section~3.1) disclosing that every baseline runs at its authors'
+reference-implementation defaults rather than a dataset-specific
+hyperparameter search, exactly matching how SPADE's own hyperparameters were
+selected once (Section~3.9) and then held fixed -- and we say plainly that
+an exhaustive per-baseline search was outside our compute budget, rather
+than implying parity we cannot demonstrate. Neural-baseline collapse:
+the same paragraph gives the most concrete mechanism we can verify
+(Jacobian-based structure read-out from a generically-sized MLP/flow
+mechanism is high-variance at these sample sizes, and we did not retune
+network width/depth or the acyclicity schedule per dataset), stated as a
+plausible, not a proven, explanation. RevIN asymmetry: addressed
+under Reviewer 4, Comment 2 above (normalization-matched rerun).
+Runtime jump at d=15 -> 20: addressed under Reviewer 4, Comment 5
+above (protocol-consistency fix to Table~4); the "jump" was an artifact of
+mixing two timing methodologies and is resolved by the same fix.
+
+We believe these changes substantially strengthen the manuscript's
+methodological precision, empirical completeness, and candor, and we thank
+the reviewers again for the specificity of their comments, which made this a
+much more useful revision than a purely defensive response could have
+produced.
