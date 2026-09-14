@@ -121,3 +121,23 @@ NoGAM's kernel-ridge cross-validated pruning step did not complete within
 budget for the full five-seed protocol at $d{=}20$; we report it there over a
 single seed, flagged in Table~\ref{tab:instdag}, rather than omit the width or
 extrapolate.
+
+Two further settings were corrected during this revision, each via a
+held-out procedure that never touched the seeds used for a reported number
+before the setting was fixed. First, SPADE's forecasting head
+(Section~\ref{sec:forecast}) originally trained for only 30 epochs against
+the deep baselines' 80; a sweep on an inner train/validation split of the
+training fold (never the test folds reported in Table~\ref{tab:forecast})
+found validation error still improving through roughly 300 epochs, and we
+adopted that as the epoch count for all further forecasting runs. Second,
+the lagged non-linear causal-discovery benchmark
+(Section~\ref{sec:synthetic}) uses a data generator
+(\texttt{generate\_nonlinear\_scm}) whose lagged summary graph can contain
+cycles and whose mechanisms include an unbounded term; a minority of
+$(d,\text{seed})$ draws at $d\in\{10,20,50\}$ diverged to non-finite or
+extreme-scale data, which classical baselines failed loudly on (and were
+silently dropped by the benchmark's error handling) while gradient-based
+methods, including SPADE, trained on silently without producing a finite,
+informative fit. We added a finite-and-bounded check with deterministic
+reseeding, scoped to \texttt{scripts/honest\_causal\_benchmark.py} only, and
+reran the affected configurations once.
