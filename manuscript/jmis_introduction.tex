@@ -119,85 +119,69 @@ penalty to a GC-KAN backbone, disentangling the constraint's contribution from
 that of the KAN edge functions.
 
 \subsection{Contributions}
-We are explicit about what in SPADE is genuinely new and what is not.
-The component-wise information bottleneck itself is \emph{not} our invention---it
-is the same restriction used by component-wise neural-Granger models
-\citep{Tank2021,Shojaie2022} and by GC-KAN \citep{GCKAN2024}; Remark~\ref{rem:whatprop1claims}
-and Appendix~\ref{app:proofs} state plainly that Proposition~\ref{prop:bottleneck}
-is a property of \emph{any} such architecture, not of KANs specifically. What we
-contribute is the combination of that bottleneck with (i) learnable per-edge
-\emph{B-spline} mechanisms in place of the fixed convolutional or MLP mechanisms
-used by prior temporal learners, (ii) an explicit block-structured NOTEARS
-acyclicity constraint applied only to the contemporaneous edges (distinguishing
-it from purely-Granger KAN baselines that impose no DAG constraint at all), and
-(iii) an experimental design that isolates \emph{which} of these ingredients does
-the work, rather than reporting only an end-to-end comparison. We make three
-contributions:
+We are explicit about what in SPADE is new and what is not. The component-wise
+information bottleneck itself is \emph{not} our invention: it is the same
+restriction used by component-wise neural-Granger models
+\citep{Tank2021,Shojaie2022} and by GC-KAN \citep{GCKAN2024}, and
+Remark~\ref{rem:whatprop1claims} and Appendix~\ref{app:proofs} state that
+Proposition~\ref{prop:bottleneck} is a property of \emph{any} such architecture,
+not of KANs specifically. What we contribute is the combination of that
+bottleneck with (i) learnable per-edge \emph{B-spline} mechanisms in place of the
+fixed or MLP mechanisms of prior temporal learners, (ii) an explicit
+block-structured NOTEARS acyclicity constraint applied only to the
+contemporaneous edges (purely-Granger KAN baselines impose no DAG constraint at
+all), and (iii) an experimental design that isolates \emph{which} of these
+ingredients does the work. We make three contributions:
 \begin{enumerate}
     \item \textbf{An identifiable, interpretable architecture, with its
     ingredients isolated.} SPADE predicts each variable \emph{only} through
-    per-(cause, lag) B-spline edges of its candidate parents---an information
-    bottleneck (not novel in itself, see above)---with an edge-level group-lasso
-    and an optional contemporaneous-only acyclicity constraint (the part that
-    \emph{is} new relative to GC-KAN). We show the bottleneck is necessary: an
-    otherwise-similar model with a dense forecasting backbone recovers structure
-    only at chance. We additionally isolate the spline edges from the bottleneck
-    architecture itself via a matched-capacity, matched-training-budget ablation
-    against per-edge MLPs (Section~\ref{sec:ablation}): the point estimates are
-    close (AUROC~$0.902$ vs.\ $0.889$; we do not have the seeds to run a
-    meaningful significance test and say so rather than report an
-    underpowered one), suggestive that the spline parameterization's
-    distinctive value is \emph{interpretability} of the recovered edge shapes
-    rather than a clear structure-recovery advantage over an equally-sized
-    MLP---we report this honestly rather than
-    only the comparisons favorable to SPADE.
-    \item \textbf{A decisive result against gradient-based DAG learners, and an
-    honest, mixed result against the score-matching family.} On
-    additive-noise instantaneous DAGs, SPADE attains AUROC~$\approx$~0.92--0.95
-    across $d\in\{6,10,20\}$ once its group-lasso weight is properly tuned on
-    genuinely held-out validation seeds (an over-regularized default in an
-    earlier draft had understated this to $\approx$0.88; a seed-leakage bug in
-    the tuning script itself, found on independent review, had briefly and
-    incorrectly inflated it to $\approx$0.97---see below), substantially
-    outperforming every fixed-architecture, gradient-based DAG
-    learner we test---DAGMA (linear and non-linear), GraN-DAG, GOLEM, and
-    NOTEARS/NOTEARS-MLP---at a fraction of their runtime, because learnable
-    spline edges capture non-linear
-    mechanisms that fixed-architecture learners miss. We also add the
-    score-matching methods SCORE and NoGAM (Reviewer~2): SPADE beats SCORE at
-    every width and beats NoGAM at two of three widths, but trails NoGAM at
-    $d{=}10$, while still training some $275$--$930\times$ faster than
-    NoGAM and additionally yielding SPADE's inspectable edge functions, which
-    neither score-matching method provides. We report the full arc of this
-    finding candidly, including a hyperparameter-tuning bug an independent
-    review pass found in our own code---one that had, unbeknownst to us,
-    tuned $\lambda_g$ on the same seeds used to report the result, and that we
-    corrected once identified, arriving at the more modest, mixed comparison
-    above rather than the cleaner-looking one it had produced
-    (Section~\ref{sec:instdag}). On lagged (temporal)
-    structure it is competitive (perfect on linear, beating KAN-Granger baselines
-    and NOTEARS on non-linear) though the best conditioning-based methods (PCMCI,
-    VAR-LiNGAM) still lead there; we report this honestly and retract the earlier,
-    unreproducible F1~=~0.897 and MSE~=~0.0008.
-    \item \textbf{Validation beyond stability, and an interpretation layer.}
-    Spline edge functions expose the \emph{shape} of each dependency (linear,
-    saturating, threshold) and lag attribution recovers known delays on synthetic
-    data. On real markets the learned graph is stable $4.7\times$ above a
-    permutation chance level ($p<0.0001$) and degrades under time-reversal (showing
-    it uses temporal precedence); on a controlled synthetic intervention it detects
-    a known structural break and recovers both regime graphs. We also report
-    candidly that documented real-world policy shocks are \emph{not} cleanly
-    recoverable from observational macro data, and that redoing the real-data
-    analysis on a stationary (returns) representation---the check Reviewer~4
-    requested---collapses the learned graph to an uninformative,
-    fully-connected structure, since daily returns on these assets carry
-    little one-step-ahead signal: two honest limits of the setting, not of
-    the method alone.
-    SPADE scales to $d{=}50$ in seconds via a vectorized implementation.
+    per-(cause, lag) B-spline edges of its candidate parents, with an edge-level
+    group-lasso and an optional contemporaneous-only acyclicity constraint. The
+    bottleneck is necessary: an otherwise-similar model with a dense forecasting
+    backbone recovers structure only at chance. A matched-capacity,
+    matched-budget ablation against per-edge MLPs
+    (Section~\ref{sec:ablation}) gives close point estimates (AUROC~$0.902$ vs.\
+    $0.889$; with three seeds we do not run a significance test), suggesting that
+    the spline parameterization's distinctive value is the
+    \emph{interpretability} of the recovered edge shapes rather than a
+    structure-recovery advantage over an equally sized MLP.
+    \item \textbf{A decisive result against gradient-based DAG learners, and a
+    mixed result against the score-matching family.} On additive-noise
+    instantaneous DAGs, SPADE attains AUROC~$\approx$~0.92--0.95 across
+    $d\in\{6,10,20\}$, with its group-lasso weight tuned on validation seeds
+    disjoint from the reported ones. It substantially outperforms every
+    fixed-architecture, gradient-based DAG learner we test (DAGMA linear and
+    non-linear, GraN-DAG, GOLEM, NOTEARS/NOTEARS-MLP) at a fraction of their
+    runtime, because learnable spline edges capture non-linear mechanisms that
+    fixed-architecture learners miss. Against the score-matching methods SCORE and
+    NoGAM, SPADE beats SCORE at every width and NoGAM at two of three widths but
+    trails NoGAM at $d{=}10$, while training some $275$--$930\times$ faster and
+    additionally yielding inspectable edge functions
+    (Section~\ref{sec:instdag}). On lagged (temporal) structure it is
+    competitive (perfect on linear graphs; on non-linear graphs it beats the
+    KAN-Granger baselines and NOTEARS), though the best conditioning-based
+    methods (PCMCI, VAR-LiNGAM) still lead there. Corrections made to the
+    benchmarks during development are listed in Appendix~\ref{app:corrections}.
+    \item \textbf{Validation beyond synthetic data, and an interpretation
+    layer.} Spline edge functions expose the \emph{shape} of each dependency
+    (linear, saturating, threshold), and lag attribution recovers known delays on
+    synthetic data. BIKEPLACEHOLDER
+    On financial markets the learned graph is stable $4.7\times$ above a
+    permutation chance level ($p<0.0001$) and degrades under time reversal; on a
+    controlled synthetic intervention it detects a known structural break and
+    recovers both regime graphs. We also report two limits of the financial
+    setting: documented policy shocks are \emph{not} cleanly recoverable from
+    observational macro data, and redoing the analysis on a stationary (returns)
+    representation collapses the learned graph to an uninformative,
+    fully-connected structure, since daily returns carry little one-step-ahead
+    signal. SPADE scales to $d{=}50$ in seconds via a vectorized implementation.
 \end{enumerate}
 
 The remainder of the paper is organized as follows.
-Section~\ref{sec:method} specifies the SPADE artifact and its optimization.
+Section~\ref{sec:method} specifies the SPADE artifact, first in plain language
+and then formally, with technical detail deferred to the appendices.
 Section~\ref{sec:results} reports the synthetic, forecasting, and real-data
-evaluations. Section~\ref{sec:discussion} discusses managerial implications and
-boundary conditions, and Section~\ref{sec:conclusion} concludes.
+evaluations, including a non-financial bike-sharing demand study.
+Section~\ref{sec:discussion} discusses managerial implications and boundary
+conditions, and Section~\ref{sec:conclusion} concludes.
+

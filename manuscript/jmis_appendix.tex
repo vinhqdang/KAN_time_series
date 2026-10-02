@@ -99,29 +99,16 @@ All experiments use the released code and fixed seeds. Unless stated otherwise,
 SPADE uses $E{=}150$ epochs (400 for the instantaneous-DAG study), learning rate
 $5\times10^{-3}$, spline grid $G{=}8$ of cubic ($p{=}3$) B-splines on
 $[-3,3]$, group-lasso weight $\lambda_g{=}10^{-2}$ (headline instantaneous-DAG
-study: $\lambda_g{=}10^{-2}$, selected via a sensitivity sweep on
-held-out validation seeds (100--104/100--102) disjoint from the seeds reported in
-Table~\ref{tab:instdag} (0--4/0--2), after finding the earlier $\lambda_g{=}0.02$ was
-over-regularized for this task---see Section~\ref{sec:instdag}. An
-intermediate value, $\lambda_g{=}5\times10^{-3}$, was reported in an earlier
-revision but was selected by a tuning script that, we later found on
-independent review, had erroneously swept the same seeds used to report
-Table~\ref{tab:instdag} rather than the disjoint validation seeds its own
-comment claimed; \texttt{scripts/tune\_instdag\_lambda.py} now uses the
-disjoint seeds it always claimed to, and the value above is what that
-corrected script selects. Because the initial disjoint sweep used only five
-held-out seeds, we then expanded it to twenty (seeds 100--119) to check
-whether $\lambda_g{=}0.01$ was a confident choice or an artifact of a small
-sample: AUROC across $\lambda_g\in\{0.005,0.008,0.01,0.012,0.015,0.02\}$ was
-$0.955/0.969/0.969/0.959/0.948/0.940$ respectively, with a paired Wilcoxon
-test of $\lambda_g=0.01$ against $\lambda_g=5\times10^{-3}$ over the same
-twenty seeds giving $p=0.39$---not a statistically confident difference.
-$\lambda_g=0.01$ sits inside this broad, statistically indistinguishable
-plateau (its peak is at $0.008$, itself not distinguishable from $0.01$),
-while $\lambda_g=0.02$ is clearly outside it; we therefore keep
-$\lambda_g=0.01$, the value already applied and reported throughout this
-paper, rather than make a further change for a difference too small to
-support one), gradient clipping at $5.0$,
+study: $\lambda_g{=}10^{-2}$, selected on held-out validation seeds
+100--119, disjoint from the seeds reported in Table~\ref{tab:instdag} (0--4 at
+$d{=}6,10$; 0--2 at $d{=}20$). Mean validation AUROC across
+$\lambda_g\in\{0.005,0.008,0.01,0.012,0.015,0.02\}$ was
+$0.955/0.969/0.969/0.959/0.948/0.940$; a paired Wilcoxon test of
+$\lambda_g=0.01$ against $5\times10^{-3}$ over the same twenty seeds gives
+$p=0.39$. The value $0.01$ therefore sits inside a broad plateau of statistically
+indistinguishable settings (its peak is at $0.008$), while $0.02$ is clearly
+outside it; the sweep script is \texttt{scripts/tune\_instdag\_lambda.py}),
+gradient clipping at $5.0$,
 and---when contemporaneous edges are modelled---an Augmented-Lagrangian schedule
 $(\rho_0,\alpha_0,\beta,K)=(1,0,2,50)$ with $\rho$ capped at $10^{10}$. Series are
 $z$-scored per training window (Remark~\ref{rem:varsort}). Baselines use their
@@ -141,31 +128,141 @@ budget for the full five-seed protocol at $d{=}20$; we report it there over a
 single seed, flagged in Table~\ref{tab:instdag}, rather than omit the width or
 extrapolate.
 
-Three further settings were corrected during this revision, each via a
-held-out procedure that never touched the seeds used for a reported number
-before the setting was fixed. First, SPADE's forecasting head
-(Section~\ref{sec:forecast}) originally trained for only 30 epochs against
-the deep baselines' 80; a sweep on an inner train/validation split of the
-training fold (never the test folds reported in Table~\ref{tab:forecast})
-found validation error still improving through roughly 300 epochs, and we
-adopted that as the epoch count for all further forecasting runs. Second,
-the lagged non-linear causal-discovery benchmark
-(Section~\ref{sec:synthetic}) uses a data generator
-(\texttt{generate\_nonlinear\_scm}) whose lagged summary graph can contain
-cycles and whose mechanisms include an unbounded term; a minority of
-$(d,\text{seed})$ draws at $d\in\{10,20,50\}$ diverged to non-finite or
-extreme-scale data, which classical baselines failed loudly on (and were
-silently dropped by the benchmark's error handling) while gradient-based
-methods, including SPADE, trained on silently without producing a finite,
-informative fit. We added a finite-and-bounded check with deterministic
-reseeding, scoped to \texttt{scripts/honest\_causal\_benchmark.py} only, and
-reran the affected configurations once. Third, in the same benchmark's
-\emph{linear} configuration at $d{=}50$, the group-lasso weight
-$\lambda_g{=}0.01$ (which works well at $d\le20$) proved severely
-over-regularized: the penalty sums a per-edge norm over all
-$d(d{-}1)\times\text{max\_lag}$ candidate edges, so the same $\lambda_g$
-grows relatively stronger as $d$ increases. A sweep on held-out validation
-seeds found $\lambda_g\le0.003$ recovers AUROC$=1.0$ at this width, and we
-adopted $\lambda_g{=}0.002$ (width-dependent choice documented in
-\texttt{fit\_cdkan}'s docstring), rerunning only the $d{=}50$ rows on the
-official seeds.
+Three further settings were fixed by held-out procedures that never touched
+the seeds used for a reported number: the forecasting epoch count (300, chosen on
+an inner train/validation split of the training fold;
+\texttt{scripts/tune\_forecast\_epochs.py}), the finite-and-bounded screen with
+deterministic reseeding for the non-linear lagged generator
+(Section~\ref{sec:synthetic}; scoped to
+\texttt{scripts/honest\_causal\_benchmark.py}), and the width-dependent
+$\lambda_g{=}0.002$ at $d{=}50$ (validation seeds 142--144;
+\texttt{scripts/tune\_d50\_lambda.py}; documented in \texttt{fit\_cdkan}'s
+docstring). The bike-sharing study (Section~\ref{sec:bike}) used no tuning at
+all: its protocol was fixed and committed before any method was run on that data
+(\texttt{scripts/realworld\_bike\_sharing.py}).
+
+\section{Technical supplement to Section~\ref{sec:method}}
+\label{app:techsupp}
+
+This appendix collects technical material moved out of the main text to keep
+Section~\ref{sec:method} readable; nothing here changes the method.
+
+\subsection*{C.1\quad Acyclicity as a smooth constraint}
+
+\begin{theorem}[Acyclicity, \citealt{Zheng2018}]\label{thm:notears}
+For a weighted adjacency $W\in\Real^{d\times d}$ with non-negative entries, let
+$h(W)=\operatorname{tr}\!\big(e^{\,W\circ W}\big)-d$, where $\circ$ is the
+Hadamard product and $e^{(\cdot)}$ the matrix exponential. Then $h(W)\ge 0$, and
+$h(W)=0$ if and only if the graph induced by the non-zeros of $W$ is a directed
+acyclic graph. Moreover $\nabla h(W)=\big(e^{W\circ W}\big)^{\!\top}\!\circ 2W$.
+\end{theorem}
+An equivalent log-determinant characterization,
+$h^{s}_{\mathrm{ldet}}(W)=-\log\det(sI-W\circ W)+d\log s$, has better-conditioned
+gradients \citep{Bello2022}; either may be used, and our implementation defaults to
+Theorem~\ref{thm:notears}. We apply $h(\cdot)$ \emph{only} to the same-period block
+$W_0$. Lagged blocks are left unconstrained because temporal precedence already
+forbids cycles across time; constraining them would incorrectly penalize
+legitimate feedback such as $x_{t-1}\!\to\! y_t$ and $y_{t-1}\!\to\! x_t$. This
+block treatment mirrors DYNOTEARS \citep{Pamfil2020} and resolves the limitation of
+a single flat $d\times d$ constraint.
+
+\subsection*{C.2\quad The instantaneous variant (self-masked SEM)}
+
+When same-period effects are modelled, SPADE realizes a non-linear structural
+equation model: it predicts $x_{t,i}$ from its \emph{same-period} parents
+$x_{t,j\neq i}$ (self-loops masked) in addition to its lags, with $W_0$ the
+same-period edge-importance matrix scored as in Eq.~\eqref{eq:importance}. The ALM
+drives $h(W_0)\!\to\!0$, so the instantaneous graph is a DAG and the SEM is
+identifiable. This is a non-linear, KAN-based analogue of DYNOTEARS; we validate it
+on data with a known instantaneous DAG in Section~\ref{sec:contemp}. The purely
+instantaneous specialization---the model behind our headline result---is the
+cleanest instance of the identifiability theory of Section~\ref{sec:identif}: each
+variable is predicted from its same-period parents only, self-loops are masked, and
+the constraint of Theorem~\ref{thm:notears} is dualized on the edge-norm matrix $W$.
+Algorithm~\ref{alg:instant} gives the full procedure; it is the estimator whose
+population minimizer Proposition~\ref{prop:identif} shows to be consistent.
+
+\begin{algorithm}[t]
+\caption{SPADE-Instantaneous: self-masked nonlinear SEM with acyclicity (ALM)}
+\label{alg:instant}
+\begin{algorithmic}[1]
+\STATE \textbf{Input:} standardized data $X\in\Real^{N\times d}$; grid $G$; group
+weight $\lambda_g$; learning rate $\eta$; epochs $E$; ALM schedule
+$(\rho{=}1,\alpha{=}0,\beta{=}2,K{=}50)$, tolerance $\tau{=}10^{-8}$
+\STATE Initialize spline coefficients $C\in\Real^{d\times d\times(G+p)}$, bias $b$; fix self-mask $M_{ii}{=}0,\,M_{ij}{=}1$
+\FOR{epoch $=1$ to $E$}
+    \STATE $\hat{x}_{\cdot i} \leftarrow b_i + \sum_{j\neq i}\phi_{ij}(x_{\cdot j})$ \quad(self-masked SEM forecast, Eq.~\ref{eq:predict})
+    \STATE $\mathcal{L}_{\mathrm{MSE}} \leftarrow \tfrac1{Nd}\lVert \hat X - X\rVert_F^2$
+    \STATE $W_{ij} \leftarrow \lVert (C\odot M)_{ij,:}\rVert_2$ \quad(edge-norm matrix)
+    \STATE $h \leftarrow \operatorname{tr}(e^{W\circ W})-d$ \hfill(Theorem~\ref{thm:notears})
+    \STATE $\mathcal{L} \leftarrow \mathcal{L}_{\mathrm{MSE}} + \lambda_g\!\sum_{ij}W_{ij} + \alpha\,h + \tfrac{\rho}{2}h^2$
+    \STATE Adam step on $\mathcal{L}$ with $\eta$; gradient-clip at $5.0$
+    \IF{epoch $\bmod\ K = 0$ \textbf{and} $h>\tau$}
+        \STATE $\alpha \leftarrow \alpha + \rho\,h$;\quad $\rho \leftarrow \min(\beta\rho,\,10^{10})$
+    \ENDIF
+\ENDFOR
+\STATE $S_{ij} \leftarrow \mathrm{std}_t\big[(C\odot M)_{ij}\!\cdot\! B(x_{t,j})\big]$ \quad(edge scores, $[\text{effect},\text{cause}]$)
+\STATE \textbf{Return} $S$, spline edge functions $\{\phi_{ij}\}$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection*{C.3\quad On the choice of the sparsity penalty}
+
+We deliberately avoid an $\ell_1$ penalty on stochastic gating logits, which recent
+work shows can bias continuous DAG learning toward many small-magnitude edges and
+which we found empirically unstable under temperature annealing
+\citep{ng2020golem,Bello2022}. The group-lasso acts at the granularity of whole
+edges, and our threshold-free evaluation (AUROC/AUPRC, Section~\ref{sec:synthetic})
+reports ranking quality independently of any single sparsity level. An
+$\ell_0$-style gate is a natural extension.
+
+
+\section{Corrections made during development}
+\label{app:corrections}
+
+For transparency we list every correction to the benchmarks or reported numbers
+that was made while preparing this manuscript, with the cause and the effect on
+the headline results. None was made to favour SPADE: several of them lowered its
+reported performance, and each correction was accompanied by a runnable script.
+
+\begin{enumerate}[leftmargin=*, itemsep=2pt]
+\item \textbf{Group-lasso weight on the instantaneous-DAG benchmark.} The
+initial default $\lambda_g{=}0.02$ was over-regularized (AUROC $\approx0.88$). A
+retuned value, $5\times10^{-3}$, appeared to give AUROC $\approx0.97$ and
+a clean win over SCORE and NoGAM at every width, but the tuning script had swept
+the same seeds that were used to report results, so that figure was inflated by
+selection on the evaluation data. The script now uses disjoint validation seeds;
+re-sweeping selects $\lambda_g{=}0.01$ and gives the results reported in
+Section~\ref{sec:instdag} (AUROC $0.947/0.926/0.915$, with NoGAM ahead at
+$d{=}10$). The sweep was then extended from five to twenty validation seeds
+(Appendix~\ref{app:repro}).
+\item \textbf{Forecasting epochs and normalization.} SPADE's forecasting head
+was first trained for 30 epochs while the baselines used 80, and the baselines
+had no normalization. After adding RevIN to every baseline, SPADE trailed three
+of four. An inner-validation sweep (training fold only) selected 300 epochs,
+reducing MSE from 0.048 to 0.029 at the cost of training time (36\,s to 357\,s),
+so SPADE is now the slowest forecaster in Table~\ref{tab:forecast}.
+\item \textbf{Test-leaking normalization.} An early forecasting result (MSE
+$\approx0.0008$) came from computing normalization statistics on the full series.
+All reported results use train-only statistics (Table~\ref{tab:leak}). An
+earlier lagged-benchmark F1 ($0.897$) could not be reproduced and was withdrawn.
+\item \textbf{Non-linear lagged generator.} Some $(d,\text{seed})$ draws at
+$d\in\{10,20,50\}$ produced non-finite or extreme-scale data, which silently
+removed classical baselines and left neural methods at initialization. A
+finite-and-bounded screen with deterministic reseeding raised SPADE's
+non-linear lagged AUROC from $0.76$ to $0.93$ (and affected every method).
+\item \textbf{Width-dependence of $\lambda_g$ at $d{=}50$.} With $\lambda_g{=}0.01$
+the linear $d{=}50$ AUROC was $0.829$; a validation sweep selected $0.002$, giving
+$1.000$.
+\item \textbf{Timing.} Wall-clock values in an early raw result file were
+inflated by CPU contention (138--172\,s); they were re-measured on an otherwise
+idle machine (SPADE 2.1/1.9/4.9\,s at $d{=}6/10/20$), and the speed-up over NoGAM
+was restated accordingly ($275$--$930\times$). A runtime-table row that mixed two
+training protocols ($d{=}15$) was corrected.
+\item \textbf{Presentation.} The architecture figure, a table caption that
+contradicted its Wilcoxon $p$-values, a claim that group-lasso leaves ranking
+quality unchanged (AUROC $0.902$ with versus $0.984$ without), and the statement
+that the number of seeds was uniform across widths were corrected; the
+returns-based re-analysis (Section~\ref{sec:returns}) was added after concerns
+about non-stationarity.
+\end{enumerate}

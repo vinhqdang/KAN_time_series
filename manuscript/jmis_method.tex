@@ -2,16 +2,60 @@
 \section{The SPADE Artifact}
 \label{sec:method}
 
-We present SPADE (SPline Additive-noise DAG Estimation), built on
-Kolmogorov--Arnold networks, a design-science
-artifact that jointly performs multivariate time-series forecasting and causal
-structure learning. This section gives the complete specification needed for
-reproduction: the problem formulation and its identifiability assumptions
-(Section~\ref{sec:formulation}), the lag-aware architecture
-(Section~\ref{sec:arch}), the constrained-optimization procedure with its full
-hyperparameter schedule (Section~\ref{sec:opt}), and a complexity analysis
-(Section~\ref{sec:complexity}). A reference implementation is available in the
-accompanying repository.
+SPADE (SPline Additive-noise DAG Estimation) is a design-science artifact, built
+on Kolmogorov--Arnold networks, that does two things at once: it forecasts a set
+of related business time series, and it shows \emph{which series drive which, and
+how}. This section is organized so that readers can stop early. Section~\ref{sec:plain}
+explains the idea and what the artifact outputs in plain language, with no
+mathematics, and is sufficient to follow the results and the managerial
+discussion. Sections~\ref{sec:formulation}--\ref{sec:complexity} give the formal
+specification needed for reproduction (problem and assumptions, why structure is
+recoverable, architecture, training, cost). Proofs, the acyclicity theorem, and
+the instantaneous-variant pseudocode are in Appendices~\ref{app:proofs}
+and~\ref{app:techsupp}. A reference implementation is in the accompanying
+repository.
+
+\subsection{SPADE in plain language}
+\label{sec:plain}
+
+\paragraph{The problem.} A manager watches several linked series---say daily
+bike rentals, temperature, humidity, and whether the day is a working day---and
+wants more than a forecast: which of these actually \emph{drive} rentals, through
+what kind of relationship (steady, saturating, a threshold?), and with what delay?
+Standard econometric models (VAR) give transparent but straight-line answers;
+deep networks capture curves but hide them inside a black box.
+
+\paragraph{Three design ideas.}
+\begin{enumerate}[leftmargin=1.6em,itemsep=2pt]
+    \item \emph{One learnable curve per driver.} Each series is predicted only as a
+    \emph{sum of curves}, one for each candidate driver (and lag). No hidden layer
+    mixes drivers together afterwards. Because the curve from driver $j$ is the only
+    path from $j$ to the forecast of $i$, the size of that curve is an honest
+    measure of how much $j$ matters to $i$, and the curve itself can be plotted and
+    read by a person (Figure~\ref{fig:architecture}).
+    \item \emph{Prune what is not needed.} A sparsity penalty pushes the curves of
+    unhelpful drivers to exactly zero, so the surviving graph is small enough to
+    inspect.
+    \item \emph{No loops at the same instant.} If two series are allowed to affect
+    each other \emph{within} the same period, a smooth ``no-cycles'' condition keeps
+    that same-period graph free of circular explanations. Effects across time need
+    no such condition, since the past cannot be caused by the future.
+\end{enumerate}
+
+\paragraph{What the artifact outputs.} (i) a directed graph of candidate drivers;
+(ii) for every retained edge, the learned curve, so one can see whether an
+influence is linear, saturating, or threshold-like; (iii) the typical delay with
+which each driver acts; and (iv) a one-step-ahead forecast of every series, from
+the same fitted model.
+
+\paragraph{What it does not do.} SPADE's edges are \emph{candidate} causal
+mechanisms for expert review, not proven causes. They are meaningful only if the
+usual conditions hold---no important unmeasured common cause, relationships that
+are not mere straight lines with Gaussian noise, and structure that is stable
+over the fitting window (Assumptions~\ref{as:suff}--\ref{as:stat} below). We
+therefore pair the method with explicit checks against domain knowledge on real
+data (Sections~\ref{sec:real} and~\ref{sec:bike}) rather than asking the reader to
+trust the graph.
 
 \subsection{Problem Formulation}
 \label{sec:formulation}
@@ -21,50 +65,75 @@ series with $\mathbf{x}_t \in \Real^d$. We posit a non-linear Structural
 Vector Autoregressive (SVAR) data-generating process with maximum lag $L$: for
 each target $j\in\{1,\dots,d\}$,
 \begin{equation}
-    x_{t,j} \;=\; \underbrace{\sum_{i\,\in\,\pa^{(0)}(j)} f^{(0)}_{ij}\!\big(x_{t,i}\big)}_{\text{contemporaneous}}
-    \;+\; \underbrace{\sum_{h=1}^{L}\ \sum_{i\,\in\,\pa^{(h)}(j)} f^{(h)}_{ij}\!\big(x_{t-h,i}\big)}_{\text{lagged}}
-    \;+\; \epsilon_{t,j},
+    x_{t,j} \;=\; \underbrace{\sum_{i\,\in\,\pa^{(0)}(j)} f^{(0)}_{ij}\!\big(x_{t,i}\big)}_{\text{same period}}
+    \;+\; \underbrace{\sum_{h=1}^{L}\ \sum_{i\,\in\,\pa^{(h)}(j)} f^{(h)}_{ij}\!\big(x_{t-h,i}\big)}_{\text{earlier periods}}
+    \;+\; \epsilon_{t,j}.
     \label{eq:svar}
 \end{equation}
-where $\pa^{(h)}(j)=\{i: A^{(h)}_{ij}=1\}$ are the lag-$h$ parents of $j$,
-encoded by adjacency $A^{(h)}\in\{0,1\}^{d\times d}$; the $f^{(h)}_{ij}$ are
-(possibly non-linear) univariate causal mechanisms; and the noises
-$\{\epsilon_{t,j}\}$ are jointly independent across $j$ and i.i.d.\ across $t$.
-Equation~\eqref{eq:svar} is an \emph{additive-noise model} (ANM): each target is
-an additive function of its parents plus independent noise. We separate the
-\emph{lagged} adjacencies $A^{(1)},\dots,A^{(L)}$ from the \emph{contemporaneous}
-adjacency $A^{(0)}$ because, as Section~\ref{sec:identif} shows, only the latter
-needs an acyclicity constraint. The summary graph reported throughout is the
-union $A_{ij}=1-\prod_{h=0}^{L}(1-A^{(h)}_{ij})$.
+In words: each series equals a sum of (possibly curved) effects of its parents,
+some measured in the same period and some in earlier periods, plus unexplained
+noise. Formally, $\pa^{(h)}(j)=\{i: A^{(h)}_{ij}=1\}$ are the lag-$h$ parents of
+$j$, encoded by adjacency $A^{(h)}\in\{0,1\}^{d\times d}$; the $f^{(h)}_{ij}$ are
+univariate causal mechanisms; and the noises $\{\epsilon_{t,j}\}$ are jointly
+independent across $j$ and i.i.d.\ across $t$. Equation~\eqref{eq:svar} is an
+\emph{additive-noise model} (ANM). We separate the lagged adjacencies
+$A^{(1)},\dots,A^{(L)}$ from the same-period adjacency $A^{(0)}$ because only the
+latter needs an acyclicity constraint (Section~\ref{sec:identif}). The summary
+graph reported throughout is the union $A_{ij}=1-\prod_{h=0}^{L}(1-A^{(h)}_{ij})$.
 
 Our goal is twofold: (i) \textbf{forecasting}---predict $\mathbf{x}_{t+1}$ from
 history $\mathbf{x}_{t-L:t}$; and (ii) \textbf{causal discovery}---recover the
 adjacencies $\{A^{(h)}\}_{h=0}^{L}$ \emph{and} the mechanisms $f^{(h)}_{ij}$
 that give the graph its managerial meaning.
 
+\begin{table}[t]
+\centering
+\caption{Notation used in the main text.}
+\label{tab:notation}
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+Symbol & Meaning \\
+\midrule
+$d$, $T$, $L$ & number of series, number of time points, maximum lag \\
+$A^{(h)}_{ij}$ & 1 if series $i$ drives series $j$ at lag $h$ ($h{=}0$: same period) \\
+$f^{(h)}_{ij}$, $\phi^{(h)}_{ij}$ & true mechanism, and SPADE's learned spline curve for it \\
+$G$, $p$ & spline grid size and order (here $G{=}8$, $p{=}3$) \\
+$S_{ij}$ & edge score: how much driver $j$ moves the forecast of $i$ \\
+$\lambda_g$ & strength of the edge-pruning (group-lasso) penalty \\
+$h(W)$ & acyclicity measure: zero exactly when the same-period graph has no loops \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 We work under four standard assumptions, made explicit because directed edges
 from observational data are causal only under stated conditions
 \citep{Pearl2009,peters2014causal}.
 \begin{assumption}[Causal sufficiency]\label{as:suff}
-There are no unobserved common causes of the measured variables. In open economic
-systems this is strong; we therefore treat real-data edges as \emph{candidate}
-mechanisms for expert review, not verified causes (Section~\ref{sec:real}).
+There are no unobserved common causes of the measured variables. \emph{In plain
+words:} nothing important that moves several series at once is missing from the
+data. In open economic systems this is strong; we therefore treat real-data edges
+as \emph{candidate} mechanisms for expert review, not verified causes
+(Section~\ref{sec:real}).
 \end{assumption}
 \begin{assumption}[Markov and causal minimality]\label{as:markov}
 The joint law is Markov to the SVAR graph, and no proper sub-graph also renders
 it Markov (equivalently, every declared mechanism $f^{(h)}_{ij}$ depends
-non-trivially on its argument). Causal minimality is the mild condition under
-which ANMs are identifiable \citep{peters2014causal}.
+non-trivially on its argument). \emph{In plain words:} the graph explains the
+data, and every drawn edge really matters. This is the mild condition under which
+ANMs are identifiable \citep{peters2014causal}.
 \end{assumption}
 \begin{assumption}[Restricted, non-linear mechanisms]\label{as:restrict}
-The contemporaneous mechanisms are \emph{non-linear} and $(f^{(0)}_{ij},$ noise,
+The same-period mechanisms are \emph{non-linear} and $(f^{(0)}_{ij},$ noise,
 cause$)$ triples do not solve the differential equation of
 \citet[Cond.~18]{peters2014causal} (the degeneracy that would admit a reverse
-model). This rules out the linear--Gaussian case, in which cause and effect are
-provably indistinguishable.
+model). \emph{In plain words:} the relationships are genuinely curved, not
+straight lines with Gaussian noise---the one textbook case in which cause and
+effect are provably indistinguishable.
 \end{assumption}
 \begin{assumption}[Within-window stationarity]\label{as:stat}
-$\{A^{(h)},f^{(h)}\}$ are constant within each estimation window. We probe
+$\{A^{(h)},f^{(h)}\}$ are constant within each estimation window. \emph{In plain
+words:} the system does not change its rules while we are fitting it. We probe
 violations directly via rolling-window stability (Section~\ref{sec:stability})
 and a structural-change experiment (Section~\ref{sec:validation}).
 \end{assumption}
@@ -75,87 +144,64 @@ Discussion.
 \label{sec:identif}
 
 Before specifying the estimator we state \emph{why} its target is well posed.
-Two facts drive the entire design: (i) a non-linear ANM is identifiable up to its
+Two facts drive the design: (i) a non-linear ANM is identifiable up to its
 graph, whereas a linear--Gaussian one is not; and (ii) identifiability is a
 property of the \emph{hypothesis class}, not merely of the data---a
 sufficiently flexible predictor destroys it. These motivate, respectively,
-SPADE's spline edge functions and its information-bottleneck architecture.
-
-\paragraph{Acyclicity as a smooth constraint.} We first recall the
-characterization that turns discrete DAG search into continuous optimization.
-\begin{theorem}[Acyclicity, \citealt{Zheng2018}]\label{thm:notears}
-For a weighted adjacency $W\in\Real^{d\times d}$ with non-negative entries, let
-$h(W)=\operatorname{tr}\!\big(e^{\,W\circ W}\big)-d$, where $\circ$ is the
-Hadamard product and $e^{(\cdot)}$ the matrix exponential. Then $h(W)\ge 0$, and
-$h(W)=0$ if and only if the graph induced by the non-zeros of $W$ is a directed
-acyclic graph. Moreover $\nabla h(W)=\big(e^{W\circ W}\big)^{\!\top}\!\circ 2W$.
-\end{theorem}
-An equivalent log-determinant characterization,
-$h^{s}_{\mathrm{ldet}}(W)=-\log\det(sI-W\circ W)+d\log s$, was later shown to have
-better-conditioned gradients \citep{Bello2022}; either may be used, and our
-implementation defaults to Theorem~\ref{thm:notears}. Crucially, we will apply
-$h(\cdot)$ \emph{only} to the contemporaneous block: lagged edges are ordered by
-time's arrow and need not be acyclic.
+SPADE's spline edge functions and its information-bottleneck architecture. Same-period
+acyclicity is enforced through the smooth criterion
+$h(W)=\operatorname{tr}(e^{W\circ W})-d$ of \citet{Zheng2018}, which is zero exactly
+when the graph has no directed cycle (Theorem~\ref{thm:notears},
+Appendix~\ref{app:techsupp}); we apply it \emph{only} to the same-period block,
+because lagged edges are ordered by time's arrow.
 
 \paragraph{The estimation target is identifiable.} SPADE's forecast of each
 target flows only through additive univariate functions of its candidate parents
-(Section~\ref{sec:arch}); it is therefore, by construction, an ANM of the same
-form as Eq.~\eqref{eq:svar}. This lets us inherit the identifiability theory of
-restricted additive-noise models.
+(Section~\ref{sec:arch}); it is therefore an ANM of the same form as
+Eq.~\eqref{eq:svar}, and inherits the identifiability theory of restricted
+additive-noise models.
 \begin{proposition}[Identifiability of SPADE's target]\label{prop:identif}
 Under Assumptions~\ref{as:suff}--\ref{as:stat}, suppose the data follow
 Eq.~\eqref{eq:svar} with mechanisms in a class approximable by order-$p$
 B-splines. Then (a) the lagged adjacencies $\{A^{(h)}\}_{h\ge 1}$ are identified
 by the joint law of $(\mathbf{x}_t,\mathbf{x}_{t-1},\dots)$; and (b) the
-contemporaneous DAG $A^{(0)}$ is identified up to Markov equivalence in general,
+same-period DAG $A^{(0)}$ is identified up to Markov equivalence in general,
 and \emph{uniquely} under Assumption~\ref{as:restrict}. Consequently the
 population minimizer of the one-step reconstruction risk over the component-wise
 B-spline class, subject to $h(W^{(0)})=0$, recovers the summary graph $A$ as the
 spline grid refines.
 \end{proposition}
-Proposition~\ref{prop:identif} is an application to our function class of the
-restricted-ANM identifiability theorem of \citet[Thm.~31]{peters2014causal} (in
-turn built on \citealt{hoyer2008nonlinear}), combined with the spline
-approximation guarantee for KAN regressors \citep{Liu2024,liu2025kanconvergence};
-we give the argument in Appendix~\ref{app:proofs}. The content of
-Assumption~\ref{as:restrict} is essential and honest: \emph{linear} mechanisms
-with Gaussian noise are the textbook non-identifiable case, which is exactly why
-a method built for the \emph{non-linear} regime (SPADE) can succeed where its
-target is identifiable, while purely linear learners cannot orient such edges.
+Proposition~\ref{prop:identif} applies the restricted-ANM identifiability theorem of
+\citet[Thm.~31]{peters2014causal} (built on \citealt{hoyer2008nonlinear}) to our
+function class, using the spline approximation guarantee for KAN regressors
+\citep{Liu2024,liu2025kanconvergence}; the argument is in
+Appendix~\ref{app:proofs}. \emph{Linear} mechanisms with Gaussian noise are the
+non-identifiable case, which is why a method built for the \emph{non-linear}
+regime can succeed where its target is identifiable, while purely linear learners
+cannot orient such edges.
 
 \begin{remark}[What the proposition does, and does not, claim]\label{rem:whatprop1claims}
-Assumptions~\ref{as:suff}--\ref{as:stat} are \emph{posited} boundary conditions
-on the data-generating process, not something the optimizer verifies or
-derives: Proposition~\ref{prop:identif} is a conditional statement (``if the
-data satisfy these assumptions, the population target is identified''), and no
-amount of fitting the training objective can establish that a given real-world
-process actually satisfies them---that is a modeling judgment external to the
-estimator (Assumption~\ref{as:suff} in particular, which we address by treating
-real-data edges as candidates, not verified causes; Section~\ref{sec:real}).
-Second, the population statement above concerns the risk minimizer over the
-B-spline class \emph{subject to the hard constraint} $h(W^{(0)})=0$; the
-estimator we actually optimize (Eq.~\ref{eq:constrained}) additionally carries
-a group-lasso penalty $\lambda_g\Omega_{\mathrm{group}}$ for finite-sample
-sparsity, which is not part of the idealized population statement and
-introduces the usual shrinkage bias of any regularized estimator at finite
-$\lambda_g$. We do not claim this bias vanishes analytically; the sensitivity
-analysis (Section~\ref{sec:sensitivity}) is the empirical evidence that
-recovery is stable across a range of $\lambda_g$, and finite-sample consistency
-as $N\to\infty,\lambda_g\to 0$ is left as a formal question for future work.
-Third, and separately from the group-lasso, the hard constraint
-$h(W^{(0)})=0$ itself is never exactly satisfied in practice: the Augmented
-Lagrangian Method drives $h(W^{(0)})$ toward zero but only to a small residual
-(e.g.\ $\approx 2\times10^{-3}$ in Section~\ref{sec:contemp}'s combined
-SVAR experiment), not the exact equality the proposition assumes. Both
-departures from the idealized statement---the group-lasso's shrinkage bias
-and the ALM's residual acyclicity violation---are properties of the
-\emph{practical} estimator, not of the population-level identifiability
-argument, and neither is claimed to vanish without further analysis.
+Proposition~\ref{prop:identif} is a statement about an idealized population
+estimator. Three gaps separate it from the estimator we actually run.
+(i)~\emph{The assumptions are posited, not verified.} The optimizer cannot
+establish that a real process satisfies Assumptions~\ref{as:suff}--\ref{as:stat};
+that is a modeling judgment, which is why real-data edges are reported as
+candidates (Section~\ref{sec:real}).
+(ii)~\emph{Sparsity shrinks.} The proposition concerns the risk minimizer under
+the \emph{hard} constraint $h(W^{(0)})=0$; the fitted estimator
+(Eq.~\ref{eq:constrained}) adds a group-lasso penalty $\lambda_g\Omega_{\mathrm{group}}$
+that carries the usual shrinkage bias at finite $\lambda_g$. Section~\ref{sec:sensitivity}
+shows empirically that recovery is stable across a range of $\lambda_g$;
+finite-sample consistency as $N\to\infty,\lambda_g\to 0$ is left open.
+(iii)~\emph{Acyclicity holds only approximately.} The Augmented Lagrangian drives
+$h(W^{(0)})$ to a small residual (e.g.\ $\approx 2\times10^{-3}$ in
+Section~\ref{sec:contemp}), not exactly zero. Neither (ii) nor (iii) is claimed to
+vanish without further analysis.
 \end{remark}
 
 \paragraph{Why the bottleneck is necessary.} Identifiability can be forfeited by
-the estimator even when the population target is well posed. The following makes
-precise the empirical collapse we document in Section~\ref{sec:ablation}.
+the estimator even when the population target is well posed. This makes precise
+the empirical collapse documented in Section~\ref{sec:ablation}.
 \begin{proposition}[Necessity of the information bottleneck]\label{prop:bottleneck}
 Let a predictor model each $x_{t,i}$ through a shared function class
 $\mathcal{F}$ of \emph{all} other coordinates that is rich enough to contain the
@@ -166,19 +212,17 @@ optimum attains the minimum risk, and $\hat A$ is \emph{not} identified by risk
 minimization. Restricting the hypothesis class so that the adjacency indexes the
 function---predicting each target \emph{only} through per-parent edges---together
 with a sparsity preference that breaks ties toward the \emph{minimal} such
-adjacency (any superset of the true parents attains the same population risk,
-since the extra edges can be zeroed), is sufficient to make the risk-minimizing
-structure unique.
+adjacency, is sufficient to make the risk-minimizing structure unique.
 \end{proposition}
-The bottleneck restriction is necessary---without it, as the first half of the
-proposition shows, risk minimization does not identify $\hat A$ at all---but it
-is not, by itself, sufficient for uniqueness: the tie-breaker is doing real
-work, and in SPADE this is exactly the role played by the edge-level
-group-lasso of Eq.~\eqref{eq:constrained} (Appendix~\ref{app:proofs} makes this
-precise). The proof is elementary but consequential: it is the formal reason a
+\emph{In plain words:} if a flexible network is free to mix all variables, many
+different graphs fit the data equally well, so the fit alone cannot tell them
+apart; forcing the prediction to pass through one curve per driver removes that
+freedom. The restriction is necessary but not by itself sufficient: the sparsity
+penalty (the edge-level group-lasso of Eq.~\eqref{eq:constrained}) supplies the
+tie-breaker (Appendix~\ref{app:proofs}). This is the formal reason a
 ``dense-backbone'' KAN forecaster recovers structure only at chance
-(AUROC~$\approx 0.5$; Section~\ref{sec:ablation}), whereas the component-wise
-SPADE---bottleneck \emph{and} group-lasso together---does not.
+(AUROC~$\approx 0.5$; Section~\ref{sec:ablation}), whereas component-wise
+SPADE does not.
 
 \begin{remark}[Guarding against benchmark artifacts]\label{rem:varsort}
 Continuous DAG learners can exploit \emph{varsortability}---an accidental
@@ -193,16 +237,14 @@ attributed to a variance-ordering shortcut.
 \subsection{The SPADE Architecture}
 \label{sec:arch}
 
-The central design principle of SPADE is an \emph{information bottleneck}: the
-forecast of each target variable must flow \emph{only} through per-edge functions
-of its candidate causes, with no shared network that re-mixes variables
-afterwards. This is what makes the learned structure identifiable---the edge
-functions are the sole path from a cause to an effect, so their magnitude is a
-faithful structural signal (as in neural-Granger models,
-\citealt{Tank2021,Shojaie2022}). We found this property to be decisive: a variant
-that instead feeds the causal layer into a dense residual backbone recovers
-structure only at chance, because the backbone can minimize forecasting error
-regardless of the adjacency (Section~\ref{sec:ablation}).
+The central design principle is an \emph{information bottleneck}: the forecast of
+each target must flow \emph{only} through per-edge functions of its candidate
+causes, with no shared network that re-mixes variables afterwards. The edge
+functions are then the sole path from a cause to an effect, so their magnitude is
+a faithful structural signal (as in neural-Granger models,
+\citealt{Tank2021,Shojaie2022}). A variant that instead feeds the causal layer
+into a dense residual backbone recovers structure only at chance
+(Section~\ref{sec:ablation}).
 
 \begin{figure}[t]
     \centering
@@ -218,13 +260,12 @@ regardless of the adjacency (Section~\ref{sec:ablation}).
 \end{figure}
 
 \paragraph{(1) Reversible Instance Normalization (RevIN).}
-Financial series are strongly non-stationary. We apply RevIN
-\citep{Kim2022}: for each input window we subtract the window mean and divide by
-the window standard deviation (statistics are computed on the input window only
-and detached from the computation graph, so no future information leaks), apply a
-learnable affine transform, and invert it on the output. Because the statistics
-are window-local and detached, RevIN is an invertible reparameterization of
-location and scale, and the causal layer operates on level/scale-removed signals.
+Many business series are non-stationary. We apply RevIN \citep{Kim2022}: for each
+input window we subtract the window mean and divide by the window standard
+deviation (computed on the input window only and detached from the computation
+graph, so no future information leaks), apply a learnable affine transform, and
+invert it on the output. The causal layer therefore operates on level- and
+scale-removed signals.
 
 \paragraph{(2) Component-wise causal layer with per-lag B-spline edges.}
 For each ordered pair $(i,j)$ and lag $h$ we place a learnable B-spline edge
@@ -233,18 +274,18 @@ function, in the spirit of Kolmogorov--Arnold networks \citep{Liu2024},
     \phi^{(h)}_{ij}(x) = \sum_{k=1}^{G+p} c^{(ijh)}_k B_k(x),
     \label{eq:spline}
 \end{equation}
-where $\{B_k\}$ are order-$p$ B-spline bases on a grid of size $G$. The forecast
-of target $i$ is the \emph{additive} aggregation of its incoming edges only,
+where $\{B_k\}$ are order-$p$ B-spline bases on a grid of size $G$---a flexible
+smooth curve whose shape is set by the coefficients $c_k$. The forecast of target
+$i$ is the \emph{additive} aggregation of its incoming edges only,
 \begin{equation}
     \hat{x}_{t,i} \;=\; b_i \;+\; \sum_{j=1}^{d}\ \sum_{h}\ \phi^{(h)}_{ij}\!\big(x_{t-h,\,j}\big),
     \label{eq:predict}
 \end{equation}
-with lags $h\in\{1,\dots,L\}$ (and $h=0$ added only when contemporaneous effects
-are modelled). Crucially there is no downstream layer mixing the $\hat{x}_{t,i}$
-across $i$; variable $j$ influences the forecast of $i$ solely through the edges
-$\{\phi^{(h)}_{ij}\}$. Placing the learnable nonlinearity \emph{on the edge}
-makes each mechanism inspectable---plotting $\phi^{(h)}_{ij}$ reveals whether an
-influence is linear, saturating, or threshold-like (Section~\ref{sec:splines}).
+with lags $h\in\{1,\dots,L\}$ (and $h=0$ added only when same-period effects are
+modelled). There is no downstream layer mixing the $\hat{x}_{t,i}$ across $i$.
+Because the nonlinearity sits \emph{on the edge}, each mechanism is inspectable:
+plotting $\phi^{(h)}_{ij}$ shows whether an influence is linear, saturating, or
+threshold-like (Section~\ref{sec:splines}).
 
 \paragraph{(3) Structure and lag read-outs.}
 Rather than reading structure from stochastic gating logits (which we found
@@ -256,53 +297,29 @@ data,
     S_{ij} \;=\; \mathrm{std}_t\big[c_{ij}(t)\big],
     \label{eq:importance}
 \end{equation}
-a data-grounded, deterministic measure of how much cause $j$ drives effect $i$.
-The expected propagation delay is the contribution-weighted mean lag,
+a deterministic measure of how much cause $j$ moves effect $i$. The expected
+delay is the contribution-weighted mean lag,
 $\mathbb{E}[h]_{ij}=\sum_h h\,m^{(h)}_{ij}/\sum_h m^{(h)}_{ij}$ with
 $m^{(h)}_{ij}=\mathrm{std}_t[\phi^{(h)}_{ij}(x_{t-h,j})]$.
 
-\subsection{Constrained Optimization}
+\subsection{Training}
 \label{sec:opt}
-
-\paragraph{Acyclicity on the contemporaneous block only.}
-Following the NOTEARS characterization \citep{Zheng2018}, a weighted matrix $W$ is
-acyclic iff
-\begin{equation}
-    h(W) = \operatorname{tr}\!\big(e^{\,W\circ W}\big) - d = 0 .
-    \label{eq:hnotears}
-\end{equation}
-Crucially, we apply Eq.~\eqref{eq:hnotears} \emph{only} to the contemporaneous
-block $W_0$. Lagged blocks are left unconstrained because temporal precedence
-already forbids cycles across time (Section~\ref{sec:identif}); constraining them would
-incorrectly penalize legitimate feedback such as $x_{t-1}\!\to\! y_t$ and
-$y_{t-1}\!\to\! x_t$. This block treatment mirrors DYNOTEARS \citep{Pamfil2020}
-and resolves the limitation of a single flat $d\times d$ constraint.
-
-\paragraph{Instantaneous variant (self-masked SEM).} When instantaneous effects
-are modelled, SPADE realizes a non-linear structural equation model: it predicts
-$x_{t,i}$ from its \emph{contemporaneous} parents $x_{t,j\neq i}$ (self-loops
-masked) in addition to its lags, with $W_0$ the contemporaneous edge-importance
-matrix scored as in Eq.~\eqref{eq:importance}. The ALM then drives
-$h(W_0)\!\to\!0$, guaranteeing the instantaneous graph is a DAG so the SEM is
-identifiable. This yields a non-linear, KAN-based analogue of DYNOTEARS; we
-validate it on data with a known instantaneous DAG in Section~\ref{sec:contemp},
-where it recovers the DAG and outperforms linear NOTEARS on non-linear mechanisms.
 
 \paragraph{Objective.}
 We fit the edge coefficients $\Phi=\{c^{(ijh)}\}$ and biases $b$ by minimizing
-one-step forecasting error with a \emph{group-lasso} that treats each
+one-step forecasting error plus a \emph{group-lasso} that treats each
 cause$\to$effect edge as a group,
 \begin{equation}
     \min_{\Phi,b}\;\; \mathcal{L}_{\mathrm{MSE}}
     \;+\; \lambda_{g}\sum_{i,j}\Big\lVert\, \mathrm{vec}\big(\{c^{(ijh)}\}_{h}\big)\,\Big\rVert_2
-    \quad \text{s.t.}\quad h(W^{(0)}) = 0 ,
+    \quad \text{s.t.}\quad h(W^{(0)}) = 0 .
     \label{eq:constrained}
 \end{equation}
-where the group norm couples all lags of edge $(i,j)$ so that an entire edge
-either survives or vanishes---the mechanism that yields sparse, identifiable
-structure. The constraint $h(W^{(0)})=0$ (Eq.~\ref{eq:hnotears}), applied to the
-contemporaneous importance block $W^{(0)}_{ij}=\mathrm{std}_t[\phi^{(0)}_{ij}]$,
-is enforced only when instantaneous edges are modelled and is dualized with the
+The group norm couples all lags of edge $(i,j)$ so that an entire edge either
+survives or vanishes, yielding sparse structure. The constraint
+$h(W^{(0)})=0$, with $h(W)=\operatorname{tr}(e^{W\circ W})-d$ applied to the
+same-period importance block $W^{(0)}_{ij}=\mathrm{std}_t[\phi^{(0)}_{ij}]$,
+is enforced only when same-period edges are modelled and is dualized with the
 Augmented Lagrangian Method:
 \begin{equation}
     \mathcal{L}(\Phi,b;\alpha,\rho) = \mathcal{L}_{\mathrm{MSE}}
@@ -310,18 +327,21 @@ Augmented Lagrangian Method:
     + \alpha\, h(W^{(0)}) + \tfrac{\rho}{2}\, h(W^{(0)})^2 .
     \label{eq:alm}
 \end{equation}
-For the purely-lagged benchmarks (all edges have $h\!\ge\!1$) the summary graph may
-contain cycles across time, so the DAG term is inactive; it becomes relevant only
-for datasets with instantaneous effects.
+For purely lagged benchmarks (all edges have $h\!\ge\!1$) the summary graph may
+contain cycles across time, so the acyclicity term is inactive. When same-period
+effects are modelled, SPADE realizes a non-linear structural equation model in
+which each series is predicted from the other same-period series (self-loops
+masked); this \emph{instantaneous variant}, behind our headline result, is
+specified in Appendix~\ref{app:techsupp} (Algorithm~\ref{alg:instant}).
 
-\paragraph{On the choice of the sparsity penalty.} We deliberately avoid an
-$\ell_1$ penalty on stochastic gating logits, which recent work shows can bias
-continuous DAG learning toward many small-magnitude edges and which we found
-empirically unstable under temperature annealing \citep{ng2020golem,Bello2022}.
-The group-lasso acts at the granularity of whole edges, and our threshold-free
-evaluation (AUROC/AUPRC, Section~\ref{sec:synthetic}) reports ranking quality
-independently of any single sparsity level. An $\ell_0$-style gate is a natural
-extension.
+\paragraph{Procedure.} Algorithm~\ref{alg:cdkan} lists the procedure: a single Adam
+loop on Eq.~\eqref{eq:constrained} with gradient clipping and, when same-period
+edges are modelled, an ALM step every $K$ epochs that tightens the acyclicity
+penalty. Unless stated otherwise we use $E{=}150$ epochs, learning rate
+$5\!\times\!10^{-3}$, grid size $G{=}8$, and $\lambda_g{=}10^{-2}$; a sensitivity
+analysis over $\lambda_g$ and $G$ is in Section~\ref{sec:sensitivity}, and the
+full settings, including how $\lambda_g$ was chosen on held-out data, are in
+Appendix~\ref{app:repro}.
 
 \begin{algorithm}[t]
 \caption{SPADE training}
@@ -331,8 +351,8 @@ extension.
 \STATE Initialize edge coefficients $\Phi$, biases $b$
 \FOR{epoch $=1$ to $E$}
     \STATE $\hat{\mathbf{x}} \leftarrow$ component-wise forecast (Eq.~\ref{eq:predict})
-    \STATE Adam step on $\mathcal{L}_{\mathrm{MSE}}+\lambda_g\,\Omega_{\mathrm{group}}$ (+ ALM terms if contemporaneous); gradient-clip at $5.0$
-    \IF{contemporaneous \textbf{and} epoch $\bmod\ K = 0$ \textbf{and} $h(W^{(0)})>10^{-8}$}
+    \STATE Adam step on $\mathcal{L}_{\mathrm{MSE}}+\lambda_g\,\Omega_{\mathrm{group}}$ (+ ALM terms if same-period); gradient-clip at $5.0$
+    \IF{same-period \textbf{and} epoch $\bmod\ K = 0$ \textbf{and} $h(W^{(0)})>10^{-8}$}
         \STATE $\rho \leftarrow \min(\beta\rho,10^{16})$;\quad $\alpha \leftarrow \alpha + \rho\,h(W^{(0)})$
     \ENDIF
 \ENDFOR
@@ -341,53 +361,12 @@ extension.
 \end{algorithmic}
 \end{algorithm}
 
-Algorithm~\ref{alg:cdkan} lists the procedure. Training is a single Adam loop on
-Eq.~\eqref{eq:constrained} with gradient clipping; when contemporaneous edges are
-modelled, an ALM outer step every $K$ epochs tightens the acyclicity penalty. We
-use $E{=}150$ epochs, learning rate $5\!\times\!10^{-3}$, grid size $G{=}8$, and
-$\lambda_g{=}10^{-2}$ throughout; a sensitivity analysis over $\lambda_g$ and $G$
-appears in Section~\ref{sec:sensitivity}.
-
-The purely-instantaneous specialization---the model behind our headline
-result---deserves an explicit statement, as it is the cleanest instance of the
-identifiability theory of Section~\ref{sec:identif}. Here each variable is
-predicted from its contemporaneous parents only, self-loops are masked, and the
-NOTEARS constraint of Theorem~\ref{thm:notears} is dualized on the edge-norm
-matrix $W$ so the recovered graph is a DAG. Algorithm~\ref{alg:instant} gives the
-full procedure; it is exactly the estimator whose population minimizer
-Proposition~\ref{prop:identif} shows to be consistent.
-
-\begin{algorithm}[t]
-\caption{SPADE-Instantaneous: self-masked nonlinear SEM with acyclicity (ALM)}
-\label{alg:instant}
-\begin{algorithmic}[1]
-\STATE \textbf{Input:} standardized data $X\in\Real^{N\times d}$; grid $G$; group
-weight $\lambda_g$; learning rate $\eta$; epochs $E$; ALM schedule
-$(\rho{=}1,\alpha{=}0,\beta{=}2,K{=}50)$, tolerance $\tau{=}10^{-8}$
-\STATE Initialize spline coefficients $C\in\Real^{d\times d\times(G+p)}$, bias $b$; fix self-mask $M_{ii}{=}0,\,M_{ij}{=}1$
-\FOR{epoch $=1$ to $E$}
-    \STATE $\hat{x}_{\cdot i} \leftarrow b_i + \sum_{j\neq i}\phi_{ij}(x_{\cdot j})$ \quad(self-masked SEM forecast, Eq.~\ref{eq:predict})
-    \STATE $\mathcal{L}_{\mathrm{MSE}} \leftarrow \tfrac1{Nd}\lVert \hat X - X\rVert_F^2$
-    \STATE $W_{ij} \leftarrow \lVert (C\odot M)_{ij,:}\rVert_2$ \quad(edge-norm matrix)
-    \STATE $h \leftarrow \operatorname{tr}(e^{W\circ W})-d$ \hfill(Theorem~\ref{thm:notears})
-    \STATE $\mathcal{L} \leftarrow \mathcal{L}_{\mathrm{MSE}} + \lambda_g\!\sum_{ij}W_{ij} + \alpha\,h + \tfrac{\rho}{2}h^2$
-    \STATE Adam step on $\mathcal{L}$ with $\eta$; gradient-clip at $5.0$
-    \IF{epoch $\bmod\ K = 0$ \textbf{and} $h>\tau$}
-        \STATE $\alpha \leftarrow \alpha + \rho\,h$;\quad $\rho \leftarrow \min(\beta\rho,\,10^{10})$
-    \ENDIF
-\ENDFOR
-\STATE $S_{ij} \leftarrow \mathrm{std}_t\big[(C\odot M)_{ij}\!\cdot\! B(x_{t,j})\big]$ \quad(edge scores, $[\text{effect},\text{cause}]$)
-\STATE \textbf{Return} $S$, spline edge functions $\{\phi_{ij}\}$
-\end{algorithmic}
-\end{algorithm}
-
 \subsection{Complexity}
 \label{sec:complexity}
 Per epoch, SPADE evaluates $O(d^2 L)$ edge splines, each $O(G)$, over $N$ windows,
 giving $O(N d^2 L G)$ cost that is \emph{linear in the number of samples} $N$. The
-optional acyclicity term adds an $O(d^3)$ matrix exponential of the
-contemporaneous block. Because the model is a single component-wise layer with no
-deep backbone, it is fast in practice (seconds at $d{=}5$; see
-Section~\ref{sec:scalability}) and suited to systems of moderate width; we
-quantify wall-clock and parameter growth with $d$ empirically and discuss high-$d$
-extensions in Section~\ref{sec:discussion}.
+optional acyclicity term adds an $O(d^3)$ matrix exponential of the same-period
+block. Because the model is a single component-wise layer with no deep backbone,
+it is fast in practice (seconds at $d{=}5$; Section~\ref{sec:scalability}) and
+suited to systems of moderate width; high-$d$ extensions are discussed in
+Section~\ref{sec:discussion}.

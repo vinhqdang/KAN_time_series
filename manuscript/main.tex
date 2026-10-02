@@ -10,6 +10,7 @@
 \usepackage{algorithm}
 \usepackage{algorithmic}
 \usepackage{url}
+\usepackage{enumitem}
 
 % theorem environments
 \newtheorem{theorem}{Theorem}
@@ -58,48 +59,33 @@ Understanding causal relationships in organizational time-series data is critica
 for managerial decision-making, yet forecasting systems often trade
 interpretability for accuracy. We introduce \textbf{SPADE} (SPline Additive-noise
 DAG Estimation), an information-systems artifact built on Kolmogorov--Arnold
-networks that, from a single differentiable model, jointly discovers interpretable
-non-linear causal structure and produces one-step forecasts. SPADE predicts each variable \emph{only} through per-(cause, lag) B-spline edge
-functions of its candidate parents---an information bottleneck that makes the
-learned structure identifiable---with an edge-level group-lasso for sparsity and
-an optional acyclicity constraint on contemporaneous edges, and we ground the
-design in the identifiability theory of nonlinear additive-noise models. We
-evaluate it transparently against recent differentiable DAG learners (DAGMA,
-GraN-DAG, GOLEM, nonlinear NOTEARS), score-matching topological-ordering methods
-(SCORE, NoGAM), and temporal causal-discovery methods (PCMCI,
-VAR-LiNGAM), using threshold-free AUROC/AUPRC with paired significance tests and
-guarding against known benchmark artifacts. Our headline result is on
-\emph{non-linear} causal discovery: on instantaneous additive-noise DAGs, SPADE
-attains AUROC~$\approx$~0.92--0.95 across widths $d\in\{6,10,20\}$ once its
-group-lasso weight is properly tuned via a genuinely held-out validation
-sweep, disjoint from the reported seeds (an over-regularized default in an
-earlier draft had understated this to $\approx$0.88; a seed-leakage bug we
-found in our own tuning script, and corrected upon independent review, had
-briefly and incorrectly inflated it to $\approx$0.97), decisively
-outperforming every fixed-architecture, gradient-based DAG learner we test---DAGMA-nonlinear, GraN-DAG, and
-NOTEARS-MLP---and the score-matching method SCORE at every width; against the
-score-matching method NoGAM the honest result is mixed (SPADE ahead at two of
-three widths, behind at $d{=}10$), while still training some
-$275$--$930\times$ faster than NoGAM and additionally yielding inspectable
-edge functions neither score-matching method provides. We show this identifiability hinges on an information bottleneck: a
-variant with a dense forecasting backbone collapses to chance. SPADE also handles
-lagged (temporal) structure competitively---perfect on linear graphs and, on
-non-linear graphs, beating KAN-Granger baselines and NOTEARS while trailing the
-best conditioning-based methods (PCMCI, VAR-LiNGAM)---and scales to $d{=}50$ in
-seconds. Under a leakage-free protocol it forecasts an 8-asset financial panel
-competitively (MSE $\approx\forecastmse$; we retract an earlier $0.0008$ traced to
-a test-leaking normalization). We validate recovered structure beyond
-self-consistency (permutation test 4.7$\times$ chance, $p<0.0001$; a time-reversal
-placebo; a ground-truth structural-change experiment), and report candidly that
-documented policy shocks are \emph{not} cleanly recoverable from observational
-macro data, and that redoing the financial analysis on a stationary
-(log-return) representation---the check non-stationarity concerns demand---
-collapses the learned graph to an uninformative, fully-connected structure:
-the levels-based graph should be read as evidence of shared non-stationary
-co-movement, not validated short-horizon causal structure. Its spline edge functions expose linear, saturating, and
-threshold-like dependencies---supporting a ``glass-box'' decision-support tool for
-moderate-dimensional, non-linear business systems, with the boundary
-conditions above named explicitly rather than left implicit.
+networks that, from a single differentiable model, learns an interpretable
+non-linear causal graph and produces one-step forecasts. SPADE predicts each
+variable \emph{only} through per-(cause, lag) B-spline edge functions of its
+candidate parents---an information bottleneck that makes the learned structure
+identifiable---with an edge-level group-lasso for sparsity and an optional
+acyclicity constraint on contemporaneous edges. We evaluate it against recent
+differentiable DAG learners (DAGMA, GraN-DAG, GOLEM, non-linear NOTEARS),
+score-matching ordering methods (SCORE, NoGAM), and temporal methods (PCMCI,
+VAR-LiNGAM), using threshold-free AUROC/AUPRC, paired significance tests, and
+hyperparameters tuned only on held-out seeds. On non-linear instantaneous DAGs
+SPADE attains AUROC~$\approx$~0.92--0.95 across widths $d\in\{6,10,20\}$,
+clearly ahead of every fixed-architecture gradient-based learner and of SCORE;
+against NoGAM the result is mixed (ahead at two of three widths, behind at
+$d{=}10$), while SPADE trains $275$--$930\times$ faster and exposes the edge
+functions that neither score-matching method provides. A variant with a dense
+backbone collapses to chance, confirming that the bottleneck drives
+identifiability. On lagged structure SPADE is perfect on linear graphs and
+competitive on non-linear ones, trailing the best conditioning-based methods;
+forecasting is competitive but not best (MSE~$\approx\forecastmse$ on an
+8-asset financial panel). BIKEABSTRACT On the financial panel, the learned graph
+is stable well above chance (permutation test, $4.7\times$), but a stationary
+(returns) re-analysis collapses it to an uninformative graph, so the levels-based
+graph reflects shared non-stationary co-movement rather than validated causal
+structure. SPADE's spline edge functions expose linear, saturating, and
+threshold-like dependencies, supporting a ``glass-box'' decision-support tool for
+moderate-dimensional, non-linear business systems whose boundary conditions we
+state explicitly.
 \end{abstract}
 
 \begin{keyword}

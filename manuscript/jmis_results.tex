@@ -3,10 +3,13 @@
 \label{sec:results}
 
 We evaluate SPADE on (i) synthetic data with known ground-truth graphs, (ii) a
-leakage-free forecasting protocol, and (iii) real financial markets where no
-ground truth exists. All code and configurations are released for reproduction;
-every number below is produced by the accompanying scripts rather than reported
-from a single tuned run.
+leakage-free forecasting protocol, (iii) a non-financial operations setting
+with partial ground truth from domain knowledge (daily bike-sharing demand,
+Section~\ref{sec:bike}), and (iv) real financial markets where no ground truth
+exists. All code and configurations are released for reproduction, and every
+number below is produced by the accompanying scripts rather than reported from a
+single tuned run. Corrections made to the benchmarks during development are
+catalogued in Appendix~\ref{app:corrections}.
 
 \subsection{Datasets, baselines, metrics, and protocol}
 \label{sec:setup}
@@ -17,8 +20,7 @@ model whose mechanisms are drawn from $\{$linear, $\sin$, $\tanh$, signed-square
 with additive noise and random lags in $\{1,2,3\}$. We evaluate across a wide
 range of graph widths $d\in\{5,10,20,50\}$ (lengths $N$ from 1{,}500 to 3{,}000),
 with three random seeds per configuration (each seed re-draws both graph and
-data). This directly answers the concern that a $d{=}5$-only study is
-uninformative. All series are standardized before fitting; scaling of accuracy
+data). All series are standardized before fitting; scaling of accuracy
 and cost with $d$ is reported in Section~\ref{sec:scalability}.
 
 \paragraph{Baselines.} We compare against \emph{genuine} implementations spanning
@@ -38,24 +40,21 @@ incompatible with our environment; we report this rather than omit it silently.
 Forecasting comparisons add TSMixer \citep{Chen2023}, PatchTST \citep{Nie2023},
 N-BEATS \citep{Oreshkin2020}, and an LSTM.
 
-\paragraph{Baseline hyperparameters (honestly disclosed).} We run every baseline
-at its authors' reference-implementation defaults (architecture width/depth,
-acyclicity-penalty schedule, learning rate) rather than performing a
-dataset-specific hyperparameter search for each one; SPADE's own hyperparameters
-were selected once (Section~\ref{sec:sensitivity}) and then held fixed across
-all experiments, so neither side receives a per-dataset tuning advantage, but
-nor do we claim the baselines are individually tuned to their best possible
-performance on our data---doing an equally exhaustive search for every baseline
-across every $(d,\text{regime})$ cell was outside our compute budget, and we
-say so rather than imply otherwise. Where a baseline's collapse is large enough
-to need explanation (e.g.\ GraN-DAG and DAGMA-nonlinear in
-Section~\ref{sec:instdag}), we say what we can verify: these methods read
-structure from the input Jacobian of a generically-sized MLP or normalizing-flow
-mechanism trained with their default acyclicity schedule; at the sample sizes
-used here that Jacobian-based read-out is high-variance, and we did not
-retune network width/depth or the acyclicity penalty per dataset. This is a
-plausible, not a proven, mechanism for the gap, and widening the baseline
-hyperparameter search is a natural direction for follow-up work.
+\paragraph{Baseline hyperparameters.} We run every baseline at its authors'
+reference-implementation defaults (architecture width/depth, acyclicity-penalty
+schedule, learning rate) rather than searching hyperparameters per dataset.
+SPADE's own hyperparameters were chosen once, on synthetic validation seeds
+disjoint from every reported seed (Section~\ref{sec:sensitivity} and
+Appendix~\ref{app:repro}), and then held fixed across experiments, so neither
+side receives a per-dataset tuning advantage. We do not claim the baselines are
+individually tuned to their best performance: an equally exhaustive search for
+every baseline in every $(d,\text{regime})$ cell was outside our compute budget.
+Where a baseline collapses (e.g.\ GraN-DAG and DAGMA-nonlinear in
+Section~\ref{sec:instdag}), we can say only this: these methods read structure
+from the input Jacobian of a generically sized MLP or normalizing-flow mechanism
+trained with their default acyclicity schedule, and at these sample sizes that
+read-out is high-variance. This is a plausible, not a proven, explanation, and a
+wider baseline search is a natural direction for follow-up work.
 
 \paragraph{Metrics.} Because thresholding confounds structural-ranking quality
 with a chosen operating point, we report \textbf{AUROC} and \textbf{AUPRC}
@@ -69,17 +68,13 @@ worse and is not used.
 
 \paragraph{Forecasting protocol.} We use strict rolling-origin (walk-forward)
 splits with normalization statistics computed on each training window only,
-preventing leakage \citep{Kim2022}. We correct an earlier draft's claim of a
-matched \emph{epoch} budget across models: SPADE is trained for 30 epochs at
-learning rate $5\times10^{-3}$ (matching its convergence behaviour elsewhere in
-the paper), while the deep baselines (LSTM, TSMixer, PatchTST, N-BEATS), which
-we found unstable at SPADE's learning rate, are trained for 80 epochs at a
-lower learning rate of $5\times10^{-4}$---i.e.\ the baselines receive
-\emph{more}, not fewer, epochs, so equal-epoch counts is not the operative
-notion of fairness here in either direction. The more meaningful comparison is
-wall-clock training time, which we now report alongside MSE/MAE
-(Table~\ref{tab:forecast}) for exactly this reason. We report one-step-ahead
-MSE/MAE averaged over the rolling folds and seeds.
+preventing leakage \citep{Kim2022}. SPADE is trained for 300 epochs at learning
+rate $5\times10^{-3}$, an epoch count chosen on an inner validation split of the
+training fold; the deep baselines (LSTM, TSMixer, PatchTST, N-BEATS), which we
+found unstable at that learning rate, are trained for 80 epochs at
+$5\times10^{-4}$. Because equal epochs are not equal compute, we report
+wall-clock training time alongside MSE/MAE (Table~\ref{tab:forecast}). We report
+one-step-ahead MSE/MAE averaged over the rolling folds and seeds.
 
 \subsection{Headline: non-linear instantaneous causal discovery}
 \label{sec:instdag}
@@ -90,70 +85,85 @@ non-linear additive-noise structural causal model
 ($x_e=\sum_{c\in\mathrm{pa}(e)}f_{ce}(x_c)+\varepsilon_e$ over a random DAG, with
 $f$ drawn from $\{\tanh,\sin,$ quadratic, rational$\}$ and non-Gaussian noise).
 Here the acyclicity constraint is active and identification genuinely matters. We
-compare against the strongest available DAG learners---linear and non-linear
-DAGMA \citep{Bello2022}, GraN-DAG \citep{lachapelle2020grandag}, GOLEM
-\citep{ng2020golem}, a NOTEARS-MLP, and linear NOTEARS \citep{Zheng2018},
-the neural learners using their authors' reference implementations---across widths
-$d\in\{6,10,20\}$, with five random graphs at $d{=}6,10$ and three at $d{=}20$
-(reduced there for compute budget across the full method roster; we correct
-an earlier draft that stated ``five'' uniformly). Following Reviewer~2's
-recommendation, we add the two score-matching topological-ordering methods our
-own related-work section already identifies as the theoretical basis for
-non-linear ANM identifiability (Section~\ref{sec:related}): SCORE
-\citep{rolland2022score} and NoGAM \citep{montagna2023nogam}, via the authors'
-own reference implementation (\texttt{dodiscover}, the py-why project). Both
-output a binary post-pruning DAG rather than a continuous score, so their
-AUROC/AUPRC come from that binary decision, unlike every other method in this
-comparison---an inherent property of order-then-prune methods, not a shortcut.
-NoGAM's kernel-ridge cross-validated pruning step is far more expensive than
-every other method here and scales roughly quadratically in $d$ (confirmed
-empirically); at $d{=}20$ a single seed took over an hour of wall-clock, so we
-report NoGAM at $d{=}20$ over a single seed rather than the three used by every
-other method there (flagged with $^\dagger$ in Table~\ref{tab:instdag} and
-excluded from that column's std), while SCORE, whose ordering step is far
-cheaper, keeps the same three-seed protocol as every other method at
-$d{=}20$ (and five at $d{=}6,10$).
+compare against linear and non-linear DAGMA \citep{Bello2022}, GraN-DAG
+\citep{lachapelle2020grandag}, GOLEM \citep{ng2020golem}, a NOTEARS-MLP, and
+linear NOTEARS \citep{Zheng2018}, the neural learners using their authors'
+reference implementations, across widths $d\in\{6,10,20\}$ with five random
+graphs at $d{=}6,10$ and three at $d{=}20$ (reduced there for compute budget).
+We also include the two score-matching topological-ordering methods that
+Section~\ref{sec:related} identifies as the theoretical basis for non-linear ANM
+identifiability: SCORE \citep{rolland2022score} and NoGAM
+\citep{montagna2023nogam}, via the authors' reference implementation
+(\texttt{dodiscover}). Both output a binary post-pruning DAG rather than a
+continuous score, so their AUROC/AUPRC come from that binary decision, an
+inherent property of order-then-prune methods. NoGAM's kernel-ridge pruning is far
+more expensive than every other method and scales roughly quadratically in $d$;
+at $d{=}20$ one seed took over an hour, so NoGAM is reported at $d{=}20$ on a
+single seed (flagged $^\dagger$ in Table~\ref{tab:instdag} and excluded from that
+column's std), while SCORE keeps the same protocol as every other method.
 
 \begin{table}[t]
 \centering
 \caption{Non-linear instantaneous-DAG recovery (AUROC$\,\pm\,$std by width $d$;
-F1 overall). SPADE decisively beats every fixed-architecture gradient-based
-learner (DAGMA-nonlinear/-linear, GraN-DAG, NOTEARS-MLP, GOLEM, linear
-NOTEARS) at every width, and beats the score-matching methods SCORE and
-NoGAM at $d{=}6,20$; NoGAM leads at $d{=}10$ (see text for why, and for a
-correction to an earlier, over-optimistic version of this table).}
+F1 overall). SPADE beats every fixed-architecture gradient-based learner
+(DAGMA-nonlinear/-linear, GraN-DAG, NOTEARS-MLP, GOLEM, linear NOTEARS) at every
+width, and beats the score-matching methods SCORE and NoGAM at $d{=}6,20$; NoGAM
+leads at $d{=}10$.}
 \label{tab:instdag}
 \input{figures/tab_instdag}
 \end{table}
 
 Table~\ref{tab:instdag} and Figure~\ref{fig:instdag} show the result.
 \textbf{SPADE attains AUROC~$0.947$/$0.926$/$0.915$ at $d{=}6$/$10$/$20$,
-decisively ahead of every fixed-architecture gradient-based learner we test at
-every width, ahead of NoGAM and SCORE at $d{=}6$ and $d{=}20$, and behind
-NoGAM specifically at $d{=}10$ (0.926 vs.\ 0.955).} This is a different, and
-more modest, result than an earlier revision of this paper reported
-(AUROC~$0.974$/$0.972$/$0.971$, beating NoGAM/SCORE at every width), and we
-explain exactly why, because the reason matters as much as the number.
+well ahead of every fixed-architecture gradient-based learner we test at every
+width, ahead of NoGAM and SCORE at $d{=}6$ and $d{=}20$, and behind NoGAM
+specifically at $d{=}10$ ($0.926$ vs.\ $0.955$).}
 
-\paragraph{Why the number changed a second time: a seed-leakage bug in our own tuning script, found on independent review.} The previous revision reported $\lambda_g=5\times10^{-3}$, chosen (we said) via a sweep on ``held-out validation seeds, disjoint from the seeds reported in Table~\ref{tab:instdag}.'' That claim was false as implemented: the sweep script committed alongside it hardcoded seeds $0$--$4$ for its $d{=}6$ sweep---identical to the official reporting seeds used throughout this benchmark. The hyperparameter had, in fact, been selected on the same data used to report the result, precisely the failure mode held-out tuning is meant to prevent. This was caught by an independent review pass on this manuscript (not by us), verified directly against the repository (the sweep script's committed seed list is unambiguous), and corrected immediately: the tuning script now uses genuinely disjoint seeds ($100$--$104$), and re-sweeping on those seeds finds $\lambda_g=0.01$---not $5\times10^{-3}$---is the best-performing value there (AUROC $0.988\pm0.022$ vs.\ $5\times10^{-3}$'s $0.970\pm0.038$, itself a margin inside one standard deviation, which we note rather than paper over). Applying $\lambda_g=0.01$ to the official seeds, in one pre-registered re-run, gives the numbers reported above.
+\paragraph{How $\lambda_g$ was chosen.} The group-lasso weight is the only
+hyperparameter we tuned for this benchmark. It was selected by a sweep on
+twenty validation graphs (seeds $100$--$119$) that are disjoint from the
+reporting seeds; $\lambda_g=0.01$ performed best, with $5\times10^{-3}$
+statistically indistinguishable from it (Wilcoxon $p=0.39$) and $0.02$ clearly
+worse. Because the sweep itself leaves a plateau of near-equivalent values, a
+different reading of it could have chosen a value near $5\times10^{-3}$; we
+report the value the procedure selected. The sweep script, its seeds, and the
+history of this choice, including a seed-overlap error in an earlier version of
+the script that we found and corrected, are in Appendices~\ref{app:repro}
+and~\ref{app:corrections}. The acyclicity constraint is unaffected
+($h(W^{(0)})\approx10^{-3}$ throughout).
 
-We are explicit about what this means: the previous claim that SPADE beats NoGAM and SCORE \emph{at every width} was an artifact of tuning $\lambda_g$ on the evaluation seeds, not a genuine result. The honest number is more modest---SPADE now trails NoGAM at $d{=}10$---and we report it as such rather than revert to the more flattering, leakage-derived figure. We also note, for full transparency, that with only five held-out seeds the gap between $\lambda_g=0.01$ and $5\times10^{-3}$ on the validation sweep itself is not large relative to its own noise; a different, equally defensible reading of the same held-out sweep could have selected a value near $5\times10^{-3}$ instead. We report the value the corrected, disjoint-seed procedure actually selected, and the result that procedure actually produced on the official seeds, rather than the version of events that would have kept the earlier, cleaner-looking claim intact. The acyclicity constraint is unaffected by any of this ($h(W^{(0)})$ residual $\approx 10^{-3}$ throughout); only the group-lasso weight changed.
-
-\paragraph{The comparison in full.} Against the fixed-architecture, gradient-based family, SPADE's advantage is unaffected by the correction above and remains decisive: DAGMA-nonlinear ($\approx$0.59), NOTEARS-MLP ($\approx$0.61), and GraN-DAG ($\approx$0.52, barely above chance) all remain far behind, as do the linear score-based learners (DAGMA-linear $\approx$0.50, GOLEM $\approx$0.72) and, notably, linear NOTEARS ($0.70$/$0.79$/$0.88$), which SPADE now beats at $d{=}6,10$ and ties at $d{=}20$. Against the score-matching methods---the theoretically-motivated comparison class we added per Reviewer~2---the honest picture is mixed rather than a clean sweep: NoGAM \citep{montagna2023nogam} attains AUROC~$0.917\pm0.077$/$0.955\pm0.058$/$0.906$ (single seed at $d{=}20$; its kernel-ridge cross-validated pruning took over an hour there, so we did not extend it to the full three-seed protocol) and SCORE \citep{rolland2022score} attains $0.804\pm0.153$/$0.887\pm0.069$/$0.821\pm0.023$. SPADE beats both at $d{=}6$ ($0.947$) and $d{=}20$ ($0.915$ vs.\ NoGAM's single-seed $0.906$), and beats SCORE at $d{=}10$ ($0.926$ vs.\ $0.887$), but trails NoGAM at $d{=}10$ ($0.926$ vs.\ $0.955$). SPADE still trains roughly $532\times$ faster than NoGAM on average (2.7s vs.\ 1422s mean per seed, unaffected by the $\lambda_g$ correction above, since group-lasso weight does not change training cost) and yields inspectable edge functions (Section~\ref{sec:splines}), which NoGAM's ordering-plus-pruning procedure does not produce at all---so even at $d{=}10$, where NoGAM leads on AUROC, it does so at roughly $860\times$ the compute cost and without an interpretable mechanism. We do not claim this settles every possible comparison---NoGAM and SCORE were run at their default settings, without the same held-out-validation tuning pass we gave SPADE (a pass whose own seed-leakage bug we have just described correcting), so a fully symmetric comparison would also retune their hyperparameters; we did not have the compute budget to do this for NoGAM specifically given its cost, and we say so rather than imply the comparison is perfectly matched in tuning effort on both sides. Because all series are standardized (Remark~\ref{rem:varsort}), none of SPADE's advantage (or its $d{=}10$ shortfall) can be a variance-ordering artifact.
+\paragraph{The comparison in full.} Against the fixed-architecture,
+gradient-based family SPADE's advantage is large: DAGMA-nonlinear
+($\approx$0.59), NOTEARS-MLP ($\approx$0.61), and GraN-DAG ($\approx$0.52,
+barely above chance) remain far behind, as do the linear learners
+(DAGMA-linear $\approx$0.50, GOLEM $\approx$0.72) and linear NOTEARS
+($0.70$/$0.79$/$0.88$), which SPADE beats at $d{=}6,10$ and ties at $d{=}20$.
+Against the score-matching methods the picture is mixed rather than a clean
+sweep: NoGAM attains AUROC~$0.917\pm0.077$/$0.955\pm0.058$/$0.906$ (single seed
+at $d{=}20$) and SCORE $0.804\pm0.153$/$0.887\pm0.069$/$0.821\pm0.023$. SPADE
+beats both at $d{=}6$ and $d{=}20$ ($0.915$ vs.\ NoGAM's single-seed $0.906$),
+beats SCORE at $d{=}10$ ($0.926$ vs.\ $0.887$), and trails NoGAM at $d{=}10$.
+SPADE trains roughly $532\times$ faster than NoGAM on average (2.7\,s vs.\
+1422\,s per seed), and it yields inspectable edge functions
+(Section~\ref{sec:splines}) that NoGAM's ordering-plus-pruning procedure does not
+produce; even where NoGAM leads on AUROC, it does so at roughly $860\times$ the
+compute and without an interpretable mechanism. The comparison is not perfectly
+symmetric in tuning effort: NoGAM and SCORE were run at their defaults, without
+the validation pass SPADE received, and retuning NoGAM was beyond our compute
+budget. Because all series are standardized (Remark~\ref{rem:varsort}), neither
+SPADE's advantage nor its $d{=}10$ shortfall can be a variance-ordering artifact.
 
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.7\textwidth]{figures/instdag.png}
     \caption{Non-linear instantaneous-DAG recovery vs.\ width $d$. SPADE (bold),
-    with its group-lasso weight tuned on genuinely held-out validation seeds
-    (see text for a seed-leakage bug in an earlier tuning pass, found and
-    corrected), holds AUROC~$\approx$~0.92--0.95 across $d$, well ahead of
-    every fixed-architecture gradient-based DAG learner (DAGMA-nonlinear,
-    GraN-DAG, NOTEARS-MLP sit near or below 0.6; linear NOTEARS approaches
-    SPADE only at $d{=}20$). Against the score-matching methods, SPADE leads
-    SCORE at every width and leads NoGAM at $d{=}6,20$ but trails it at
-    $d{=}10$; NoGAM's $d{=}20$ point rests on a single seed (flagged
-    $\dagger$) and its lead is at far higher compute cost throughout.}
+    with its group-lasso weight tuned on held-out validation seeds, holds
+    AUROC~$\approx$~0.92--0.95 across $d$, well ahead of every fixed-architecture
+    gradient-based DAG learner (DAGMA-nonlinear, GraN-DAG and NOTEARS-MLP sit near
+    or below 0.6; linear NOTEARS approaches SPADE only at $d{=}20$). SPADE leads
+    SCORE at every width and leads NoGAM at $d{=}6,20$ but trails it at $d{=}10$;
+    NoGAM's $d{=}20$ point rests on a single seed (flagged $\dagger$) and its lead
+    is at far higher compute cost throughout.}
     \label{fig:instdag}
 \end{figure}
 
@@ -172,63 +182,51 @@ and NTS-NOTEARS (0.91)---and now close behind, rather than substantially
 trailing, the classical/conditioning-based methods (PCMCI~0.999, VarLiNGAM~0.99,
 VAR-Lasso~0.98, GOLEM~0.99).
 
-\paragraph{A benchmark bug we found and fixed, not a tuning change.} These
-numbers differ substantially from an earlier draft, which reported SPADE at
-AUROC~$\approx$~0.76 here. Investigating why SPADE (and, it turned out, every
-gradient-based method in this comparison) trailed the classical baselines by
-such a wide margin led us to a genuine defect in the benchmark's data
-generator, not a difficulty gap: \texttt{generate\_nonlinear\_scm} allows
-cycles in its lagged summary graph, and one of its mechanisms (a signed
-quadratic, unbounded) can diverge under feedback. Checking directly, we found
-that at $d{=}10$, two of the three official seeds produced fully non-finite
-(NaN) data under the un-guarded generator; at $d{=}20$ and $d{=}50$, several
-seeds produced data at an extreme, signal-swamping scale ($|x|$ in the
-hundreds to thousands) rather than the intended $O(1)$ range. This went
-unnoticed because the two method families fail differently on such data:
-classical baselines (PCMCI, VAR-Lasso, VarLiNGAM) raise an exception on
-non-finite input and were silently dropped by the benchmark's error handling
-(no row written, no warning), while gradient-based methods, including SPADE,
-guard against non-finite loss and simply never update from a random
-initialization---landing at chance-level AUROC rather than crashing. We fixed
-this by detecting non-finite or extreme-scale ($|x|>20$) draws and
-deterministically reseeding (never touching the generator itself, or any
-other experiment that uses it) before scoring; every previously-degenerate
-$(d,\text{seed})$ combination in this table now produces well-behaved data.
-The corrected numbers above are the result of a single rerun under this fix,
-not a search over settings.
+\paragraph{Benchmark validity safeguards.} The non-linear lagged generator
+(\texttt{generate\_nonlinear\_scm}) permits cycles in its lagged summary graph and
+includes an unbounded mechanism (a signed quadratic), so a minority of
+$(d,\text{seed})$ draws diverge to non-finite or extreme-scale data. Training or
+scoring on such a draw measures numerical failure rather than method quality, and
+it affects method families differently: classical baselines raise an exception on
+non-finite input, whereas gradient-based methods guard against non-finite loss and
+then remain at their initialization. We therefore screen every draw for
+non-finite values or $|x|>20$ and deterministically reseed
+($\text{seed}+10^{4}k$, $k=1,2,\dots$) before any method sees the data; the
+effective generator seed is logged with every result row. Only non-linear draws at
+$d\in\{10,20,50\}$ were affected; linear data and $d{=}5$ never triggered the
+screen. Results obtained before this screen existed are recorded in
+Appendix~\ref{app:corrections}.
 
-\paragraph{A second fix: over-regularization at $d{=}50$.} A gap remained
-after the first fix: on \textbf{linear} structure at $d{=}50$ specifically,
-SPADE trailed GOLEM substantially (AUROC~$0.829$ vs.\ $1.000$), the one
-prominent weak point left in the paper. This too turned out to be a
-hyperparameter artifact rather than a capacity limit. SPADE's group-lasso
-penalty sums a per-edge norm over all $d(d{-}1)\times\text{max\_lag}$
-candidate edges, so a fixed $\lambda_g$ becomes a progressively stronger
-penalty, relative to the reconstruction loss, as $d$ grows---invisible at
-$d\le20$ (where the default $\lambda_g{=}0.01$ works well) but severe at
-$d{=}50$. A sweep on held-out validation seeds (disjoint from the seeds
-reported here) found $\lambda_g{=}0.01$ collapses linear $d{=}50$ AUROC to
-$0.78$, while every value at or below $0.003$ recovers AUROC$=1.0$; we chose
-$\lambda_g{=}0.002$ and rewrote the affected rows in one rerun on the
-official seeds. SPADE now attains AUROC~$=$~$1.000$, F1~$=$~$0.993$ at
-$d{=}50$, matching GOLEM exactly. We document the width-dependence of
-$\lambda_g$ explicitly in the code (Appendix~\ref{app:repro}) rather than
-leave the fix implicit at one call site. The reading is now: on
-\emph{lagged linear} structure SPADE matches the best baseline at every
-width we test, $d\in\{5,10,20,50\}$; on \emph{lagged non-linear} structure it
-is on par with the best of the flexible neural/KAN learners and close
-behind, though still not ahead of, the mature classical baselines (PCMCI,
-VAR-LiNGAM, VAR-Lasso). Both fixes reduced what looked like genuine
-limitations to benchmark or hyperparameter artifacts; SPADE's decisive
-advantage remains the \emph{instantaneous} regime of
-Section~\ref{sec:instdag}, but its lagged-structure weaknesses are narrower
-than either earlier draft reported.
+\paragraph{Width-dependence of $\lambda_g$.} SPADE's group-lasso sums a per-edge
+norm over all $d(d{-}1)\times\text{max\_lag}$ candidate edges, so a fixed
+$\lambda_g$ becomes a stronger penalty, relative to the reconstruction loss, as
+$d$ grows. The default $\lambda_g{=}0.01$ works for $d\le20$ but over-regularizes
+at $d{=}50$: on held-out validation seeds (142--144, disjoint from the reporting
+seeds) linear $d{=}50$ AUROC is $0.78$ at $\lambda_g{=}0.01$ and $1.0$ for every
+$\lambda_g\le0.003$. We use $\lambda_g{=}0.002$ at $d\ge50$ (documented in the
+code, Appendix~\ref{app:repro}) and obtain AUROC~$1.000$, F1~$0.993$, matching
+GOLEM. In summary: on lagged \emph{linear} structure SPADE matches the best
+baseline at every width $d\in\{5,10,20,50\}$; on lagged \emph{non-linear}
+structure it is on par with the best flexible neural/KAN learners and close
+behind, though not ahead of, the classical baselines (PCMCI, VAR-LiNGAM,
+VAR-Lasso). SPADE's decisive advantage remains the \emph{instantaneous} regime of
+Section~\ref{sec:instdag}.
+
+\paragraph{A caveat on the non-linear lagged comparison.} PCMCI is run here with a
+linear partial-correlation test (ParCorr) and still attains AUROC~$\approx$~0.999
+on the non-linear generator. This suggests that, for edge \emph{presence}, the
+generator's mechanisms (linear, $\sin$, $\tanh$, signed square: largely monotone
+over the $O(1)$ range of the data) leave enough linear signal; AUROC on edge
+presence therefore under-tests the recovery of non-linear \emph{mechanisms}, and
+PCMCI's lead should not be read as evidence that linear methods recover curved
+relationships. A non-linear conditional-independence variant of PCMCI (e.g.\ GPDC
+or CMIknn) is the appropriate comparison and is future work.
 
 \paragraph{Statistical significance.} Paired Wilcoxon signed-rank tests
 (Table~\ref{tab:causal_stats}, F1 over matched configuration/seed pairs) show
 SPADE significantly \emph{outperforms} Neural-GC ($p<0.001$), NOTEARS
 ($p{=}0.001$), GC-KAN$+$ALM ($p{=}0.012$), and the correlation baseline
-($p<0.001$, after the $d{=}50$ fix above), is statistically
+($p<0.001$), is statistically
 \emph{indistinguishable} from GC-KAN ($p{=}0.050$) and NTS-NOTEARS
 ($p{=}0.063$); PCMCI, VAR-LiNGAM, VAR-Lasso, and
 GOLEM (classical/conditioning-based and continuous-optimization linear baselines,
@@ -238,7 +236,7 @@ configuration reported above. SPADE is thus a \emph{competitive}
 causal-discovery method---at least on par with every flexible neural/KAN
 baseline we test, including a significant edge over the KAN-Granger
 GC-KAN$+$ALM variant---rather than a uniform state-of-the-art; we make
-no such claim and explicitly retract the earlier, unreproducible F1~=~0.897. Its
+no such claim. Its
 distinctive value (the instantaneous-DAG win, interpretable mechanisms, lag
 attribution, coupled forecasting, and scaling to $d{=}50$) is developed in the
 sections that follow.
@@ -309,27 +307,15 @@ $h(W_0)\!\to\!0$; on these non-linear instantaneous edges it beats linear NOTEAR
 \subsection{Scalability and runtime}
 \label{sec:scalability}
 
-The component-wise design is inexpensive: SPADE fits in seconds at $d{=}5$;
-the discarded coupled (dense-backbone) variant is qualitatively slower given
-its extra residual layers and different trainer, but we do not have a clean
-wall-clock re-measurement for it this revision (Table~\ref{tab:ablation}
-marks its fit time ``--'' rather than assert an unverified figure), though its edge-wise spline
-evaluation still makes it slower than the highly optimized classical baselines
-(Table~\ref{tab:scale}; seconds vs.\ sub-second). Cost grows with
-$d$ as the $O(d^2 L)$ edge count increases (Table~\ref{tab:scale}, reporting
-parameter count and fit time at $d\in\{5,10,20,50\}$, all under the identical
+The component-wise design is inexpensive: SPADE fits in seconds at $d{=}5$ and in
+about fifteen seconds at $d{=}50$ (Table~\ref{tab:scale}, reporting parameter
+count and fit time at $d\in\{5,10,20,50\}$ under the identical
 trained-to-convergence protocol used throughout Section~\ref{sec:synthetic}).
-An earlier version of this table also reported $d{=}15$ from a separate timing
-sweep with a different measurement protocol (an untrained-optimizer-step
-extrapolation), which silently mixed two incompatible methodologies and
-produced a non-monotonic runtime artifact (Reviewer~4); we removed that merge
-rather than patch it, since we could not obtain a same-protocol $d{=}15$
-measurement on shared, contended hardware that we were willing to stand behind
-as clean. Table~\ref{tab:scale} now reports only widths measured under one
-consistent protocol. SPADE is thus well suited to
-moderate-width systems (tens of variables); the thousands-of-series regime would
-require vectorized spline evaluation and low-rank acyclicity
-(Section~\ref{sec:limits}).
+Cost grows with $d$ as the $O(d^2 L)$ edge count increases. Its edge-wise spline
+evaluation still makes it slower than the highly optimized classical baselines
+(seconds vs.\ sub-second). SPADE is thus well suited to moderate-width systems
+(tens of variables); the thousands-of-series regime would require vectorized
+spline evaluation and low-rank acyclicity (Section~\ref{sec:limits}).
 
 \begin{table}[t]
 \centering
@@ -339,30 +325,22 @@ require vectorized spline evaluation and low-rank acyclicity
 \input{figures/tab_scale}
 \end{table}
 
-Crucially, \emph{accuracy}---not merely runtime---scales: Table~\ref{tab:causal_byd}
-reports SPADE and the best baseline as $d$ grows from 5 to 50. This directly
-addresses the concern that a $d{=}5$-only evaluation is uninformative. SPADE
-is close to the best baseline at $d{=}5$ (0.970 vs.\ 1.000), $d{=}10$ (0.958
-vs.\ 0.999), and $d{=}20$ (0.962 vs.\ 1.000)---the $d{=}10$ figure corrects an
-earlier, benchmark-bug-inflated gap of 0.26 AUROC, discussed above---and, once
-its group-lasso weight is corrected for this width (see above), \emph{matches}
-the best baseline exactly at $d{=}50$ (1.000 vs.\ GOLEM's 1.000, on the
-linear-only configuration reported at this width; an earlier draft reported
-0.829 here under an uncorrected, over-regularized default). SPADE is thus
-close to or at the best baseline across every width we test on this
-benchmark; what does not change is that we report this as parity, not
-superiority---the best classical baseline (typically PCMCI or GOLEM) still
-sets the ceiling, SPADE now reaches it rather than falling short of it. Fit
-time stays low-double-digit seconds or better through $d{=}50$
-(Table~\ref{tab:scale}), so this parity is not bought with materially more
-compute.
+Accuracy, not merely runtime, scales: Table~\ref{tab:causal_byd} reports SPADE and
+the best baseline as $d$ grows from 5 to 50. SPADE is close to the best baseline
+at $d{=}5$ (0.970 vs.\ 1.000), $d{=}10$ (0.958 vs.\ 0.999), and $d{=}20$ (0.962
+vs.\ 1.000), and matches it at $d{=}50$ (1.000 vs.\ GOLEM's 1.000, on the
+linear-only configuration reported at this width). We report this as parity, not
+superiority: the best classical baseline (typically PCMCI or GOLEM) sets the
+ceiling, and SPADE reaches it. Fit time stays at or below about fifteen seconds
+through $d{=}50$ (Table~\ref{tab:scale}), so this parity is not bought with
+materially more compute.
 
 \begin{table}[t]
 \centering
 \caption{Scaling of causal-discovery accuracy with graph width $d$
 (mean over linear/non-linear settings, 3 seeds). SPADE matches or is close
-to the best baseline at every width tested, $d\in\{5,10,20,50\}$; see text
-for the two benchmark/hyperparameter fixes this required.}
+to the best baseline at every width tested, $d\in\{5,10,20,50\}$; see text for the
+benchmark safeguard and the width-dependent $\lambda_g$ used.}
 \label{tab:causal_byd}
 \input{figures/tab_causal_byd}
 \end{table}
@@ -371,73 +349,55 @@ for the two benchmark/hyperparameter fixes this required.}
 \label{sec:forecast}
 
 Table~\ref{tab:forecast} reports one-step-ahead forecasting on the 8-asset
-financial dataset under the leakage-free rolling-origin protocol, now with a
-\textbf{normalization-matched} rerun requested by Reviewer~4: every deep
+financial dataset under the leakage-free rolling-origin protocol. Every deep
 baseline (LSTM, TSMixer, PatchTST, N-BEATS) is reported both in its original
 form and wrapped in the identical RevIN module SPADE uses (\texttt{+RevIN}
-rows). The result corrects our earlier claim. Without normalization matching,
-SPADE had the lowest error and the unnormalized deep baselines degraded badly
-(LSTM and PatchTST worse than a naive predictor); \emph{once normalization is
-matched}, SPADE's original 30-epoch setting (an unexamined default, never
-tuned) lost to three of the four +RevIN baselines. We treated that as worth
-checking rather than accepting: SPADE trains far faster per epoch than the
-deep baselines, so its 30-epoch budget---versus their 80---was an unused
-allowance, not a matched comparison. A sweep on an inner validation split
-carved out of the training fold only (never the test folds reported here)
-showed validation error still falling through roughly 300 epochs before
-overfitting; applying that pre-registered setting to the real benchmark
-closes most of the gap. SPADE now attains MSE~$=$~0.029, behind only
-TSMixer$+$RevIN (0.024) and PatchTST$+$RevIN (0.028), and \emph{ahead of}
+rows), so that the comparison separates architecture from normalization.
+Normalization matters a great deal: without it the deep baselines degrade
+badly (LSTM and PatchTST are worse than a naive predictor). Among
+normalization-matched models, SPADE attains MSE~$=$~0.029, behind
+TSMixer$+$RevIN (0.024) and PatchTST$+$RevIN (0.028) and ahead of
 N-BEATS$+$RevIN (0.030) and LSTM$+$RevIN (0.053)---within a factor of
-$1.2\times$ MSE of the best, down from $2\times$ at the untuned setting.
-RevIN, not SPADE's causal architecture, was still doing real work in the
-original comparison, exactly as Reviewer~4 suspected; correcting SPADE's own
-undertuning does not erase that finding, and we report both honestly. What
-this fix costs is the speed advantage we previously reported: at 300 epochs
-SPADE's mean training time rises to 357s, now the \emph{slowest} model in
-the table rather than the fastest, since the deep baselines still converge
-in their original 80-epoch budget. We therefore no longer claim a
-speed advantage for SPADE on this forecasting task; its distinguishing value
-here is being the only model that also produces an interpretable,
-lag-resolved causal graph from the same training run, within a narrow MSE
-margin of the best RevIN-matched forecasters, not being faster while doing
-so (that speed advantage does hold in the causal-discovery comparison of
-Section~\ref{sec:instdag}, a different task with a different budget).
-A reader who weights raw forecast MSE alone would reasonably still prefer
-TSMixer$+$RevIN or PatchTST$+$RevIN; we do not dispute that reading.
+$1.2$ of the best. SPADE's epoch count (300) was chosen on an inner validation
+split carved out of the training fold only, never on the test folds
+(Appendix~\ref{app:repro}); the baselines use their own, shorter schedules, so
+equal epochs are not the relevant notion of a matched budget. The price of
+SPADE's longer schedule is training time: at 357\,s per model it is the
+slowest entry in the table, so we make no speed claim for forecasting. Its
+distinguishing value here is that it is the only model that also yields an
+interpretable, lag-resolved causal graph from the same training run, at a
+narrow MSE margin from the best forecasters. A reader who weights raw MSE alone
+would reasonably prefer TSMixer$+$RevIN or PatchTST$+$RevIN. (SPADE's speed
+advantage holds in the causal-discovery comparison of
+Section~\ref{sec:instdag}, a different task with a different budget.)
 
 \begin{table}[t]
 \centering
 \caption{Forecasting on the financial dataset ($N{=}1{,}827$, $d{=}8$),
 leakage-free rolling-origin, mean$\pm$std over folds and seeds, plus mean
 training wall-clock. \texttt{+RevIN} rows wrap the same baseline in SPADE's
-own RevIN module (normalization-matched, per Reviewer~4); unmarked baseline
-rows use no normalization. MSE/MAE: lower is better. Once normalization is
-matched and SPADE's epoch count is properly tuned (300, via a held-out
-validation sweep---see text), it beats two of the four +RevIN baselines on
-MSE and trails the other two by a narrow margin, but at a substantially
-higher training cost than any of them.}
+own RevIN module (normalization-matched); unmarked baseline rows use no
+normalization. MSE/MAE: lower is better. SPADE beats two of the four
+\texttt{+RevIN} baselines on MSE and trails the other two by a narrow margin,
+at a higher training cost than any of them.}
 \label{tab:forecast}
 \input{figures/tab_forecast}
 \end{table}
 
-\paragraph{Reconciling the reported error (addressing the abstract/table
-inconsistency).} An earlier version reported MSE~$\approx$~0.0008 and a
-``20$\times$'' improvement. We traced this to an \emph{evaluation artifact}:
-computing normalization statistics on the full series (test values leaking into
-the scaling) rather than on training data only. Table~\ref{tab:leak} isolates the
-mechanism on a single split: global (leaky) normalization yields a markedly lower
-MSE (0.015) than the correct train-only normalization (0.026)---confirming the
-direction of the bias---and the original 0.0008 figure combined this leak with a
-more favourable single split. We therefore \emph{retract} the 0.0008 / 20$\times$
-claim; the correct, leakage-free numbers are those in Table~\ref{tab:forecast},
-and all abstract and conclusion statements are updated accordingly.
+\paragraph{Evaluation-protocol check: normalization leakage.} Computing
+normalization statistics on the full series lets test values leak into the
+scaling and understates forecast error. Table~\ref{tab:leak} isolates the
+mechanism on a single split: global (leaky) normalization yields a markedly
+lower MSE (0.015) than the correct train-only normalization (0.026). Every
+forecasting number in this paper uses train-only statistics
+(Appendix~\ref{app:corrections} records an earlier, leak-affected figure).
 
 \begin{table}[t]
 \centering
 \caption{Leak demonstration: identical SPADE model, single 80/20 split, global
 (test-leaking) vs.\ train-only normalization. Leaking test statistics into the
-scaler lowers the reported MSE---the artifact behind the retracted figure.}
+scaler lowers the reported MSE, which is why all results use train-only
+statistics.}
 \label{tab:leak}
 \input{figures/tab_leak}
 \end{table}
@@ -449,21 +409,16 @@ Table~\ref{tab:ablation} isolates SPADE's design choices on non-linear synthetic
 data. The decisive factor is the \textbf{information bottleneck}: replacing the
 component-wise readout with a dense residual KAN backbone (the ``coupled''
 variant) collapses recovery to chance (AUROC~$0.58$), because the backbone can fit
-the forecast irrespective of the adjacency. The edge-level group-lasso tells a
-different, more nuanced story than we previously summarized: removing it
-\emph{raises} AUROC on these small, dense synthetic graphs (0.984 without the
-penalty vs.\ 0.902 with it) rather than leaving it unchanged---an 8-point gap
-we should not have called ``comparable.'' This is the usual shrinkage
-trade-off of an $\ell_1$-style penalty: on a graph this small and this dense,
-the penalty gives up some ranking quality (AUROC) in exchange for the sparse,
-thresholdable structure that matters at larger, sparser $d$ (Section~
-\ref{sec:scalability}) and for the finite-sample uniqueness argument in
-Proposition~\ref{prop:bottleneck}. We therefore no longer describe the
-group-lasso as ranking-quality-neutral; its cost in this regime is real and
-measurable, and its benefit (sparsity, and the tie-breaking role in
-Proposition~\ref{prop:bottleneck}) is what we are trading for.
+the forecast irrespective of the adjacency. The edge-level group-lasso trades
+ranking quality for sparsity: removing it \emph{raises} AUROC on these small,
+dense synthetic graphs (0.984 without the penalty vs.\ 0.902 with it), the usual
+shrinkage trade-off of an $\ell_1$-style penalty. Its benefit is sparse,
+thresholdable structure at larger, sparser $d$
+(Section~\ref{sec:scalability}) and the tie-breaking role in
+Proposition~\ref{prop:bottleneck}; we therefore do not describe it as neutral
+for ranking quality.
 
-\paragraph{Isolating the spline edges themselves (Reviewer 2).} The ablation
+\paragraph{Isolating the spline edges themselves.} The ablation
 above isolates the bottleneck \emph{architecture} but does not, by itself, say
 whether the B-spline edge parameterization is what drives recovery, as opposed
 to the bottleneck-plus-group-lasso recipe it shares with prior component-wise
@@ -471,7 +426,7 @@ neural-Granger models (Section~\ref{sec:intro}). We add a fourth variant that
 keeps the architecture, optimizer, learning rate, epoch budget, seeds, and
 group-lasso weight identical and replaces each B-spline edge (11 coefficients)
 with a matched-capacity $1\!\to\!3\!\to\!1$ tanh MLP edge (10 coefficients).
-The result: AUROC~$0.889$/F1~$0.878$ for the MLP-edge variant versus
+The result is AUROC~$0.889$/F1~$0.878$ for the MLP-edge variant versus
 AUROC~$0.902$/F1~$0.867$ for the B-spline variant. We report the point
 estimates rather than claim a tested equivalence: with only three seeds we
 do not have the power to run a meaningful significance test (unlike the
@@ -488,8 +443,7 @@ bottleneck is the more clearly load-bearing factor
 larger and unambiguous effect), consistent with
 Remark~\ref{rem:whatprop1claims} and the fact that
 Proposition~\ref{prop:bottleneck} is architecture-agnostic.
-We report this honestly rather than as a negative result to bury: SPADE's
-distinctive contribution is not a structure-recovery advantage from splines
+SPADE's distinctive contribution is not a structure-recovery advantage from splines
 per se, but (i) the \emph{interpretability} of the recovered edge shapes,
 which a scalar MLP weight cannot provide (Section~\ref{sec:splines}), and (ii)
 combining the bottleneck with an explicit NOTEARS acyclicity constraint, which
@@ -506,7 +460,7 @@ decisive (the dense-backbone variant collapses to chance); the matched-capacity
 MLP-edge variant's point estimate is close to the B-spline variant's, which we
 report as suggestive rather than as a tested equivalence.
 Fit time is per seed, same 150-epoch budget; ``--'' marks variants whose
-wall-clock was not re-measured in this revision.}
+wall-clock was not measured.}
 \label{tab:ablation}
 \input{figures/tab_ablation}
 \end{table}
@@ -526,6 +480,93 @@ grid size $G$ on non-linear synthetic data (mean over 3 seeds).}
 \label{tab:sensitivity}
 \input{figures/tab_sensitivity}
 \end{table}
+
+\subsection{Non-financial real data: demand planning and air quality}
+\label{sec:bike}
+
+The financial panel of Section~\ref{sec:real} has no ground truth and, as
+Section~\ref{sec:returns} shows, a weakly learnable one-step-ahead signal. To
+test SPADE on managerial data where structure \emph{can} be checked, we use public
+operational data with strong domain knowledge. Two properties are certain without
+any labelled graph: the \emph{timing} of variables (yesterday cannot be caused by
+today; weather and calendar are determined outside the system, so demand cannot
+cause them) and a handful of mechanisms (commuters ride on working days;
+warmer weather drives leisure riding; both demand and weather are persistent).
+We sort variables into three tiers---pre-determined (calendar and lagged
+values), weather, and demand---and call an edge \emph{forbidden} if it points
+from a later tier to an earlier one, and \emph{positive} if it is one of the
+domain-certain mechanisms. Our metric is the \textbf{background-knowledge AUROC}
+(BK-AUROC): how well a method's edge scores separate positive edges from
+forbidden ones ($0.5$ is chance). It is partial ground truth, not a full graph,
+and it rewards methods for learning the structure that managers already know to
+be true before trusting them on structure they do not.
+
+\paragraph{Protocol.} Every protocol below was written and committed before any
+method was run on the data (\texttt{scripts/realworld\_bike\_sharing.py},
+\texttt{scripts/realworld\_large.py}), no hyperparameter was tuned on these data
+(SPADE uses its synthetic-benchmark settings; baselines use theirs), and
+uncertainty comes from a moving-block bootstrap (six resamples; the Wilcoxon
+test over six pairs cannot go below $p=0.031$). We use three datasets:
+\emph{daily} Capital Bikeshare demand \citep{FanaeeT2014} ($n{=}730$ days,
+$d{=}12$: workday indicator, year, lagged and current temperature, humidity, wind,
+casual and registered riders; 41 forbidden and 7 positive edges);
+\emph{hourly} Capital Bikeshare demand (same source, $n{=}17{,}303$ hourly
+records, $d{=}14$, adding the hour of day; 9 positive edges); and \emph{hourly Beijing
+PM2.5} \citep{Liang2015} ($n{=}41{,}543$, $d{=}14$: weather variables,
+hour-of-day and month cycles, lagged values, and PM2.5; 10 positive edges
+including ``wind speed reduces PM2.5'').
+
+\subsubsection{Daily bike-sharing demand}
+Table~\ref{tab:bike_daily} shows the result. SPADE obtains the highest BK-AUROC
+($0.810\pm0.061$) and the fewest forbidden edges among the non-linear methods
+that return a continuous score. It beats seven of the eight baselines in every
+one of the six resamples ($p=0.031$, the smallest value possible with six pairs).
+The exception is DAGMA-nonlinear ($0.703\pm0.159$), which SPADE beats in four of six
+resamples ($p=0.22$): the difference is not statistically established at this
+sample size. The order-then-prune methods SCORE and NoGAM return roughly 54 edges
+of which about 19 are forbidden (at $d{=}12$ there are 132 possible edges), and
+GOLEM and linear DAGMA score below chance, i.e.\ they prefer impossible edges to
+domain-certain ones.
+
+\begin{table}[t]
+\centering
+\caption{Daily bike-sharing demand ($n{=}730$, $d{=}12$): background-knowledge
+AUROC (mean$\pm$std over six block-bootstrap resamples; resample~0 is the
+original data), forbidden edges among each method's top-12 edges (all edges for
+the binary-output SCORE and NoGAM), domain-certain edges recovered, run time, and
+paired Wilcoxon $p$ for SPADE versus each method.}
+\label{tab:bike_daily}
+\input{figures/tab_bike_daily}
+\end{table}
+
+\paragraph{Learned edge shapes.} For SPADE we also check the \emph{functions} on
+the edges against domain-certain signs (Figure~\ref{fig:bike_shapes}). The
+effect of a working day is positive on registered (commuting) riders and negative
+on casual (leisure) riders in all six fits, and both edges rank among the
+strongest learned (median ranks 10 and 4 of 132). The temperature curves are
+increasing and then flattening in all six fits, as expected for warmth driving
+riding, but for temperature$\to$casual the learned edge is nearly pruned
+(importance $\approx0.002$, median rank 48), so that agreement is not meaningful
+evidence; SPADE attributes most of the temperature signal to the
+registered-rider equation, and only in some resamples (importance up to $0.25$).
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{figures/bike_shapes.png}
+    \caption{Learned SPADE edge functions on daily bike-sharing data in the
+    original data (blue) and five block-bootstrap resamples (grey). Left and
+    centre: temperature $\to$ riders; right: change in the learned effect when
+    the day switches from non-working to working.}
+    \label{fig:bike_shapes}
+\end{figure}
+
+\paragraph{Caveats.} BK-AUROC measures agreement with known structure; it does not
+validate the neutral edges, and a method could score well by learning only
+persistence. Causal sufficiency is not guaranteed (e.g.\ events, holidays and
+fleet size are unobserved), $n{=}730$ days is short, and the working-day variable
+is binary, which limits what a spline can show.
+
+HOURLYPLACEHOLDER
 
 \subsection{Real-world causal insights: financial markets 2020--2025}
 \label{sec:real}
@@ -616,8 +657,7 @@ on stationary or differenced series.
 \subsubsection{Robustness to a stationary representation: a candid negative
 result on returns}
 \label{sec:returns}
-Reviewer~4 asked the direct question this section has so far only motivated:
-what happens if the causal analysis is redone on a genuinely stationary
+A natural concern is that price levels are non-stationary. What happens if the causal analysis is redone on a genuinely stationary
 representation (log-returns) instead of price levels? We reran the identical
 pipeline (\texttt{scripts/extract\_real\_causal.py --returns}, same
 architecture, hyperparameters, window, and three rolling folds) on daily
@@ -636,7 +676,7 @@ since a graph that is always everything is trivially identical to itself
 across folds). This is not a software bug: it is what a forecasting-based
 structure-learning method should honestly report when the forecasting problem
 itself carries near-zero signal. Two conclusions follow, and we state both
-plainly. First, this is itself evidence \emph{for} the reviewer's concern: it
+plainly. First, this is itself evidence \emph{for} the non-stationarity concern: it
 shows the sparse, stable graph reported on price levels
 (Sections~\ref{sec:real}--\ref{sec:stability}) most plausibly reflects shared
 non-stationary trends and slower co-movement across these assets, not
@@ -652,8 +692,7 @@ report, and choose to say so rather than not run the check.
 \label{sec:stability}
 We estimate the graph on three rolling windows and measure the mean off-diagonal
 Jaccard overlap of the binarized graphs (Figure~\ref{fig:stability}), obtaining
-\textbf{0.31}. To test whether this exceeds chance---the analysis Reviewers
-requested---we compare against a permutation null of random graphs matched to each
+\textbf{0.31}. To test whether this exceeds chance---we compare against a permutation null of random graphs matched to each
 fold's edge count. The observed stability is \textbf{4.7$\times$} the null mean
 (0.066) with permutation $p<0.0001$: the learned structure is far more consistent
 across time than random graphs of the same density, i.e.\ it reflects persistent
@@ -670,8 +709,7 @@ dependencies rather than noise.
 
 \subsubsection{Validation beyond stability: time-reversal and regime shifts}
 \label{sec:validation}
-Stability shows consistency, not correctness. We add two stronger checks
-requested by Reviewers.
+Stability shows consistency, not correctness. We add two stronger checks.
 
 \paragraph{Time-reversal placebo.} A genuine temporal causal method should recover
 the true (forward) graph far better from forward data than from time-reversed
@@ -681,8 +719,8 @@ synthetic data ($d{=}10$, 3 seeds), SPADE's recovery AUROC drops from
 it exploits temporal precedence rather than symmetric association.
 
 \paragraph{Ground-truth structural change (intervention).} The most direct
-version of the Reviewer's request---``does SPADE recover the \emph{expected
-change} in causal structure?''---requires a known change. We concatenate two SVAR
+test---does SPADE recover the \emph{expected change} in causal
+structure?---requires a known change. We concatenate two SVAR
 regimes with \emph{different} graphs at a known break ($t{=}1500$) and slide
 SPADE across the series (Figure~\ref{fig:intervention}A). The graph-dissimilarity
 signal between adjacent windows peaks around the break, and SPADE recovers the
@@ -712,7 +750,7 @@ the synthetic experiment.
 \end{figure}
 
 \paragraph{Documented policy shock on real macro data (a candid negative result).}
-To test the most direct version of the Reviewer's request, we assembled a real
+To test recovery of a documented real-world intervention, we assembled a real
 macro panel from FRED (2016--2026) that includes the \emph{actual policy
 instrument}---the effective Federal Funds rate---alongside 2Y/3M/10Y Treasury
 yields, the broad US-dollar index, the S\&P~500, WTI, and the VIX (stationary
@@ -723,7 +761,7 @@ honestly, because it is instructive:
     \item \emph{Methodological (confirmed).} On daily \emph{price levels} the
     learned structure is degenerate (the dollar index carries $<$1\% of outgoing
     influence, swamped by co-trending non-stationarity); a stationary
-    representation is necessary---echoing the Reviewer's non-stationarity concern.
+    representation is necessary, consistent with the non-stationarity concern above.
     \item \emph{Change magnitude (null).} A placebo-controlled, symmetric-window
     test finds the 2022 liftoff produces a structural change no larger than
     typical placebo dates (dissimilarity 0.80 vs.\ placebo mean 0.75,

@@ -10,36 +10,26 @@ contemporaneous adjacencies and enforces acyclicity only on the contemporaneous
 block via an Augmented Lagrangian scheme---a formulation we specify in full,
 including its hyperparameter schedule and convergence criteria.
 
-Our evaluation is deliberately candid. The headline result is on \emph{non-linear
-instantaneous} causal discovery, where SPADE's learnable spline edges recover
-additive-noise DAGs at AUROC~$\approx$~0.92--0.95 across $d\in\{6,10,20\}$ once
-its group-lasso weight is properly tuned on genuinely held-out validation
-seeds (an over-regularized default in an earlier draft had understated this
-to $\approx$0.88; a seed-leakage bug in our own tuning script, found on
-independent review, had briefly and incorrectly inflated it to
-$\approx$0.97---we correct that here rather than let it stand), decisively
-beating every fixed-architecture, gradient-based non-linear DAG learner (DAGMA-nonlinear, GraN-DAG,
-NOTEARS-MLP, all $\le$0.6) and matching or beating the linear ones, at a
-fraction of their runtime---the regime
-where the KAN edge functions confer a real, distinctive advantage \emph{relative
-to that family}. We are equally candid about the full arc of this comparison:
-at the earlier, over-regularized setting the score-matching method NoGAM had
-clearly outperformed SPADE at $d{=}6,10$; at the leakage-corrected setting
-SPADE beats SCORE at every width and beats NoGAM at two of the three widths
-tested ($d{=}6,20$), but trails NoGAM at $d{=}10$ (0.926 vs.\ 0.955)---an
-honest, mixed result rather than the clean sweep an intermediate,
-leakage-affected version of this analysis had briefly suggested. SPADE still
-trains some $275$--$930\times$ faster than NoGAM and additionally
-yields inspectable edge functions neither score-matching method provides,
-including at $d{=}10$ where NoGAM leads on accuracy alone.
-On lagged structure SPADE is competitive (perfect
-on linear; on non-linear it beats KAN-Granger baselines and NOTEARS but trails
-conditioning-based PCMCI/VAR-LiNGAM). The key design lesson is that
-identifiability hinges on an information bottleneck: predicting each variable only
-through its incoming edges, not a dense backbone (which collapses to chance). We
-retract the earlier, unreproducible F1~=~0.897 in favour of these honest numbers,
-and likewise corrected a forecasting artifact ($\approx$0.0008 from test-leaking
-normalization), reporting leakage-free results under which SPADE is competitive. On real financial data---an observational setting where causal sufficiency cannot be
+Our evaluation is deliberately candid about where SPADE helps and where it does
+not. The headline result is on \emph{non-linear instantaneous} causal discovery,
+where SPADE's learnable spline edges recover additive-noise DAGs at
+AUROC~$\approx$~0.92--0.95 across $d\in\{6,10,20\}$, with its group-lasso weight
+tuned on validation seeds disjoint from the reported ones. It decisively beats
+every fixed-architecture, gradient-based non-linear DAG learner (DAGMA-nonlinear,
+GraN-DAG, NOTEARS-MLP, all $\le$0.6), matches or beats the linear ones, and does
+so at a fraction of their runtime---the regime where the KAN edge functions confer
+a real advantage \emph{relative to that family}. Against score-matching methods
+the result is mixed: SPADE beats SCORE at every width and NoGAM at $d{=}6,20$ but
+trails NoGAM at $d{=}10$ (0.926 vs.\ 0.955), while training some
+$275$--$930\times$ faster and yielding inspectable edge functions that neither
+score-matching method provides. On lagged structure SPADE is competitive
+(perfect on linear; on non-linear it beats KAN-Granger baselines and NOTEARS but
+trails conditioning-based PCMCI/VAR-LiNGAM). The key design lesson is that
+identifiability hinges on an information bottleneck: predicting each variable
+only through its incoming edges, not through a dense backbone (which collapses to
+chance). Forecasting is competitive but not best (MSE~$\approx$~0.029 against
+0.024 for the strongest normalization-matched baseline). BIKECONCL
+On financial data---an observational setting where causal sufficiency cannot be
 verified---SPADE recovers a directed graph of \emph{candidate} mechanisms, not
 verified causal effects, whose stability exceeds a permutation-based chance
 level by $4.7\times$ ($p<0.0001$) and whose spline edge functions expose the

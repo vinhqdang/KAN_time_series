@@ -25,6 +25,25 @@ logic built on them) should be read as evidence of shared, likely
 non-stationary co-movement rather than a validated short-horizon causal
 driver a manager should act on directly.
 
+\subsection{A non-financial illustration: demand planning}
+\label{sec:demandplan}
+The bike-sharing study (Section~\ref{sec:bike}) shows the same workflow on data
+where the answer can be checked. A fleet planner reading SPADE's learned graph
+sees, first, which relationships the model trusts: calendar and lagged demand
+drive current demand, and no edge points from demand back to the weather.
+Second, the edge functions give magnitudes a planner can act on. Switching a day
+from non-working to working changes the learned contribution to casual (leisure)
+ridership by $-0.77$ standard deviations (range $-0.89$ to $-0.68$ across six
+resamples) and to registered (commuter) ridership by $+0.51$ ($0.42$ to $0.69$);
+the \emph{mix} of demand, not only its total, therefore shifts on working days,
+which bears on where bikes are rebalanced and how many staff are rostered at
+commuter versus leisure stations. Third, the structure can be audited against
+knowledge the planner already has, which is how the BK-AUROC of
+Section~\ref{sec:bike} turns ``the graph looks plausible'' into a measurable
+check. These are decision-support readings of a \emph{candidate} structure, not
+causal effect estimates: events, holidays, and fleet size are unobserved, and the
+temperature edge to casual riders was too weakly supported to interpret.
+
 \subsection{Risk management and intervention}
 A causal (rather than merely correlational) map identifies candidate leverage
 points: if $X$ and $Y$ are both driven by a confounder $Z$, intervening on $X$
@@ -73,36 +92,25 @@ Several boundary conditions delimit responsible use:
     on price levels should be read as evidence of shared non-stationary
     co-movement, not as a validated short-horizon causal structure that
     survives a stationarity check.
-    \item \textbf{Where SPADE stands vs.\ classical methods.} SPADE now
-    matches the mature linear estimators exactly on \emph{linear} lagged
-    structure at every width we test, including $d{=}50$ (AUROC~0.999),
-    once its group-lasso weight is corrected for that width (an
-    over-regularized default had understated it to 0.829 there). On
-    \emph{non-linear} lagged structure it is the best of the flexible
-    neural/KAN learners: it
-    significantly beats NOTEARS, Neural-GC, Correlation, and the KAN-Granger variant
-    GC-KAN$+$ALM (Wilcoxon $p<0.05$) and is on par with GC-KAN and the recent
-    NTS-NOTEARS---but the strongest
-    conditioning-based, non-Gaussianity-exploiting, and sparse-linear methods
-    (PCMCI, VAR-LiNGAM, VAR-Lasso) and the continuous-optimization linear
+    \item \textbf{Where SPADE stands vs.\ classical methods.} SPADE matches the
+    mature linear estimators on \emph{linear} lagged structure at every width we
+    test, including $d{=}50$ (AUROC~0.999). On \emph{non-linear} lagged
+    structure it is the best of the flexible neural/KAN learners: it
+    significantly beats NOTEARS, Neural-GC, Correlation, and the KAN-Granger
+    variant GC-KAN$+$ALM (Wilcoxon $p<0.05$) and is on par with GC-KAN and
+    NTS-NOTEARS. The strongest conditioning-based, non-Gaussianity-exploiting,
+    and sparse-linear methods (PCMCI, VAR-LiNGAM, VAR-Lasso) and the linear
     learner GOLEM retain an edge there, and all classical methods are far faster
     (Section~\ref{sec:synthetic}). On \emph{instantaneous} non-linear structure,
     SPADE decisively beats every fixed-architecture, gradient-based DAG learner
-    and, once its group-lasso weight is properly tuned on genuinely held-out
-    seeds, the score-matching method SCORE as well, at a fraction of the
-    compute cost; against NoGAM the honest result is mixed---SPADE ahead at
-    $d{=}6,20$, behind at $d{=}10$---though still at a fraction of NoGAM's
-    compute cost throughout
-    (Section~\ref{sec:instdag}). We disclose the full history candidly: an
-    earlier, over-regularized default had understated SPADE's AUROC and let
-    NoGAM lead at every width; a subsequent tuning pass fixed that but, we
-    later found, had itself leaked the evaluation seeds into the hyperparameter
-    choice, briefly and wrongly suggesting SPADE led at every width instead.
-    Correcting that leak is what produces the mixed result reported here. When \emph{only} a structure estimate is needed
-    and interpretability of mechanisms is not required, a fast classical method may
-    still suffice on \emph{lagged} structure, where PCMCI and VAR-LiNGAM keep the edge;
-    SPADE's advantage is delivering competitive-to-best structure recovery \emph{together}
-    with interpretable edge shapes and a coupled forecaster.
+    and the score-matching method SCORE, at a fraction of the compute cost;
+    against NoGAM the result is mixed (ahead at $d{=}6,20$, behind at $d{=}10$),
+    though still at a fraction of NoGAM's compute throughout
+    (Section~\ref{sec:instdag}). When \emph{only} a structure estimate is needed
+    and interpretability of mechanisms is not required, a fast classical method
+    may still suffice on \emph{lagged} structure, where PCMCI and VAR-LiNGAM keep
+    the edge; SPADE's advantage is delivering competitive structure recovery
+    \emph{together} with interpretable edge shapes and a coupled forecaster.
     \item \textbf{The $\ell_1$ penalty.} Consistent with recent critiques
     \citep{ng2020golem,Bello2022}, the $\ell_1$ sparsity term can bias structure
     recovery; our group-lasso term and threshold-free reporting mitigate but do
