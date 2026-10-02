@@ -144,9 +144,16 @@ def main():
         jobs = [(r, SCALE_METHODS, X0 if r == 0 else block_bootstrap(X0, r, len(X0))) for r in range(3)]
     only = [a for a in sys.argv[3:]]
     rows, adj = [], {}
+    raw_path, npz_path = os.path.join(OUT_DIR, tag + "_raw.csv"), os.path.join(OUT_DIR, tag + "_adj.npz")
+    if os.path.exists(raw_path):                         # resume an interrupted run
+        prev = pd.read_csv(raw_path); rows = prev[prev.status == "ok"].to_dict("records")
+        adj = dict(np.load(npz_path)) if os.path.exists(npz_path) else {}
+        print("resuming with", len(rows), "completed method-runs", flush=True)
+    done = {(int(x["resample"]), x["method"]) for x in rows}
     for r, methods, X in jobs:
         for m in methods:
             if only and m not in only: continue
+            if (r, m) in done: continue
             t0 = time.time()
             try:
                 S = np.asarray(METHODS[m](X, r), float); met = metrics(S, tier, pos, names)
