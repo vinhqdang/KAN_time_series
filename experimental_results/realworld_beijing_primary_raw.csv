@@ -1,2 +1,0 @@
-dataset,part,n,resample,method,status,time_s,bk_auroc,n_edges,n_forbidden,n_positive,n_pos_total
-beijing,primary,2000,0,SPADE,ok,87.7,0.653061224489796,14,3,4,10

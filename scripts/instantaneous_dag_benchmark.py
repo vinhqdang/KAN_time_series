@@ -51,7 +51,8 @@ def score(S, A):                         # S, A indexed [cause, effect]
 def cdkan(X, seed, ep=400, lg=0.01):
     torch.set_default_dtype(torch.float32)
     torch.manual_seed(seed); np.random.seed(seed)
-    Xt = torch.tensor(zscore(X), dtype=torch.float32); m = CausalKANInstant(X.shape[1], grid_size=8)
+    dev = os.environ.get("SPADE_DEVICE", "cpu")
+    Xt = torch.tensor(zscore(X), dtype=torch.float32, device=dev); m = CausalKANInstant(X.shape[1], grid_size=8).to(dev)
     opt = torch.optim.Adam(m.parameters(), lr=5e-3); rho, al = 1.0, 0.0
     for e in range(ep):
         opt.zero_grad(); pred = m(Xt); mse = ((pred - Xt) ** 2).mean(); h = m.h()
@@ -60,7 +61,7 @@ def cdkan(X, seed, ep=400, lg=0.01):
         if (e + 1) % 50 == 0:
             with torch.no_grad(): hv = m.h().item()
             if hv > 1e-8: al += rho * hv; rho = min(rho * 2, 1e10)
-    return m.importance(Xt).numpy().T          # [effect,cause]->[cause,effect]
+    return m.importance(Xt).cpu().numpy().T    # [effect,cause]->[cause,effect]
 
 
 # ---- NOTEARS-MLP (ours) : per-node MLP, acyclicity on 1st-layer weight norms ----
