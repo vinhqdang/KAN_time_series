@@ -78,7 +78,7 @@ backbone collapses to chance, confirming that the bottleneck drives
 identifiability. On lagged structure SPADE is perfect on linear graphs and
 competitive on non-linear ones, trailing the best conditioning-based methods;
 forecasting is competitive but not best (MSE~$\approx\forecastmse$ on an
-8-asset financial panel). BIKEABSTRACT On the financial panel, the learned graph
+8-asset financial panel). On three public non-financial datasets (bike-sharing demand, daily and hourly, and Beijing air quality), scored against domain-certain background knowledge, SPADE leads on daily data, ties linear NOTEARS on $2{,}000$-row hourly samples, and leads on the full hourly series ($n=17{,}303$ and $41{,}543$). On the financial panel, the learned graph
 is stable well above chance (permutation test, $4.7\times$), but a stationary
 (returns) re-analysis collapses it to an uninformative graph, so the levels-based
 graph reflects shared non-stationary co-movement rather than validated causal

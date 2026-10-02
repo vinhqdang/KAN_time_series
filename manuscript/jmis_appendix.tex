@@ -107,7 +107,7 @@ $0.955/0.969/0.969/0.959/0.948/0.940$; a paired Wilcoxon test of
 $\lambda_g=0.01$ against $5\times10^{-3}$ over the same twenty seeds gives
 $p=0.39$. The value $0.01$ therefore sits inside a broad plateau of statistically
 indistinguishable settings (its peak is at $0.008$), while $0.02$ is clearly
-outside it; the sweep script is \texttt{scripts/tune\_instdag\_lambda.py}),
+outside it; the sweep script is \path{scripts/tune_instdag_lambda.py}),
 gradient clipping at $5.0$,
 and---when contemporaneous edges are modelled---an Augmented-Lagrangian schedule
 $(\rho_0,\alpha_0,\beta,K)=(1,0,2,50)$ with $\rho$ capped at $10^{10}$. Series are
@@ -128,18 +128,20 @@ budget for the full five-seed protocol at $d{=}20$; we report it there over a
 single seed, flagged in Table~\ref{tab:instdag}, rather than omit the width or
 extrapolate.
 
+\begingroup\sloppy
 Three further settings were fixed by held-out procedures that never touched
 the seeds used for a reported number: the forecasting epoch count (300, chosen on
 an inner train/validation split of the training fold;
-\texttt{scripts/tune\_forecast\_epochs.py}), the finite-and-bounded screen with
+\path{scripts/tune_forecast_epochs.py}), the finite-and-bounded screen with
 deterministic reseeding for the non-linear lagged generator
 (Section~\ref{sec:synthetic}; scoped to
-\texttt{scripts/honest\_causal\_benchmark.py}), and the width-dependent
+\path{scripts/honest_causal_benchmark.py}), and the width-dependent
 $\lambda_g{=}0.002$ at $d{=}50$ (validation seeds 142--144;
-\texttt{scripts/tune\_d50\_lambda.py}; documented in \texttt{fit\_cdkan}'s
+\path{scripts/tune_d50_lambda.py}; documented in \texttt{fit\_cdkan}'s
 docstring). The bike-sharing study (Section~\ref{sec:bike}) used no tuning at
 all: its protocol was fixed and committed before any method was run on that data
-(\texttt{scripts/realworld\_bike\_sharing.py}).
+(\path{scripts/realworld_bike_sharing.py}).
+\endgroup
 
 \section{Technical supplement to Section~\ref{sec:method}}
 \label{app:techsupp}

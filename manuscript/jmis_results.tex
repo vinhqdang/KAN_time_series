@@ -183,7 +183,7 @@ trailing, the classical/conditioning-based methods (PCMCI~0.999, VarLiNGAM~0.99,
 VAR-Lasso~0.98, GOLEM~0.99).
 
 \paragraph{Benchmark validity safeguards.} The non-linear lagged generator
-(\texttt{generate\_nonlinear\_scm}) permits cycles in its lagged summary graph and
+(\path{generate_nonlinear_scm}) permits cycles in its lagged summary graph and
 includes an unbounded mechanism (a signed quadratic), so a minority of
 $(d,\text{seed})$ draws diverge to non-finite or extreme-scale data. Training or
 scoring on such a draw measures numerical failure rather than method quality, and
@@ -502,8 +502,8 @@ and it rewards methods for learning the structure that managers already know to
 be true before trusting them on structure they do not.
 
 \paragraph{Protocol.} Every protocol below was written and committed before any
-method was run on the data (\texttt{scripts/realworld\_bike\_sharing.py},
-\texttt{scripts/realworld\_large.py}), no hyperparameter was tuned on these data
+method was run on the data (\path{scripts/realworld_bike_sharing.py},
+\path{scripts/realworld_large.py}), no hyperparameter was tuned on these data
 (SPADE uses its synthetic-benchmark settings; baselines use theirs), and
 uncertainty comes from a moving-block bootstrap (six resamples; the Wilcoxon
 test over six pairs cannot go below $p=0.031$). We use three datasets:
@@ -560,13 +560,81 @@ registered-rider equation, and only in some resamples (importance up to $0.25$).
     \label{fig:bike_shapes}
 \end{figure}
 
-\paragraph{Caveats.} BK-AUROC measures agreement with known structure; it does not
-validate the neutral edges, and a method could score well by learning only
-persistence. Causal sufficiency is not guaranteed (e.g.\ events, holidays and
-fleet size are unobserved), $n{=}730$ days is short, and the working-day variable
-is binary, which limits what a spline can show.
+\subsubsection{Larger hourly datasets: sample size matters}
+The daily study is small, so we repeat it on two much larger hourly datasets
+(Table~\ref{tab:bike_hourly} and Table~\ref{tab:beijing}). Two settings are
+reported. In the \emph{common-sample} comparison every method, including the
+cubic-cost kernel method NoGAM, receives the same $2{,}000$-row block-bootstrap
+sample in each of six resamples. In the \emph{full-series} check, SPADE and the
+fast baselines are run on the entire series (Table~\ref{tab:large_scale}); the
+slow methods cannot be run there.
 
-HOURLYPLACEHOLDER
+On the common sample SPADE is \emph{not} the clear winner. On hourly bike sharing
+it scores $0.634\pm0.067$ against $0.649\pm0.045$ for linear NOTEARS (SPADE ahead
+in three of six resamples, $p=0.69$), and on Beijing PM2.5 the two tie at
+$0.669$ ($0.095$ versus $0.055$ standard deviation). SPADE does beat every other
+method on bike sharing (five of six resamples against GOLEM, $p=0.062$;
+all six resamples against the rest, $p=0.031$). On Beijing it beats the
+non-linear methods DAGMA-nonlinear ($p=0.44$) and NoGAM ($p=0.16$) in a majority
+of resamples without that being statistically established, and beats GOLEM,
+GraN-DAG, NOTEARS-MLP, SCORE, and linear DAGMA in all six. Linear NOTEARS is a
+strong baseline here because lag-1 persistence dominates hourly data.
+
+On the full series, however, SPADE leads in all three resamples on both datasets
+(Table~\ref{tab:large_scale}): $0.688\pm0.007$ against $0.622\pm0.019$ for linear
+NOTEARS on bike sharing ($n{=}17{,}303$), and $0.742\pm0.046$ against
+$0.658\pm0.041$ on Beijing ($n{=}41{,}543$). A spline edge has many more
+parameters than a linear one, so it needs more data to separate weak real edges
+from noise; this is consistent with SPADE's modest result at $n{=}2{,}000$ and its
+lead at full size. With three resamples we do not run a significance test, and
+we did not tune SPADE on these data.
+
+\paragraph{Edge shapes at hourly resolution.} The pre-registered shape checks do
+not give usable evidence on the hourly data. The working-day edges (bike
+sharing) and the wind-speed$\to$PM2.5 edge (Beijing) have the expected sign in
+17 of 18 fits, but they are almost entirely pruned (importance $\approx0$,
+median rank $85$ to $136$ of $182$ possible edges), so agreement in sign is not
+evidence. A plausible reason is that at hourly resolution the lagged value of
+each variable explains almost all of the signal, leaving little for the
+group-lasso to keep among contemporaneous edges; we have not verified this.
+
+\begin{table}[t]
+\centering
+\caption{Hourly bike sharing, common sample ($2{,}000$-row block-bootstrap
+resamples, six resamples, $d{=}14$): background-knowledge AUROC (mean$\pm$std),
+forbidden edges among each method's top-14 edges (all edges for SCORE and NoGAM),
+domain-certain edges recovered (of $9$), and paired Wilcoxon $p$ for SPADE
+versus each method. Linear NOTEARS and SPADE are statistically
+indistinguishable.}
+\label{tab:bike_hourly}
+\input{figures/tab_bike_hourly}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Hourly Beijing PM2.5, common sample (six resamples, $d{=}14$); layout as
+in Table~\ref{tab:bike_hourly}, with $10$ domain-certain edges. SPADE and linear
+NOTEARS tie at $0.669$.}
+\label{tab:beijing}
+\input{figures/tab_beijing}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Full-series check (BK-AUROC, mean$\pm$std over three resamples; the first
+resample is the original series, the others are full-length block bootstraps).
+SPADE leads on both datasets in all three resamples. SPADE ran on a GPU
+here; the slower methods (SCORE, NoGAM, GraN-DAG, DAGMA-nonlinear) were not run
+at this size.}
+\label{tab:large_scale}
+\input{figures/tab_large_scale}
+\end{table}
+
+\paragraph{Caveats (all three datasets).} BK-AUROC measures agreement with known
+structure only; it does not validate the neutral edges, and a method could score
+well by learning only persistence. Causal sufficiency is not guaranteed
+(holidays, events, fleet size, emissions sources and policy are unobserved),
+the daily study is short ($n{=}730$) and its working-day variable is binary, which limits what a spline can show, and none of these results are causal-effect estimates.
 
 \subsection{Real-world causal insights: financial markets 2020--2025}
 \label{sec:real}
@@ -659,7 +727,7 @@ result on returns}
 \label{sec:returns}
 A natural concern is that price levels are non-stationary. What happens if the causal analysis is redone on a genuinely stationary
 representation (log-returns) instead of price levels? We reran the identical
-pipeline (\texttt{scripts/extract\_real\_causal.py --returns}, same
+pipeline (\path{scripts/extract_real_causal.py --returns}, same
 architecture, hyperparameters, window, and three rolling folds) on daily
 log-returns of the same eight assets. The honest answer is a negative result,
 and we report it rather than the more flattering levels-based graph alone.

@@ -28,7 +28,7 @@ trails conditioning-based PCMCI/VAR-LiNGAM). The key design lesson is that
 identifiability hinges on an information bottleneck: predicting each variable
 only through its incoming edges, not through a dense backbone (which collapses to
 chance). Forecasting is competitive but not best (MSE~$\approx$~0.029 against
-0.024 for the strongest normalization-matched baseline). BIKECONCL
+0.024 for the strongest normalization-matched baseline). On three non-financial real datasets with partial ground truth from domain knowledge (Section~\ref{sec:bike}), SPADE is best on daily bike-sharing demand, statistically tied with linear NOTEARS on small samples of two hourly datasets, and ahead of it on the full hourly series; its edge functions behave as expected where the edges are retained, but at hourly resolution most of the checked edges were pruned.
 On financial data---an observational setting where causal sufficiency cannot be
 verified---SPADE recovers a directed graph of \emph{candidate} mechanisms, not
 verified causal effects, whose stability exceeds a permutation-based chance
