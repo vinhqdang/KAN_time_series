@@ -1,0 +1,17 @@
+bike_hourly scale bike_hourly usable rows: (17303, 14)
+bike_hourly scale [r0] SPADE            bkAUROC=0.682 forb=3/14 pos=3/9 t=10s
+bike_hourly scale [r0] NOTEARS-linear   bkAUROC=0.614 forb=5/14 pos=1/9 t=2s
+bike_hourly scale [r0] DAGMA-linear     bkAUROC=0.159 forb=6/14 pos=1/9 t=4s
+bike_hourly scale [r0] GOLEM            bkAUROC=0.549 forb=6/14 pos=1/9 t=81s
+bike_hourly scale [r0] NOTEARS-MLP      bkAUROC=0.344 forb=5/14 pos=0/9 t=27s
+bike_hourly scale [r1] SPADE            bkAUROC=0.695 forb=5/14 pos=2/9 t=2s
+bike_hourly scale [r1] NOTEARS-linear   bkAUROC=0.608 forb=5/14 pos=1/9 t=1s
+bike_hourly scale [r1] DAGMA-linear     bkAUROC=0.301 forb=6/14 pos=1/9 t=3s
+bike_hourly scale [r1] GOLEM            bkAUROC=0.516 forb=4/14 pos=1/9 t=53s
+bike_hourly scale [r1] NOTEARS-MLP      bkAUROC=0.296 forb=6/14 pos=0/9 t=28s
+bike_hourly scale [r2] SPADE            bkAUROC=0.688 forb=1/14 pos=4/9 t=3s
+bike_hourly scale [r2] NOTEARS-linear   bkAUROC=0.643 forb=5/14 pos=2/9 t=1s
+bike_hourly scale [r2] DAGMA-linear     bkAUROC=0.159 forb=5/14 pos=1/9 t=3s
+bike_hourly scale [r2] GOLEM            bkAUROC=0.381 forb=6/14 pos=1/9 t=53s
+bike_hourly scale [r2] NOTEARS-MLP      bkAUROC=0.353 forb=5/14 pos=0/9 t=28s
+bike_hourly scale failures: 0

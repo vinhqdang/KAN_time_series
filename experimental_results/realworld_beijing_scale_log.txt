@@ -1,0 +1,17 @@
+beijing scale beijing usable rows: (41543, 14)
+beijing scale [r0] SPADE            bkAUROC=0.727 forb=3/14 pos=5/10 t=11s
+beijing scale [r0] NOTEARS-linear   bkAUROC=0.669 forb=6/14 pos=3/10 t=3s
+beijing scale [r0] DAGMA-linear     bkAUROC=0.437 forb=5/14 pos=2/10 t=4s
+beijing scale [r0] GOLEM            bkAUROC=0.543 forb=6/14 pos=1/10 t=107s
+beijing scale [r0] NOTEARS-MLP      bkAUROC=0.445 forb=6/14 pos=0/10 t=57s
+beijing scale [r1] SPADE            bkAUROC=0.706 forb=5/14 pos=2/10 t=4s
+beijing scale [r1] NOTEARS-linear   bkAUROC=0.692 forb=7/14 pos=2/10 t=2s
+beijing scale [r1] DAGMA-linear     bkAUROC=0.335 forb=6/14 pos=1/10 t=4s
+beijing scale [r1] GOLEM            bkAUROC=0.427 forb=5/14 pos=0/10 t=58s
+beijing scale [r1] NOTEARS-MLP      bkAUROC=0.457 forb=8/14 pos=0/10 t=58s
+beijing scale [r2] SPADE            bkAUROC=0.794 forb=3/14 pos=4/10 t=4s
+beijing scale [r2] NOTEARS-linear   bkAUROC=0.612 forb=6/14 pos=2/10 t=2s
+beijing scale [r2] DAGMA-linear     bkAUROC=0.280 forb=6/14 pos=1/10 t=4s
+beijing scale [r2] GOLEM            bkAUROC=0.537 forb=4/14 pos=1/10 t=61s
+beijing scale [r2] NOTEARS-MLP      bkAUROC=0.498 forb=8/14 pos=0/10 t=59s
+beijing scale failures: 0
