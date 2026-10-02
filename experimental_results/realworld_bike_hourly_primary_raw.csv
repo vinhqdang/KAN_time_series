@@ -1,0 +1,2 @@
+dataset,part,n,resample,method,status,time_s,bk_auroc,n_edges,n_forbidden,n_positive,n_pos_total
+bike_hourly,primary,2000,0,SPADE,ok,92.7,0.6535947712418301,14,3,3,9
