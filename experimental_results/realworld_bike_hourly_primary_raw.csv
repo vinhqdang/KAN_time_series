@@ -18,3 +18,8 @@ bike_hourly,primary,2000,1,GOLEM,ok,15.9,0.5076252723311546,14,5,0,9
 bike_hourly,primary,2000,1,DAGMA-linear,ok,2.2,0.28322440087145967,14,6,1,9
 bike_hourly,primary,2000,1,NOTEARS-linear,ok,0.3,0.6252723311546842,14,7,2,9
 bike_hourly,primary,2000,2,SPADE,ok,2.5,0.5969498910675382,14,2,3,9
+bike_hourly,primary,2000,2,DAGMA-nonlinear,ok,118.0,0.4117647058823529,14,7,2,9
+bike_hourly,primary,2000,2,SCORE,ok,39.4,0.4509803921568627,63,22,3,9
+bike_hourly,primary,2000,2,NoGAM,ok,197.1,0.4248366013071896,60,19,2,9
+bike_hourly,primary,2000,2,GraN-DAG,ok,20.5,0.5555555555555556,14,11,1,9
+bike_hourly,primary,2000,2,NOTEARS-MLP,ok,2.2,0.3093681917211329,14,5,0,9
