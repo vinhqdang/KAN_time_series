@@ -1,22 +1,11 @@
-\documentclass[11pt]{article}
-\usepackage[margin=1in]{geometry}
-\usepackage{times}
-\usepackage{enumitem}
-\usepackage{hyperref}
-\title{Response to Reviewers --- Revision 2\\
-\large SPADE: spline additive-noise DAG estimation for interpretable nonlinear\\
-causal discovery in managerial decision support\\
-Manuscript ARRAY-D-26-04878, \emph{Array}}
-\author{}
-\date{}
-\begin{document}
-\maketitle
+%%TITLE
+Response to Reviewers -- Revision 2
+%%INTRO
 We thank the Editor and the reviewers for the second round of comments. Reviewer~1 judged that reproducibility, statistical consistency, comparative fairness, and the discussion of assumptions are now satisfactorily addressed, and asked for two further improvements: clearer exposition and stronger real-world validation with a more convincing demonstration of managerial applicability. Reviewer~3 requires no changes. Reviewers~2 and~4 have not yet commented on the revised version, so for them we restate how each of their original comments is handled in the current manuscript (section, table, and figure numbers refer to the revised manuscript). Results are reported as they came out, including where they do not favour SPADE.
-
-\section*{Reviewer 1}
-\textbf{Reviewer comments.} Reviewer 1 (Revision 1, September 18). ``The authors have partially addressed the previously raised concerns but not fully resolved them: the issues related to reproducibility, statistical consistency, and comparative fairness have been substantially and satisfactorily incorporated ... however, the concerns regarding clarity of exposition are only partially improved, as the manuscript remains technically dense and difficult to follow, while the more critical issues of limited real-world validation, continued over-reliance on synthetic benchmarks, and weak demonstration of practical managerial applicability remain largely unaddressed, with real-data experiments still confined to a narrow financial setting that yields inconclusive or negative causal insights.''
-
-\textbf{Response.} Thank you; both remaining points were fair, and we acted on both.
+%%R1
+\item[R1] Reviewer 1 (Revision 1, September 18). ``The authors have partially addressed the previously raised concerns but not fully resolved them: the issues related to reproducibility, statistical consistency, and comparative fairness have been substantially and satisfactorily incorporated ... however, the concerns regarding clarity of exposition are only partially improved, as the manuscript remains technically dense and difficult to follow, while the more critical issues of limited real-world validation, continued over-reliance on synthetic benchmarks, and weak demonstration of practical managerial applicability remain largely unaddressed, with real-data experiments still confined to a narrow financial setting that yields inconclusive or negative causal insights.''
+%%R1A
+Thank you; both remaining points were fair, and we acted on both.
 
 \textbf{(1) Clarity of exposition.} We rewrote the Method (Section 2) for a reader from information systems or management, and moved technical detail to appendices. Specifically: (a) Section 2 now opens with a roadmap and a plain-language account of SPADE (Section 2.1, with the architecture in Figure 1) before any equation; (b) a notation table (Table 1) collects every symbol; (c) each assumption and each proposition is followed by an ``in plain words'' paragraph; (d) the acyclicity theorem, the instantaneous-variant algorithm, and the choice of sparsity penalty moved to a new Appendix C, leaving Section 2 with the model, the objective, and the algorithm; (e) the Abstract and the list of contributions were rewritten. We also removed from Sections 1--5 the running account of how earlier drafts differed (for example, mentions of corrected numbers and retracted claims); that audit trail is now in one place, Appendix D, so the main text reads as a single argument.
 
@@ -29,16 +18,14 @@ We thank the Editor and the reviewers for the second round of comments. Reviewer
 \end{itemize}
 
 \textbf{(3) Managerial applicability.} Section 4.2 (new) shows how a planner reads the learned structure on the bike-sharing data: which relationships the model trusts, what the edge functions say in actionable magnitudes (switching a day from non-working to working shifts the learned contribution to leisure riders by $-0.77$ standard deviations and to commuter riders by $+0.51$, stable across resamples), and how BK-AUROC turns ``the graph looks plausible'' into a measurable audit. We keep the earlier caution about the financial panel (Sections 3.9.3 and 4.1): its levels-based graph is read as shared non-stationary co-movement, not as validated causal structure. We still stop short of causal-effect claims on all real data. Appendix D lists every correction made to the benchmarks during development.
-
-\section*{Reviewer 3}
-\textbf{Reviewer comments.} Reviewer 3 (Revision 1, September 25). The review is positive on the abstract, introduction, methods, results, discussion, references, reproducibility, and ethics.
-
-\textbf{Response.} Thank you for the careful and encouraging review. No change was requested. For transparency: the Method is rewritten for easier reading (Section 2), and adds a non-financial validation study (Section 3.8) and an audit trail of corrections (Appendix D); the claims you assessed are unchanged.
-
-\section*{Reviewer 4}
-\textbf{Reviewer comments.} Reviewer 4 (initial submission, September 8). Six comments: (1) correct or clarify Figure 1; (2) level the forecasting comparison with normalization-matched baselines; (3) treat non-stationarity in the real financial analysis; (4) review statistical reporting (Table 3 Wilcoxon p-values versus caption; uncertainty for the main instantaneous-DAG results); (5) check consistency of hyperparameters, runtimes, indexing, and statements; (6) keep causal claims on real data conservative.
-
-\textbf{Response.} We addressed all six; the manuscript states each outcome, and we note where results did not favour SPADE.
+%%R3
+\item[R3] Reviewer 3 (Revision 1, September 25). The review is positive on the abstract, introduction, methods, results, discussion, references, reproducibility, and ethics.
+%%R3A
+Thank you for the careful and encouraging review. No change was requested. For transparency: the Method is rewritten for easier reading (Section 2), and adds a non-financial validation study (Section 3.8) and an audit trail of corrections (Appendix D); the claims you assessed are unchanged.
+%%R4
+\item[R4] Reviewer 4 (initial submission, September 8). Six comments: (1) correct or clarify Figure 1; (2) level the forecasting comparison with normalization-matched baselines; (3) treat non-stationarity in the real financial analysis; (4) review statistical reporting (Table 3 Wilcoxon p-values versus caption; uncertainty for the main instantaneous-DAG results); (5) check consistency of hyperparameters, runtimes, indexing, and statements; (6) keep causal claims on real data conservative.
+%%R4A
+We addressed all six; the manuscript states each outcome, and we note where results did not favour SPADE.
 
 \textbf{(1) Figure 1.} The reviewer was right: the figure contained a leftover residual-backbone box inherited from an earlier design that would break identifiability. Figure 1 now shows the deployed architecture (RevIN normalization, edge functions and adjacency, per-target additive sum, RevIN de-normalization) with no intervening network (Section 2.4).
 
@@ -51,16 +38,13 @@ We thank the Editor and the reviewers for the second round of comments. Reviewer
 \textbf{(5) Consistency.} The runtime table (Table 6) now contains only widths measured under one protocol ($d = 5, 10, 20, 50$); a mixed-protocol $d = 15$ row was removed. A non-linear lagged-data generator that occasionally produced non-finite or extreme data is now screened (Section 3.3), and the group-lasso weight is width-dependent at $d = 50$ (Appendix B). Every correction, with cause and effect on the numbers, is listed in Appendix D.
 
 \textbf{(6) Conservative causal language.} Real-data edges are described as candidate mechanisms throughout (Assumption 1, Sections 3.8--3.9, 4, and 5). The bike-sharing study scores agreement with domain knowledge and is not a causal-effect estimate.
-
-\section*{Reviewer 2}
-\textbf{Reviewer comments.} Reviewer 2 (initial submission, September 8). Comments: (1) novelty beyond combining existing pieces; (2) Propositions 1 and 2 need stronger arguments or weaker statements; (3) no experiment isolates the spline contribution (matched-capacity MLP edges), and SCORE/NoGAM are missing; (4) tightening: equal epochs versus equal budget, baseline tuning, collapsed neural baselines, RevIN fairness, the runtime jump between $d=15$ and $d=20$.
-
-\textbf{Response.} \textbf{(1) Novelty.} Section 1.2 states first what is not new (the component-wise bottleneck, shared with neural-Granger models and GC-KAN) and then what is: learnable per-edge B-spline mechanisms, a block-structured acyclicity constraint applied only to contemporaneous edges, and an experimental design that isolates which ingredient matters.
+%%R2
+\item[R2] Reviewer 2 (initial submission, September 8). Comments: (1) novelty beyond combining existing pieces; (2) Propositions 1 and 2 need stronger arguments or weaker statements; (3) no experiment isolates the spline contribution (matched-capacity MLP edges), and SCORE/NoGAM are missing; (4) tightening: equal epochs versus equal budget, baseline tuning, collapsed neural baselines, RevIN fairness, the runtime jump between $d=15$ and $d=20$.
+%%R2A
+\textbf{(1) Novelty.} Section 1.2 states first what is not new (the component-wise bottleneck, shared with neural-Granger models and GC-KAN) and then what is: learnable per-edge B-spline mechanisms, a block-structured acyclicity constraint applied only to contemporaneous edges, and an experimental design that isolates which ingredient matters.
 
 \textbf{(2) Propositions.} Remark 1 states that the assumptions (sufficiency, Markov/minimality, restricted non-linearity, stationarity) are posited properties of the data-generating process, not consequences of optimization, and that the proposition concerns the unregularized population target. Proposition 2 now states that the bottleneck is necessary but needs a sparsity preference for uniqueness; the group-lasso plays that role. Each statement is followed by a plain-words paragraph, and the longer arguments are in Appendix A.
 
 \textbf{(3) Spline versus MLP edges; missing baselines.} We ran the requested ablation: identical architecture, optimizer, epochs, seeds, and group-lasso, with each B-spline edge (11 coefficients) replaced by a matched-capacity MLP edge (10 coefficients). AUROC is 0.889 for MLP edges and 0.902 for splines (Table 10); with three seeds we report point estimates and do not claim a tested equivalence. We conclude that the spline's distinctive value is the interpretability of the edge shapes, not a structure-recovery advantage over an equally sized MLP. SCORE and NoGAM were added to the headline benchmark (Table 2). SPADE reaches AUROC 0.947/0.926/0.915 at $d = 6/10/20$; it beats SCORE at every width and NoGAM at $d = 6$ and $d = 20$, but trails NoGAM at $d = 10$ (0.926 vs 0.955), while training $275$--$930\times$ faster. NoGAM at $d = 20$ is one seed.
 
 \textbf{(4) Tightening.} We report wall-clock time alongside epochs (Tables 6 and 8). Baselines run at their reference defaults; this and the possible reasons for the collapse of GraN-DAG and DAGMA-nonlinear are stated in Section 3.1. The forecasting comparison is normalization-matched (Table 8). The $d = 15$ runtime row was a mixed-protocol artifact and was removed.
-
-\end{document}

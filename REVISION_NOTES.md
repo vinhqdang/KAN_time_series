@@ -1,3 +1,38 @@
+# SPADE — Revision 2 (ARRAY-D-26-04878)
+
+Reviewer 1 (round 2) asked for clearer exposition and real-world validation beyond finance;
+Reviewer 3 requires no change; Reviewers 2 and 4 had no round-2 comments yet.
+
+## What changed
+1. **Method rewritten for readability** (manuscript/jmis_method.tex): roadmap, plain-language
+   section, notation table, "in plain words" after each assumption/proposition; technical
+   theorem, instantaneous-variant algorithm and sparsity-penalty choice moved to Appendix C.
+2. **De-narration**: all "earlier draft / retracted / Reviewer N" text removed from Sections 1-5;
+   the audit trail of corrections is Appendix D.
+3. **Non-financial real-data validation (Section 3.8), protocols committed BEFORE running**:
+   - daily bike sharing (n=730, d=12): SPADE BK-AUROC 0.810+/-0.061 (best); DAGMA-nonlinear 0.703
+     (not significantly different, p=0.22); beats 7/8 baselines in all 6 resamples.
+   - hourly bike sharing (n=17,303) and Beijing PM2.5 (n=41,543): on a common 2,000-row sample SPADE
+     TIES linear NOTEARS (0.634 vs 0.649; 0.669 vs 0.669); on the full series SPADE leads in 3/3
+     resamples (0.688 vs 0.622; 0.742 vs 0.658). Scale check ran SPADE on a Colab T4 GPU.
+   - Spline-shape checks: working-day sign right 6/6 on daily data; temperature->casual edge nearly
+     pruned (vacuous); at hourly resolution the checked edges are almost entirely pruned (vacuous).
+4. Managerial illustration (Discussion 4.2), new abstract/contributions/conclusion, highlights, cover letter.
+5. Response letter rewritten for Revision 2 (response_to_reviewers.*; built by make_response.py).
+
+## Scripts (all committed)
+scripts/realworld_bike_sharing.py, scripts/realworld_large.py (pre-registration in docstring),
+scripts/realworld_bike_shapes.py, scripts/realworld_large_shapes.py, scripts/build_realworld_tables.py.
+Raw results: experimental_results/realworld_*.
+
+## Honest caveats
+- SPADE does not win on small hourly samples; its advantage there needs the full series.
+- Colab results for the scale check live in experimental_results/realworld_*_scale_log.txt and
+  realworld_large_scale_raw.csv (parsed from run logs; the VM was reclaimed before files could be pulled).
+- Wall-clock numbers in the hourly tables are omitted (shared-machine contention).
+
+---
+
 # SPADE — Revision 1 session notes (ARRAY-D-26-04878)
 
 Summary of the work done in this revision pass, kept for reference.
