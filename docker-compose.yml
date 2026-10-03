@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   zookeeper:
-    image: bitnami/zookeeper:3.9
+    image: soldevelo/zookeeper:3.9
     container_name: icoin-zookeeper
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
@@ -9,7 +9,7 @@ services:
       - "22181:2181"
 
   kafka:
-    image: bitnami/kafka:3.7
+    image: soldevelo/kafka:3.7
     container_name: icoin-kafka
     depends_on:
       - zookeeper
