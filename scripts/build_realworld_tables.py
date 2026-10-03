@@ -25,13 +25,13 @@ def agg(path):
 
 def table(rows, fh, show_time=True):
     best = max(v[0] for v in rows.values())
-    fh.write("\\resizebox{\\textwidth}{!}{%\n\\begin{tabular}{l" + "c" * (6 if show_time else 5) + "}\n\\toprule\n")
+    fh.write("\\begin{tabular}{l" + "c" * (6 if show_time else 5) + "}\n\\toprule\n")
     fh.write("Method & BK-AUROC & forbidden / edges & recovered & " + ("time (s) & " if show_time else "") + "$p$ vs.\\ SPADE & $n$ \\\\ \\midrule\n")
     for m, (mu, sd, fo, ed, po, pt, tm, pv, n) in rows.items():
         a = f"{mu:.3f}$\\pm${sd:.3f}"; a = f"\\textbf{{{a}}}" if mu == best else a
         nm = f"\\textbf{{{m}}}" if m == "SPADE" else m
         fh.write(f"{nm} & {a} & {fo:.1f} / {ed:.1f} & {po:.1f} / {pt} & " + (f"{tm:.1f} & " if show_time else "") + f"{pv or '--'} & {n} \\\\\n")
-    fh.write("\\bottomrule\n\\end{tabular}}\n")
+    fh.write("\\bottomrule\n\\end{tabular}\n")
 
 
 if __name__ == "__main__":
@@ -50,7 +50,7 @@ def scale_table():
     meths = [m for m in ORDER if m in set(d.method)]
     names = {"bike_hourly": "Hourly bike sharing ($n{=}17{,}303$)", "beijing": "Beijing PM2.5 ($n{=}41{,}543$)"}
     with open(os.path.join(FG, "tab_large_scale.tex"), "w") as fh:
-        fh.write("\\resizebox{\\textwidth}{!}{%\n\\begin{tabular}{l" + "c" * len(meths) + "}\n\\toprule\nDataset & " + " & ".join(meths) + " \\\\ \\midrule\n")
+        fh.write("\\begin{tabular}{l" + "c" * len(meths) + "}\n\\toprule\nDataset & " + " & ".join(meths) + " \\\\ \\midrule\n")
         for ds in ["bike_hourly", "beijing"]:
             g = d[d.dataset == ds]; best = max(g[g.method == m].bk_auroc.mean() for m in meths)
             cells = []
@@ -58,7 +58,7 @@ def scale_table():
                 x = g[g.method == m].bk_auroc; c = f"{x.mean():.3f}$\\pm${x.std():.3f}"
                 cells.append(f"\\textbf{{{c}}}" if x.mean() == best else c)
             fh.write(names[ds] + " & " + " & ".join(cells) + " \\\\\n")
-        fh.write("\\bottomrule\n\\end{tabular}}\n")
+        fh.write("\\bottomrule\n\\end{tabular}\n")
     print("wrote tab_large_scale.tex")
 
 

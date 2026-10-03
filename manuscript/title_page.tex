@@ -2,6 +2,8 @@
 %% Upload this as "Title page with author details".
 \documentclass[preprint,12pt,authoryear]{elsarticle}
 \usepackage{graphicx}
+\usepackage{url}
+\newcommand{\forecastmse}{0.029}
 \journal{Array}
 
 \begin{document}
@@ -10,11 +12,11 @@
 \title{{SPADE}: spline additive-noise {DAG} estimation for interpretable
 nonlinear causal discovery in managerial decision support}
 
-\author[inst1]{Quang-Vinh Dang\corref{cor1}}
+\author[inst1]{Quang-Vinh Dang\fnref{fn1}}
 \ead{vinh.dq4@buv.edu.vn}
 \author[inst2]{Dat Le}
 \ead{datla@uef.edu.vn}
-\author[inst3]{Minh Ngoc Dinh}
+\author[inst3]{Minh Ngoc Dinh\corref{cor1}}
 \ead{minh.dinh@maeducation.com}
 
 \affiliation[inst1]{organization={British University Vietnam},
@@ -28,25 +30,40 @@ nonlinear causal discovery in managerial decision support}
             country={Vietnam}}
 
 \cortext[cor1]{Corresponding author.}
+\fntext[fn1]{Manuscript submitted by Quang-Vinh Dang on behalf of all authors, for convenience of the submission process; the corresponding author is Minh Ngoc Dinh.}
 
 \begin{abstract}
 Understanding causal relationships in organizational time-series data is critical
 for managerial decision-making, yet forecasting systems often trade
 interpretability for accuracy. We introduce \textbf{SPADE} (SPline Additive-noise
 DAG Estimation), an information-systems artifact built on Kolmogorov--Arnold
-networks that jointly discovers interpretable non-linear causal structure and
-produces one-step forecasts from a single differentiable model. Its headline
-result is on non-linear instantaneous causal discovery, where learnable spline
-edges recover additive-noise DAGs at AUROC~$\approx$~0.92--0.95 across
-$d\in\{6,10,20\}$ once its group-lasso weight is properly tuned on genuinely
-held-out validation seeds, decisively outperforming every fixed-architecture,
-gradient-based DAG learner we test
-(DAGMA-nonlinear, GraN-DAG, NOTEARS-MLP) and the score-matching method SCORE
-at every width, and beating the score-matching method NoGAM at two of three
-widths, while training some
-$275$--$930\times$ faster than NoGAM. We ground the design in the
-identifiability theory of additive-noise models, evaluate transparently against
-recent baselines with threshold-free metrics, and report all limitations candidly.
+networks that, from a single differentiable model, learns an interpretable
+non-linear causal graph and produces one-step forecasts. SPADE predicts each
+variable \emph{only} through per-(cause, lag) B-spline edge functions of its
+candidate parents---an information bottleneck that makes the learned structure
+identifiable---with an edge-level group-lasso for sparsity and an optional
+acyclicity constraint on contemporaneous edges. We evaluate it against recent
+differentiable DAG learners (DAGMA, GraN-DAG, GOLEM, non-linear NOTEARS),
+score-matching ordering methods (SCORE, NoGAM), and temporal methods (PCMCI,
+VAR-LiNGAM), using threshold-free AUROC/AUPRC, paired significance tests, and
+hyperparameters tuned only on held-out seeds. On non-linear instantaneous DAGs
+SPADE attains AUROC~$\approx$~0.92--0.95 across widths $d\in\{6,10,20\}$,
+clearly ahead of every fixed-architecture gradient-based learner and of SCORE;
+against NoGAM the result is mixed (ahead at two of three widths, behind at
+$d{=}10$), while SPADE trains $275$--$930\times$ faster and exposes the edge
+functions that neither score-matching method provides. A variant with a dense
+backbone collapses to chance, confirming that the bottleneck drives
+identifiability. On lagged structure SPADE is perfect on linear graphs and
+competitive on non-linear ones, trailing the best conditioning-based methods;
+forecasting is competitive but not best (MSE~$\approx\forecastmse$ on an
+8-asset financial panel). On three public non-financial datasets (bike-sharing demand, daily and hourly, and Beijing air quality), scored against domain-certain background knowledge, SPADE leads on daily data, ties linear NOTEARS on $2{,}000$-row hourly samples, and leads on the full hourly series ($n=17{,}303$ and $41{,}543$). On the financial panel, the learned graph
+is stable well above chance (permutation test, $4.7\times$), but a stationary
+(returns) re-analysis collapses it to an uninformative graph, so the levels-based
+graph reflects shared non-stationary co-movement rather than validated causal
+structure. SPADE's spline edge functions expose linear, saturating, and
+threshold-like dependencies, supporting a ``glass-box'' decision-support tool for
+moderate-dimensional, non-linear business systems whose boundary conditions we
+state explicitly.
 \end{abstract}
 
 \begin{keyword}
@@ -58,19 +75,19 @@ Directed acyclic graphs
 \end{frontmatter}
 
 \section*{Author details}
-\noindent\textbf{Quang-Vinh Dang} (corresponding author) --- British University
+\noindent\textbf{Quang-Vinh Dang} (submitting author) --- British University
 Vietnam, Hung Yen, Vietnam; \texttt{vinh.dq4@buv.edu.vn}.\\
 \textbf{Dat Le} --- Ho Chi Minh City University of Economics and Finance, Ho Chi
 Minh City, Vietnam; \texttt{datla@uef.edu.vn}.\\
-\textbf{Minh Ngoc Dinh} --- Millennia Education, Ho Chi Minh City, Vietnam;
+\textbf{Minh Ngoc Dinh} (corresponding author) --- Millennia Education, Ho Chi Minh City, Vietnam;
 \texttt{minh.dinh@maeducation.com}.
 
 \section*{Declarations}
 \noindent\textbf{Funding.} This research received no specific grant from funding
 agencies in the public, commercial, or not-for-profit sectors.
-\emph{[Authors: amend if any funding applies.]}\\
+\\
 \textbf{Conflict of interest.} The authors declare no competing interests.\\
 \textbf{Data and code availability.} Code and data to reproduce all results are
-available in the accompanying repository.
+available at \url{https://github.com/vinhqdang/KAN_time_series}.
 
 \end{document}

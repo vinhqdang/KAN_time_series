@@ -11,6 +11,8 @@
 \usepackage{algorithmic}
 \usepackage{url}
 \usepackage{enumitem}
+\usepackage{adjustbox}
+\emergencystretch=3em
 
 % theorem environments
 \newtheorem{theorem}{Theorem}
@@ -39,11 +41,11 @@
 nonlinear causal discovery in managerial decision support}
 
 %% Array is single-blind: author details are included here.
-\author[inst1]{Quang-Vinh Dang\corref{cor1}}
+\author[inst1]{Quang-Vinh Dang\fnref{fn1}}
 \ead{vinh.dq4@buv.edu.vn}
 \author[inst2]{Dat Le}
 \ead{datla@uef.edu.vn}
-\author[inst3]{Minh Ngoc Dinh}
+\author[inst3]{Minh Ngoc Dinh\corref{cor1}}
 \ead{minh.dinh@maeducation.com}
 
 \affiliation[inst1]{organization={British University Vietnam},
@@ -53,6 +55,7 @@ nonlinear causal discovery in managerial decision support}
 \affiliation[inst3]{organization={Millennia Education},
             city={Ho Chi Minh City}, country={Vietnam}}
 \cortext[cor1]{Corresponding author.}
+\fntext[fn1]{Manuscript submitted by Quang-Vinh Dang on behalf of all authors, for convenience of the submission process; the corresponding author is Minh Ngoc Dinh.}
 
 \begin{abstract}
 Understanding causal relationships in organizational time-series data is critical

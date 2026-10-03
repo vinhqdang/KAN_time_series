@@ -4,11 +4,11 @@
 
 We evaluate SPADE on (i) synthetic data with known ground-truth graphs, (ii) a
 leakage-free forecasting protocol, (iii) a non-financial operations setting
-with partial ground truth from domain knowledge (daily bike-sharing demand,
-Section~\ref{sec:bike}), and (iv) real financial markets where no ground truth
-exists. All code and configurations are released for reproduction, and every
-number below is produced by the accompanying scripts rather than reported from a
-single tuned run. Corrections made to the benchmarks during development are
+with partial ground truth from domain knowledge (bike-sharing demand and
+Beijing air quality, Section~\ref{sec:bike}), and (iv) real financial markets where no ground truth
+exists. Code and configurations are provided as supplementary material, and every
+number below is produced by that code rather than reported from a single tuned
+run. Corrections made to the benchmarks during development are
 catalogued in Appendix~\ref{app:corrections}.
 
 \subsection{Datasets, baselines, metrics, and protocol}
@@ -110,7 +110,7 @@ F1 overall). SPADE beats every fixed-architecture gradient-based learner
 width, and beats the score-matching methods SCORE and NoGAM at $d{=}6,20$; NoGAM
 leads at $d{=}10$.}
 \label{tab:instdag}
-\input{figures/tab_instdag}
+\adjustbox{max width=\textwidth}{\input{figures/tab_instdag}}
 \end{table}
 
 Table~\ref{tab:instdag} and Figure~\ref{fig:instdag} show the result.
@@ -183,7 +183,7 @@ trailing, the classical/conditioning-based methods (PCMCI~0.999, VarLiNGAM~0.99,
 VAR-Lasso~0.98, GOLEM~0.99).
 
 \paragraph{Benchmark validity safeguards.} The non-linear lagged generator
-(\path{generate_nonlinear_scm}) permits cycles in its lagged summary graph and
+permits cycles in its lagged summary graph and
 includes an unbounded mechanism (a signed quadratic), so a minority of
 $(d,\text{seed})$ draws diverge to non-finite or extreme-scale data. Training or
 scoring on such a draw measures numerical failure rather than method quality, and
@@ -259,7 +259,7 @@ gains come from the identifiable architecture, not the DAG penalty alone.
 (mean over configurations $\times$ 3 seeds). AUROC/AUPRC are threshold-free;
 F1 uses each method's best threshold. Higher is better.}
 \label{tab:causal}
-\input{figures/tab_causal}
+\adjustbox{max width=\textwidth}{\input{figures/tab_causal}}
 \end{table}
 
 \begin{table}[t]
@@ -271,7 +271,7 @@ and Correlation ($p>0.05$), and trails
 PCMCI, VAR-LiNGAM, VAR-Lasso, and GOLEM
 ($p<0.01$).}
 \label{tab:causal_stats}
-\input{figures/tab_causal_stats}
+\adjustbox{max width=\textwidth}{\input{figures/tab_causal_stats}}
 \end{table}
 
 \subsection{Combined contemporaneous $+$ lagged structure (SVAR)}
@@ -301,7 +301,7 @@ that KAN edges add value precisely where mechanisms are non-linear.
 $+$ lagged edges (mean over 5 seeds). SPADE recovers both blocks and keeps
 $h(W_0)\!\to\!0$; on these non-linear instantaneous edges it beats linear NOTEARS.}
 \label{tab:contemp}
-\input{figures/tab_contemp}
+\adjustbox{max width=\textwidth}{\input{figures/tab_contemp}}
 \end{table}
 
 \subsection{Scalability and runtime}
@@ -322,7 +322,7 @@ spline evaluation and low-rank acyclicity (Section~\ref{sec:limits}).
 \caption{SPADE parameter count and fit time vs.\ graph width $d$
 (150 epochs, 4-core CPU). The vectorized implementation fits $d{=}50$ in seconds.}
 \label{tab:scale}
-\input{figures/tab_scale}
+\adjustbox{max width=\textwidth}{\input{figures/tab_scale}}
 \end{table}
 
 Accuracy, not merely runtime, scales: Table~\ref{tab:causal_byd} reports SPADE and
@@ -342,7 +342,7 @@ materially more compute.
 to the best baseline at every width tested, $d\in\{5,10,20,50\}$; see text for the
 benchmark safeguard and the width-dependent $\lambda_g$ used.}
 \label{tab:causal_byd}
-\input{figures/tab_causal_byd}
+\adjustbox{max width=\textwidth}{\input{figures/tab_causal_byd}}
 \end{table}
 
 \subsection{Forecasting}
@@ -381,7 +381,7 @@ normalization. MSE/MAE: lower is better. SPADE beats two of the four
 \texttt{+RevIN} baselines on MSE and trails the other two by a narrow margin,
 at a higher training cost than any of them.}
 \label{tab:forecast}
-\input{figures/tab_forecast}
+\adjustbox{max width=\textwidth}{\input{figures/tab_forecast}}
 \end{table}
 
 \paragraph{Evaluation-protocol check: normalization leakage.} Computing
@@ -399,7 +399,7 @@ forecasting number in this paper uses train-only statistics
 scaler lowers the reported MSE, which is why all results use train-only
 statistics.}
 \label{tab:leak}
-\input{figures/tab_leak}
+\adjustbox{max width=\textwidth}{\input{figures/tab_leak}}
 \end{table}
 
 \subsection{Ablation and sensitivity}
@@ -462,7 +462,7 @@ report as suggestive rather than as a tested equivalence.
 Fit time is per seed, same 150-epoch budget; ``--'' marks variants whose
 wall-clock was not measured.}
 \label{tab:ablation}
-\input{figures/tab_ablation}
+\adjustbox{max width=\textwidth}{\input{figures/tab_ablation}}
 \end{table}
 
 \paragraph{Sensitivity.}
@@ -478,7 +478,7 @@ $\lambda_g{=}0.01$, $G{=}8$ throughout.
 \caption{Sensitivity of SPADE to the group-lasso weight $\lambda_g$ and spline
 grid size $G$ on non-linear synthetic data (mean over 3 seeds).}
 \label{tab:sensitivity}
-\input{figures/tab_sensitivity}
+\adjustbox{max width=\textwidth}{\input{figures/tab_sensitivity}}
 \end{table}
 
 \subsection{Non-financial real data: demand planning and air quality}
@@ -501,9 +501,9 @@ forbidden ones ($0.5$ is chance). It is partial ground truth, not a full graph,
 and it rewards methods for learning the structure that managers already know to
 be true before trusting them on structure they do not.
 
-\paragraph{Protocol.} Every protocol below was written and committed before any
-method was run on the data (\path{scripts/realworld_bike_sharing.py},
-\path{scripts/realworld_large.py}), no hyperparameter was tuned on these data
+\paragraph{Protocol.} Every protocol below was fixed and time-stamped before any
+method was run on the data (the protocols are documented in the supplementary
+code), no hyperparameter was tuned on these data
 (SPADE uses its synthetic-benchmark settings; baselines use theirs), and
 uncertainty comes from a moving-block bootstrap (six resamples; the Wilcoxon
 test over six pairs cannot go below $p=0.031$). We use three datasets:
@@ -536,7 +536,7 @@ original data), forbidden edges among each method's top-12 edges (all edges for
 the binary-output SCORE and NoGAM), domain-certain edges recovered, run time, and
 paired Wilcoxon $p$ for SPADE versus each method.}
 \label{tab:bike_daily}
-\input{figures/tab_bike_daily}
+\adjustbox{max width=\textwidth}{\input{figures/tab_bike_daily}}
 \end{table}
 
 \paragraph{Learned edge shapes.} For SPADE we also check the \emph{functions} on
@@ -607,7 +607,7 @@ domain-certain edges recovered (of $9$), and paired Wilcoxon $p$ for SPADE
 versus each method. Linear NOTEARS and SPADE are statistically
 indistinguishable.}
 \label{tab:bike_hourly}
-\input{figures/tab_bike_hourly}
+\adjustbox{max width=\textwidth}{\input{figures/tab_bike_hourly}}
 \end{table}
 
 \begin{table}[t]
@@ -616,7 +616,7 @@ indistinguishable.}
 in Table~\ref{tab:bike_hourly}, with $10$ domain-certain edges. SPADE and linear
 NOTEARS tie at $0.669$.}
 \label{tab:beijing}
-\input{figures/tab_beijing}
+\adjustbox{max width=\textwidth}{\input{figures/tab_beijing}}
 \end{table}
 
 \begin{table}[t]
@@ -627,7 +627,7 @@ SPADE leads on both datasets in all three resamples. SPADE ran on a GPU
 here; the slower methods (SCORE, NoGAM, GraN-DAG, DAGMA-nonlinear) were not run
 at this size.}
 \label{tab:large_scale}
-\input{figures/tab_large_scale}
+\adjustbox{max width=\textwidth}{\input{figures/tab_large_scale}}
 \end{table}
 
 \paragraph{Caveats (all three datasets).} BK-AUROC measures agreement with known
@@ -727,7 +727,7 @@ result on returns}
 \label{sec:returns}
 A natural concern is that price levels are non-stationary. What happens if the causal analysis is redone on a genuinely stationary
 representation (log-returns) instead of price levels? We reran the identical
-pipeline (\path{scripts/extract_real_causal.py --returns}, same
+pipeline (same
 architecture, hyperparameters, window, and three rolling folds) on daily
 log-returns of the same eight assets. The honest answer is a negative result,
 and we report it rather than the more flattering levels-based graph alone.

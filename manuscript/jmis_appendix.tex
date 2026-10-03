@@ -95,7 +95,7 @@ learners approximate poorly (Section~\ref{sec:instdag}).
 \section{Reproducibility}
 \label{app:repro}
 
-All experiments use the released code and fixed seeds. Unless stated otherwise,
+All experiments use the supplementary code and fixed seeds. Unless stated otherwise,
 SPADE uses $E{=}150$ epochs (400 for the instantaneous-DAG study), learning rate
 $5\times10^{-3}$, spline grid $G{=}8$ of cubic ($p{=}3$) B-splines on
 $[-3,3]$, group-lasso weight $\lambda_g{=}10^{-2}$ (headline instantaneous-DAG
@@ -107,7 +107,7 @@ $0.955/0.969/0.969/0.959/0.948/0.940$; a paired Wilcoxon test of
 $\lambda_g=0.01$ against $5\times10^{-3}$ over the same twenty seeds gives
 $p=0.39$. The value $0.01$ therefore sits inside a broad plateau of statistically
 indistinguishable settings (its peak is at $0.008$), while $0.02$ is clearly
-outside it; the sweep script is \path{scripts/tune_instdag_lambda.py}),
+outside it),
 gradient clipping at $5.0$,
 and---when contemporaneous edges are modelled---an Augmented-Lagrangian schedule
 $(\rho_0,\alpha_0,\beta,K)=(1,0,2,50)$ with $\rho$ capped at $10^{10}$. Series are
@@ -131,16 +131,14 @@ extrapolate.
 \begingroup\sloppy
 Three further settings were fixed by held-out procedures that never touched
 the seeds used for a reported number: the forecasting epoch count (300, chosen on
-an inner train/validation split of the training fold;
-\path{scripts/tune_forecast_epochs.py}), the finite-and-bounded screen with
-deterministic reseeding for the non-linear lagged generator
-(Section~\ref{sec:synthetic}; scoped to
-\path{scripts/honest_causal_benchmark.py}), and the width-dependent
-$\lambda_g{=}0.002$ at $d{=}50$ (validation seeds 142--144;
-\path{scripts/tune_d50_lambda.py}; documented in \texttt{fit\_cdkan}'s
-docstring). The bike-sharing study (Section~\ref{sec:bike}) used no tuning at
-all: its protocol was fixed and committed before any method was run on that data
-(\path{scripts/realworld_bike_sharing.py}).
+an inner train/validation split of the training fold), the finite-and-bounded
+screen with deterministic reseeding for the non-linear lagged generator
+(Section~\ref{sec:synthetic}), and the width-dependent $\lambda_g{=}0.002$ at
+$d{=}50$ (validation seeds 142--144). The non-financial studies
+(Section~\ref{sec:bike}) used no tuning at all: their protocols (variable tiers,
+forbidden and positive edge sets, metric, resampling) were fixed and time-stamped
+before any method was run on those data. All sweeps and experiments are provided
+in the supplementary code.
 \endgroup
 
 \section{Technical supplement to Section~\ref{sec:method}}
