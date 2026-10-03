@@ -20,6 +20,11 @@ Reviewer 3 requires no change; Reviewers 2 and 4 had no round-2 comments yet.
 4. Managerial illustration (Discussion 4.2), new abstract/contributions/conclusion, highlights, cover letter.
 5. Response letter rewritten for Revision 2 (response_to_reviewers.*; built by make_response.py).
 
+## Submission bundle
+spade_latex_flat.zip = ONE main.tex (all sections, tables and the reference list inlined as thebibliography,
+no main.bbl / .bib needed) + 8 PNG figures, no subfolders. Compiles with plain pdflatex x2-3, no BibTeX.
+Rebuild: see the inline script used in the session (inline \\input files, replace \\bibliography with main.bbl content).
+
 ## Scripts (all committed)
 scripts/realworld_bike_sharing.py, scripts/realworld_large.py (pre-registration in docstring),
 scripts/realworld_bike_shapes.py, scripts/realworld_large_shapes.py, scripts/build_realworld_tables.py.
