@@ -1,3 +1,12 @@
+# STATUS: Revision 2 SUBMITTED (Elsevier Editorial Manager, Array, ARRAY-D-26-04878)
+
+Submitted by Quang-Vinh Dang on behalf of all authors, 03/10/2026 (VN time). Corresponding author on the
+manuscript: Minh Ngoc Dinh. Submitted package: single main.tex (reference list inlined, no .bbl) + 8 PNG figures
+(type "LaTeX source files" / "Figure"), declarations, response to reviewers (PDF + plaintext pasted per reviewer),
+cover letter, highlights, title page. Revision-1 files are superseded.
+
+Next: wait for the editor/reviewer decision. Nothing further to run; all results, protocols and scripts are on `main`.
+
 # SPADE — Revision 2 (ARRAY-D-26-04878)
 
 Reviewer 1 (round 2) asked for clearer exposition and real-world validation beyond finance;
