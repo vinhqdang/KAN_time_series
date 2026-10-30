@@ -41,7 +41,7 @@ def score(S, A):
     return au, ap, f1
 
 
-def fit(Xt, seed, lg=0.01, ep=400, weights=None, mask=None):
+def fit(Xt, seed, lg=0.01, ep=400, weights=None, mask=None, smooth=0.0):
     torch.manual_seed(seed); np.random.seed(seed)
     d = Xt.shape[1]; m = CausalKANInstant(d, grid_size=8)
     if mask is not None: m.selfmask.mul_(mask.unsqueeze(-1))
@@ -50,6 +50,8 @@ def fit(Xt, seed, lg=0.01, ep=400, weights=None, mask=None):
         opt.zero_grad(); pred = m(Xt); mse = ((pred - Xt) ** 2).mean(); h = m.h()
         norms = torch.linalg.vector_norm(m.coef * m.selfmask, dim=2)
         pen = (norms * weights).sum() if weights is not None else norms.sum()
+        if smooth > 0:
+            c = m.coef * m.selfmask; d2 = c[..., 2:] - 2 * c[..., 1:-1] + c[..., :-2]; pen = pen + (smooth / lg) * (d2 ** 2).sum()
         (mse + lg * pen + al * h + 0.5 * rho * h * h).backward()
         torch.nn.utils.clip_grad_norm_(m.parameters(), 5.0); opt.step()
         if (e + 1) % 50 == 0:

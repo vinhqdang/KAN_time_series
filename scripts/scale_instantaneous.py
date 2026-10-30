@@ -29,7 +29,7 @@ def screen_mask(Z, K, seed):
     for e in range(d):
         others = [j for j in range(d) if j != e]
         et = ExtraTreesRegressor(n_estimators=40, max_depth=8, min_samples_leaf=20, max_features=0.5,
-                                 n_jobs=4, random_state=seed + e).fit(Z[:, others], Z[:, e])
+                                 n_jobs=int(os.environ.get("NJOBS", 2)), random_state=seed + e).fit(Z[:, others], Z[:, e])
         top = np.argsort(-et.feature_importances_)[:K]
         for t in top: M[e, others[t]] = 1
     return torch.tensor(M)

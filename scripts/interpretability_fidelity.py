@@ -75,42 +75,52 @@ def r2_affine(phi, f):
 
 
 def cls(v):
-    rng = v.max() - v.min(); dv = np.diff(v); thr = 0.05 * rng / len(dv) * 4
-    inc, dec = (dv > thr).any(), (dv < -thr).any()
-    return "non-monotone" if inc and dec else ("increasing" if inc else ("decreasing" if dec else "flat"))
+    """qualitative class from total upward vs downward movement (a wiggle below 15% of the range is ignored)."""
+    rng = v.max() - v.min() + 1e-12; dv = np.diff(v); up, dn = dv[dv > 0].sum() / rng, -dv[dv < 0].sum() / rng
+    if min(up, dn) > 0.15: return "non-monotone"
+    return "increasing" if up >= dn else "decreasing"
+
+
+SMOOTH = float(os.environ.get("SMOOTH", 0)); SEEDS = range(int(os.environ.get("S0", 400)), int(os.environ.get("S1", 420))); OUT = os.environ.get("OUTCSV", "experimental_results/x3_fidelity_raw.csv")
 
 
 def main():
     rows = []; xs = np.linspace(-2, 2, 81)
     for d in (6, 10):
-        for seed in range(400, 420):
+        for seed in SEEDS:
             X, A = generate_instantaneous_anm(1500, d, seed=seed); Z = zscore(X); Xt = torch.tensor(Z)
             # standardization changes the x-axis scale of each cause; map xs (standardized) back to raw units
             mu, sd = X.mean(0), X.std(0) + 1e-8
             models = {}
             models["SPADE"] = fit(Xt, seed, 0.01)
+            if SMOOTH:
+                models["SPADE-smooth"] = fit(Xt, seed, 0.01, smooth=SMOOTH)
+                imp1 = models["SPADE"].importance(Xt); thr = torch.sort(imp1.flatten(), descending=True)[0][2 * d - 1]
+                mask = (imp1 >= thr).float(); mask.fill_diagonal_(0)
+                models["SPADE-2stage"] = fit(Xt, seed, 0.001, mask=mask, smooth=SMOOTH)   # structure from stage 1, smooth display refit
             models["MLP-edge"] = train(MLPEdgeInstant(d), Xt, seed)
             Atrue = np.argwhere(A == 1)
             for name, m in models.items():
-                imp = importance(m, Xt)                              # [cause, effect]
+                imp = importance(models['SPADE'] if name == 'SPADE-2stage' else m, Xt)   # [cause, effect]; 2-stage ranks with stage 1
                 k = len(Atrue); flat = np.argsort(-imp.flatten())[:k]
                 found = {(i // d, i % d) for i in flat}
                 for c, e in Atrue:
-                    if (c, e) not in found: continue
                     xt = torch.zeros(len(xs), d); xt[:, c] = torch.tensor(xs, dtype=torch.float32)
                     with torch.no_grad():
-                        if name == "SPADE":
-                            b = m._bases(xt); phi = (b @ (m.coef * m.selfmask)[e, c]).numpy()
+                        if name.startswith("SPADE"):
+                            b = m._bases(xt); phi = (b[:, c, :] @ (m.coef * m.selfmask)[e, c]).numpy()
                         else:
                             phi = m.edge(xt)[:, e, c].numpy()
                     f = true_curve(seed, c, e, mu[c] + sd[c] * xs, d)
                     lin = np.polyfit(xs, f, 1); linear_phi = np.polyval(lin, xs)   # best possible linear (oracle slope)
-                    rows.append(dict(d=d, seed=seed, method=name, c=c, e=e, r2=r2_affine(phi, f),
+                    rows.append(dict(d=d, seed=seed, method=name, c=c, e=e, found=(c, e) in found, r2=r2_affine(phi, f),
                                      cls_ok=cls(phi) == cls(f), linear_oracle_r2=r2_affine(linear_phi, f)))
             print(f"d={d} seed={seed} done", flush=True)
-            pd.DataFrame(rows).to_csv("experimental_results/x3_fidelity_raw.csv", index=False)
+            pd.DataFrame(rows).to_csv(OUT, index=False)
     df = pd.DataFrame(rows)
-    print(df.groupby(["d", "method"]).agg(r2=("r2", "mean"), cls_ok=("cls_ok", "mean"), lin_oracle=("linear_oracle_r2", "mean"), n=("r2", "size")).round(3))
+    df["nonlinear"] = df.linear_oracle_r2 < 0.5       # edges a straight line cannot describe (sin, quadratic)
+    print("all true edges"); print(df.groupby(["d", "method"]).agg(r2=("r2", "mean"), cls_ok=("cls_ok", "mean"), lin_oracle=("linear_oracle_r2", "mean"), found=("found", "mean"), n=("r2", "size")).round(3))
+    print("strongly non-linear true edges only"); print(df[df.nonlinear].groupby(["d", "method"]).agg(r2=("r2", "mean"), cls_ok=("cls_ok", "mean"), lin_oracle=("linear_oracle_r2", "mean"), found=("found", "mean"), n=("r2", "size")).round(3))
 
 
 if __name__ == "__main__":

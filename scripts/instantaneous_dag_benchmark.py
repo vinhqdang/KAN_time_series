@@ -14,7 +14,7 @@ warnings.filterwarnings("ignore")
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 import numpy as np, torch
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
-torch.set_num_threads(4)
+torch.set_num_threads(int(os.environ.get("SPADE_THREADS", 4)))
 from src.synthetic import generate_instantaneous_anm
 from src.cdkan.causal_kan import CausalKANInstant
 from src.cdkan.losses import _h_notears
