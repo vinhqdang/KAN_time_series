@@ -77,7 +77,7 @@ if __name__ == "__main__":
     ytr, yv = ytr.squeeze(1), yv.squeeze(1); rows = []
     # naive reference: predict the last observed value
     naive = float(((Xv[:, -1, :] - yv) ** 2).mean()); print(f"naive last-value inner-val MSE (scaled units) = {naive:.5f}")
-    for name, cfg in VARIANTS.items():
+    for name, cfg in ({} if os.environ.get('ONLY_FAST') else VARIANTS).items():
         for seed in (42, 43, 44):
             torch.manual_seed(seed); np.random.seed(seed)
             m = Forecaster(d, cfg["residual"]); t0 = time.time()
