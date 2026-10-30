@@ -93,8 +93,8 @@ if __name__ == "__main__":
             run(d, range(500, 503), cfg, out=os.path.join(ER, f"x4_validation_d{d}.csv"))
     if mode == "final":
         FROZEN = dict(c=0.2, K=15)                       # selected on validation seeds 500-502 (see x4_validation_d*.csv)
-        for d in (50, 100, 200):
+        for d in [int(x) for x in os.environ.get("DS", "50,100,200").split(",")]:
             cfg = {"SPADE (lg=0.01)": lambda X, s: spade(X, s, 0.01),
                    "SPADE-scaled (lg=c/d,K=15)": lambda X, s, d=d: spade(X, s, lg_rule(d, FROZEN["c"]), FROZEN["K"])}
-            base = baselines() if d <= 100 else {k: v for k, v in baselines().items() if k in ("NOTEARS-linear", "DAGMA-linear")}
+            base = baselines() if d <= 50 else {k: v for k, v in baselines().items() if k in ("NOTEARS-linear", "DAGMA-linear")}   # GOLEM / NOTEARS-MLP need >15 min per fit at d=50 and are skipped beyond it
             run(d, range(600, 603), cfg, base=base, out=os.path.join(ER, f"x4_final_d{d}.csv"))
