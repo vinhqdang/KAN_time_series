@@ -28,7 +28,7 @@ from sklearn.metrics import roc_auc_score, average_precision_score, f1_score
 torch.set_default_dtype(torch.float32)
 
 
-def zscore(X): return (X - X.mean(0, keepdims=True)) / (X.std(0, keepdims=True) + 1e-8)
+def zscore(X): return ((X - X.mean(0, keepdims=True)) / (X.std(0, keepdims=True) + 1e-8)).astype(np.float32)
 
 
 def score(S, A):

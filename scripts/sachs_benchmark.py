@@ -58,12 +58,15 @@ def main():
     methods = {k: v for k, v in METHODS.items() if k != "SPADE"}
     methods.update({("SPADE" if k == "base" else f"SPADE-{k}"): v for k, v in variants.items()})
     fast = ["NOTEARS-linear", "DAGMA-linear", "GOLEM", "NOTEARS-MLP"] + [k for k in methods if k.startswith("SPADE")]
-    rows = []; out = os.path.join(ROOT, "experimental_results", "sachs_raw.csv")
+    out = os.path.join(ROOT, "experimental_results", "sachs_raw.csv")
+    rows = pd.read_csv(out).query("status == 'ok'").to_dict("records") if os.path.exists(out) else []   # resume
+    done = {(r['part'], int(r['resample']), r['method']) for r in rows}
     jobs = [(r, "primary", X[np.random.RandomState(r).choice(n_all, 2000, replace=False)], list(methods)) for r in range(10)]
     jobs.append((0, "full", X, fast))
     for r, part, Xs, ms in jobs:
         Xs = (Xs - Xs.mean(0)) / Xs.std(0)
         for m in ms:
+            if (part, r, m) in done: continue
             fn = methods[m]; t0 = time.time()
             try:
                 S = fn(Xs, r) if m not in variants and not m.startswith("SPADE-") and m != "SPADE" else fn(Xs, r)

@@ -91,3 +91,10 @@ if __name__ == "__main__":
                    f"lg=c/d,c=0.2,K=15": lambda X, s, d=d: spade(X, s, lg_rule(d, 0.2), 15),
                    f"lg=0.01,K=8": lambda X, s: spade(X, s, 0.01, 8)}
             run(d, range(500, 503), cfg, out=os.path.join(ER, f"x4_validation_d{d}.csv"))
+    if mode == "final":
+        FROZEN = dict(c=0.2, K=15)                       # selected on validation seeds 500-502 (see x4_validation_d*.csv)
+        for d in (50, 100, 200):
+            cfg = {"SPADE (lg=0.01)": lambda X, s: spade(X, s, 0.01),
+                   "SPADE-scaled (lg=c/d,K=15)": lambda X, s, d=d: spade(X, s, lg_rule(d, FROZEN["c"]), FROZEN["K"])}
+            base = baselines() if d <= 100 else {k: v for k, v in baselines().items() if k in ("NOTEARS-linear", "DAGMA-linear")}
+            run(d, range(600, 603), cfg, base=base, out=os.path.join(ER, f"x4_final_d{d}.csv"))
