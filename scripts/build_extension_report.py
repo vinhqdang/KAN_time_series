@@ -53,8 +53,7 @@ P("\n`SPADE` = raw fitted splines; `SPADE-2stage` = same structure, curves from 
 P("## X4. Scale (fresh seeds 600-602, n=3,000)\n")
 rows = []
 for dd in (50, 100, 200):
-    fp = os.path.join(ER, f"x4_final_d{dd}.csv")
-    if os.path.exists(fp): rows.append(pd.read_csv(fp))
+    for fp in sorted(glob.glob(os.path.join(ER, f"x4_final_d{dd}*.csv"))): rows.append(pd.read_csv(fp))
 x4 = pd.concat(rows); sp = os.path.join(ER, "x4_score.csv")
 if os.path.exists(sp): x4 = pd.concat([x4, pd.read_csv(sp)])
 P(md(x4.groupby(["d", "method"]).agg(auroc=("auroc", "mean"), auroc_sd=("auroc", "std"), auprc=("auprc", "mean"), n=("auroc", "size")).round(3)))

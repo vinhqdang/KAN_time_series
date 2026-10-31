@@ -97,4 +97,5 @@ if __name__ == "__main__":
             cfg = {"SPADE (lg=0.01)": lambda X, s: spade(X, s, 0.01),
                    "SPADE-scaled (lg=c/d,K=15)": lambda X, s, d=d: spade(X, s, lg_rule(d, FROZEN["c"]), FROZEN["K"])}
             base = baselines() if d <= 50 else {k: v for k, v in baselines().items() if k in ("NOTEARS-linear", "DAGMA-linear")}   # GOLEM / NOTEARS-MLP need >15 min per fit at d=50 and are skipped beyond it
-            run(d, range(600, 603), cfg, base=base, out=os.path.join(ER, f"x4_final_d{d}.csv"))
+            sd = [int(x) for x in os.environ.get("SEEDS", "600,601,602").split(",")]; suf = os.environ.get("SUFFIX", "")
+            run(d, sd, cfg, base=base, out=os.path.join(ER, f"x4_final_d{d}{suf}.csv"))

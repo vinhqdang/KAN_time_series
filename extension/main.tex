@@ -1,0 +1,150 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{times,amsmath,amssymb,booktabs,graphicx,adjustbox,url,natbib}
+\usepackage{hyperref}
+\emergencystretch=3em
+\title{Scaling and reading interpretable spline causal discovery:\\
+adaptive sparsity, parent screening, and shape-faithful edge functions}
+\author{[authors to be confirmed]}
+\date{}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+SPADE learns a non-linear additive-noise DAG whose edges are B-spline functions, so every learned
+dependency can be plotted and inspected. It has three practical weaknesses: its group-lasso weight must
+shrink with the number of variables $d$, it shrinks strong edges as much as weak ones, and its raw spline
+curves wiggle, which hides the shapes it is meant to expose. We address each. (i) An adaptive group-lasso
+averaged over half-sample fits (SPADE-AB) raises instantaneous-DAG AUROC by $0.014$ on fresh seeds
+(Wilcoxon $p=0.004$, $n=45$ runs). (ii) A width-aware penalty $\lambda_g=\min(0.01,0.2/d)$ with
+per-node parent screening keeps AUROC at $0.96$ to $0.98$ for $d=50$ to $200$, where the fixed
+penalty collapses to $0.58$ to $0.82$. (iii) A smoothness-penalized refit of the retained edges lifts the
+agreement between learned and true curve class from $0.12$--$0.25$ to $0.93$--$0.94$ without changing the
+recovered structure. On the Sachs protein-signalling network, the one real benchmark with a ground-truth graph that
+we use, SPADE-AB attains AUROC $0.664$ against at most $0.566$ for the other methods tested, although absolute
+accuracy remains low. We state the limits: all comparisons at $d\ge100$ are against linear baselines
+(non-linear competitors do not run at that size), and the synthetic gains are modest.
+\end{abstract}
+
+\section{Introduction}
+SPADE \citep{Dang2026spade} couples Kolmogorov--Arnold-style B-spline edge functions \citep{Liu2024} with
+an acyclicity constraint \citep{Zheng2018} and a group-lasso, giving a non-linear causal graph whose edges
+are readable curves. Its published evaluation stopped at $d=50$ and used one fixed sparsity weight. This
+paper asks three questions a practitioner would ask next. Does it work at hundreds of variables? Can the
+sparsity step be made less biased? And are the curves it draws actually faithful to the mechanisms that
+generated the data, which is the property that justifies calling the model interpretable? We answer with
+protocols fixed before the final runs, candidates chosen on validation data disjoint from the evaluation
+data, and failures reported.
+
+\section{Method}
+\paragraph{Base model.} Each variable $x_i$ is predicted only through spline edges of its candidate
+causes, $\hat x_i=b_i+\sum_{j\ne i}\phi_{ij}(x_j)$, trained with MSE, a group-lasso
+$\lambda_g\sum_{ij}\lVert\theta_{ij}\rVert_2$ over the coefficient vector of each edge, and the NOTEARS
+penalty on the edge-norm matrix \citep{Zheng2018}. Edge scores are the standard deviation of each edge's
+contribution.
+
+\paragraph{SPADE-AB (adaptive sparsity with averaging).} Stage 1 is the base fit. Stage 2 refits with
+weights $w_{ij}=(\lVert\theta_{ij}\rVert+\epsilon)^{-1}$ normalized to unit mean (adaptive group-lasso,
+\citealt{Zou2006}), which penalizes weak edges more and strong edges less. The final score is the mean of
+max-normalized scores over five fits on random half samples. On validation seeds neither the adaptive step
+nor the averaging alone was reliably better; the combination had the best mean AUROC at all three widths.
+Plain adaptive fitting was no better than the base fit and refitting without penalty was worse
+(Table~\ref{tab:valsel}).
+
+\paragraph{Width-aware penalty and parent screening.} The group-lasso sums over $d(d-1)$ edges, so a fixed
+$\lambda_g$ over-penalizes as $d$ grows. We use $\lambda_g(d)=\min(0.01,c/d)$, and before fitting keep for
+each node only the $K$ candidate causes with the highest ExtraTrees importance, masking all other edges.
+$c=0.2$ and $K=15$ were chosen on validation graphs at $d=50$ and $100$.
+
+\paragraph{Shape-faithful display refit.} Raw spline coefficients are unconstrained at the grid tails and
+produce spurious wiggles. After structure is fixed, we refit the retained edges (top $2d$ by score) with a
+second-difference penalty $0.01\sum\lVert D^2\theta_{ij}\rVert^2$ and plot those curves. Structure
+(ranking) always comes from the unsmoothed fit, so the display step cannot change which edges are found.
+
+\section{Experiments}
+Instantaneous data come from a non-linear additive-noise generator with non-Gaussian noise (mechanisms
+$\tanh$, $\sin$, quadratic, rational). Validation and evaluation seeds are disjoint throughout. Baselines are
+run at their reference settings as in the original SPADE study.
+
+\subsection{Sparsity: SPADE-AB}
+\begin{table}[t]\centering\small
+\caption{Fresh seeds (300--319 for $d=6,10$; 300--304 for $d=20$): instantaneous-DAG recovery.}
+\label{tab:ab}
+\input{tab_ab}
+\end{table}
+Table~\ref{tab:ab} shows consistent gains. Pooled over the 45 runs the paired difference is
+\input{ab_stats}. The gain per width is small and
+not individually significant; only the pooled test is. In an earlier comparison SPADE trailed NoGAM at
+$d=10$ (0.926 vs 0.955); with SPADE-AB the gap on the same seeds narrows from 0.063 to 0.015 but does not close.
+\emph{Environment note.} Re-running the base SPADE in a newer library environment gave $d=10$ AUROC $0.892$ on the
+official seeds, below the originally reported $0.926$. Single-run variance across library versions is therefore
+about $\pm0.03$ at $d=10$, comparable to some of the gains reported here, which is why we rely on paired,
+same-environment comparisons.
+
+\begin{table}[t]\centering\small
+\caption{Validation selection (seeds 200--219, $d=6,10$; 200--204, $d=20$): mean AUROC.}
+\label{tab:valsel}
+\begin{tabular}{lccc}\toprule Variant & $d{=}6$ & $d{=}10$ & $d{=}20$\\\midrule
+base & 0.958 & 0.923 & 0.871\\ adaptive & 0.952 & 0.917 & 0.871\\ refit (no penalty) & 0.930 & 0.900 & 0.855\\
+bootstrap average & 0.971 & 0.939 & 0.877\\ adaptive + average (SPADE-AB) & 0.974 & 0.947 & 0.893\\\bottomrule\end{tabular}
+\end{table}
+
+\subsection{Scale: $d=50$ to $200$}
+\begin{table}[t]\centering\small
+\caption{Fresh seeds 600--602, $n=3{,}000$. SPADE-scaled: $\lambda_g=\min(0.01,0.2/d)$ and parent screening
+($K=15$). GOLEM and NOTEARS-MLP were run only at $d=50$ (each fit exceeded 15 minutes); non-linear competitors
+(NoGAM, DAGMA-nonlinear, GraN-DAG) cannot run at $d\ge100$ and SCORE did not finish within our budget.}
+\label{tab:scale}
+\adjustbox{max width=\textwidth}{\input{tab_scale}}
+\end{table}
+Table~\ref{tab:scale} shows the fixed penalty collapsing as $d$ grows, while the width-aware rule with screening
+holds AUROC near $0.96$--$0.98$. The comparison at $d\ge100$ is only against linear methods, which are
+mis-specified for this data; it shows SPADE-scaled works at this size, not that it beats the best non-linear learner.
+Run times are not reported because jobs shared a four-core machine.
+
+\subsection{Interpretability, measured}
+For every true edge that a method ranks within its top-$|E|$ scored edges, we compare the learned curve with the
+true mechanism: $R^2$ of the best affine map, and agreement of the qualitative class (increasing, decreasing,
+non-monotone). ``Strongly non-linear'' edges are those a straight line explains less than half of (sin and quadratic).
+\begin{table}[t]\centering\small
+\caption{Shape fidelity on fresh seeds 400--419. MLP-edge: same bottleneck, penalty and budget with $1\!\to\!3\!\to\!1$
+$\tanh$ edges. SPADE-2stage: structure from the plain SPADE fit, curves from the smoothed refit.}
+\label{tab:fid}
+\adjustbox{max width=\textwidth}{\input{tab_fidelity}}
+\end{table}
+Table~\ref{tab:fid} has two messages. First, raw SPADE curves recover the right values ($R^2\approx0.91$) but the wrong
+qualitative class on most edges, because of wiggles; the smoothed display refit repairs this ($0.93$--$0.94$) and
+reaches the best $R^2$ ($0.96$). Second, on strongly non-linear edges, SPADE finds many more of them than the
+matched-capacity MLP edges and recovers their shape far better. The ``found'' rule uses the true number of
+edges, so it favours no method but is an oracle count. A metric computed in an early run was wrong because of an
+indexing error (the curve was read from the wrong input column); we fixed it and re-ran before any result was used.
+
+\subsection{A real benchmark with ground truth: Sachs}
+The Sachs data are 7{,}466 single-cell measurements of 11 phospho-proteins with an 18-edge consensus graph. We use
+10 random subsamples of 2{,}000 cells after a log transform; no method is tuned on these data.
+\begin{table}[t]\centering\small
+\caption{Sachs, 10 subsamples of $2{,}000$ cells (chance AUPRC $=0.164$). SPADE-AB and plain SPADE use the settings
+fixed on synthetic data.}
+\label{tab:sachs}
+\input{tab_sachs}
+\end{table}
+SPADE-AB is best (Table~\ref{tab:sachs}); it beats every other method in 8 or more of 10 resamples ($p\le0.010$).
+Absolute accuracy is low: it recovers about 6 of the 18 edges among its top 18. Sachs is difficult for all methods,
+and this result shows relative rather than good performance.
+
+\section{Limitations}
+(1) Gains from SPADE-AB are modest. (2) At $d\ge100$ only linear baselines were run. (3) The parent screening step
+can discard true parents, so recall is bounded by the screen. (4) The interpretability metric uses synthetic
+mechanisms and an oracle edge count; it is not a human study. (5) Sachs is a single real data set. (6) On the
+financial and weather series we tried, no learned one-step forecaster beat a naive last-value prediction, SPADE
+variants included, so we make no forecasting claim.
+
+\section{Conclusion}
+A width-aware penalty with parent screening makes SPADE usable at $d=200$; adaptive, averaged sparsity gives a small
+but consistent accuracy gain; and a smoothed display refit makes the learned curves match the true mechanism's class
+without altering the recovered graph. The next step is a comparison with non-linear learners at $d\ge100$ and a
+human study of whether the curves change decisions.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+\end{document}
