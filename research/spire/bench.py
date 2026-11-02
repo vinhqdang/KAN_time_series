@@ -16,6 +16,7 @@ from spade_variants import zscore, score
 import shape_bench as G2
 from spire import fit_spire, spire_curve
 from basil import fit_basil
+from basil_s import fit_basil_s
 
 
 def gen(n, d, seed, noise="unif"):
@@ -83,7 +84,7 @@ def run_method(name, X, A, f, sd, seed):
             elif tok[0] == "E": kw["T"] = int(tok[1:])
         S, model = fit_spire(Xz, seed, return_model=True, **kw)
         cr = edge_curve_metrics(lambda c, e, xs: spire_curve(model, c, e, xs), Xz, A, f, sd)
-    elif name.startswith("BASIL"):
+    elif name.startswith("BASIL") and not name.startswith("BASILS"):
         gm, pm_, kmax = 1.0, 1.0, 3
         for tok in name.split("_")[1:]:
             if tok[0] == "g": gm = float(tok[1:])
@@ -97,6 +98,26 @@ def run_method(name, X, A, f, sd, seed):
             lo_, hi_ = o["band"](c, e); gt = f[(c, e)](Xz[:, c].astype(float)) / sd[e]; gt = gt - gt.mean()
             cover.append(np.mean((gt >= lo_ - 1e-9) & (gt <= hi_ + 1e-9)))
         EXTRA.update(cover=float(np.mean(cover)), rhat=o["rhat"], gap=o["chain_gap"])
+    elif name.startswith("BASILS"):
+        kw = {}
+        for tok in name.split("_")[1:]:
+            if tok[0] == "m": kw["m"] = int(tok[1:])
+            elif tok[0] == "i": kw["iters"] = int(float(tok[1:]) * Xz.shape[1])
+            elif tok[0] == "c": kw["chains"] = int(tok[1:])
+            elif tok[0] == "G": kw["init"] = "greedy"
+            elif tok[0] == "S": kw["select"] = True
+        o = fit_basil_s(Xz, seed, **kw); S = o["P"]
+        cr = edge_curve_metrics(lambda c, e, xs: o["mean_curve"](c, e), Xz, A, f, sd)
+        rec = np.mean([c in o["cand"][e] for c, e in zip(*np.nonzero(A))])
+        EXTRA.update(recall=float(rec), gap=o["trace_gap"], score_final=o["final_score"])
+    elif name == "SPADE-scaled-curves":
+        import scale_instantaneous as SI
+        Zs = SI.zscore(X); Xt_ = torch.tensor(Zs); mk = SI.screen_mask(Zs, 15, seed)
+        mm = SI.fit(Xt_, seed, SI.lg_rule(X.shape[1], 0.2), ep=400, mask=mk); S = SI.chunked_importance(mm, Xt_)
+        cr = spade_curve_metrics(mm, Xt_, A, f, sd)
+    elif name == "SPADE-scaled":
+        import scale_instantaneous as SI
+        S = SI.spade(X, seed, SI.lg_rule(X.shape[1], 0.2), 15)
     elif name == "SPADE":
         m = spade_fit(Xt, seed); S = m.importance(Xt).numpy().T; cr = spade_curve_metrics(m, Xt, A, f, sd)
     elif name == "SPADE-adaptive":

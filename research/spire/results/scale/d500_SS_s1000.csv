@@ -1,0 +1,2 @@
+d,n,noise,seed,method,auroc,auprc,skel_auroc,orient,curve_r2,slope,ece,nnz,n_edges,time
+500,1000,unif,1000,SPADE-scaled,0.9994096074221129,0.7845309605877977,0.9997018875207174,0.9198218262806236,,,,7500,449,523.4688737392426

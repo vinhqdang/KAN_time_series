@@ -1,0 +1,5 @@
+results/scale/d200_C_s1000.csv 200 1000 unif 1000 1003 BASILS_m20_i1800_G_S
+results/scale/d200_C_s1003.csv 200 1000 unif 1003 1005 BASILS_m20_i1800_G_S
+results/scale/d500_B_s1000.csv 500 1000 unif 1000 1003 BASILS_m20_i600
+results/scale/d100_C_s1000.csv 100 1000 unif 1000 1005 BASILS_m20_i1800_G_S
+results/scale/d500_SS_s1000.csv 500 1000 unif 1000 1002 SPADE-scaled

@@ -1,0 +1,5 @@
+results/scale/d200_B_s1000.csv 200 1000 unif 1000 1005 BASILS_m20_i600,var-sortnregress
+results/scale/d100_B_s1000.csv 100 1000 unif 1000 1005 BASILS_m20_i600,var-sortnregress
+results/scale/d200_SS_s1000.csv 200 1000 unif 1000 1003 SPADE-scaled
+results/scale/d200_SS_s1003.csv 200 1000 unif 1003 1005 SPADE-scaled
+results/scale/d100_SS_s1000.csv 100 1000 unif 1000 1005 SPADE-scaled
