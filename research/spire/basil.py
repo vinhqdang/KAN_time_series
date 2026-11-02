@@ -4,17 +4,18 @@ import itertools, math, numpy as np, torch
 from src.cdkan.causal_kan import CausalKANInstant
 
 
-def whitened_features(X, G=8):
+def whitened_features(X, G=8, return_T=False):
     n, d = X.shape
     helper = CausalKANInstant(d, grid_size=G)
     Bs = helper._bases(torch.as_tensor(X, dtype=torch.float64)).double().numpy()     # [n,d,K]
     Bc = Bs - Bs.mean(0, keepdims=True); K = Bc.shape[2]; Kc = K - 1
-    Z = np.zeros((n, d, Kc))
+    Z = np.zeros((n, d, Kc)); T = np.zeros((d, K, Kc)); Tst = np.zeros((d, K, Kc))
     for j in range(d):
         ev, U = np.linalg.eigh(Bc[:, j].T @ Bc[:, j] / n)
         ev, U = ev[::-1][:Kc], U[:, ::-1][:, :Kc]
-        Z[:, j] = Bc[:, j] @ (U / np.sqrt(ev + 1e-9))
-    return Z, Kc
+        T[j] = U / np.sqrt(ev + 1e-9); Z[:, j] = Bc[:, j] @ T[j]
+        lam = 1e-3 * ev.max(); Tst[j] = U * (np.sqrt(ev + 1e-9) / (ev + lam))      # ridge-stabilised map u -> theta (post-hoc, prediction only)
+    return (Z, Kc, T, Tst) if return_T else (Z, Kc)
 
 
 def lse(a):

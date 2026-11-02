@@ -1,0 +1,16 @@
+results/do_stab/d500_unif_m1_n1000_s1001.csv 500 1000 unif 1001 1002 BASILWs m1
+results/do_stab/d100_hetero_m1_n1000_s1004.csv 100 1000 hetero 1004 1005 BASILWs m1
+results/do_stab/d100_unif_m1_n500_s1004.csv 100 500 unif 1004 1005 BASILWs m1
+results/do_stab/d200_unif_m1_n1000_s1004.csv 200 1000 unif 1004 1005 BASILWs m1
+results/do_stab/d100_hetero_m1_n1000_s1003.csv 100 1000 hetero 1003 1004 BASILWs m1
+results/do_stab/d100_unif_m1_n500_s1003.csv 100 500 unif 1003 1004 BASILWs m1
+results/do_stab/d200_unif_m1_n1000_s1003.csv 200 1000 unif 1003 1004 BASILWs m1
+results/do_stab/d100_hetero_m1_n1000_s1002.csv 100 1000 hetero 1002 1003 BASILWs m1
+results/do_stab/d100_unif_m1_n500_s1002.csv 100 500 unif 1002 1003 BASILWs m1
+results/do_stab/d200_unif_m1_n1000_s1002.csv 200 1000 unif 1002 1003 BASILWs m1
+results/do_stab/d100_hetero_m1_n1000_s1001.csv 100 1000 hetero 1001 1002 BASILWs m1
+results/do_stab/d100_unif_m1_n500_s1001.csv 100 500 unif 1001 1002 BASILWs m1
+results/do_stab/d200_unif_m1_n1000_s1001.csv 200 1000 unif 1001 1002 BASILWs m1
+results/do_stab/d100_hetero_m1_n1000_s1000.csv 100 1000 hetero 1000 1001 BASILWs m1
+results/do_stab/d100_unif_m1_n500_s1000.csv 100 500 unif 1000 1001 BASILWs m1
+results/do_stab/d200_unif_m1_n1000_s1000.csv 200 1000 unif 1000 1001 BASILWs m1

@@ -1,0 +1,25 @@
+BASILWs (ridge-stabilised coefficient map) vs original rows, re-run cells only
+100|hetero|m1|n1000 BASILWs direct 0.212 indirect 0.474 (max indirect 0.63); orig:
+          do_direct  do_indirect
+method                          
+BASILW        0.216        1.546
+SSC           0.720        0.927
+SSR_k1.5      0.271        0.518
+100|unif|m1|n500 BASILWs direct 0.193 indirect 0.317 (max indirect 0.41); orig:
+          do_direct  do_indirect
+method                          
+BASILW        0.240        7.840
+SSC           0.568        0.867
+SSR_k1.5      0.188        0.311
+200|unif|m1|n1000 BASILWs direct 0.167 indirect 0.242 (max indirect 0.44); orig:
+          do_direct  do_indirect
+method                          
+BASILW        0.197       37.161
+SSC           0.615        0.823
+SSR_k1.5      0.211        0.258
+500|unif|m1|n1000 BASILWs direct 0.125 indirect 0.176 (max indirect 0.18); orig:
+          do_direct  do_indirect
+method                          
+BASILW        0.134        0.761
+SSC           0.680        0.903
+SSR_k1.5      0.188        0.283

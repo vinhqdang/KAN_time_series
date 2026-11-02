@@ -1,0 +1,99 @@
+
+=== 100|unif|m1|n2000 datasets={'BASILW': 5, 'SSC': 5, 'SSR_k1.5': 5} ===
+          nrmse  do_direct  do_indirect  slope  auroc  auprc  orient  cover    ece     time
+method                                                                                     
+BASILW    0.178      0.182        0.383  0.995  0.968  0.859   0.916  0.752  0.002  110.053
+SSC       0.612      0.569        0.871  0.441  0.998  0.887   0.966    NaN    NaN  104.018
+SSR_k1.5  0.191      0.135        0.279  0.966  0.968  0.861   0.937    NaN    NaN  132.418
+  edge NRMSE ratio BASILW/SSC = 0.29 ; BASILW-SSR = -0.013
+  do_direct ratio BASILW/SSC = 0.32 (range 0.19-0.42) ; BASILW-SSR = +0.047
+  do_indirect ratio BASILW/SSC = 0.44 (range 0.25-0.68) ; BASILW-SSR = +0.104
+  AUROC BASILW-SSC = -0.030
+
+=== 100|hetero|m1|n1000 datasets={'BASILW': 5, 'SSC': 5, 'SSR_k1.5': 5} ===
+          nrmse  do_direct  do_indirect  slope  auroc  auprc  orient  cover    ece    time
+method                                                                                    
+BASILW    0.305      0.216        1.546  0.985  0.971  0.900   0.942  0.769  0.002  68.876
+SSC       0.766      0.720        0.927  0.226  0.997  0.873   0.895    NaN    NaN  68.192
+SSR_k1.5  0.339      0.271        0.518  0.927  0.963  0.856   0.859    NaN    NaN  75.292
+  edge NRMSE ratio BASILW/SSC = 0.40 ; BASILW-SSR = -0.034
+  do_direct ratio BASILW/SSC = 0.30 (range 0.21-0.41) ; BASILW-SSR = -0.055
+  do_indirect ratio BASILW/SSC = 1.64 (range 0.37-6.12) ; BASILW-SSR = +1.028
+  AUROC BASILW-SSC = -0.025
+
+=== 200|unif|m1|n1000 datasets={'BASILW': 5, 'SSC': 5, 'SSR_k1.5': 5} ===
+          nrmse  do_direct  do_indirect  slope  auroc  auprc  orient  cover    ece     time
+method                                                                                     
+BASILW    0.175      0.197       37.161  0.995  0.979  0.890   0.953  0.788  0.001  179.661
+SSC       0.612      0.615        0.823  0.445  0.997  0.855   0.942    NaN    NaN  168.111
+SSR_k1.5  0.211      0.211        0.258  0.958  0.967  0.828   0.920    NaN    NaN  201.843
+  edge NRMSE ratio BASILW/SSC = 0.29 ; BASILW-SSR = -0.036
+  do_direct ratio BASILW/SSC = 0.32 (range 0.19-0.45) ; BASILW-SSR = -0.014
+  do_indirect ratio BASILW/SSC = 44.06 (range 0.16-218.96) ; BASILW-SSR = +36.903
+  AUROC BASILW-SSC = -0.018
+
+=== 100|laplace|m1|n1000 datasets={'BASILW': 5, 'SSC': 5, 'SSR_k1.5': 5} ===
+          nrmse  do_direct  do_indirect  slope  auroc  auprc  orient  cover    ece    time
+method                                                                                    
+BASILW    0.261      0.200        0.385  0.979  0.970  0.874   0.931  0.749  0.002  64.488
+SSC       0.793      0.747        0.934  0.173  0.994  0.682   0.775    NaN    NaN  63.251
+SSR_k1.5  0.449      0.389        0.532  0.778  0.907  0.662   0.756    NaN    NaN  70.083
+  edge NRMSE ratio BASILW/SSC = 0.33 ; BASILW-SSR = -0.188
+  do_direct ratio BASILW/SSC = 0.26 (range 0.17-0.44) ; BASILW-SSR = -0.189
+  do_indirect ratio BASILW/SSC = 0.41 (range 0.29-0.62) ; BASILW-SSR = -0.147
+  AUROC BASILW-SSC = -0.023
+
+=== 100|gauss|m1|n1000 datasets={'BASILW': 5, 'SSC': 5, 'SSR_k1.5': 5} ===
+          nrmse  do_direct  do_indirect  slope  auroc  auprc  orient  cover    ece    time
+method                                                                                    
+BASILW    0.174      0.172        0.283  0.993  0.986  0.935   0.957  0.782  0.001  65.585
+SSC       0.690      0.636        0.886  0.348  0.998  0.854   0.919    NaN    NaN  65.167
+SSR_k1.5  0.254      0.187        0.299  0.924  0.969  0.833   0.904    NaN    NaN  72.941
+  edge NRMSE ratio BASILW/SSC = 0.25 ; BASILW-SSR = -0.080
+  do_direct ratio BASILW/SSC = 0.27 (range 0.18-0.42) ; BASILW-SSR = -0.015
+  do_indirect ratio BASILW/SSC = 0.32 (range 0.26-0.37) ; BASILW-SSR = -0.016
+  AUROC BASILW-SSC = -0.012
+
+=== 100|unif|m2|n1000 datasets={'BASILW': 5, 'SSC': 5, 'SSR_k1.5': 5} ===
+          nrmse  do_direct  do_indirect  slope  auroc  auprc  orient  cover    ece    time
+method                                                                                    
+BASILW    0.186      0.250        0.506  0.995  0.963  0.848   0.908  0.728  0.002  69.787
+SSC       0.632      0.606        0.829  0.429  0.997  0.801   0.917    NaN    NaN  72.689
+SSR_k1.5  0.256      0.177        0.269  0.919  0.959  0.769   0.903    NaN    NaN  78.898
+  edge NRMSE ratio BASILW/SSC = 0.29 ; BASILW-SSR = -0.070
+  do_direct ratio BASILW/SSC = 0.41 (range 0.33-0.47) ; BASILW-SSR = +0.073
+  do_indirect ratio BASILW/SSC = 0.61 (range 0.47-0.81) ; BASILW-SSR = +0.237
+  AUROC BASILW-SSC = -0.034
+
+=== 100|unif|m1|n500 datasets={'BASILW': 5, 'SSC': 5, 'SSR_k1.5': 5} ===
+          nrmse  do_direct  do_indirect  slope  auroc  auprc  orient  cover    ece    time
+method                                                                                    
+BASILW    0.225      0.240        7.840  0.990  0.978  0.904   0.948  0.777  0.002  51.768
+SSC       0.613      0.568        0.867  0.442  0.993  0.887   0.954    NaN    NaN  57.598
+SSR_k1.5  0.229      0.188        0.311  0.953  0.962  0.848   0.926    NaN    NaN  49.139
+  edge NRMSE ratio BASILW/SSC = 0.37 ; BASILW-SSR = -0.005
+  do_direct ratio BASILW/SSC = 0.42 (range 0.29-0.58) ; BASILW-SSR = +0.052
+  do_indirect ratio BASILW/SSC = 9.00 (range 0.38-43.07) ; BASILW-SSR = +7.530
+  AUROC BASILW-SSC = -0.015
+
+=== 100|unif|m1|n1000 datasets={'BASILW': 5, 'SSC': 5, 'SSR_k1.5': 5} ===
+          nrmse  do_direct  do_indirect  slope  auroc  auprc  orient  cover    ece    time
+method                                                                                    
+BASILW    0.194      0.236        0.387  0.993  0.973  0.870   0.940  0.776  0.002  71.366
+SSC       0.616      0.579        0.877  0.438  0.997  0.878   0.958    NaN    NaN  73.627
+SSR_k1.5  0.211      0.196        0.268  0.956  0.966  0.853   0.922    NaN    NaN  79.553
+  edge NRMSE ratio BASILW/SSC = 0.32 ; BASILW-SSR = -0.017
+  do_direct ratio BASILW/SSC = 0.41 (range 0.14-0.81) ; BASILW-SSR = +0.040
+  do_indirect ratio BASILW/SSC = 0.44 (range 0.31-0.52) ; BASILW-SSR = +0.119
+  AUROC BASILW-SSC = -0.024
+
+=== 500|unif|m1|n1000 datasets={'BASILW': 2, 'SSC': 2, 'SSR_k1.5': 2} ===
+          nrmse  do_direct  do_indirect  slope  auroc  auprc  orient  cover  ece     time
+method                                                                                   
+BASILW    0.162      0.134        0.761  0.995  0.977  0.889   0.952  0.798  0.0  675.735
+SSC       0.690      0.680        0.903  0.326  0.998  0.793   0.919    NaN  NaN  718.263
+SSR_k1.5  0.229      0.188        0.283  0.935  0.953  0.778   0.912    NaN  NaN  840.554
+  edge NRMSE ratio BASILW/SSC = 0.23 ; BASILW-SSR = -0.067
+  do_direct ratio BASILW/SSC = 0.20 (range 0.19-0.21) ; BASILW-SSR = -0.054
+  do_indirect ratio BASILW/SSC = 0.86 (range 0.21-1.50) ; BASILW-SSR = +0.478
+  AUROC BASILW-SSC = -0.021

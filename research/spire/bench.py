@@ -17,31 +17,49 @@ import shape_bench as G2
 from spire import fit_spire, spire_curve
 from basil import fit_basil
 from basil_s import fit_basil_s
+from docalc import make_learned, do_error
 
 
-def gen(n, d, seed, noise="unif"):
-    """iSCM: each node standardized right after generation (children see standardized parents)."""
+MECH2 = [lambda x: 0.9 * x, lambda x: np.tanh(2 * x), lambda x: 0.6 * (x ** 2 - 1), lambda x: 1 / (1 + np.exp(-6 * (x - .3))) - .5, lambda x: 0.9 * np.sin(2 * x)]
+MECH1 = [lambda x: 0.8 * np.tanh(1.5 * x), lambda x: 0.7 * np.sin(1.5 * x), lambda x: 0.3 * (x ** 2 - 1.0), lambda x: 0.8 * x / (1.0 + np.abs(x))]
+
+
+def gen_full(n, d, seed, noise="unif", mech="m1"):
+    """iSCM: each node standardized right after generation. Returns X, A, f, sd and sim(nsim, c, v) = fresh draws from the true SEM (do(x_c=v) if c given)."""
     r = np.random.RandomState(seed); dens = 2.0 / (d - 1); perm = r.permutation(d)
     A = np.zeros((d, d), int)
     for a in range(d):
         for b in range(a):
             if r.rand() < dens: A[perm[b], perm[a]] = 1
-    fns = [lambda x: 0.8 * np.tanh(1.5 * x), lambda x: 0.7 * np.sin(1.5 * x),
-           lambda x: 0.3 * (x ** 2 - 1.0), lambda x: 0.8 * x / (1.0 + np.abs(x))]
+    fns = MECH1 if mech == "m1" else MECH2
     f = {(c, e): fns[r.randint(len(fns))] for c in range(d) for e in range(d) if A[c, e]}
-    X = np.zeros((n, d)); sd = np.ones(d); s0 = 0.7 / np.sqrt(3)
-    for e in perm:
-        if noise == "unif": v = r.uniform(-0.7, 0.7, n)
-        elif noise == "gauss": v = r.randn(n) * s0
-        elif noise == "laplace": v = r.laplace(0, s0 / np.sqrt(2), n)
-        elif noise == "hetero": v = r.randn(n) * s0
+    X = np.zeros((n, d)); sd = np.ones(d); mu = np.zeros(d); s0 = 0.7 / np.sqrt(3)
+    def noise_draw(rr, m, e, X_, pa_):
+        if noise == "unif": v = rr.uniform(-0.7, 0.7, m)
+        elif noise == "gauss": v = rr.randn(m) * s0
+        elif noise == "laplace": v = rr.laplace(0, s0 / np.sqrt(2), m)
+        elif noise == "hetero": v = rr.randn(m) * s0
         else: raise ValueError(noise)
+        if noise == "hetero" and pa_: v = v * (0.4 + 1.2 * np.abs(X_[:, pa_[0]]))
+        return v
+    for e in perm:
         pa_ = [c for c in range(d) if A[c, e]]
-        if noise == "hetero" and pa_: v = v * (0.4 + 1.2 * np.abs(X[:, pa_[0]])) / 1.0   # noise sd depends on a parent (ANM violated)
-        for c in range(d):
-            if A[c, e]: v = v + f[(c, e)](X[:, c])
-        sd[e] = v.std(); X[:, e] = (v - v.mean()) / sd[e]
-    return X.astype(np.float32), A, f, sd
+        v = noise_draw(r, n, e, X, pa_)
+        for c in pa_: v = v + f[(c, e)](X[:, c])
+        sd[e] = v.std(); mu[e] = v.mean(); X[:, e] = (v - mu[e]) / sd[e]
+    def sim(nsim, c=None, val=None, seed_=12345):
+        rr = np.random.RandomState(seed_); Xs = np.zeros((nsim, d))
+        for e in perm:
+            if c is not None and e == c: Xs[:, e] = val; continue
+            pa_ = [k for k in range(d) if A[k, e]]; v = noise_draw(rr, nsim, e, Xs, pa_)
+            for k in pa_: v = v + f[(k, e)](Xs[:, k])
+            Xs[:, e] = (v - mu[e]) / sd[e]
+        return Xs
+    return X.astype(np.float32), A, f, sd, sim
+
+
+def gen(n, d, seed, noise="unif", mech="m1"):
+    return gen_full(n, d, seed, noise, mech)[:4]
 
 
 def r2_all(X):
@@ -72,6 +90,13 @@ def edge_curve_metrics(curve_fn, X, A, f, sd):
 
 EXTRA = {}
 SS_CACHE = {}
+SIM = [None]
+
+
+def add_do(coef, Xz, A, seed):
+    if SIM[0] is None: return
+    r = do_error(make_learned(coef, Xz), SIM[0], Xz, A, seed)
+    EXTRA.update(do_direct=r['direct'][0], do_indirect=r['indirect'][0], n_do_d=r['direct'][1], n_do_i=r['indirect'][1], sk_do=r['direct'][2] + r['indirect'][2])
 
 def run_method(name, X, A, f, sd, seed):
     EXTRA.clear()
@@ -112,7 +137,7 @@ def run_method(name, X, A, f, sd, seed):
         cr = edge_curve_metrics(lambda c, e, xs: o["mean_curve"](c, e), Xz, A, f, sd)
         rec = np.mean([c in o["cand"][e] for c, e in zip(*np.nonzero(A))])
         EXTRA.update(recall=float(rec), gap=o["trace_gap"], score_final=o["final_score"])
-    elif name in ("SSC", "BASILW") or name.startswith("SSR"):
+    elif name in ("SSC", "BASILW", "BASILWs") or name.startswith("SSR"):
         import scale_instantaneous as SI
         key = (seed, X.shape, float(X.sum()))
         if key not in SS_CACHE:
@@ -124,12 +149,12 @@ def run_method(name, X, A, f, sd, seed):
             Bm = model._bases(Xt__).detach(); cf = (model.coef * model.selfmask).detach()
             return lambda c, e, xs: (Bm[:, c, :] @ cf[e, c]).numpy()
         if name == "SSC":
-            S = S0; cr = edge_curve_metrics(sp_curve(mm, Xt_), Xz, A, f, sd)
+            S = S0; cr = edge_curve_metrics(sp_curve(mm, Xt_), Xz, A, f, sd); add_do((mm.coef * mm.selfmask).detach().numpy(), Xz, A, seed)
         elif name.startswith("SSR"):
             kk = float(name.split("_k")[1]); kn = int(kk * d_); thr = np.sort(S0.flatten())[::-1][kn - 1]
             mk2 = torch.tensor((S0.T >= thr).astype(np.float32)); np.fill_diagonal(mk2.numpy(), 0)
             m2 = SI.fit(Xt_, seed, 0.0, ep=400, mask=mk2); S = SI.chunked_importance(m2, Xt_)
-            cr = edge_curve_metrics(sp_curve(m2, Xt_), Xz, A, f, sd); t_extra = t_ss
+            cr = edge_curve_metrics(sp_curve(m2, Xt_), Xz, A, f, sd); add_do((m2.coef * m2.selfmask).detach().numpy(), Xz, A, seed); t_extra = t_ss
         else:  # BASILW
             inw = S0.sum(0).copy(); order0 = []
             for _ in range(d_):
@@ -141,6 +166,7 @@ def run_method(name, X, A, f, sd, seed):
                 lo_, hi_ = o["band"](c, e); gt = f[(c, e)](Xz[:, c].astype(float)) / sd[e]; gt = gt - gt.mean()
                 cover.append(np.mean((gt >= lo_ - 1e-9) & (gt <= hi_ + 1e-9)))
             rec = np.mean([c in o["cand"][e] for c, e in zip(*np.nonzero(A))])
+            add_do(o["coef"](stable=(name == "BASILWs")), Xz, A, seed)
             EXTRA.update(cover=float(np.mean(cover)), recall=float(rec), gap=o["trace_gap"]); t_extra = t_ss
         EXTRA['t_ss'] = t_ss
     elif name == "SPADE-scaled-curves":
@@ -189,15 +215,16 @@ def metrics(S, A):
 
 if __name__ == "__main__":
     out, d, n, noise, lo, hi, methods = sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), sys.argv[4], int(sys.argv[5]), int(sys.argv[6]), sys.argv[7].split(",")
+    mech = sys.argv[8] if len(sys.argv) > 8 else "m1"
     done = set()
     if os.path.exists(out):
         old = pd.read_csv(out); done = set(zip(old.seed, old.method))
     for s in range(lo, hi):
-        X, A, f, sd = gen(n, d, s, noise); rows = []
+        X, A, f, sd, SIM[0] = gen_full(n, d, s, noise, mech); rows = []
         for m in methods:
             if (s, m) in done: continue
             S, cr, t = run_method(m, X, A, f, sd, 0); au, ap, ska, oa = metrics(S, A)
-            rows.append(dict(d=d, n=n, noise=noise, seed=s, method=m, auroc=au, auprc=ap, skel_auroc=ska, orient=oa,
+            rows.append(dict(d=d, n=n, noise=noise, mech=mech, seed=s, method=m, auroc=au, auprc=ap, skel_auroc=ska, orient=oa,
                              curve_r2=cr[0], slope=cr[1], ece=ece(S, A) if m.startswith('BASIL') else np.nan, **EXTRA, nnz=int((S > 1e-6).sum()), n_edges=int(A.sum()), time=t))
         if rows:
             pd.DataFrame(rows).to_csv(out, mode="a", header=not os.path.exists(out), index=False)

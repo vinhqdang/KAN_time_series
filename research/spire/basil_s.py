@@ -6,7 +6,7 @@ from basil import whitened_features, lse
 def fit_basil_s(X, seed=0, m=20, kmax=3, g=None, pi=None, iters=None, burn_frac=0.5, chains=2, n_samples=300, curves=True, verbose=False, init='random', select=False, cand_score=None, order0=None):
     rng = np.random.RandomState(seed); X = np.asarray(X, np.float64); n, d = X.shape
     g = float(n if g is None else g); pi = (2.0 / (d - 1)) if pi is None else pi; rho = math.log(pi / (1 - pi)); m = min(m, d - 1)
-    Z, Kc = whitened_features(X); Y = (X - X.mean(0)) / X.std(0)
+    Z, Kc, Tm, Tst = whitened_features(X, return_T=True); Y = (X - X.mean(0)) / X.std(0)
     C = np.einsum("njk,ni->jik", Z, Y, optimize=True); R2 = (C ** 2).sum(-1) / (n * n); np.fill_diagonal(R2, -1)
     rank_sc = R2 if cand_score is None else (np.asarray(cand_score, float) + 1e-6 * R2)
     np.fill_diagonal(rank_sc, -1e9)
@@ -88,6 +88,18 @@ def fit_basil_s(X, seed=0, m=20, kmax=3, g=None, pi=None, iters=None, burn_frac=
                 mem, u = cache[key]; k = mem.index(loc[0]); f += Wset[e][s] * (Z[:, c, :] @ u[k * Kc:(k + 1) * Kc])
             return f
         out["mean_curve"] = mean_curve
+        def coef_tensor(stable=False):
+            TT = Tst if stable else Tm; K = Tm.shape[1]; coef = np.zeros((d, d, K))
+            for e in range(d):
+                for sidx in np.argsort(-Wset[e])[:60]:
+                    if Wset[e][sidx] < 1e-4: continue
+                    mem = list(np.nonzero(Mem[sidx])[0])
+                    if not mem: continue
+                    idx = (np.array(mem)[:, None] * Kc + np.arange(Kc)).reshape(-1)
+                    u = np.linalg.solve(Gs[e][np.ix_(idx, idx)] + 1e-9 * np.eye(len(idx)), Cs[e][idx]) * g / (1 + g)
+                    for k, lm in enumerate(mem): coef[e, cand[e][lm]] += Wset[e][sidx] * (TT[cand[e][lm]] @ u[k * Kc:(k + 1) * Kc])
+            return coef
+        out["coef"] = coef_tensor
         invc = {}
         def band(c, e, draws=100):
             loc = np.where(cand[e] == c)[0]; outb = np.zeros((draws, n))
