@@ -61,19 +61,21 @@ def sortnregress(X, order):
 
 
 def edge_curve_metrics(curve_fn, X, A, f, sd):
-    r2, sl = [], []
+    r2, sl, nr = [], [], []
     for c, e in zip(*np.nonzero(A)):
         gh = np.asarray(curve_fn(c, e, X[:, c]), float); gh = gh - gh.mean()
         gt = f[(c, e)](X[:, c].astype(float)) / sd[e]; gt = gt - gt.mean()
-        r2.append(1 - ((gh - gt) ** 2).sum() / (gt ** 2).sum()); sl.append((gh * gt).sum() / (gt ** 2).sum())
+        r2.append(1 - ((gh - gt) ** 2).sum() / (gt ** 2).sum()); sl.append((gh * gt).sum() / (gt ** 2).sum()); nr.append(np.sqrt(((gh - gt) ** 2).sum() / (gt ** 2).sum()))
+    EXTRA['nrmse'] = float(np.mean(nr))
     return float(np.mean(r2)), float(np.median(sl))
 
 
 EXTRA = {}
+SS_CACHE = {}
 
 def run_method(name, X, A, f, sd, seed):
     EXTRA.clear()
-    Xz = zscore(X); Xt = torch.tensor(Xz); t0 = time.time(); cr = (np.nan, np.nan)
+    Xz = zscore(X); Xt = torch.tensor(Xz); t0 = time.time(); cr = (np.nan, np.nan); t_extra = 0.0
     if name.startswith("SPIRE"):
         kw = {}
         for tok in name.split("_")[1:]:
@@ -84,7 +86,7 @@ def run_method(name, X, A, f, sd, seed):
             elif tok[0] == "E": kw["T"] = int(tok[1:])
         S, model = fit_spire(Xz, seed, return_model=True, **kw)
         cr = edge_curve_metrics(lambda c, e, xs: spire_curve(model, c, e, xs), Xz, A, f, sd)
-    elif name.startswith("BASIL") and not name.startswith("BASILS"):
+    elif name.startswith("BASIL") and not name.startswith("BASILS") and not name.startswith("BASILW"):
         gm, pm_, kmax = 1.0, 1.0, 3
         for tok in name.split("_")[1:]:
             if tok[0] == "g": gm = float(tok[1:])
@@ -110,6 +112,37 @@ def run_method(name, X, A, f, sd, seed):
         cr = edge_curve_metrics(lambda c, e, xs: o["mean_curve"](c, e), Xz, A, f, sd)
         rec = np.mean([c in o["cand"][e] for c, e in zip(*np.nonzero(A))])
         EXTRA.update(recall=float(rec), gap=o["trace_gap"], score_final=o["final_score"])
+    elif name in ("SSC", "BASILW") or name.startswith("SSR"):
+        import scale_instantaneous as SI
+        key = (seed, X.shape, float(X.sum()))
+        if key not in SS_CACHE:
+            Zs = SI.zscore(X); Xt_ = torch.tensor(Zs); tt = time.time(); mk = SI.screen_mask(Zs, 15, seed)
+            mm = SI.fit(Xt_, seed, SI.lg_rule(X.shape[1], 0.2), ep=400, mask=mk); S0 = SI.chunked_importance(mm, Xt_)
+            SS_CACHE.clear(); SS_CACHE[key] = (mm, S0, Xt_, time.time() - tt)
+        mm, S0, Xt_, t_ss = SS_CACHE[key]; d_ = X.shape[1]
+        def sp_curve(model, Xt__):
+            Bm = model._bases(Xt__).detach(); cf = (model.coef * model.selfmask).detach()
+            return lambda c, e, xs: (Bm[:, c, :] @ cf[e, c]).numpy()
+        if name == "SSC":
+            S = S0; cr = edge_curve_metrics(sp_curve(mm, Xt_), Xz, A, f, sd)
+        elif name.startswith("SSR"):
+            kk = float(name.split("_k")[1]); kn = int(kk * d_); thr = np.sort(S0.flatten())[::-1][kn - 1]
+            mk2 = torch.tensor((S0.T >= thr).astype(np.float32)); np.fill_diagonal(mk2.numpy(), 0)
+            m2 = SI.fit(Xt_, seed, 0.0, ep=400, mask=mk2); S = SI.chunked_importance(m2, Xt_)
+            cr = edge_curve_metrics(sp_curve(m2, Xt_), Xz, A, f, sd); t_extra = t_ss
+        else:  # BASILW
+            inw = S0.sum(0).copy(); order0 = []
+            for _ in range(d_):
+                i = int(np.argmin(inw)); order0.append(i); inw[i] = np.inf; inw -= np.where(np.isinf(inw), 0, S0[i, :])
+            o = fit_basil_s(Xz, seed, m=20, iters=200 * d_, chains=2, burn_frac=0.3, select=True, cand_score=S0, order0=order0)
+            S = o["P"]; cr = edge_curve_metrics(lambda c, e, xs: o["mean_curve"](c, e), Xz, A, f, sd)
+            cover = []
+            for c, e in zip(*np.nonzero(A)):
+                lo_, hi_ = o["band"](c, e); gt = f[(c, e)](Xz[:, c].astype(float)) / sd[e]; gt = gt - gt.mean()
+                cover.append(np.mean((gt >= lo_ - 1e-9) & (gt <= hi_ + 1e-9)))
+            rec = np.mean([c in o["cand"][e] for c, e in zip(*np.nonzero(A))])
+            EXTRA.update(cover=float(np.mean(cover)), recall=float(rec), gap=o["trace_gap"]); t_extra = t_ss
+        EXTRA['t_ss'] = t_ss
     elif name == "SPADE-scaled-curves":
         import scale_instantaneous as SI
         Zs = SI.zscore(X); Xt_ = torch.tensor(Zs); mk = SI.screen_mask(Zs, 15, seed)
@@ -135,7 +168,7 @@ def run_method(name, X, A, f, sd, seed):
     elif name == "R2-sortnregress":
         S = sortnregress(X.astype(np.float64), np.argsort(r2_all(X.astype(np.float64))))
     else: raise ValueError(name)
-    return np.asarray(S, float), cr, time.time() - t0
+    return np.asarray(S, float), cr, time.time() - t0 + t_extra
 
 
 def ece(P, A, bins=10):

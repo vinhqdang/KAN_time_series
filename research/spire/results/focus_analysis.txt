@@ -1,0 +1,30 @@
+
+=== d=100 (datasets per method: {'BASILW': 5, 'SSC': 5, 'SSR_k1.5': 5, 'SSR_k2': 5}) ===
+          auroc  auprc  orient  nrmse  slope  curve_r2  cover    ece  recall    time
+method                                                                              
+BASILW    0.973  0.870   0.940  0.194  0.993     0.883  0.776  0.002     1.0  70.684
+SSC       0.997  0.878   0.958  0.616  0.438     0.576    NaN    NaN     NaN  47.072
+SSR_k1.5  0.966  0.853   0.922  0.211  0.956     0.880    NaN    NaN     NaN  80.330
+SSR_k2    0.975  0.817   0.895  0.256  0.921     0.846    NaN    NaN     NaN  79.153
+  NRMSE BASILW / SSC = 0.32 (per-dataset range 0.28-0.34)
+  NRMSE SSR_k1.5 / SSC = 0.34 (per-dataset range 0.30-0.38)
+  NRMSE SSR_k2 / SSC = 0.42 (per-dataset range 0.38-0.47)
+  NRMSE BASILW minus SSR_k1.5 = -0.017 (range -0.046..+0.024, n=5)
+  NRMSE BASILW minus SSR_k2 = -0.062 (range -0.106..-0.029, n=5)
+  auroc BASILW minus SSC = -0.024 (range -0.034..-0.016)
+  orient BASILW minus SSC = -0.018 (range -0.043..+0.010)
+
+=== d=200 (datasets per method: {'BASILW': 5, 'SSC': 5, 'SSR_k1.5': 5, 'SSR_k2': 5}) ===
+          auroc  auprc  orient  nrmse  slope  curve_r2  cover    ece  recall     time
+method                                                                               
+BASILW    0.979  0.890   0.953  0.175  0.995     0.903  0.788  0.001   0.999  169.368
+SSC       0.997  0.855   0.942  0.612  0.445     0.578    NaN    NaN     NaN  121.791
+SSR_k1.5  0.967  0.828   0.920  0.211  0.958     0.882    NaN    NaN     NaN  200.496
+SSR_k2    0.980  0.806   0.893  0.259  0.910     0.849    NaN    NaN     NaN  205.479
+  NRMSE BASILW / SSC = 0.29 (per-dataset range 0.25-0.33)
+  NRMSE SSR_k1.5 / SSC = 0.34 (per-dataset range 0.33-0.36)
+  NRMSE SSR_k2 / SSC = 0.42 (per-dataset range 0.35-0.49)
+  NRMSE BASILW minus SSR_k1.5 = -0.036 (range -0.049..-0.013, n=5)
+  NRMSE BASILW minus SSR_k2 = -0.084 (range -0.126..-0.018, n=5)
+  auroc BASILW minus SSC = -0.018 (range -0.024..-0.011)
+  orient BASILW minus SSC = +0.011 (range -0.019..+0.045)

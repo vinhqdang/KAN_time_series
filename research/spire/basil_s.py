@@ -3,12 +3,14 @@ import itertools, math, numpy as np
 from basil import whitened_features, lse
 
 
-def fit_basil_s(X, seed=0, m=20, kmax=3, g=None, pi=None, iters=None, burn_frac=0.5, chains=2, n_samples=300, curves=True, verbose=False, init='random', select=False):
+def fit_basil_s(X, seed=0, m=20, kmax=3, g=None, pi=None, iters=None, burn_frac=0.5, chains=2, n_samples=300, curves=True, verbose=False, init='random', select=False, cand_score=None, order0=None):
     rng = np.random.RandomState(seed); X = np.asarray(X, np.float64); n, d = X.shape
     g = float(n if g is None else g); pi = (2.0 / (d - 1)) if pi is None else pi; rho = math.log(pi / (1 - pi)); m = min(m, d - 1)
     Z, Kc = whitened_features(X); Y = (X - X.mean(0)) / X.std(0)
     C = np.einsum("njk,ni->jik", Z, Y, optimize=True); R2 = (C ** 2).sum(-1) / (n * n); np.fill_diagonal(R2, -1)
-    cand = np.argsort(-R2, axis=0)[:m].T.copy()                                       # cand[i] = top-m candidate parents of i
+    rank_sc = R2 if cand_score is None else (np.asarray(cand_score, float) + 1e-6 * R2)
+    np.fill_diagonal(rank_sc, -1e9)
+    cand = np.argsort(-rank_sc, axis=0)[:m].T.copy()                                       # cand[i] = top-m candidate parents of i
     combos = [np.zeros((1, 0), int)] + [np.array(list(itertools.combinations(range(m), k)), dtype=int) for k in range(1, kmax + 1)]
     sizes = np.concatenate([np.full(len(c), k) for k, c in enumerate(combos)])
     masks = np.concatenate([(1 << c).sum(1) if len(c) and c.shape[1] else np.zeros(len(c), np.int64) for c in combos]).astype(np.int64)
@@ -42,7 +44,7 @@ def fit_basil_s(X, seed=0, m=20, kmax=3, g=None, pi=None, iters=None, burn_frac=
         return rev[::-1]
     iters = iters or 600 * d; burn = int(iters * burn_frac); samples = []; traces = []; chain_samples = []
     for ch in range(chains):
-        r = np.random.RandomState(seed * 1000 + ch); order = greedy_order() if (init == 'greedy' and ch == 0) else list(r.permutation(d)); pos = np.empty(d, int); pos[order] = np.arange(d)
+        r = np.random.RandomState(seed * 1000 + ch); order = (list(order0) if order0 is not None else greedy_order() if (init == 'greedy' and ch == 0) else list(r.permutation(d))); pos = np.empty(d, int); pos[order] = np.arange(d)
         ns = np.array([node_lse(order[k], pos) for k in range(d)]); tot = ns.sum(); tr = []
         every = max(1, (iters - burn) // n_samples); samples = []
         for it in range(iters):
@@ -86,4 +88,20 @@ def fit_basil_s(X, seed=0, m=20, kmax=3, g=None, pi=None, iters=None, burn_frac=
                 mem, u = cache[key]; k = mem.index(loc[0]); f += Wset[e][s] * (Z[:, c, :] @ u[k * Kc:(k + 1) * Kc])
             return f
         out["mean_curve"] = mean_curve
+        invc = {}
+        def band(c, e, draws=100):
+            loc = np.where(cand[e] == c)[0]; outb = np.zeros((draws, n))
+            if len(loc) == 0: return np.zeros((2, n))
+            ts = np.argsort(-Wset[e])[:60]; w = Wset[e][ts]; w = w / w.sum()
+            for b in range(draws):
+                sidx = ts[rng.choice(len(ts), p=w)]
+                if Mem[sidx, loc[0]] == 0: continue
+                mem = list(np.nonzero(Mem[sidx])[0]); idx = (np.array(mem)[:, None] * Kc + np.arange(Kc)).reshape(-1)
+                if (e, sidx) not in invc:
+                    Gsub = Gs[e][np.ix_(idx, idx)] + 1e-9 * np.eye(len(idx)); u0 = np.linalg.solve(Gsub, Cs[e][idx]); r2 = float(Cs[e][idx] @ u0 / n)
+                    s2 = n * (1 - g / (1 + g) * r2) / max(n - 3, 1); invc[(e, sidx)] = (g / (1 + g) * u0, s2 * g / (1 + g) * np.linalg.inv(Gsub))
+                mu, cov = invc[(e, sidx)]; u = rng.multivariate_normal(mu, (cov + cov.T) / 2, check_valid="ignore")
+                k = mem.index(loc[0]); outb[b] = Z[:, c, :] @ u[k * Kc:(k + 1) * Kc]
+            return np.percentile(outb, [5, 95], axis=0)
+        out["band"] = band
     return out
