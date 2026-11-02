@@ -33,7 +33,10 @@ def gen(n, d, seed, noise="unif"):
         if noise == "unif": v = r.uniform(-0.7, 0.7, n)
         elif noise == "gauss": v = r.randn(n) * s0
         elif noise == "laplace": v = r.laplace(0, s0 / np.sqrt(2), n)
+        elif noise == "hetero": v = r.randn(n) * s0
         else: raise ValueError(noise)
+        pa_ = [c for c in range(d) if A[c, e]]
+        if noise == "hetero" and pa_: v = v * (0.4 + 1.2 * np.abs(X[:, pa_[0]])) / 1.0   # noise sd depends on a parent (ANM violated)
         for c in range(d):
             if A[c, e]: v = v + f[(c, e)](X[:, c])
         sd[e] = v.std(); X[:, e] = (v - v.mean()) / sd[e]
@@ -103,6 +106,9 @@ def run_method(name, X, A, f, sd, seed):
         m = spade_fit(Xt, seed, weights=w); S = m.importance(Xt).numpy().T; cr = spade_curve_metrics(m, Xt, A, f, sd)
     elif name == "GAM-ridge":
         S, cur = G2.fit_gam(Xz, seed); cr = edge_curve_metrics(cur, Xz, A, f, sd)
+    elif name in ("SCORE", "NoGAM"):
+        import instantaneous_dag_benchmark as IB
+        S = IB.METHODS[name](X, 0)
     elif name == "var-sortnregress":
         S = sortnregress(X.astype(np.float64), np.argsort(X.var(0)))
     elif name == "R2-sortnregress":

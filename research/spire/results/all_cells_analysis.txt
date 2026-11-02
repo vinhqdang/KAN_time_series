@@ -1,0 +1,132 @@
+
+=== d=10 n=500 noise=unif  paired datasets=20 ===
+                  auroc  auprc  skel_auroc  orient  slope  cover    ece   time
+method                                                                        
+BASIL_g1_p1       0.963  0.941       0.991   0.958  0.989   0.81  0.011  2.080
+GAM-ridge         0.947  0.551       0.987   0.677  0.824    NaN    NaN  0.666
+SPADE             0.984  0.885       0.993   0.932  0.650    NaN    NaN  2.094
+SPADE-adaptive    0.982  0.888       0.994   0.932  0.931    NaN    NaN  3.423
+var-sortnregress  0.611  0.238       0.841   0.458    NaN    NaN    NaN  0.025
+  BASIL-minus-SPADE-adaptive auroc  -0.019 CI[-0.043,+0.003] p=0.136
+  BASIL-minus-SPADE-adaptive auprc  +0.053 CI[-0.008,+0.115] p=0.158
+  BASIL-minus-SPADE-adaptive orient +0.026 CI[-0.012,+0.065] p=0.173
+  BASIL-minus-SPADE-adaptive slope  +0.058 CI[+0.035,+0.090] p=1.91e-06
+
+=== d=10 n=1000 noise=gauss  paired datasets=21 ===
+                  auroc  auprc  skel_auroc  orient  slope  cover    ece    time
+method                                                                         
+BASIL_g1_p1       0.989  0.987       0.992   0.992  0.995  0.814  0.003   1.987
+GAM-ridge         0.957  0.636       0.993   0.733  0.926    NaN    NaN   1.218
+NoGAM             0.737  0.286       0.921   0.593    NaN    NaN    NaN  29.609
+SCORE             0.767  0.338       0.921   0.648    NaN    NaN    NaN  19.927
+SPADE             0.987  0.889       0.995   0.907  0.608    NaN    NaN   3.624
+SPADE-adaptive    0.988  0.889       0.995   0.907  0.886    NaN    NaN   4.843
+var-sortnregress  0.627  0.271       0.857   0.483    NaN    NaN    NaN   0.027
+  BASIL-minus-SPADE-adaptive auroc  +0.001 CI[-0.010,+0.011] p=0.397
+  BASIL-minus-SPADE-adaptive auprc  +0.097 CI[+0.054,+0.143] p=0.00189
+  BASIL-minus-SPADE-adaptive orient +0.085 CI[+0.055,+0.117] p=0.0014
+  BASIL-minus-SPADE-adaptive slope  +0.109 CI[+0.077,+0.151] p=9.54e-07
+
+=== d=10 n=1000 noise=hetero  paired datasets=20 ===
+                  auroc  auprc  skel_auroc  orient  slope  cover    ece   time
+method                                                                        
+BASIL_g1_p1       0.966  0.938       0.991   0.955  0.983  0.782  0.014  2.102
+GAM-ridge         0.966  0.700       0.996   0.778  0.884    NaN    NaN  1.156
+SPADE             0.990  0.915       0.997   0.918  0.575    NaN    NaN  2.601
+SPADE-adaptive    0.987  0.926       0.997   0.922  0.920    NaN    NaN  4.614
+var-sortnregress  0.656  0.306       0.865   0.525    NaN    NaN    NaN  0.028
+  BASIL-minus-SPADE-adaptive auroc  -0.021 CI[-0.046,-0.001] p=0.3
+  BASIL-minus-SPADE-adaptive auprc  +0.013 CI[-0.031,+0.059] p=0.615
+  BASIL-minus-SPADE-adaptive orient +0.033 CI[-0.005,+0.070] p=0.202
+  BASIL-minus-SPADE-adaptive slope  +0.063 CI[+0.040,+0.090] p=1.91e-06
+
+=== d=10 n=1000 noise=laplace  paired datasets=20 ===
+                  auroc  auprc  skel_auroc  orient  slope  cover    ece    time
+method                                                                         
+BASIL_g1_p1       0.956  0.907       0.988   0.933  0.972  0.784  0.021   2.059
+GAM-ridge         0.960  0.687       0.992   0.731  0.900    NaN    NaN   1.172
+NoGAM             0.740  0.333       0.850   0.667    NaN    NaN    NaN  28.383
+SCORE             0.740  0.333       0.850   0.667    NaN    NaN    NaN  20.269
+SPADE             0.968  0.780       0.992   0.799  0.486    NaN    NaN   2.962
+SPADE-adaptive    0.962  0.786       0.988   0.795  0.733    NaN    NaN   4.683
+var-sortnregress  0.651  0.346       0.854   0.517    NaN    NaN    NaN   0.032
+  BASIL-minus-SPADE-adaptive auroc  -0.006 CI[-0.036,+0.019] p=0.349
+  BASIL-minus-SPADE-adaptive auprc  +0.121 CI[+0.054,+0.191] p=0.00434
+  BASIL-minus-SPADE-adaptive orient +0.138 CI[+0.089,+0.184] p=0.000767
+  BASIL-minus-SPADE-adaptive slope  +0.238 CI[+0.172,+0.321] p=1.91e-06
+
+=== d=10 n=1000 noise=unif  paired datasets=30 ===
+                  auroc  auprc  skel_auroc  orient  slope  cover    ece    time
+method                                                                         
+BASIL_g1_p1       0.969  0.940       0.997   0.947  0.997  0.807  0.013   1.855
+GAM-ridge         0.945  0.559       0.986   0.654  0.901    NaN    NaN   1.078
+NoGAM             0.895  0.620       0.954   0.851    NaN    NaN    NaN  24.654
+SCORE             0.858  0.491       0.936   0.797    NaN    NaN    NaN  15.388
+SPADE             0.989  0.932       0.994   0.948  0.682    NaN    NaN   2.318
+SPADE-adaptive    0.986  0.928       0.995   0.948  0.926    NaN    NaN   4.177
+var-sortnregress  0.667  0.336       0.854   0.550    NaN    NaN    NaN   0.024
+  BASIL-minus-SPADE-adaptive auroc  -0.018 CI[-0.037,+0.002] p=0.102
+  BASIL-minus-SPADE-adaptive auprc  +0.012 CI[-0.030,+0.061] p=0.777
+  BASIL-minus-SPADE-adaptive orient -0.001 CI[-0.035,+0.038] p=0.888
+  BASIL-minus-SPADE-adaptive slope  +0.071 CI[+0.036,+0.119] p=1.86e-09
+
+=== d=10 n=2000 noise=unif  paired datasets=20 ===
+                  auroc  auprc  skel_auroc  orient  slope  cover    ece   time
+method                                                                        
+BASIL_g1_p1       0.942  0.885       0.994   0.939  0.997  0.785  0.018  2.081
+GAM-ridge         0.943  0.545       0.986   0.659  0.940    NaN    NaN  2.277
+SPADE             0.988  0.907       0.995   0.942  0.669    NaN    NaN  3.880
+SPADE-adaptive    0.987  0.906       0.996   0.942  0.948    NaN    NaN  7.303
+var-sortnregress  0.615  0.274       0.852   0.465    NaN    NaN    NaN  0.032
+  BASIL-minus-SPADE-adaptive auroc  -0.045 CI[-0.072,-0.020] p=0.00577
+  BASIL-minus-SPADE-adaptive auprc  -0.020 CI[-0.086,+0.046] p=0.65
+  BASIL-minus-SPADE-adaptive orient -0.003 CI[-0.039,+0.034] p=0.944
+  BASIL-minus-SPADE-adaptive slope  +0.049 CI[+0.033,+0.072] p=1.91e-06
+
+=== d=20 n=500 noise=unif  paired datasets=10 ===
+                  auroc  auprc  skel_auroc  orient  slope  cover    ece   time
+method                                                                        
+BASIL_g1_p1       0.969  0.942       0.993   0.953  0.986  0.806  0.007  7.241
+GAM-ridge         0.970  0.495       0.987   0.718  0.790    NaN    NaN  6.827
+SPADE             0.993  0.934       0.993   0.971  0.440    NaN    NaN  2.803
+SPADE-adaptive    0.992  0.942       0.998   0.971  0.936    NaN    NaN  5.047
+var-sortnregress  0.662  0.242       0.856   0.515    NaN    NaN    NaN  0.076
+  BASIL-minus-SPADE-adaptive auroc  -0.022 CI[-0.042,-0.004] p=0.0547
+  BASIL-minus-SPADE-adaptive auprc  -0.000 CI[-0.061,+0.062] p=1
+  BASIL-minus-SPADE-adaptive orient -0.018 CI[-0.051,+0.015] p=0.312
+  BASIL-minus-SPADE-adaptive slope  +0.050 CI[+0.030,+0.076] p=0.00195
+
+=== d=20 n=2000 noise=unif  paired datasets=10 ===
+                  auroc  auprc  skel_auroc  orient  slope  cover    ece    time
+method                                                                         
+BASIL_g1_p1       0.951  0.907       0.989   0.941  0.996  0.758  0.008   8.398
+GAM-ridge         0.967  0.472       0.986   0.666  0.907    NaN    NaN  20.819
+SPADE             0.993  0.925       0.995   0.966  0.445    NaN    NaN   7.093
+SPADE-adaptive    0.990  0.935       0.995   0.958  0.957    NaN    NaN  12.880
+var-sortnregress  0.649  0.210       0.866   0.484    NaN    NaN    NaN   0.090
+  BASIL-minus-SPADE-adaptive auroc  -0.039 CI[-0.055,-0.023] p=0.00391
+  BASIL-minus-SPADE-adaptive auprc  -0.028 CI[-0.085,+0.031] p=0.496
+  BASIL-minus-SPADE-adaptive orient -0.017 CI[-0.046,+0.017] p=0.438
+  BASIL-minus-SPADE-adaptive slope  +0.039 CI[+0.028,+0.052] p=0.00195
+
+=== d=50 n=500 noise=unif  paired datasets=6 ===
+                  auroc  auprc  skel_auroc  orient  slope  cover    ece     time
+method                                                                          
+BASIL_g1_p1       0.959  0.921       0.988   0.949  0.989  0.814  0.003  660.236
+GAM-ridge         0.992  0.554       0.998   0.787  0.618    NaN    NaN  178.999
+SPADE             0.871  0.506       0.871   0.842  0.002    NaN    NaN    7.100
+SPADE-adaptive    0.889  0.620       0.877   0.856  0.051    NaN    NaN   12.580
+var-sortnregress  0.662  0.177       0.873   0.470    NaN    NaN    NaN    0.415
+  BASIL-minus-SPADE-adaptive auroc  +0.070 CI[+0.052,+0.087] p=0.0312
+  BASIL-minus-SPADE-adaptive auprc  +0.301 CI[+0.242,+0.353] p=0.0312
+  BASIL-minus-SPADE-adaptive orient +0.093 CI[+0.049,+0.146] p=0.0312
+  BASIL-minus-SPADE-adaptive slope  +0.938 CI[+0.856,+0.986] p=0.0312
+
+=== d=50 n=2000 noise=unif  paired datasets=1 ===
+                  auroc  auprc  skel_auroc  orient  slope  cover    ece     time
+method                                                                          
+BASIL_g1_p1       0.956  0.925       0.986   0.903  1.000  0.806  0.005  711.468
+GAM-ridge         0.989  0.521       0.996   0.758  0.865    NaN    NaN  561.303
+SPADE             0.873  0.472       0.876   0.790  0.002    NaN    NaN   24.249
+SPADE-adaptive    0.889  0.569       0.892   0.839  0.003    NaN    NaN   41.644
+var-sortnregress  0.637  0.149       0.876   0.427    NaN    NaN    NaN    0.557
