@@ -1,0 +1,43 @@
+<h2 id="s7">7. Tổng hợp: biết gì, chưa biết gì</h2>
+<div class="scroll"><table><thead><tr><th>Phát biểu</th><th>Bằng chứng</th><th>Độ tin cậy</th></tr></thead><tbody>
+<tr><td>SPADE gốc làm co biên độ đường cong; adaptive weighting sửa</td><td>G1: 20/20 đồ thị ở hai d; minh họa trực quan ở mục 6.1; một họ bộ sinh</td><td><span class="tag t-good">tương đối chắc ở mức pilot</span></td></tr>
+<tr><td>Benchmark cũ của dự án dễ bị khai thác bằng phương sai</td><td>G4: đo trực tiếp</td><td><span class="tag t-good">chắc</span></td></tr>
+<tr><td>Sai số cài đặt khoảng 0.04–0.06 AUROC mỗi lần chạy</td><td>G4: 30 seed ở d=10; 5 bộ cho thử số luồng</td><td><span class="tag t-good">khá chắc</span></td></tr>
+<tr><td>Spline đọc được tốt hơn MLP cạnh trên cạnh phi tuyến mạnh</td><td>X3 và G2 (so với MLP-edge)</td><td><span class="tag t-warn">chưa chắc: GAM-ridge chưa bị loại</span></td></tr>
+<tr><td>SPADE hơn baseline cộng cổ điển (CAM, GAM)</td><td>chưa kiểm; G2 gợi ý ngang nhau</td><td><span class="tag t-bad">chưa biết</span></td></tr>
+<tr><td>Khám phá cộng đọc được ở d ≥ 100 hơn phương pháp phi tuyến khác</td><td>chưa kiểm (baseline không chạy nổi)</td><td><span class="tag t-bad">chưa biết</span></td></tr>
+<tr><td>Công thức xử lý chuỗi I(1) có giá trị thực</td><td>G5: +0.022, t ≈ 2.6</td><td><span class="tag t-warn">chưa chứng minh</span></td></tr></tbody></table></div>
+<h4>Rủi ro chung</h4>
+<ul><li>Mọi pilot do agent chạy, nhỏ và nhanh; cần chạy lại độc lập trước khi tin bất kỳ phép so sánh nào.</li><li>Cùng nhóm xây benchmark và phương pháp: cần baseline thật (CAM, NAM, DAGMA với đạo hàm, KAN, GAM backfitting).</li><li>"Không thấy trong tổng quan" chỉ có nghĩa là không thấy trong lần quét này, không phải bằng chứng về tính mới.</li><li>Một bài về benchmark/kiểm toán đứng riêng sẽ bị coi là yếu (phần lớn đã có trong Reisach và cộng sự).</li></ul>
+
+<h2 id="s8">8. Hướng đi và câu hỏi cần thảo luận</h2>
+<div class="scroll"><table><thead><tr><th>Phương án</th><th>Nội dung</th><th>Ưu điểm</th><th>Rủi ro</th></tr></thead><tbody>
+<tr><td><b>A</b> <span class="tag t-ours">đề xuất</span></td><td>Gộp G1+G2, dùng G4 làm giao thức: đo và sửa thiên lệch biên độ/hình dạng của hàm cạnh thưa trong khám phá nhân quả cộng phi tuyến</td><td>Hạt nhân rõ (hệ số co 0.48 → 0.95); thước đo mới; sân chơi sạch</td><td>Phải thắng hoặc ngang baseline cộng thật; cải thiện chọn cạnh gần như bằng 0; cần lý thuyết cho ước lượng group-adaptive; hiệu ứng có thể chỉ rõ ở d lớn</td></tr>
+<tr><td><b>B</b></td><td>Chỉ bài phương pháp luận đánh giá (mở rộng G4)</td><td>Rẻ, dữ liệu chắc</td><td>Bị coi là mỏng; ý tưởng đã có</td></tr>
+<tr><td><b>C</b></td><td>Quay lại G3 với ước lượng thứ tự tốt hơn (DiffAN/SCORE chính thức) hoặc thứ tự mềm</td><td>Nếu thành công: tác động lớn (d hàng trăm, đọc được)</td><td>Rủi ro cao: bước thứ tự là điểm hỏng; baseline phi tuyến chạy rất lâu</td></tr>
+<tr><td><b>D</b></td><td>G5 ở chế độ khó (tín hiệu yếu, T ngắn, d lớn, đồng tích hợp phi tuyến)</td><td>Giải thích được kết quả tài chính của bài</td><td>Mới là sửa điểm yếu đã biết, chưa có thuật toán mới</td></tr>
+<tr><td><b>E</b></td><td>Bỏ hướng "sửa SPADE", viết bài khác dựa trên SPADE (ứng dụng quản trị)</td><td>Ít rủi ro khoa học</td><td>Có thể trùng bài đã đăng</td></tr></tbody></table></div>
+<h3>Phác thảo bài toán nếu theo A (để thảo luận, sẽ chặt chẽ ở bước thiết kế)</h3>
+<ul><li><b>Mô hình:</b> <code>x_e = Σ_j f_je(x_j) + ε</code>, f_je thuộc lớp hàm trơn. Mục tiêu kép: (i) khôi phục tập cạnh; (ii) khôi phục <i>hình dạng</i> f_je, không chỉ có/không.</li><li><b>Câu hỏi:</b> phạt group-lasso gây sai số biên độ ở mức nào theo n, d, độ mạnh cạnh, concurvity; có ước lượng nào sửa mà không đánh đổi việc chọn cạnh?</li><li><b>Ứng viên:</b> adaptive group-lasso (G1 cho thấy sửa biên độ); bước làm trơn chỉ để hiển thị (X3: không đổi cấu trúc); chọn tập cạnh bằng tiêu chí thông tin hoặc kiểm chéo thay vì top-2d cố định (G1 nghi chính chỗ này làm hỏng refit).</li><li><b>Thước đo:</b> hệ số hiệu chỉnh biên độ, R² hình dạng sau căn chỉnh, SF-F1, dấu đạo hàm; không dùng "class agreement" cho đến khi kiểm chứng.</li><li><b>Giao thức:</b> bộ sinh chuẩn hóa từng biến; baseline sortnregress; baseline cộng thật (CAM/GAM, NAM, DAGMA-DCE); ≥ 30 bộ dữ liệu mỗi ô; so cặp; báo ngưỡng nhiễu cài đặt; seed validation tách seed test; ghi phiên bản thư viện, dtype.</li></ul>
+<h3>Câu hỏi cho thầy</h3>
+<ol><li>Thầy có đồng ý đổi từ "sửa SPADE" sang câu hỏi khoa học về thiên lệch biên độ/hình dạng của hàm cạnh thưa (phương án A) không? Hay thấy phương án khác đáng hơn?</li><li>Đóng góp mong muốn: thuật toán mới, thước đo/benchmark mới, hay phân tích lý thuyết? Mỗi loại cần chuẩn chứng minh khác nhau.</li><li>Nếu thí nghiệm đầy đủ cho thấy GAM-ridge/CAM ngang SPADE, ta kể câu chuyện nào? ("SPADE không cần cho khả năng đọc được" là kết quả âm nhưng thật.)</li><li>Nhắm tới nơi nào (tạp chí, hội nghị)? Điều đó quyết định mức lý thuyết và số thí nghiệm.</li><li>Ngân sách tính toán: pilot dùng 1 luồng CPU; thí nghiệm đầy đủ cho A cần vài ngày CPU hoặc vài giờ GPU. Có dùng được GPU (Colab) không?</li><li>Tác giả và cách trích dẫn bài SPADE đã đăng khi bài mới xây trên nó.</li><li>Dự báo: tạm gác hẳn (naive thắng) hay còn muốn một nhánh riêng?</li></ol>
+
+<h2 id="s9">9. Phụ lục</h2>
+<h3>9.1 Seed và cấu hình từng thí nghiệm</h3>
+<div class="scroll"><table><thead><tr><th>Thí nghiệm</th><th>Chọn (validation)</th><th>Báo (test)</th><th>Dữ liệu</th></tr></thead><tbody>
+<tr><td>Bài đã đăng, λ_g = 0.01</td><td>seed 100–119</td><td>seed 0–4 (d=6,10), 0–2 (d=20)</td><td>bộ sinh ANM của dự án, n=1500</td></tr>
+<tr><td>X1 SPADE-AB</td><td>200–219 / 200–204</td><td>300–319 / 300–304 và 0–4/0–2</td><td>như trên</td></tr>
+<tr><td>X2 Sachs</td><td>không tune</td><td>10 mẫu con 2,000 tế bào (seed 0–9)</td><td>Sachs 2005, log + chuẩn hóa</td></tr>
+<tr><td>X3 hình dạng</td><td>450–459 (hệ số làm trơn)</td><td>400–419</td><td>ANM d=6,10</td></tr>
+<tr><td>X4 quy mô</td><td>500–502</td><td>600–602</td><td>ANM, n=3000, d=50/100/200</td></tr>
+<tr><td>X5 dự báo</td><td>tách trong khối huấn luyện đầu</td><td>2 fold lăn × seed 42–44</td><td>tài chính 8 tài sản; Beijing 5 biến</td></tr>
+<tr><td>G1</td><td>200–205</td><td>1000–1019 (d=10), 2000–2019 (d=20)</td><td>iSCM, n=1500</td></tr>
+<tr><td>G2</td><td>1000–1004 (chọn τ)</td><td>2000–2009 × 3 giá trị ρ</td><td>d=8, n=1000</td></tr>
+<tr><td>G3</td><td>700–701 (d=50), 700 (d=100)</td><td>800 (một seed mỗi ô)</td><td>n=3000, d=50/100/200</td></tr>
+<tr><td>G4</td><td>không tune</td><td>800–829 (seed mới)</td><td>n=1500, d=6–50</td></tr>
+<tr><td>G5</td><td>100–102</td><td>200–209 × 3 kịch bản</td><td>d=6, T=500</td></tr></tbody></table></div>
+<h3>9.2 Nơi lưu</h3>
+<ul><li><code>research/01_literature_review.md</code>, <code>research/02_pilot_synthesis.md</code>, <code>research/pilots/G1…G5</code> (mã, protocol, kết quả thô).</li><li><code>experimental_results/</code>: kết quả X1–X5, Sachs, dữ liệu thật phi tài chính. <code>scripts/</code>: mã.</li><li><code>research/report/</code>: trang này (<code>spade_report.html</code>) và mã sinh nó (<code>collect_data.py</code>, <code>build_html.py</code>).</li><li><code>extension/</code>: bản thảo khung thầy đã nhận xét là chưa phải paper; giữ để tham khảo, không dùng.</li></ul>
+<h3>9.3 Lỗi quy trình của tôi và cách xử lý</h3>
+<ul><li>Gán nhầm NoGAM với DAS trong tổng quan: bắt được khi đối chiếu hai nhánh; dùng đúng arXiv:2304.03265.</li><li>Lỗi X3 (đọc nhầm cột đầu vào làm R² phình): sửa trước khi lấy số; kết quả cũ lưu riêng.</li><li>Class agreement quá nhạy với gợn đuôi: ghi nhận ở X3 và G2; không dùng làm thước đo chính.</li><li>Chạy nhiều job tranh CPU làm méo thời gian đo: các bảng dữ liệu giờ bỏ cột thời gian.</li><li>Job nền chết khi lượt làm việc kết thúc và một lần lệnh <code>pkill</code> tắt luôn shell của tôi: đã chuyển sang chờ trong lượt, thêm chế độ resume.</li><li>Một lần tôi push thêm lên nhánh phụ ngoài <code>main</code> trái dặn của thầy: đã xóa nhánh, từ đó chỉ dùng <code>main</code>.</li></ul>
+</main></div>

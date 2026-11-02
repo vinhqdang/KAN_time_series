@@ -1,0 +1,106 @@
+<div class="shell">
+<nav class="rail" id="rail"><span class="nm">SPADE Research Log</span>
+<a href="#s0">0. Tóm tắt</a><a href="#s1">1. Người ta đã viết gì</a><a href="#s2">2. SPADE chạy thế nào</a><a href="#s3">3. Bài đã đăng</a><a href="#s4">4. Đợt thử nhanh X1–X5</a><a href="#s5">5. Scoping review</a><a href="#s6">6. Năm pilot</a><a href="#s7">7. Tổng hợp</a><a href="#s8">8. Hướng đi và câu hỏi</a><a href="#s9">9. Phụ lục</a></nav>
+<main>
+<h1>SPADE: nhật ký nghiên cứu</h1>
+<p class="lead">Báo cáo của nghiên cứu sinh gửi thầy, ngày 02/11/2026. Mục tiêu của trang này: ai đọc cũng biết chính xác đã chạy thuật toán nào, với tham số và seed nào, kết quả ra sao, và người khác đã viết gì trước đó. Mọi biểu đồ vẽ trực tiếp từ các file kết quả trong repo (nhánh <code>main</code>); chỗ nào chưa tự kiểm chứng sẽ ghi rõ.</p>
+
+<h2 id="s0">0. Tóm tắt</h2>
+<div class="grid3">
+<div class="card"><span class="tag t-info">đã công bố</span><p><b>SPADE</b> học đồ thị nhân quả phi tuyến, mỗi cạnh là một hàm spline vẽ ra được. Bài đã được nhận ở <i>Array</i>; không sửa.</p></div>
+<div class="card"><span class="tag t-warn">thử nhanh</span><p>Đợt <b>X1–X5</b> cho vài con số đẹp, nhưng thiếu thiết kế, một họ bộ sinh dữ liệu, và sai số giữa các lần chạy lớn hơn mức cải thiện. <b>Không dùng làm kết quả.</b></p></div>
+<div class="card"><span class="tag t-good">có hạt nhân</span><p>Group-lasso làm <b>biên độ đường cong co còn ~một nửa</b>; adaptive weighting sửa được. Mức pilot, cần làm lại bài bản.</p></div>
+</div>
+<div class="note info"><b>Điều thầy cần quyết định:</b> chọn câu hỏi nghiên cứu cho bước thiết kế lại (mục 8). Đề xuất của tôi: gộp G1+G2 (thiên lệch biên độ và độ trung thực hình dạng của hàm cạnh), dùng G4 làm giao thức đánh giá.</div>
+<figure><svg viewBox="0 0 860 150" width="100%" role="img" aria-label="Các giai đoạn công việc">
+<g font-size="12" text-anchor="middle">
+<rect x="6" y="30" width="130" height="70" rx="6" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="71" y="60">1. Bài SPADE</text><text x="71" y="78">đã đăng</text>
+<rect x="150" y="30" width="130" height="70" rx="6" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="215" y="55">2. Revision 2</text><text x="215" y="73">dữ liệu thật</text><text x="215" y="89">phi tài chính</text>
+<rect x="294" y="30" width="130" height="70" rx="6" fill="var(--warn-soft)" stroke="var(--warn)"/><text x="359" y="55">3. Thử nhanh</text><text x="359" y="73">X1–X5</text><text x="359" y="89">(chưa đủ chặt)</text>
+<rect x="438" y="30" width="130" height="70" rx="6" fill="var(--good-soft)" stroke="var(--good)"/><text x="503" y="55">4. Scoping review</text><text x="503" y="73">~130 bài</text><text x="503" y="89">đã xác minh web</text>
+<rect x="582" y="30" width="130" height="70" rx="6" fill="var(--good-soft)" stroke="var(--good)"/><text x="647" y="60">5. Năm pilot</text><text x="647" y="78">G1–G5</text>
+<rect x="726" y="30" width="130" height="70" rx="6" fill="var(--ours-soft)" stroke="var(--ours)"/><text x="791" y="55">6. Bây giờ</text><text x="791" y="73">chọn hướng,</text><text x="791" y="89">thiết kế lại</text>
+</g>
+<g stroke="var(--muted)" stroke-width="1.5" fill="none"><path d="M138 65h10M282 65h10M426 65h10M570 65h10M714 65h10"/></g></svg>
+<figcaption>Hình 0. Các giai đoạn. Xanh dương: đã công bố. Vàng: làm nhanh. Xanh lá: làm lại có hệ thống.</figcaption></figure>
+
+<h2 id="s1">1. Người ta đã viết gì</h2>
+<p>Phần này tóm lược tài liệu theo từng dòng nghiên cứu: người ta làm gì, hạn chế gì, và nó chạm vào SPADE ở đâu. Mỗi bài đã được các agent tìm kiếm xác nhận tồn tại qua trang arXiv, nhà xuất bản hoặc proceedings (khung nhỏ ghi cờ nếu có thông tin chưa xác nhận). Chưa có người thứ hai sàng lọc và đa số mới đọc abstract. Bảng đầy đủ có bộ lọc ở cuối mục này.</p>
+
+<h3>1.1 Bài toán và tính xác định được</h3>
+<p>Khám phá nhân quả từ dữ liệu quan sát cố tìm đồ thị có hướng không vòng (DAG) biểu diễn ai gây ra ai. Chỉ từ phân phối chung, nói chung chỉ xác định được tới lớp tương đương Markov. Hoyer và cộng sự (2008) cho thấy mô hình <b>nhiễu cộng phi tuyến</b> <code>x_e = f(x_cha) + ε</code> thì hướng xác định được; Peters và cộng sự (2014) mở rộng ra DAG nhiều biến và đề xuất RESIT (hồi quy rồi kiểm định độc lập phần dư; chỉ chạy được ở d nhỏ). Đây là nền lý thuyết của SPADE: mỗi biến chỉ nhận thông tin qua các hàm một biến của biến cha, cộng nhiễu.</p>
+
+<h3>1.2 Tối ưu liên tục (dòng NOTEARS)</h3>
+<p>Zheng và cộng sự (2018) biến ràng buộc "không có vòng" thành một hàm trơn <code>h(W)=tr(exp(W∘W))−d</code> (bằng 0 đúng khi đồ thị là DAG), rồi giải bằng Lagrangian tăng cường. Chi phí ma trận mũ là O(d³), và đây là điểm nghẽn chính cho các công trình sau. Các hướng nối tiếp:</p>
+<ul>
+<li><b>Mở rộng phi tuyến:</b> NOTEARS-MLP/Sobolev (Zheng 2020), DAG-GNN (Yu 2019), GraN-DAG (Lachapelle 2020, kèm cắt tỉa kiểu CAM), DCDI (Brouillard 2020, cần can thiệp).</li>
+<li><b>Ràng buộc khác:</b> GOLEM (Ng 2020, phạt mềm, tuyến tính), DAGMA (Bello 2022, hàm log-det, gradient tốt hơn).</li>
+<li><b>Chi phí và quy mô:</b> lũy thừa ma trận cắt cụt (Zhang 2022), không cần ràng buộc (no-curl, Yu 2021), hạng thấp (Fang 2020), nhân tố (DCD-FG, Lopez 2022), SDCD (Nazaret 2024, tuyên bố "hàng nghìn biến").</li>
+<li><b>Cảnh báo:</b> "DAGs with No Fears" (Wei 2020) và "sober look" (Ng 2024) chỉ ra nhạy với ngưỡng cuối và gợi ý phạt khác ℓ1.</li>
+<li><b>Cường độ cạnh dễ đọc:</b> Dagma-DCE (Waxman 2024) thay chuẩn trọng số bằng hiệu ứng nhân quả dựa trên đạo hàm.</li></ul>
+
+<h3>1.3 Phương pháp theo thứ tự và score matching</h3>
+<p>Thay vì tìm cả đồ thị, đi tìm <b>thứ tự nhân quả</b> trước rồi chọn cạnh. CAM (Bühlmann 2014) dùng mô hình cộng, tìm thứ tự tham lam rồi hồi quy thưa. SCORE (Rolland 2022) tìm lá của DAG nhờ phương sai của đường chéo ma trận Hessian của log-mật độ, ước lượng bằng Stein; thí nghiệm tới d=50, phần cắt tỉa kiểu CAM chiếm khoảng 95% thời gian ở d=50. NoGAM (Montagna 2023) mở rộng sang nhiễu bất kỳ; DAS (Montagna 2023) chỉ cắt tỉa trên cha ứng viên để nhanh hơn một bậc độ lớn (d tới 1000 trên dữ liệu tổng hợp nhưng recall khoảng 0.08–0.09 ở d=1000). DiffAN (Sanchez 2023) dùng mô hình khuếch tán, tuyên bố tới 500 biến. SciNO (Kang 2025), CaPS (Xu 2024) cải tiến ước lượng Hessian và cắt tỉa.</p>
+
+<h3>1.4 Mô hình cộng, spline, GAM, NAM, KAN</h3>
+<p>Mô hình cộng phi tham số đã có từ lâu (Sparse Additive Models, Ravikumar 2009; GA2M/EBM, Lou 2013; NAM, Agarwal 2021; NODE-GAM, Chang 2022; P-spline, Eilers &amp; Marx 1996). KAN (Liu 2025) đặt hàm spline học được lên cạnh; các phê bình cho thấy khi khớp tham số, KAN chỉ hơn MLP trên bài biểu thức ký hiệu (Yu 2024, Hou 2024), và khớp biểu thức từng cạnh không ổn định (Sovrano 2026). Với nhân quả: KAN-Granger cho chuỗi thời gian (Lin 2024, Liu 2025), mô hình sinh với cấu trúc biết trước (KaCGM, 2026), bản đồ nhận thức mờ (Salmeron 2026). <b>Trong lần quét này không thấy bài nào ngoài SPADE kết hợp cạnh spline/KAN với ràng buộc acyclicity hoặc tìm kiếm theo thứ tự cho dữ liệu cắt ngang.</b> Cảnh báo về diễn giải: concurvity và tính không xác định của mô hình cộng (Siems 2023; Zhang 2025).</p>
+
+<h3>1.5 Phạt thưa, thiên lệch co rút, chọn cạnh</h3>
+<p>Lasso thu nhỏ mọi hệ số một lượng gần như không đổi, nên hệ số lớn bị thiên lệch xuống. Adaptive lasso (Zou 2006) đặt trọng số nghịch với ước lượng ban đầu để giảm thiên lệch đó; stability selection (Meinshausen &amp; Bühlmann 2010) lặp trên mẫu con; bootstrap độ tin cậy cạnh cho mạng Bayes (Friedman 1999); cổng L0 (Louizos 2018). Trong học cấu trúc: NOTEARS-AL (Xu 2022) lập luận ℓ1 cộng ngưỡng cố định xóa nhầm cạnh nhỏ; Jacobian regularizer cho Granger thần kinh (Zhou 2024) thay phạt trọng số nhóm. Chọn siêu tham số không nhãn: tuning ngoài mẫu (Biza 2020), độ bền theo siêu tham số (Machlanski 2024), self-compatibility (Faller 2024). <b>Khoảng trống: chưa có nghiên cứu nào đo thiên lệch co rút của phạt thưa lên đường cong cạnh của learner cộng phi tham số.</b></p>
+
+<h3>1.6 Benchmark và những cái bẫy</h3>
+<ul><li><b>Varsortability</b> (Reisach 2021): trong ANM mô phỏng, phương sai biên thường tăng dọc thứ tự nhân quả; một baseline chỉ sắp theo phương sai khớp các phương pháp liên tục, và các phương pháp này hỏng sau khi chuẩn hóa. <b>R²-sortability</b> (Reisach 2023) bền với chuẩn hóa; SCM chuẩn hóa nội bộ (Ormaniec 2025) tránh cả hai.</li>
+<li>NOTEARS không bất biến theo thang đo (Kaiser &amp; Sipos 2022; Seng 2022); hàm mất mát bình phương có thể cực tiểu ở DAG sai khi d lớn (Seng 2024).</li>
+<li>Benchmark lớn: vi phạm giả định (Montagna 2023), mạng Bayes với nhiễu (Constantinou 2021), cảnh quan dữ liệu thật (Brouillard 2025), đánh giá bằng can thiệp (Gentzel 2019).</li>
+<li>Dữ liệu thật có ground truth: Sachs (2005; 11 nút, ground truth có tranh cãi), Tübingen (Mooij 2016), NetSim, DREAM5, CausalBench (chỉ số can thiệp), Causal Chambers, và cho chuỗi thời gian CausalTime, CausalRivers (hơn 1000 nút).</li>
+<li>Chưa thấy kiểm toán rò rỉ seed hoặc biến thiên theo phiên bản thư viện cho learner thần kinh/spline.</li></ul>
+
+<h3>1.7 Chuỗi thời gian</h3>
+<p>VAR-LiNGAM (Hyvärinen 2010), PCMCI/PCMCI+ (Runge 2019; 2020), DYNOTEARS (Pamfil 2020), Neural Granger (Tank 2022), NAVAR (Bussmann 2021, mô hình cộng gần nhất), NTS-NOTEARS (Sun 2023), Rhino (Gong 2023), CUTS/CUTS+ (Cheng 2023, 2024). Dữ liệu giá (tích hợp) gây hồi quy giả (Granger &amp; Newbold 1974); CD-NOD (Huang 2020) xử lý phi dừng nhưng không phải nhiễu cộng. Hàm ảnh hưởng dạng đường cong từ NAVAR (Kuskova 2026, preprint) là nỗ lực gần nhất cho diễn giải mức hình dạng.</p>
+
+<h3>1.8 Năm khoảng trống rút ra</h3>
+<div class="scroll"><table><thead><tr><th>Mã</th><th>Khoảng trống</th><th>Bằng chứng trong tài liệu</th></tr></thead><tbody>
+<tr><td>G1</td><td>Thiên lệch co rút/chọn cạnh của phạt thưa với learner cộng phi tham số</td><td>Có bàn cho NOTEARS tuyến tính và Granger; chưa có nghiên cứu về méo đường cong; stability selection chưa áp cho learner khả vi</td></tr>
+<tr><td>G2</td><td>Đánh giá hàm cạnh với ground truth bên trong causal discovery</td><td>Chưa có thước đo; KAN fit biểu thức không ổn định; concurvity mới nêu cho dự đoán</td></tr>
+<tr><td>G3</td><td>Khám phá cộng đọc được ở d lớn</td><td>Cắt tỉa kiểu CAM là điểm nghẽn; recall DAS thấp ở d=1000; không có benchmark tĩnh d lớn có ground truth</td></tr>
+<tr><td>G4</td><td>Hợp lệ benchmark cho bộ sinh trơn, bị chặn</td><td>Chưa kiểm toán seed/rò rỉ/phiên bản thư viện</td></tr>
+<tr><td>G5</td><td>Phi dừng với mô hình cộng</td><td>Phần lớn xử lý bằng giả định; KAN-Granger mới là preprint, nhỏ</td></tr></tbody></table></div>
+<h3>Bảng bài báo (lọc được)</h3>
+<div class="ctl"><label>Chủ đề <select id="pfTheme"></select></label><label>Tìm <input type="text" id="pfText" placeholder="tên tác giả, từ khóa"></label><span id="pfCount" style="color:var(--muted)"></span></div>
+<div id="papers"></div>
+
+<h2 id="s2">2. SPADE chạy thế nào (thuật toán chính xác)</h2>
+<p>SPADE giả định mỗi biến kết quả là tổng các hàm một biến của biến nguyên nhân, cộng nhiễu. Mỗi hàm là một spline bậc 3 với G+p = 11 hệ số (lưới G=8 ô trên [−3,3], dữ liệu đã chuẩn hóa, đầu vào bị cắt vào khoảng này). Hình dưới là sơ đồ.</p>
+<figure><svg viewBox="0 0 860 280" width="100%" role="img" aria-label="Sơ đồ SPADE"><g font-size="12" text-anchor="middle">
+<rect x="10" y="30" width="130" height="50" rx="6" fill="var(--ours-soft)" stroke="var(--ours)"/><text x="75" y="60">nguyên nhân x₁</text>
+<rect x="10" y="110" width="130" height="50" rx="6" fill="var(--ours-soft)" stroke="var(--ours)"/><text x="75" y="140">nguyên nhân x₂</text>
+<rect x="10" y="190" width="130" height="50" rx="6" fill="var(--ours-soft)" stroke="var(--ours)"/><text x="75" y="220">nguyên nhân x₃</text>
+<path d="M140 55h90M140 135h90M140 215h90" stroke="var(--muted)" marker-end="url(#ar)"/>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker></defs>
+<g stroke="var(--ours)" stroke-width="2.4" fill="none"><path d="M240 70 C270 70 280 40 330 38 S 360 38 380 38"/><path d="M240 120 Q310 170 380 120"/><path d="M240 225 C270 180 300 250 330 205 S360 190 380 205"/></g>
+<g stroke="var(--line)" fill="none"><rect x="236" y="22" width="150" height="56"/><rect x="236" y="104" width="150" height="62"/><rect x="236" y="182" width="150" height="62"/></g>
+<text x="311" y="16">φ₁(x₁): spline</text><text x="311" y="98">φ₂(x₂)</text><text x="311" y="176">φ₃(x₃)</text>
+<path d="M386 50L520 130M386 135L520 135M386 213L520 140" stroke="var(--muted)" marker-end="url(#ar)"/>
+<rect x="520" y="100" width="170" height="70" rx="6" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="605" y="130">x̂ₑ = b + Σⱼ φⱼ(xⱼ)</text><text x="605" y="150">(cộng lại)</text>
+<path d="M690 135h60" stroke="var(--muted)" marker-end="url(#ar)"/>
+<rect x="750" y="110" width="100" height="50" rx="6" fill="var(--good-soft)" stroke="var(--good)"/><text x="800" y="140">biến kết quả xₑ</text>
+</g><text x="430" y="272" text-anchor="middle" font-size="12" fill="var(--muted)">Không có mạng trộn nào ở giữa: đây là điều kiện để cấu trúc xác định được (information bottleneck)</text></svg>
+<figcaption>Hình 1. Mô hình SPADE cho một biến kết quả. Group-lasso trên cả nhóm hệ số của một cạnh để cắt cạnh; ràng buộc acyclicity trên ma trận chuẩn cạnh để không có vòng.</figcaption></figure>
+<details open><summary>Thuật toán huấn luyện (đúng như trong code <code>scripts/instantaneous_dag_benchmark.py</code>)</summary>
+<pre><code>Đầu vào: X ∈ R^{n×d}; λ_g = 0.01; E = 400 epoch; Adam lr = 5e-3; lưới G = 8, bậc p = 3, miền [-3, 3]
+Z ← chuẩn hóa từng cột của X (trung bình 0, độ lệch chuẩn 1)
+Khởi tạo hệ số θ_ij ∈ R^11 ngẫu nhiên nhỏ cho mọi cặp (i = kết quả, j = nguyên nhân), bias b_i = 0; cạnh tự thân bị che
+ρ ← 1; α ← 0
+lặp epoch = 1..E:
+    x̂_i = b_i + Σ_{j≠i} Σ_k B_k(z_j) · θ_ijk          # B_k: cơ sở B-spline bậc 3; z_j bị cắt vào [-3,3]
+    W_ij = ‖θ_ij‖₂ ;   h(W) = tr(exp(W∘W)) − d
+    L = mean((x̂ − Z)²) + λ_g · Σ_ij W_ij + α·h + (ρ/2)·h²
+    cập nhật Adam (cắt chuẩn gradient ở 5)
+    mỗi 50 epoch: nếu h &gt; 1e-8 thì α ← α + ρ·h ; ρ ← min(2ρ, 1e10)
+Điểm cạnh: S_ij = độ lệch chuẩn theo mẫu của  Σ_k B_k(z_j)·θ_ijk    # độ mạnh đóng góp của cạnh j→i
+Đầu ra: ma trận điểm S (cạnh nào mạnh hơn thì xếp trên); đường cong φ_ij vẽ được từ θ_ij</code></pre></details>
+<div class="note">Điểm mấu chốt cho phần sau: phạt <code>λ_g · Σ W_ij</code> là một <b>hằng số nhân với chuẩn của nhóm</b>. Với cạnh đang hoạt động, đạo hàm của phạt không đổi bất kể cạnh mạnh hay yếu, nên mọi cạnh hoạt động bị đẩy xuống một lượng tương tự. Đó là cơ chế gây co biên độ (mục 6, G1).</div>
+<h4>Minh họa: vì sao nhóm lớn vẫn bị co</h4>
+<div class="card"><div class="ctl"><label>Chuẩn thật của một cạnh <input type="range" id="toyN" min="0.2" max="3" step="0.05" value="1.5"></label><span id="toyNv"></span><label>λ <input type="range" id="toyL" min="0" max="1" step="0.02" value="0.4"></label><span id="toyLv"></span></div>
+<div class="chartbox" style="height:240px"><canvas id="toyC"></canvas></div><p id="toyT" class="m" style="color:var(--muted);font-size:.9rem"></p></div>
+<p class="lead" style="font-size:.9rem">Đây là phép tính tượng trưng (toán, không phải dữ liệu): bước "soft-threshold" của lasso nhóm cho ‖θ̂‖ = max(0, ‖θ‖ − λ); adaptive lasso dùng λ_ij = λ/(‖θ̃_ij‖+ε) nên phạt cạnh mạnh ít hơn.</p>

@@ -1,0 +1,180 @@
+<script>
+const D = /*DATA*/;
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const reg = []; const charts = {};
+function mk(id, factory){ reg.push([id, factory]); }
+const errPlugin = {id:'err', afterDatasetsDraw(ch){ const {ctx}=ch; ch.data.datasets.forEach((ds,di)=>{ if(!ds.std) return; const meta=ch.getDatasetMeta(di); meta.data.forEach((bar,i)=>{ const s=ds.std[i]; if(s==null||isNaN(s)) return; const horiz=ch.options.indexAxis==='y'; const sc=horiz?ch.scales.x:ch.scales.y; const v=ds.data[i]; ctx.save(); ctx.strokeStyle=css('--fg'); ctx.lineWidth=1.2; ctx.beginPath(); if(horiz){const y=bar.y,x1=sc.getPixelForValue(v-s),x2=sc.getPixelForValue(v+s); ctx.moveTo(x1,y);ctx.lineTo(x2,y);ctx.moveTo(x1,y-4);ctx.lineTo(x1,y+4);ctx.moveTo(x2,y-4);ctx.lineTo(x2,y+4);} else {const x=bar.x,y1=sc.getPixelForValue(v-s),y2=sc.getPixelForValue(v+s); ctx.moveTo(x,y1);ctx.lineTo(x,y2);ctx.moveTo(x-4,y1);ctx.lineTo(x+4,y1);ctx.moveTo(x-4,y2);ctx.lineTo(x+4,y2);} ctx.stroke(); ctx.restore(); }); }); }};
+function base(extra={}){ return Object.assign({responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{labels:{color:css('--fg'),boxWidth:12}}},scales:{x:{ticks:{color:css('--muted')},grid:{color:css('--grid')}},y:{ticks:{color:css('--muted')},grid:{color:css('--grid')}}}},extra); }
+function build(){ const cols=[css('--c1'),css('--c2'),css('--c3'),css('--c4'),css('--c5')];
+  Chart.defaults.font.family='"Source Sans 3",system-ui,sans-serif'; Chart.defaults.color=css('--muted');
+  reg.forEach(([id,f])=>{ const el=document.getElementById(id); if(!el) return; if(charts[id]) charts[id].destroy(); const cfg=f(cols); cfg.plugins=(cfg.plugins||[]).concat([errPlugin]); charts[id]=new Chart(el,cfg); }); }
+function tabs(id, names, on, cb){ const el=document.getElementById(id); if(!el) return; el.innerHTML=''; names.forEach((n,i)=>{ const b=document.createElement('button'); b.textContent=n; if(i===on.v) b.className='on'; b.onclick=()=>{ on.v=i; [...el.children].forEach((c,j)=>c.className=j===i?'on':''); cb(); build(); }; el.appendChild(b); }); }
+
+/* ---- Fig 2 published ---- */
+const pubOrder=['SPADE','NoGAM','SCORE','NOTEARS-linear','GOLEM','DAGMA-nonlinear','NOTEARS-MLP','GraN-DAG','DAGMA-linear'].filter(m=>D.published[m]);
+mk('cPub',c=>({type:'bar',data:{labels:pubOrder,datasets:[6,10,20].map((d,i)=>({label:'d='+d,data:pubOrder.map(m=>D.published[m][i]),backgroundColor:[c[2],c[0],c[3]][i]}))},options:base({scales:{y:{min:0.4,max:1,title:{display:true,text:'AUROC',color:css('--muted')},ticks:{color:css('--muted')},grid:{color:css('--grid')}},x:{ticks:{color:css('--muted')},grid:{display:false}}}})}));
+
+/* ---- Fig 3 real data ---- */
+const rwState={v:0}; const rwSets=[['Bike ngày (n=730)','bike_daily'],['Bike giờ, mẫu 2000','bike_hourly'],['Beijing, mẫu 2000','beijing'],['Toàn chuỗi (n=17k / 41k)','full']];
+tabs('tabsRW',rwSets.map(s=>s[0]),rwState,()=>{});
+mk('cRW',c=>{ if(rwState.v<3){ const S=D[rwSets[rwState.v][1]]; const ms=['SPADE','NOTEARS-linear','DAGMA-nonlinear','NoGAM','SCORE','GOLEM','GraN-DAG','NOTEARS-MLP','DAGMA-linear'].filter(m=>S[m]);
+    return {type:'bar',data:{labels:ms,datasets:[{label:'BK-AUROC',data:ms.map(m=>S[m][0]),std:ms.map(m=>S[m][1]),backgroundColor:ms.map(m=>m==='SPADE'?c[1]:c[2])}]},options:base({plugins:{legend:{display:false}},scales:{y:{min:0,max:1,ticks:{color:css('--muted')},grid:{color:css('--grid')},title:{display:true,text:'BK-AUROC (0.5 = ngẫu nhiên)',color:css('--muted')}},x:{ticks:{color:css('--muted')},grid:{display:false}}}})}; }
+  const F=D.fullseries; const ds=['bike_hourly','beijing']; const ms=['SPADE','NOTEARS-linear','GOLEM','NOTEARS-MLP','DAGMA-linear'];
+  return {type:'bar',data:{labels:ms,datasets:ds.map((k,i)=>({label:k==='bike_hourly'?'Bike giờ (n=17,303)':'Beijing (n=41,543)',data:ms.map(m=>F[k][m][0]),std:ms.map(m=>F[k][m][1]),backgroundColor:[c[0],c[3]][i]}))},options:base({scales:{y:{min:0,max:1,ticks:{color:css('--muted')},grid:{color:css('--grid')}},x:{ticks:{color:css('--muted')},grid:{display:false}}}})}; });
+
+/* ---- X1 ---- */
+const x1State={v:0}; tabs('tabsX1',['Validation: chọn biến thể','Seed mới: SPADE vs SPADE-AB'],x1State,()=>{});
+mk('cX1',c=>{ if(x1State.v===0){ const vs=['base','adaptive','refit','boot','adaptive_boot']; return {type:'bar',data:{labels:['d=6','d=10','d=20'],datasets:vs.map((v,i)=>({label:v,data:['6','10','20'].map(d=>D.x1_val[d][v]),backgroundColor:[c[2],c[0],c[3],c[4],c[1]][i]}))},options:base({scales:{y:{min:0.8,max:1,ticks:{color:css('--muted')},grid:{color:css('--grid')},title:{display:true,text:'AUROC',color:css('--muted')}},x:{ticks:{color:css('--muted')},grid:{display:false}}}})}; }
+  return {type:'bar',data:{labels:['d=6','d=10','d=20'],datasets:['SPADE','SPADE-AB'].map((m,i)=>({label:m,data:['6','10','20'].map(d=>D.x1_fresh[d][m][0]),backgroundColor:[c[2],c[1]][i]}))},options:base({scales:{y:{min:0.8,max:1,ticks:{color:css('--muted')},grid:{color:css('--grid')},title:{display:true,text:'AUROC',color:css('--muted')}},x:{ticks:{color:css('--muted')},grid:{display:false}}}})}; });
+
+/* ---- Sachs ---- */
+const sk=Object.keys(D.sachs).sort((a,b)=>D.sachs[b][0]-D.sachs[a][0]);
+mk('cSachs',c=>({type:'bar',data:{labels:sk,datasets:[{label:'AUROC',data:sk.map(m=>D.sachs[m][0]),std:sk.map(m=>D.sachs[m][1]),backgroundColor:sk.map(m=>m.startsWith('SPADE')?c[1]:c[2])}]},options:base({indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{min:0.2,max:0.8,ticks:{color:css('--muted')},grid:{color:css('--grid')},title:{display:true,text:'AUROC (0.5 = ngẫu nhiên)',color:css('--muted')}},y:{ticks:{color:css('--muted')},grid:{display:false}}}})}));
+
+/* ---- X3 ---- */
+mk('cX3',c=>{ const ms=['MLP-edge','SPADE','SPADE-2stage']; return {type:'bar',data:{labels:ms.map(m=>m+' (n='+D.x3[m].nl_n+')'),datasets:[{label:'R² hình dạng (cạnh phi tuyến mạnh)',data:ms.map(m=>D.x3[m].nl_r2),backgroundColor:[c[2],c[1],c[0]]}]},options:base({plugins:{legend:{display:false}},scales:{y:{min:0,max:1,ticks:{color:css('--muted')},grid:{color:css('--grid')},title:{display:true,text:'R² sau căn chỉnh affine',color:css('--muted')}},x:{ticks:{color:css('--muted')},grid:{display:false}}}})}; });
+
+/* ---- X4 ---- */
+mk('cX4',c=>{ const names=[['SPADE (lg=0.01)','SPADE λ cố định 0.01',c[2]],['SPADE-scaled (lg=c/d,K=15)','SPADE-scaled',c[1]],['NOTEARS-linear','NOTEARS-linear',c[0]],['DAGMA-linear','DAGMA-linear',c[4]],['GOLEM','GOLEM (chỉ d=50)',c[3]],['NOTEARS-MLP','NOTEARS-MLP (chỉ d=50)',c[3]]]; const ds=names.filter(n=>D.x4[n[0]]).map(n=>({label:n[1],borderColor:n[2],backgroundColor:n[2],data:['50','100','200'].map(d=>D.x4[n[0]][d]?D.x4[n[0]][d][0]:null),spanGaps:false,tension:0.1,pointRadius:4}));
+  return {type:'line',data:{labels:['d=50','d=100','d=200'],datasets:ds},options:base({scales:{y:{min:0.4,max:1.02,ticks:{color:css('--muted')},grid:{color:css('--grid')},title:{display:true,text:'AUROC',color:css('--muted')}},x:{ticks:{color:css('--muted')},grid:{display:false}}}})}; });
+
+/* ---- X5 ---- */
+const x5State={v:0}; tabs('tabsX5',['Dự báo tài chính','Dự báo Beijing'],x5State,()=>{});
+mk('cX5',c=>{ let obj; if(x5State.v===0){ obj={}; Object.keys(D.x5_fin).forEach(m=>{ if(['Naive (last value)','SPADE-fast (res+gl)','SPADE-fast (res+ES)','TSMixer+RevIN','PatchTST+RevIN','CD-KAN','N-BEATS+RevIN','LSTM+RevIN'].includes(m)) obj[m]=D.x5_fin[m][0]; }); } else obj=D.x5_bj;
+  const ks=Object.keys(obj).sort((a,b)=>obj[a]-obj[b]); return {type:'bar',data:{labels:ks,datasets:[{label:'MSE',data:ks.map(k=>obj[k]),backgroundColor:ks.map(k=>k.startsWith('Naive')?c[4]:(k.startsWith('SPADE')||k==='CD-KAN')?c[1]:c[2])}]},options:base({indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{color:css('--muted')},grid:{color:css('--grid')},title:{display:true,text:'MSE (thấp = tốt)',color:css('--muted')}},y:{ticks:{color:css('--muted')},grid:{display:false}}}})}; });
+
+/* ---- G1 ---- */
+const g1State={v:0}; const g1m=[['slope','Hệ số hiệu chỉnh biên độ (1 = đúng)'],['curve_r2','R² đường cong học được'],['auprc','AUPRC cạnh'],['auroc','AUROC cạnh']]; tabs('tabsG1',g1m.map(x=>x[1]),g1State,()=>{});
+mk('cG1',c=>{ const col=g1m[g1State.v][0]; const ms=['base','adaptive','refit_s0.001','dss_s0.001'].filter(m=>D.g1['10'][m]&&D.g1['10'][m][col]!==undefined); const lab={'base':'base (group-lasso)','adaptive':'adaptive','refit_s0.001':'refit','dss_s0.001':'DSS (đầy đủ)'};
+  return {type:'bar',data:{labels:ms.map(m=>lab[m]),datasets:['10','20'].map((d,i)=>({label:'d='+d,data:ms.map(m=>D.g1[d][m][col]),backgroundColor:[c[0],c[3]][i]}))},options:base({scales:{y:{min:col==='slope'||col==='curve_r2'?0:0.8,max:1.02,ticks:{color:css('--muted')},grid:{color:css('--grid')}},x:{ticks:{color:css('--muted')},grid:{display:false}}}})}; });
+
+/* ---- curve explorer ---- */
+const cvSeed=document.getElementById('cvSeed'), cvEdge=document.getElementById('cvEdge'), cvInfo=document.getElementById('cvInfo');
+Object.keys(D.curves).forEach(s=>{ const o=document.createElement('option'); o.value=s; o.textContent='seed '+s; cvSeed.appendChild(o); });
+function fillEdges(){ cvEdge.innerHTML=''; D.curves[cvSeed.value].forEach((e,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent='x'+e.c+' → x'+e.e+(e.slope_base===0?' (không được chọn)':''); cvEdge.appendChild(o); }); }
+fillEdges(); cvSeed.onchange=()=>{ fillEdges(); build(); }; cvEdge.onchange=()=>build();
+mk('cCurve',c=>{ const e=D.curves[cvSeed.value][+cvEdge.value]||D.curves[cvSeed.value][0]; cvInfo.textContent='hệ số biên độ: base '+e.slope_base.toFixed(2)+', adaptive '+e.slope_adaptive.toFixed(2)+' (1 = đúng)';
+  return {type:'line',data:{labels:e.xs,datasets:[{label:'hàm thật',data:e.truth,borderColor:css('--fg'),borderWidth:3,pointRadius:0},{label:'SPADE (group-lasso)',data:e.base,borderColor:c[2],borderDash:[6,4],borderWidth:2.5,pointRadius:0},{label:'adaptive',data:e.adaptive,borderColor:c[1],borderWidth:2.5,pointRadius:0}]},options:base({scales:{x:{ticks:{color:css('--muted'),maxTicksLimit:9},grid:{color:css('--grid')},title:{display:true,text:'giá trị nguyên nhân (đã chuẩn hóa)',color:css('--muted')}},y:{ticks:{color:css('--muted')},grid:{color:css('--grid')},title:{display:true,text:'đóng góp φ(x) (đã trừ trung bình)',color:css('--muted')}}}})}; });
+
+/* ---- toy ---- */
+const toyN=document.getElementById('toyN'), toyL=document.getElementById('toyL');
+mk('toyC',c=>{ const tn=+toyN.value, lam=+toyL.value; document.getElementById('toyNv').textContent='‖θ‖ = '+tn.toFixed(2); document.getElementById('toyLv').textContent='λ = '+lam.toFixed(2);
+  const xs=[]; for(let n=0.2;n<=3.001;n+=0.1) xs.push(+n.toFixed(2)); const soft=n=>Math.max(0,n-lam); const ada=n=>Math.max(0,n-lam/((n)+0.05)*0.5);
+  const sh=soft(tn), ah=ada(tn); document.getElementById('toyT').textContent='Với cạnh có chuẩn thật '+tn.toFixed(2)+': lasso nhóm giữ '+sh.toFixed(2)+' ('+(100*sh/tn).toFixed(0)+'% biên độ); adaptive (trọng số theo ước lượng ban đầu) giữ '+ah.toFixed(2)+' ('+(100*ah/tn).toFixed(0)+'%).';
+  return {type:'line',data:{labels:xs,datasets:[{label:'đúng (y = x)',data:xs,borderColor:css('--fg'),borderWidth:1.5,pointRadius:0,borderDash:[3,3]},{label:'lasso nhóm',data:xs.map(soft),borderColor:c[2],borderWidth:2.5,pointRadius:0},{label:'adaptive',data:xs.map(ada),borderColor:c[1],borderWidth:2.5,pointRadius:0}]},options:base({scales:{x:{ticks:{color:css('--muted'),maxTicksLimit:8},grid:{color:css('--grid')},title:{display:true,text:'chuẩn thật của nhóm hệ số',color:css('--muted')}},y:{ticks:{color:css('--muted')},grid:{color:css('--grid')},title:{display:true,text:'chuẩn ước lượng',color:css('--muted')}}}})}; });
+toyN.oninput=toyL.oninput=()=>build();
+
+/* ---- G2 ---- */
+mk('cG2',c=>{ const ms=['GAM-ridge','SPADE','MLP-edge','Linear','NT-MLP'].filter(m=>D.g2[m]); return {type:'bar',data:{labels:ms,datasets:[{label:'AUROC cạnh',data:ms.map(m=>D.g2[m].AUROC),backgroundColor:c[0]},{label:'SF-F1 (tìm được VÀ đúng hình dạng)',data:ms.map(m=>D.g2[m]['SF-F1']),backgroundColor:c[1]}]},options:base({scales:{y:{min:0,max:1,ticks:{color:css('--muted')},grid:{color:css('--grid')}},x:{ticks:{color:css('--muted')},grid:{display:false}}}})}; });
+
+/* ---- G3 ---- */
+mk('cG3',c=>{ const items=[['SPOT','SPOT (thứ tự ước lượng)',c[1]],['SPOT-oracle-order','SPOT với thứ tự ĐÚNG (chẩn đoán)',c[4]],['NOTEARS-linear','NOTEARS-linear',c[0]],['DAGMA-linear','DAGMA-linear',c[2]]]; const ds=items.filter(i=>D.g3[i[0]]).map(i=>({label:i[1],borderColor:i[2],backgroundColor:i[2],tension:0.1,pointRadius:4,data:['50','100','200'].map(d=>D.g3[i[0]][d]?D.g3[i[0]][d][0]:null)}));
+  return {type:'line',data:{labels:['d=50','d=100','d=200'],datasets:ds},options:base({scales:{y:{min:0.4,max:1.05,ticks:{color:css('--muted')},grid:{color:css('--grid')},title:{display:true,text:'AUROC (một seed mỗi ô)',color:css('--muted')}},x:{ticks:{color:css('--muted')},grid:{display:false}}}})}; });
+
+/* ---- G4 ---- */
+const g4State={v:0}; tabs('tabsG4',['Bộ sinh của dự án (sortable ≈ 0.9)','Bộ sinh chuẩn hóa từng biến'],g4State,()=>{});
+mk('cG4',c=>{ const G=D.g4[g4State.v===0?'A':'B']; const items=[['var-sortnregress','chỉ sắp theo phương sai',c[2]],['R2-sortnregress','R²-sortnregress',c[3]],['NOTEARS-linear','NOTEARS-linear',c[0]],['SPADE','SPADE',c[1]],['GOLEM','GOLEM',c[4]]]; const ds=items.filter(i=>G[i[0]]).map(i=>({label:i[1],borderColor:i[2],backgroundColor:i[2],tension:0.1,pointRadius:4,data:['6','10','20','50'].map(d=>G[i[0]][d]!==undefined?G[i[0]][d]:null)}));
+  return {type:'line',data:{labels:['d=6','d=10','d=20','d=50'],datasets:ds},options:base({scales:{y:{min:0.45,max:1.02,ticks:{color:css('--muted')},grid:{color:css('--grid')},title:{display:true,text:'AUROC',color:css('--muted')}},x:{ticks:{color:css('--muted')},grid:{display:false}}}})}; });
+
+/* ---- G5 ---- */
+mk('cG5',c=>{ const ms=[['SPADE-levels','SPADE trên dữ liệu mức',c[2]],['SPADE-diff','SPADE trên sai phân',c[0]],['ECM-SPADE','ECM-SPADE',c[1]],['PCMCI-levels','PCMCI trên mức',c[3]]]; return {type:'bar',data:{labels:['I1 (không đồng tích hợp)','I1C (có đồng tích hợp)','ST (dừng)'],datasets:ms.map(m=>({label:m[1],data:['I1','I1C','ST'].map(s=>D.g5[s][m[0]]?D.g5[s][m[0]][1]:null),backgroundColor:m[2]}))},options:base({scales:{y:{min:0,max:1.02,ticks:{color:css('--muted')},grid:{color:css('--grid')},title:{display:true,text:'AUPRC',color:css('--muted')}},x:{ticks:{color:css('--muted')},grid:{display:false}}}})}; });
+
+/* ---- papers ---- */
+const P=[
+['id','Hoyer, Janzing, Mooij, Peters, Schölkopf (2008). Nonlinear causal discovery with additive noise models. NeurIPS 21.','Hướng xác định được cho mô hình nhiễu cộng phi tuyến, kể cả hàm không khả nghịch (trường hợp hai biến).','Nền lý thuyết của SPADE.'],
+['id','Peters, Mooij, Janzing, Schölkopf (2014). Causal discovery with continuous additive noise models. JMLR 15.','Chứng minh xác định được DAG nhiều biến; RESIT (hồi quy rồi kiểm định độc lập phần dư).','RESIT chỉ chạy ở d nhỏ.'],
+['id','Zhang, Hyvärinen (2009). On the identifiability of the post-nonlinear causal model. UAI.','Xác định được cho mô hình hậu phi tuyến (ANM là trường hợp riêng).','Cho biết lớp mô hình nào bị loại.'],
+['diff','Zheng, Aragam, Ravikumar, Xing (2018). DAGs with NO TEARS. NeurIPS.','Hàm acyclicity trơn tr(exp(W∘W))−d; Lagrangian tăng cường; tuyến tính.','Cơ sở ràng buộc của SPADE; chi phí O(d³).'],
+['diff','Zheng, Dan, Aragam, Ravikumar, Xing (2020). Learning sparse nonparametric DAGs. AISTATS.','NOTEARS-MLP/Sobolev: mở rộng phi tham số.','Baseline phi tuyến.'],
+['diff','Yu, Chen, Gao, Yu (2019). DAG-GNN. ICML.','VAE dạng đồ thị với ràng buộc đa thức.','Diễn giải yếu.'],
+['diff','Lachapelle, Brouillard, Deleu, Lacoste-Julien (2020). Gradient-based neural DAG learning (GraN-DAG). ICLR.','MLP từng nút, ràng buộc đường đi, cắt tỉa kiểu CAM.','Baseline phi tuyến.'],
+['diff','Ng, Ghassami, Zhang (2020). On the role of sparsity and DAG constraints for learning linear DAGs (GOLEM). NeurIPS.','Phạt mềm thay ràng buộc cứng, tuyến tính, tới hàng nghìn nút.','Vai trò của phạt thưa.'],
+['diff','Brouillard, Lachapelle, Lacoste, Lacoste-Julien, Drouin (2020). DCDI. NeurIPS.','Khám phá khả vi với dữ liệu can thiệp.','Cần can thiệp.'],
+['diff','Bello, Aragam, Ravikumar (2022). DAGMA. NeurIPS.','Acyclicity log-det trên M-ma trận; gradient tốt hơn; có bản phi tuyến.','Baseline chính.'],
+['diff','Zhang, Ng, et al. (2022). Truncated matrix power iteration for differentiable DAG learning. NeurIPS.','Xấp xỉ ràng buộc bằng lũy thừa ma trận cắt cụt.','Giảm chi phí.','danh sách tác giả đầy đủ chưa xác nhận'],
+['diff','Yu, Gao, Yin, Ji (2021). DAGs with no curl. ICML.','Tham số hóa DAG qua dòng gradient, không cần ràng buộc.','Giảm chi phí.'],
+['scale','Fang, Zhu, Zhang, Liu, Chen, He (2020). On low rank directed acyclic graphs and causal structure learning. IEEE TNNLS.','Ma trận trọng số hạng thấp để mở rộng quy mô.','Giả định hạng thấp hạn chế đồ thị.'],
+['scale','Lopez, Hütter, Pritchard, Regev (2022). DCD-FG: large-scale differentiable causal discovery of factor graphs. NeurIPS.','DAG nhân tố hạng thấp; hàng nghìn biến; dùng can thiệp.','Cần dữ liệu can thiệp.'],
+['scale','Nazaret, Hong, Azizi, Blei (2024). Stable differentiable causal discovery (SDCD). ICML.','Ràng buộc ổn định hơn, tuyên bố hàng nghìn biến.','Mô hình mạng, không đọc được từng cạnh.'],
+['diff','Wei, Gao, Yu (2020). DAGs with no fears. NeurIPS.','Phân tích điều kiện KKT của nghiệm NOTEARS; tìm cục bộ.','Tuyến tính.'],
+['diff','Ng, Huang, Zhang (2024). Structure learning with continuous optimization: a sober look and beyond. CLeaR.','Khi nào phương pháp liên tục thành công; nhạy với ngưỡng; gợi ý SCAD/MCP thay ℓ1.','Gần với vấn đề thiên lệch của ta.'],
+['diff','Waxman, Butler, Djuric (2024). Dagma-DCE: interpretable, non-parametric differentiable causal discovery. IEEE OJSP.','Cường độ cạnh dựa trên đạo hàm thay vì chuẩn trọng số.','Gần nhất với mục tiêu "cạnh đọc được".'],
+['order','Bühlmann, Peters, Ernest (2014). CAM: causal additive models. Ann. Statist. 42.','Mô hình cộng; tìm thứ tự tham lam và hồi quy thưa.','Baseline cộng cổ điển quan trọng.'],
+['order','Rolland, Cevher, Kleindessner, Russell, Schölkopf, Janzing, Locatello (2022). Score matching enables causal discovery of nonlinear additive noise models (SCORE). ICML.','Tìm lá qua phương sai đường chéo Hessian của log-mật độ; d ≤ 50.','~95% thời gian ở cắt tỉa CAM.'],
+['order','Montagna, Noceti, Rosasco, Zhang, Locatello (2023). Causal discovery with score matching on additive models with arbitrary noise (NoGAM). CLeaR.','Mở rộng score matching cho nhiễu bất kỳ.','Đối thủ chính ở d=10.'],
+['order','Montagna, Noceti, Rosasco, Zhang, Locatello (2023). Scalable causal discovery with score matching (DAS). CLeaR.','Cắt tỉa chỉ trên cha ứng viên; d tới 1000 (tổng hợp).','Recall ~0.08–0.09 ở d=1000.'],
+['order','Sanchez, Liu, O\'Neil, Tsaftaris (2023). Diffusion models for causal discovery via topological ordering (DiffAN). ICLR.','Mô hình khuếch tán cho Hessian; tuyên bố tới 500 biến.','Ứng viên cho bước thứ tự (G3).'],
+['order','Zhu, Locatello, Cevher (2023). Sample complexity bounds for score-matching. NeurIPS.','Cận sai số của SCORE theo sai số ước lượng score.','Lý thuyết.'],
+['order','Kang et al. (2025). Score-informed neural operator for ordering-based causal discovery (SciNO). NeurIPS.','Ước lượng Hessian ổn định hơn so với DiffAN.','Cải thiện thứ tự.'],
+['order','Xu, Li, Liu, Gui (2024). Ordering-based causal discovery for linear and nonlinear relations (CaPS). NeurIPS.','Tiêu chí thứ tự cho dữ liệu trộn tuyến tính và phi tuyến; cắt tỉa nhanh.','Cắt tỉa.'],
+['order','Hiremath, Maasch, Gao, Ghosal, Gan (2024). Hybrid top-down global causal discovery with local search for additive noise models. NeurIPS.','Sắp xếp từ trên xuống rồi cắt tỉa cục bộ không tham số.','Đa thức trong trường hợp xấu nhất.'],
+['order','Wang, Du, Zhu, Ke, Chen, Hao, Wang (2021). Ordering-based causal discovery with reinforcement learning (CORL). IJCAI.','Tìm thứ tự như bài toán MDP.','Chưa xác nhận d lớn nhất.'],
+['order','Kamkari, Balazadeh, Zehtab, Krishnan (2023). Order-based structure learning with normalizing flows (OSLow). arXiv:2308.07480.','Tìm thứ tự bằng dòng chuẩn hóa tự hồi quy; đánh giá trên Sachs.','Preprint.'],
+['scale','Lippe, Cohen, Gavves (2022). Efficient neural causal discovery without acyclicity constraints (ENCO). ICLR.','Hàng trăm nút nhờ can thiệp.','Cần can thiệp.'],
+['scale','Lorch, Sussex, Rothfuss, Krause, Schölkopf (2022). Amortized inference for causal structure learning (AVICI). NeurIPS.','Mạng đã huấn luyện trên dữ liệu mô phỏng dự đoán đồ thị; benchmark tới d=100.','Không đảm bảo không vòng.'],
+['scale','Wu, Bao, Barzilay, Jaakkola (2025). Sample, estimate, aggregate (SEA). TMLR.','Chạy phương pháp cổ điển trên mẫu rồi tổng hợp bằng mô hình tiền huấn luyện; ≤ 1000 biến.','Dự đoán thiếu cạnh trên dữ liệu thật.'],
+['scale','Cai, Zhang, Hao (2013). SADA. ICML.','Chia biến thành tập con, chạy rồi hợp nhất.','Dựa trên kiểm định độc lập.'],
+['scale','Huynh-Thu, Irrthum, Wehenkel, Geurts (2010). GENIE3. PLoS ONE.','Rừng ngẫu nhiên từng gen; độ quan trọng làm liên kết.','Ý tưởng sàng lọc bằng cây (ta dùng ExtraTrees).'],
+['add','Ravikumar, Lafferty, Liu, Wasserman (2009). Sparse additive models. JRSSB 71.','Phạt nhóm cho mô hình cộng phi tham số.','Nền thống kê của CAM/NAM.','venue/số trang chưa xác nhận'],
+['add','Lou, Caruana, Gehrke, Hooker (2013). Accurate intelligible models with pairwise interactions. KDD.','GA2M: GAM cộng vài tương tác cặp.','Diễn giải được.'],
+['add','Agarwal, Melnick, Frosst, Zhang, Lengerich, Caruana, Hinton (2021). Neural additive models. NeurIPS.','Mạng nhỏ cho từng đặc trưng rồi cộng; đường hình dạng chính xác.','Gần nhất về cấu trúc với cạnh SPADE.'],
+['add','Chang, Caruana, Goldenberg (2022). NODE-GAM. ICLR.','GAM khả vi từ cây oblivious.','Diễn giải được.'],
+['add','Eilers, Marx (1996). Flexible smoothing with B-splines and penalties. Stat. Sci. 11.','P-spline: B-spline cộng phạt sai phân.','Cơ sở phạt độ trơn.'],
+['add','Siems et al. (2023). Curve your enthusiasm: concurvity regularization in differentiable GAMs. NeurIPS.','Concurvity đe dọa diễn giải; phạt tương quan.','Đe dọa diễn giải cạnh.','danh sách tác giả đầy đủ chưa xác nhận'],
+['add','Zhang, Martinelli, John (2025). Challenges in interpretability of additive models. arXiv:2504.10169.','Mô hình cộng không xác định theo nhiều cách; nên thận trọng khi nói "diễn giải được".','Preprint.'],
+['add','Liu, Wang, Vaidya, Ruehle, Halverson, Soljačić, Hou, Tegmark (2025). KAN: Kolmogorov–Arnold networks. ICLR.','Hàm một biến học được trên cạnh; tuyên bố diễn giải qua cắt tỉa và khớp biểu thức.','Nguồn cảm hứng của SPADE.'],
+['add','Yu, Yu, Wang (2024). KAN or MLP: a fairer comparison. arXiv:2407.16674.','Khi khớp tham số, KAN chỉ hơn trên bài biểu thức ký hiệu.','Phê bình KAN.'],
+['add','Hou, Ji, Zhang, Stefanidis (2024). KAN: a critical assessment. arXiv:2407.11075.','Đánh giá phê phán các tuyên bố của KAN.','Preprint.'],
+['add','Sovrano, Losavio, Vilone, Langheinrich (2026). In-context symbolic regression for robustness-improved KANs. arXiv:2603.15250.','Khớp biểu thức từng cạnh KAN không ổn định.','Preprint.'],
+['add','Lin, Ren, Barucca, Aste (2024). Granger causality detection with KANs. arXiv:2412.15373.','KAN thay MLP trong Granger thần kinh.','Preprint, quy mô nhỏ.'],
+['add','Liu, Xu, Li, Si, Yang, Yang, Zhao (2025). KANs for time series Granger causality inference. arXiv:2501.08958.','KAN Granger với chọn trễ tự động.','Preprint; tên phương pháp không thống nhất giữa nguồn.'],
+['sparse','Zou (2006). The adaptive lasso and its oracle properties. JASA 101.','Trọng số nghịch ước lượng ban đầu; chọn biến nhất quán và tính chất oracle.','Cơ sở của adaptive weighting.'],
+['sparse','Meinshausen, Bühlmann (2010). Stability selection. JRSSB 72.','Mẫu con lặp, kiểm soát dương tính giả.','Chưa áp cho learner khả vi.'],
+['sparse','Friedman, Goldszmidt, Wyner (1999). Data analysis with Bayesian networks: a bootstrap approach. UAI.','Bootstrap để đo độ tin cậy cạnh.','Tiền thân của chọn cạnh theo tần suất.'],
+['sparse','Louizos, Welling, Kingma (2018). Learning sparse neural networks through L0 regularization. ICLR.','Cổng hard-concrete cho phạt L0 khả vi.','Ứng viên thay group-lasso.'],
+['sparse','Xu, Gao, Huang, Wang, Song, Gong (2022). On the sparse DAG structure learning based on adaptive lasso. arXiv:2209.02946.','Lập luận ℓ1 thiên lệch về 0 và ngưỡng cố định xóa cạnh nhỏ; đề xuất adaptive lasso.','Preprint; gần nhất với G1.'],
+['sparse','Tank, Covert, Foti, Shojaie, Fox (2022). Neural Granger causality. IEEE TPAMI 44.','Phạt group-lasso lên trọng số lớp đầu để đọc đồ thị Granger.','Đã có thiên lệch co rút.'],
+['sparse','Zhou, Bai, Yu, Zhao, Chen (2024). Jacobian regularizer-based neural Granger causality. ICML.','Thay phạt trọng số nhóm bằng phạt Jacobian.','Gợi ý lối khác cho thiên lệch.'],
+['sparse','Biza, Tsamardinos, Triantafillou (2020). Tuning causal discovery algorithms. PGM.','Tuning dựa trên độ ổn định hoặc ngoài mẫu.','Chọn λ không cần nhãn.'],
+['sparse','Machlanski, Samothrakis, Clarke (2024). Robustness of algorithms for causal structure learning to hyperparameter choice. CLeaR.','Siêu tham số có thể làm đổi thứ hạng thuật toán.','Phải báo cả lưới siêu tham số.'],
+['sparse','Faller, Vankadara, Mastakouri, Locatello, Janzing (2024). Self-compatibility. AISTATS.','Đánh giá không cần ground truth qua tính tương thích.','Chọn mô hình không nhãn.'],
+['bench','Reisach, Seiler, Weichwald (2021). Beware of the simulated DAG! NeurIPS.','Varsortability: baseline sắp theo phương sai khớp phương pháp liên tục.','Ta đã tái hiện ở G4.'],
+['bench','Reisach, Tami, Seiler, Chambaz, Weichwald (2023). A scale-invariant sorting criterion to find a causal order in additive noise models. NeurIPS.','R²-sortability, bền với chuẩn hóa.','Cần bộ sinh kiểm soát.'],
+['bench','Ormaniec, Sussex, Lorch, Schölkopf, Krause (2025). Standardizing structural causal models. ICLR.','iSCM: chuẩn hóa nội bộ khi sinh, tránh sortability.','Bộ sinh nên dùng.'],
+['bench','Kaiser, Sipos (2022). Unsuitability of NOTEARS for causal graph discovery when dealing with dimensional quantities. Neural Process. Lett.','NOTEARS nhạy với thang đo.','Số tập/trang chưa xác nhận.'],
+['bench','Seng, Zečević, Dhami, Kersting (2024). Learning large DAGs is harder than you think. ICLR.','Mất mát bình phương có thể cực tiểu ở DAG sai khi d lớn.','Không tìm thấy arXiv.'],
+['bench','Montagna, Mastakouri, Eulig, Noceti, Rosasco, Janzing, Aragam, Locatello (2023). Assumption violations in causal discovery and the robustness of score matching. NeurIPS.','Benchmark trên hơn 60,000 bộ dữ liệu vi phạm giả định.','Khuôn mẫu cho benchmark của ta.'],
+['bench','Brouillard, Squires, Wahl, Kording, Sachs, Drouin, Sridhar (2025). The landscape of causal discovery data. CLeaR.','Danh mục dữ liệu thật; chỉ ra benchmark tổng hợp đơn giản.','Danh sách chọn dữ liệu thật.'],
+['bench','Sachs, Perez, Pe\'er, Lauffenburger, Nolan (2005). Causal protein-signaling networks derived from multiparameter single-cell data. Science 308.','Nguồn dữ liệu 11 protein và đồ thị đồng thuận.','Nhỏ, ground truth có tranh cãi.'],
+['bench','Mooij, Peters, Janzing, Zscheischler, Schölkopf (2016). Distinguishing cause from effect using observational data. JMLR 17.','Benchmark cặp Tübingen (100 cặp).','Chỉ hai biến.'],
+['bench','Peters, Bühlmann (2015). Structural intervention distance (SID). Neural Comput. 27.','Thước đo bổ sung SHD.','Phạt nặng thứ tự sai.'],
+['bench','Gentzel, Garant, Jensen (2019). The case for evaluating causal models using interventional measures and empirical data. NeurIPS.','Khảo 111 bài: đa số chỉ dữ liệu tổng hợp và thước cấu trúc.','Ủng hộ dữ liệu thật và thước can thiệp.'],
+['bench','Constantinou, Liu, Chobtham, Guo, Kitson (2021). Large-scale empirical validation of Bayesian network structure learning algorithms with noisy data. IJAR 131.','15 thuật toán trên ~10,000 đồ thị; benchmark sạch phóng đại hiệu năng.','Nhắc dùng nhiễu/vi phạm.'],
+['temporal','Hyvärinen, Zhang, Shimizu, Hoyer (2010). Estimation of a structural vector autoregression model using non-Gaussianity. JMLR 11.','VAR-LiNGAM.','Baseline chuỗi thời gian.'],
+['temporal','Runge, Nowack, Kretschmer, Flaxman, Sejdinovic (2019). Detecting and quantifying causal associations in large nonlinear time series datasets (PCMCI). Sci. Adv. 5.','Chọn cha kiểu PC rồi kiểm định có điều kiện.','Baseline mạnh ở phi tuyến lệch.'],
+['temporal','Pamfil et al. (2020). DYNOTEARS. AISTATS.','Acyclicity kiểu NOTEARS cho cạnh cùng thời điểm và cạnh trễ.','Tác giả đầy đủ chưa xác nhận.'],
+['temporal','Bussmann, Nys, Latré (2021). Neural additive vector autoregression models for causal discovery in time series (NAVAR). DS.','Mô hình cộng thần kinh cho chuỗi thời gian.','Phương pháp thời gian gần nhất về cấu trúc.'],
+['temporal','Sun, Schulte, Liu, Poupart (2023). NTS-NOTEARS. AISTATS.','Tích chập 1D cho cạnh trễ và tức thời.','Nhạy với chuẩn hóa.'],
+['temporal','Gong, Jennings, Zhang, Pawlowski (2023). Rhino. ICLR.','Nhiễu phụ thuộc lịch sử; xác định được.','Baseline thần kinh.'],
+['temporal','Cheng et al. (2023, 2024). CUTS and CUTS+. ICLR 2023; AAAI 2024.','Chuỗi thời gian bất thường; mở rộng d lớn.','Quy mô cho chuỗi thời gian.'],
+['temporal','Cheng, Wang, Xiao, Zhong, Suo, He (2024). CausalTime. ICLR.','Chuỗi thời gian sinh từ dữ liệu thật có ground truth một phần.','Ground truth do mô hình định nghĩa.'],
+['temporal','Stein, Shadaydeh, Blunk, Penzel, Denzler (2025). CausalRivers. ICLR.','Lưu lượng sông, hơn 1000 nút có đồ thị thật.','Benchmark thật lớn duy nhất cho chuỗi thời gian.'],
+['temporal','Huang, Zhang, Zhang, Ramsey, Sanchez-Romero, Glymour, Schölkopf (2020). Causal discovery from heterogeneous/nonstationary data. JMLR 21.','CD-NOD: coi dịch chuyển phân phối là thông tin.','Không phải mô hình cộng.'],
+['temporal','Granger, Newbold (1974). Spurious regressions in econometrics. J. Econometrics 2.','Chuỗi I(1) độc lập cho R² cao giả.','Cảnh báo dữ liệu giá.'],
+['temporal','Kuskova, Zaytsev, Coppedge (2026). Function-valued causal influence in nonlinear time series. arXiv:2605.26408.','Coi mỗi liên kết là một đường cong phản ứng ước lượng từ NAVAR.','Gần nhất với diễn giải mức hình dạng; preprint.']
+];
+const themes={'':'Tất cả','id':'Xác định được','diff':'Học khả vi','order':'Thứ tự / score matching','scale':'Quy mô','add':'Cộng / spline / KAN','sparse':'Phạt thưa / chọn cạnh','bench':'Benchmark / dữ liệu thật','temporal':'Chuỗi thời gian'};
+const pt=document.getElementById('pfTheme'), px=document.getElementById('pfText'), pl=document.getElementById('papers'), pc=document.getElementById('pfCount');
+Object.keys(themes).forEach(k=>{ const o=document.createElement('option'); o.value=k; o.textContent=themes[k]; pt.appendChild(o); });
+function esc(s){ return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+function renderPapers(){ const th=pt.value, q=px.value.toLowerCase(); const items=P.filter(p=>(!th||p[0]===th)&&(!q||(p[1]+' '+p[2]+' '+p[3]).toLowerCase().includes(q))); pc.textContent=items.length+' / '+P.length+' bài';
+  pl.innerHTML=items.map(p=>'<div class="paper"><div class="r">'+esc(p[1])+'</div><div class="w">'+esc(p[2])+'</div><div class="m"><span class="tag t-info">'+themes[p[0]]+'</span>Liên quan: '+esc(p[3])+(p[4]?' <span class="tag t-warn">chưa xác nhận: '+esc(p[4])+'</span>':'')+'</div></div>').join(''); }
+pt.onchange=px.oninput=renderPapers; renderPapers();
+
+/* ---- theme + nav ---- */
+build();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',build);
+new MutationObserver(build).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+const links=[...document.querySelectorAll('#rail a')], secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+addEventListener('scroll',()=>{ let cur=0; secs.forEach((s,i)=>{ if(s&&s.getBoundingClientRect().top<120) cur=i; }); links.forEach((a,i)=>a.classList.toggle('on',i===cur)); },{passive:true});
+</script>

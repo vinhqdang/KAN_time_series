@@ -1,0 +1,113 @@
+<h2 id="s3">3. Những gì bài đã đăng cho thấy (và Revision 2)</h2>
+<p>Bài toán chính: đồ thị DAG tức thời, nhiễu cộng phi tuyến (cơ chế tanh, sin, bậc hai, hữu tỉ; nhiễu đều không Gaussian), n=1500, d=6/10/20, 5 đồ thị ở d=6,10 và 3 đồ thị ở d=20. Đo AUROC trên điểm cạnh. Tất cả phương pháp dùng cài đặt tham chiếu của tác giả; SPADE dùng λ_g=0.01 chọn trên seed validation 100–119.</p>
+<figure><div class="chartbox tall"><canvas id="cPub"></canvas></div><figcaption>Hình 2. AUROC của bài đã đăng theo phương pháp và độ rộng d (dữ liệu: <code>experimental_results/instdag_raw.csv</code>). NoGAM ở d=20 chỉ một seed. SPADE vượt hẳn các phương pháp gradient kiến trúc cố định và SCORE; với NoGAM kết quả hỗn hợp (thua ở d=10).</figcaption></figure>
+<p>Ở Revision 2 (theo Reviewer 1) thêm dữ liệu thật phi tài chính, chấm theo kiến thức miền bằng <b>BK-AUROC</b>:</p>
+<div class="card"><div class="kv"><b>Biến</b><span>chia ba tầng: đã xác định trước (lịch, giá trị trễ), thời tiết, nhu cầu/ô nhiễm</span><b>Cạnh cấm</b><span>mọi cạnh từ tầng sau về tầng trước (ví dụ nhu cầu không gây ra thời tiết)</span><b>Cạnh dương</b><span>vài cơ chế chắc chắn đúng (ngày làm việc → người đi làm, nhiệt độ → đi chơi, tính bền)</span><b>Thước đo</b><span>AUROC tách cạnh dương khỏi cạnh cấm theo điểm cạnh của từng phương pháp (0.5 là ngẫu nhiên)</span><b>Bất định</b><span>6 lần bootstrap theo khối (block 30 ngày / 168 giờ); mẫu chung 2,000 dòng cho dữ liệu giờ</span></div></div>
+<figure><div class="tabs" id="tabsRW"></div><div class="chartbox"><canvas id="cRW"></canvas></div><figcaption>Hình 3. BK-AUROC (trung bình ± độ lệch chuẩn qua 6 lần). Trên mẫu nhỏ ở dữ liệu giờ SPADE chỉ hòa NOTEARS-linear; trên toàn chuỗi (tab "toàn chuỗi") SPADE dẫn trong cả 3 lần.</figcaption></figure>
+
+<h2 id="s4">4. Đợt thử nhanh X1–X5: đã làm chính xác cái gì</h2>
+<div class="note bad"><b>Đọc trước:</b> đợt này chạy trước khi có tổng quan tài liệu và trước khi có thiết kế bài toán. Tôi chọn biến thể trên seed validation riêng và báo trên seed mới, nhưng chỉ một họ bộ sinh dữ liệu, và pilot G4 sau đó cho thấy sai số cài đặt (≈0.04–0.06 AUROC mỗi lần chạy) lớn hơn mức cải thiện. Vì vậy các con số dưới đây là <b>tín hiệu, không phải kết quả</b>.</div>
+
+<h3>X1. Sửa phạt thưa: SPADE-AB</h3>
+<p><b>Câu hỏi.</b> SPADE gốc thua NoGAM ở d=10 và có thể bị thiên lệch co rút; có biến thể nào chọn cạnh tốt hơn?</p>
+<details open><summary>Các biến thể đã thử (định nghĩa chính xác, <code>scripts/spade_variants.py</code>)</summary>
+<pre><code>base          : SPADE gốc (mục 2).
+adaptive      : Giai đoạn 1 = base. Tính  w_ij = (‖θ_ij‖ + ε)^(-γ)  rồi chuẩn hóa để trung bình w = 1  (γ = 1, ε = 0.01).
+                Giai đoạn 2 = huấn luyện lại TỪ ĐẦU, phạt  λ_g Σ w_ij·‖θ_ij‖  (cùng λ_g = 0.01).
+                (Adaptive group-lasso, Zou 2006 dạng nhóm: phạt cạnh mạnh ít hơn.)
+refit         : Giai đoạn 1 = base. Giữ 2d cạnh có điểm cao nhất, che các cạnh khác. Huấn luyện lại KHÔNG phạt (λ = 0) trên cạnh còn lại.
+boot          : Lặp B = 5 lần: bốc ngẫu nhiên một nửa số mẫu, chạy base, chuẩn hóa điểm theo giá trị lớn nhất. Điểm cuối = trung bình 5 lần.
+adaptive_boot : Như boot nhưng mỗi lần chạy là adaptive.   ←  tên gọi "SPADE-AB"</code></pre></details>
+<p><b>Giao thức.</b> Chọn biến thể trên seed validation 200–219 (d=6,10) và 200–204 (d=20), tiêu chí AUROC trung bình lớn nhất; đóng băng, rồi chạy trên seed mới 300–319 (d=6,10) và 300–304 (d=20), và trên seed chính thức 0–4/0–2 để so với NoGAM/SCORE đã lưu.</p>
+<figure><div class="tabs" id="tabsX1"></div><div class="chartbox"><canvas id="cX1"></canvas></div><figcaption>Hình 4. Trái: AUROC trung bình của các biến thể trên seed validation. Phải: SPADE so với SPADE-AB trên seed mới (45 lần chạy; AB hơn +0.014 AUROC, 24 thắng / 13 hòa / 8 thua, Wilcoxon p = 0.004).</figcaption></figure>
+<p><b>Đọc kết quả.</b> Biến thể adaptive_boot tốt nhất ở cả ba độ rộng trên validation; trên seed mới cải thiện đều nhưng nhỏ (+0.012, +0.013, +0.021). Trên seed chính thức khoảng cách với NoGAM ở d=10 co từ 0.063 còn 0.015 (nhưng SPADE chạy lại trong môi trường mới chỉ ra 0.892 thay vì 0.926 đã công bố, xem mục 6.4). <b>Hạn chế:</b> cải thiện nằm dưới ngưỡng nhiễu cài đặt nếu không so cặp trên nhiều bộ dữ liệu.</p>
+
+<h3>X2. Dữ liệu thật có ground truth: Sachs</h3>
+<p><b>Dữ liệu.</b> Sachs 2005: 11 phospho-protein, 7,466 tế bào, 18 cạnh đồng thuận (<code>data/sachs/</code>). <b>Protocol cố định trước:</b> lấy log mọi giá trị rồi chuẩn hóa; 10 mẫu con ngẫu nhiên 2,000 tế bào (seed 0–9); mọi phương pháp dùng cài đặt cố định, không tune trên Sachs. Đo AUROC, AUPRC (ngẫu nhiên = 0.164), số cạnh thật trong top-18.</p>
+<figure><div class="chartbox"><canvas id="cSachs"></canvas></div><figcaption>Hình 5. Sachs, AUROC trung bình ± độ lệch chuẩn qua 10 mẫu con. SPADE-AB đứng đầu (0.664) và thắng mọi phương pháp khác trong ≥ 8/10 lần (p ≤ 0.010), nhưng tuyệt đối vẫn thấp: chỉ trúng khoảng 6 trên 18 cạnh ở top-18.</figcaption></figure>
+
+<h3>X3. Hình dạng đường cong có trung thực không?</h3>
+<p><b>Cách đo.</b> Với mỗi cạnh thật mà phương pháp xếp trong top-|E_thật| (dùng số cạnh thật nên có phần thiên vị đều cho mọi phương pháp), so đường cong học được với hàm thật: R² sau khi căn chỉnh affine; phân loại (tăng/giảm/không đơn điệu). So SPADE với <b>MLP-edge</b> (cùng bottleneck, cùng phạt, cùng ngân sách, mỗi cạnh là MLP 1→3→1 tanh).</p>
+<details><summary>Hai điều tôi phát hiện và sửa trong chính thí nghiệm này</summary><div style="padding:.5rem 0"><p>(1) Lần chạy đầu có lỗi: đọc đường cong từ <code>b @ coef</code> lấy cả d cột đầu vào thay vì đúng một cột, làm R² và phân loại sai. Đã sửa trước khi lấy số cuối. Kết quả v1 lưu ở <code>x3_fidelity_v1_raw.csv</code>. (2) Sau khi sửa, đường cong spline thô vẫn "gợn" nên phân loại hình dạng đúng chỉ 12–25%. Tôi thêm bước <b>refit 2 giai đoạn chỉ để hiển thị</b>: giữ cấu trúc từ lần fit thô, rồi huấn luyện lại các cạnh được giữ với phạt sai phân bậc hai trên hệ số (0.01); xếp hạng cạnh vẫn lấy từ lần fit thô nên không đổi cấu trúc. Hệ số 0.01 chọn trên seed 450–459 là giá trị nhỏ nhất đạt phân loại ≥ 0.8.</p></div></details>
+<figure><div class="chartbox"><canvas id="cX3"></canvas></div><figcaption>Hình 6. Cạnh phi tuyến mạnh (sin, bậc hai): R² hình dạng và số cạnh được tìm ra (n). SPADE tìm 15–16 cạnh loại này, MLP cùng dung lượng chỉ 3–4 (seed 400–419, d=6 và 10 gộp).</figcaption></figure>
+
+<h3>X4. Quy mô d = 50, 100, 200</h3>
+<details open><summary>Phương pháp (<code>scripts/scale_instantaneous.py</code>)</summary>
+<pre><code>Quy tắc phạt:  λ_g(d) = min(0.01, c / d),  c = 0.2      # vì tổng phạt chạy trên d(d-1) cạnh nên λ cố định phạt quá tay khi d tăng
+Sàng lọc cha:  với mỗi nút kết quả e, huấn luyện ExtraTrees (40 cây, độ sâu 8, lá tối thiểu 20, max_features 0.5)
+               hồi quy z_e theo các biến còn lại; giữ K = 15 biến có độ quan trọng cao nhất; che mọi cạnh khác
+Sau đó chạy SPADE như mục 2 trên các cạnh còn lại (importance tính theo khối để khỏi tràn bộ nhớ)</code></pre></details>
+<p><b>Giao thức.</b> c và K chọn trên seed validation 500–502 (d=50,100); báo trên seed mới 600–602, n=3000. <b>Hạn chế quan trọng:</b> GOLEM và NOTEARS-MLP mỗi lần chạy &gt; 15 phút ở d=50 nên chỉ chạy ở d=50; ở d ≥ 100 chỉ so được với NOTEARS-linear và DAGMA-linear (mô hình sai cho dữ liệu này). Vì vậy kết quả cho thấy SPADE-scaled <i>chạy được</i> ở cỡ này, không phải nó hơn phương pháp phi tuyến tốt nhất.</p>
+<figure><div class="chartbox"><canvas id="cX4"></canvas></div><figcaption>Hình 7. AUROC theo d. λ_g cố định = 0.01 sụp xuống 0.58 ở d=200; quy tắc theo d giữ ≈ 0.96–0.98.</figcaption></figure>
+
+<h3>X5. Dự báo</h3>
+<p>Tôi thử làm bộ dự báo SPADE nhanh hơn: không dùng affine của RevIN nên cơ sở spline của mọi cửa sổ tính một lần và cache; dự đoán = giá trị cuối đã chuẩn hóa + tổng spline (residual) với phạt group-lasso 1e-3, 300 epoch (chọn trên tách trong của khối huấn luyện đầu). Thêm baseline <b>naive</b> (dự đoán giá trị cuối), mà bài đã đăng không có.</p>
+<figure><div class="tabs" id="tabsX5"></div><div class="chartbox"><canvas id="cX5"></canvas></div><figcaption>Hình 8. MSE dự báo (thấp là tốt). Naive thấp hơn mọi mô hình học; SPADE-fast bằng naive (vì nó học ra hầu như chỉ phần residual bằng 0) và chạy vài giây thay vì vài trăm giây. Beijing (không tune trên đó): naive 0.115, SPADE-fast 0.126, các mô hình sâu ≥ 0.158.</figcaption></figure>
+<div class="note"><b>Hệ quả:</b> với dữ liệu giá gần như bước ngẫu nhiên, không mô hình học nào thắng naive. Tôi không đề xuất dự báo làm điểm bán của hướng tiếp theo.</div>
+
+<h2 id="s5">5. Scoping review: làm thế nào</h2>
+<div class="card"><div class="kv"><b>Dạng</b><span>scoping review (lập bản đồ khái niệm, bằng chứng, khoảng trống); <b>không</b> phải systematic review PRISMA; chưa đăng ký protocol, chưa điền PRISMA-ScR</span><b>Câu hỏi (PCC)</b><span>Các phương pháp khám phá nhân quả phi tuyến nhiễu cộng đang xử lý thế nào ba vấn đề: quy mô, thiên lệch co rút của phạt thưa, khả năng đọc/kiểm chứng hàm cạnh; và bằng chứng đánh giá nào đỡ cho các tuyên bố đó?</span><b>Tìm kiếm</b><span>bốn agent chạy song song theo bốn chủ đề (A: khả vi và thưa; B: theo thứ tự và quy mô; C: benchmark và dữ liệu thật; D: diễn giải và chuỗi thời gian)</span><b>Xác minh</b><span>mỗi bài phải đối chiếu một trang arXiv/nhà xuất bản/proceedings; bài không xác nhận được xếp vào danh sách UNVERIFIED và loại khỏi bằng chứng</span><b>Giới hạn</b><span>sàng lọc một lượt do AI; đa số chỉ đọc abstract; nhiều bài 2025–2026 là preprint; một số danh sách tác giả/số trang chưa xác nhận. Phải kiểm lại DOI trước khi trích dẫn.</span></div></div>
+<div class="note good">Một lỗi bắt được nhờ đối chiếu chéo giữa hai nhánh: một nhánh ghi arXiv:2304.03382 là NoGAM, nhưng đó là bài DAS; NoGAM là arXiv:2304.03265.</div>
+<p>Bản đồ bằng chứng nằm ở mục 1 (kèm bảng lọc). Tài liệu đầy đủ trong repo: <code>research/01_literature_review.md</code>.</p>
+
+<h2 id="s6">6. Năm pilot cho năm khoảng trống</h2>
+<p>Mỗi pilot do một agent làm trong thư mục riêng (<code>research/pilots/G1…G5</code>), viết protocol trong docstring <b>trước</b> khi chạy, tách seed validation khỏi seed test, giới hạn 1 luồng CPU. Đây là <b>khảo sát khả thi</b>: 10–30 đồ thị, một họ bộ sinh, 20–45 phút mỗi pilot. Số liệu do tôi đối chiếu giữa các pilot, <b>chưa chạy lại độc lập</b>.</p>
+
+<h3>6.1 G1: thiên lệch biên độ và chọn cạnh <span class="tag t-warn">CẬN BIÊN</span></h3>
+<p><b>Giả thuyết.</b> Vì phạt group-lasso trừ một lượng gần như không đổi trên mỗi nhóm hệ số đang hoạt động, đường cong học được bị "dẹt" (biên độ nhỏ hơn thật), và cạnh yếu giả có thể sống sót khi các biến cha phụ thuộc nhau.</p>
+<details open><summary>Thuật toán DSS thử trong pilot (gồm các bước đã biết ghép lại)</summary>
+<pre><code>1. fit SPADE gốc.
+2. refit adaptive group-lasso với w_ij = (n1_ij + ε)^(-1), γ = 1.
+3. chọn tần suất: B = 4 nửa-mẫu, mỗi lần lấy 2d cạnh điểm cao nhất → tần suất xuất hiện π_ij.
+4. tập hỗ trợ = 2d cạnh có (điểm adaptive × π) cao nhất.
+5. refit trên tập hỗ trợ KHÔNG phạt thưa, kèm phạt sai phân bậc hai (P-spline) hệ số λ_s.
+Lý thuyết (phác, không phải chứng minh): thiên lệch của group-lasso trên cạnh hoạt động là O(λ) bất kể độ mạnh;
+adaptive giảm còn O(λ·n^-γ) cho cạnh mạnh (lập luận oracle cổ điển); refit không phạt khử hẳn thiên lệch, phương sai nhờ P-spline.</code></pre></details>
+<p><b>Giao thức.</b> Bộ sinh <b>chuẩn hóa nội bộ</b> (iSCM: chuẩn hóa từng biến ngay khi sinh nên không khai thác được phương sai; varsortability đo được 0.546, so với 0.921 nếu không chuẩn hóa); n=1500, mật độ 2/(d−1), cơ chế tanh/sin/bậc hai/softsign, nhiễu đều. Chọn λ_s trên seed 200–205; test seed 1000–1019 (d=10) và 2000–2019 (d=20), 20 đồ thị mỗi d; Wilcoxon cặp. Thước đo: AUROC/AUPRC cạnh; R² đường cong (căn theo đơn vị chuẩn hóa, cạnh không được chọn tính là đường cong 0); và <b>hệ số hiệu chỉnh biên độ</b> = hệ số hồi quy đường cong học được lên đường cong thật (1 = đúng, &lt;1 = bị co).</p>
+<figure><div class="tabs" id="tabsG1"></div><div class="chartbox"><canvas id="cG1"></canvas></div><figcaption>Hình 9. G1. Group-lasso thường chỉ giữ ~0.67 (d=10) và ~0.48 (d=20) biên độ thật; adaptive đưa về 0.95–0.96, tăng R² đường cong +0.11 (d=10) và +0.29 (d=20), tốt hơn ở 20/20 đồ thị. Refit và DSS làm AUPRC giảm 0.03–0.04.</figcaption></figure>
+<h4>Xem đường cong thật so với học được</h4>
+<div class="card"><div class="ctl"><label>Mẫu <select id="cvSeed"></select></label><label>Cạnh <select id="cvEdge"></select></label><span id="cvInfo" style="color:var(--muted);font-size:.9rem"></span></div><div class="chartbox"><canvas id="cCurve"></canvas></div><p style="color:var(--muted);font-size:.88rem">Dữ liệu thật: tôi chạy SPADE (base) và adaptive trên đồ thị tổng hợp d=10 (seed 450, 451, không dùng để đánh giá) và vẽ φ(x) cho từng cạnh thật, so với hàm thật (đã căn theo thang chuẩn hóa của biến kết quả, trừ trung bình). Hệ số trung bình trên 17 cạnh được tìm ra: base 0.59, adaptive 0.86. Đây là minh họa trực quan, không phải kết quả thống kê.</p></div>
+<ul><li><span class="tag t-good">đứng vững</span> adaptive sửa biên độ, ít hại việc chọn cạnh (d=10: AUROC −0.005; d=20: +0.003).</li><li><span class="tag t-bad">không đứng vững</span> refit không phạt và stability selection làm AUPRC giảm; phạt độ trơn P-spline không giúp.</li><li><span class="tag t-warn">cảnh báo</span> baseline AUROC đã ≈ 0.99 nên không còn chỗ cải thiện việc chọn cạnh; chưa thử n nhỏ, mật độ cao, nhiễu lớn; hyperparameter tune trên 6 đồ thị.</li></ul>
+
+<h3>6.2 G2: thước đo độ trung thực hình dạng <span class="tag t-warn">CẬN BIÊN</span></h3>
+<details open><summary>Bộ thước đo và bộ sinh (<code>research/pilots/G2_shape_benchmark/shape_bench.py</code>)</summary>
+<pre><code>Với mỗi cạnh thật: đường cong học được so với cơ chế thật trên 50 phân vị của nguyên nhân.
+R2_aff    : R² sau khi căn chỉnh affine với hệ số dốc dương (âm thì tính 0), kẹp vào [0, 1]
+dsign     : tỷ lệ khớp dấu đạo hàm
+cls_ok    : khớp lớp (tăng / giảm / không đơn điệu)           ← nhạy với gợn đuôi, chưa tin cậy
+SF-recall : tỷ lệ cạnh thật vừa được tìm ra VÀ có R2_aff ≥ 0.8
+SF-F1     : F1 trong đó cạnh chỉ tính đúng nếu vừa tìm ra vừa đúng hình dạng
+stab      : R2_aff giữa các đường cong từ 3 lần fit nửa-mẫu
+Ngưỡng chọn cạnh không dùng nhãn: τ tương đối trên điểm/điểm lớn nhất (tune trên 5 đồ thị validation)
+Bộ sinh: d=8, n=1000, ER ~8 cạnh; mỗi cạnh một cơ chế: tuyến tính, bão hòa (tanh), không đơn điệu (bậc hai), ngưỡng (sigmoid dốc), chu kỳ (sin 2x)
+Núm concurvity ρ ∈ {0, 0.6, 0.9}: các biến gốc tương quan đều ρ
+Learner: SPADE; MLP-edge; NT-MLP (kiểu NOTEARS-MLP, đường cong là partial dependence); GAM-ridge (spline ridge theo từng nút, không DAG, không thưa); tuyến tính OLS
+Seed: validation 1000–1004 (chỉ chọn τ), test 2000–2009 × 3 giá trị ρ = 30 bộ dữ liệu</code></pre></details>
+<figure><div class="chartbox"><canvas id="cG2"></canvas></div><figcaption>Hình 10. G2 (gộp theo ρ). SF-F1 và AUROC cạnh. GAM-ridge ngang SPADE trên SF-F1 và hơn một chút AUROC; MLP-edge và NT-MLP kém. Thước hình dạng gần như không đổi thứ hạng so với AUROC.</figcaption></figure>
+<ul><li><span class="tag t-good">có giá trị</span> "tìm ra cạnh" và "đúng hình dạng" khác nhau khoảng 0.2–0.3 recall; concurvity làm hỏng khám phá (AUROC SPADE 0.948→0.800 khi ρ từ 0 lên 0.9) nhiều hơn là làm méo đường cong (R² có điều kiện 0.975→0.943).</li><li><span class="tag t-bad">mối đe dọa</span> baseline cộng đơn giản không cần DAG ngang SPADE. Hạn chế: d=8, GAM-ridge không có ràng buộc DAG nên có thể không còn đúng ở đồ thị lớn hoặc đặc; NT-MLP chỉ là bản tự cài, có thể chưa tune đủ.</li></ul>
+
+<h3>6.3 G3: khám phá cộng ở d lớn <span class="tag t-bad">BỎ (dạng này)</span></h3>
+<details open><summary>Thuật toán SPOT (<code>research/pilots/G3_scale/spot.py</code>)</summary>
+<pre><code>1. Thứ tự: bóc lá kiểu SCORE; ước lượng đường chéo Hessian của log-mật độ bằng Stein kernel trên 1000 hàng con (tự cài lại, không phải dodiscover).
+2. Sàng lọc: ứng viên cha của mỗi nút = các nút đứng trước nó trong thứ tự; nếu nhiều hơn K = 8 thì giữ K nút theo độ quan trọng ExtraTrees.
+3. Fit: hồi quy cộng spline bậc 3 (11 hệ số mỗi cạnh) với group-lasso (λ = 0.03), giải chính xác bằng FISTA dạng Gram; không cần ràng buộc acyclicity.
+Đảm bảo: đầu ra là DAG theo cấu trúc; cạnh đọc được. Có điều kiện (kiến thức chuẩn): nếu thứ tự đúng và bước sàng lọc giữ đủ cha thật thì hồi quy cộng từng nút nhắm đúng hàm cạnh.
+Khuyến nghị: tính đúng của thứ tự ở mẫu hữu hạn, độ phủ của sàng lọc là heuristic; lỗi thứ tự xóa vĩnh viễn các cạnh bị lật.</code></pre></details>
+<p><b>Giao thức.</b> n=3000, 1 luồng; hai bộ sinh; test seed 800 (một seed mỗi ô, không có kiểm định). "SPOT-oracle-order" dùng thứ tự thật, chỉ để chẩn đoán.</p>
+<figure><div class="chartbox"><canvas id="cG3"></canvas></div><figcaption>Hình 11. G3 (bộ sinh "std", seed 800). Với thứ tự đúng, phần sàng lọc và spline rất tốt (đường xanh); với thứ tự ước lượng thì SPOT hỏng (cam). Thứ tự ước lượng chỉ khớp 49–64% cạnh (50% là ngẫu nhiên).</figcaption></figure>
+<div class="note"><b>Cảnh báo của chính pilot:</b> bộ sinh "std" của agent này không thật sự sạch sortability (0.76–0.88); mỗi ô chỉ một seed; các baseline phi tuyến (GOLEM, NOTEARS-MLP, SCORE chính thức) không chạy nổi ở kích thước này nên là "không có số", không phải "thua".</div>
+
+<h3>6.4 G4: kiểm toán benchmark <span class="tag t-info">PHƯƠNG PHÁP</span></h3>
+<p><b>Làm gì.</b> Đo varsortability và R²-sortability của bộ sinh dự án ở d=6,10,20,50; cài hai baseline kiểu Reisach: <b>var-sortnregress</b> (sắp theo phương sai tăng dần rồi hồi quy lasso/BIC trên các nút đứng trước) và <b>R²-sortnregress</b>; thêm bộ sinh chuẩn hóa từng biến ngay khi sinh; đo sai số giữa các lần chạy (cùng dữ liệu đổi seed phương pháp; đổi số luồng; float32 so với float64). Seed mới 800–829; mỗi ô có 8 đồ thị ở d=6,10, 6 ở d=20, 4 ở d=50.</p>
+<figure><div class="tabs" id="tabsG4"></div><div class="chartbox"><canvas id="cG4"></canvas></div><figcaption>Hình 12. G4. Trên bộ sinh của dự án (sortable ≈ 0.9), baseline chỉ sắp theo phương sai đạt gần SPADE, hơn NOTEARS-linear ở mọi d và hơn SPADE ở d=50. Trên bộ sinh chuẩn hóa, nó sụp về gần ngẫu nhiên và lợi thế của SPADE hiện rõ.</figcaption></figure>
+<div class="grid3"><div class="card"><div class="big">0.04–0.06</div><p>độ lệch chuẩn AUROC chỉ do cài đặt trên một bộ dữ liệu (số luồng, float32/float64)</p></div><div class="card"><div class="big">0.926 → 0.892</div><p>AUROC của SPADE gốc ở d=10 giữa hai môi trường thư viện: nằm <i>trong</i> ngưỡng nhiễu</p></div><div class="card"><div class="big">≥ 30</div><p>bộ dữ liệu cặp mỗi ô để tin một cải thiện nhỏ hơn 0.03–0.05</p></div></div>
+<p>Agent tự bắt được một lỗi rò rỉ của chính nó: lần đầu, đối chứng "thứ tự ngẫu nhiên" vô tình dùng đúng thứ tự thật vì chia sẻ dòng RNG với bộ sinh (đã sửa, bản cũ lưu trong cột <code>leaked_auroc_old</code>). Danh sách kiểm 10 điểm nằm trong <code>research/pilots/G4_benchmark_audit/README_results.md</code>.</p>
+
+<h3>6.5 G5: chuỗi thời gian phi dừng <span class="tag t-warn">CẬN BIÊN</span></h3>
+<details open><summary>Công thức ECM-SPADE</summary><pre><code>Mục tiêu: dx_t (chuẩn hóa).  Đầu vào: dx trễ 1..2 qua một CausalKAN, cộng giá trị MỨC trễ 1 của mọi chuỗi qua CausalKAN thứ hai; hai dự đoán cộng lại dưới một phạt group-lasso chung.
+Điểm cạnh = độ lệch chuẩn đóng góp phần sai phân + max(0, độ lệch chuẩn phần mức − trung bình phần mức qua 3 lần refit placebo).
+Placebo: dịch vòng mỗi cột mức một độ lệch ngẫu nhiên độc lập (giữ xu hướng nhưng phá căn chỉnh với mục tiêu).
+Bảo đảm: chỉ lập luận chuẩn rằng hồi quy trên gia số dừng tránh hồi quy giả. Còn lại (số hạng mức, điểm placebo) là heuristic; dịch vòng một bước ngẫu nhiên tạo bước nhảy.</code></pre></details>
+<p><b>Giao thức.</b> d=6, T=500, đồ thị trễ ngẫu nhiên với cơ chế tanh/sin/x·exp(−x²/2); ba kịch bản: I1 (bước ngẫu nhiên không đồng tích hợp), I1C (thêm 2 cạnh sửa lỗi tuyến tính, tác động qua mức), ST (dừng làm đối chứng). Validation seed 100–102; test 200–209 (10 mỗi kịch bản).</p>
+<figure><div class="chartbox"><canvas id="cG5"></canvas></div><figcaption>Hình 13. G5 (AUPRC). SPADE trên dữ liệu mức hỏng khi chuỗi là I(1) (xám); trên sai phân đúng; ECM-SPADE chỉ hơn sai phân thuần +0.022 ở I1C (t ≈ 2.6, không hiệu chỉnh đa phép thử).</figcaption></figure>
+<ul><li><span class="tag t-good">chắc</span> SPADE trên mức hỏng khi I(1): AUPRC thấp hơn trên sai phân 0.35–0.52.</li><li><span class="tag t-warn">chưa chứng minh</span> giá trị của số hạng mức và placebo; bài toán quá dễ (nhiều phương pháp ≈ 1.0), và VAR-Lasso/PCMCI trên mức vẫn tốt vì cơ chế bị chặn.</li></ul>
