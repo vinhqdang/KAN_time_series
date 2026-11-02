@@ -1,0 +1,112 @@
+== sortability (mean over seeds)
+          vs_raw  vs_std  r2s_raw  r2s_std  n_edges
+gen   d                                            
+A_raw 6    0.950   0.475    0.525    0.525    5.875
+      10   0.921   0.584    0.602    0.602    7.875
+      20   0.909   0.490    0.446    0.446   20.833
+      50   0.912   0.463    0.573    0.573   54.250
+B_std 6    0.510   0.683    0.564    0.564    5.875
+      10   0.353   0.468    0.493    0.493    7.875
+      20   0.560   0.491    0.394    0.394   20.833
+      50   0.515   0.514    0.488    0.488   54.250
+== AUROC mean (sd) n
+method    var-sortnregress  R2-sortnregress  ...  GOLEM  NOTEARS-MLP
+gen   d                                      ...                    
+A_raw 6              0.898            0.618  ...  0.605        0.631
+      10             0.879            0.722  ...  0.808        0.593
+      20             0.853            0.651  ...  0.751        0.649
+      50             0.863            0.725  ...  0.779        0.498
+B_std 6              0.595            0.666  ...  0.563        0.650
+      10             0.592            0.698  ...  0.755        0.648
+      20             0.649            0.644  ...  0.743        0.683
+      50             0.682            0.695  ...  0.730        0.501
+
+[8 rows x 8 columns]
+method    var-sortnregress  R2-sortnregress  ...  GOLEM  NOTEARS-MLP
+gen   d                                      ...                    
+A_raw 6              0.071            0.104  ...  0.106        0.112
+      10             0.056            0.117  ...  0.052        0.071
+      20             0.056            0.054  ...  0.069        0.020
+      50             0.012            0.034  ...  0.022        0.062
+B_std 6              0.157            0.100  ...  0.157        0.101
+      10             0.118            0.138  ...  0.076        0.079
+      20             0.050            0.037  ...  0.037        0.046
+      50             0.061            0.033  ...  0.071        0.060
+
+[8 rows x 8 columns]
+== per-dataset corr of AUROC with sortability (A_raw, all d pooled, Spearman)
+A_raw var-sortnregress rho(vs_raw)=0.41 rho(r2s_raw)=0.41
+A_raw R2-sortnregress rho(vs_raw)=-0.09 rho(r2s_raw)=0.70
+A_raw random-sortnregress rho(vs_raw)=-0.02 rho(r2s_raw)=-0.19
+A_raw SPADE rho(vs_raw)=-0.05 rho(r2s_raw)=0.07
+A_raw NOTEARS-linear rho(vs_raw)=-0.08 rho(r2s_raw)=0.20
+A_raw DAGMA-linear rho(vs_raw)=-0.25 rho(r2s_raw)=-0.16
+A_raw GOLEM rho(vs_raw)=-0.19 rho(r2s_raw)=0.30
+A_raw NOTEARS-MLP rho(vs_raw)=-0.15 rho(r2s_raw)=-0.70
+A_raw SPADE - var-sortnregress
+     mean    std  count
+d                      
+6   0.043  0.095      8
+10  0.069  0.061      8
+20  0.062  0.068      6
+50 -0.040  0.009      4
+A_raw SPADE - R2-sortnregress
+     mean    std  count
+d                      
+6   0.323  0.122      8
+10  0.225  0.107      8
+20  0.264  0.064      6
+50  0.098  0.025      4
+A_raw SPADE - NOTEARS-linear
+     mean    std  count
+d                      
+6   0.254  0.067      8
+10  0.077  0.057      8
+20  0.066  0.029      6
+50  0.026  0.044      4
+B_std var-sortnregress rho(vs_raw)=0.80 rho(r2s_raw)=-0.35
+B_std R2-sortnregress rho(vs_raw)=-0.32 rho(r2s_raw)=0.66
+B_std random-sortnregress rho(vs_raw)=-0.08 rho(r2s_raw)=-0.45
+B_std SPADE rho(vs_raw)=-0.14 rho(r2s_raw)=-0.03
+B_std NOTEARS-linear rho(vs_raw)=-0.28 rho(r2s_raw)=-0.12
+B_std DAGMA-linear rho(vs_raw)=0.35 rho(r2s_raw)=-0.23
+B_std GOLEM rho(vs_raw)=-0.23 rho(r2s_raw)=-0.05
+B_std NOTEARS-MLP rho(vs_raw)=0.25 rho(r2s_raw)=-0.43
+B_std SPADE - var-sortnregress
+     mean    std  count
+d                      
+6   0.381  0.118      8
+10  0.404  0.123      8
+20  0.347  0.051      6
+50  0.188  0.088      4
+B_std SPADE - R2-sortnregress
+     mean    std  count
+d                      
+6   0.311  0.108      8
+10  0.298  0.141      8
+20  0.351  0.038      6
+50  0.175  0.046      4
+B_std SPADE - NOTEARS-linear
+     mean    std  count
+d                      
+6   0.316  0.090      8
+10  0.162  0.073      8
+20  0.171  0.056      6
+50  0.056  0.034      4
+== variance floor
+                 mean    std  count
+method                             
+NOTEARS-linear  0.832  0.071     30
+SPADE           0.927  0.060     30
+paired SPADE-NOTEARSlin over 30 seeds: mean 0.095 sd 0.078 se 0.014
+method-seed sd within dataset (mean over 5 datasets): 0.022 range per dataset [0.021, 0.082, 0.057, 0.012, 0.109]
+       mean    std
+seed              
+800   0.996  0.009
+801   0.900  0.030
+802   0.941  0.023
+803   0.984  0.005
+804   0.935  0.044
+repeat_1thr dAUROC: [0.0, 0.0, 0.0, 0.0, 0.0] RMS 0.000 max|dS| [0.0, 0.0, 0.0, 0.0, 0.0]
+thr2 dAUROC: [0.0, 0.032, 0.032, -0.022, 0.062] RMS 0.036 max|dS| [0.0009, 0.0068, 0.0032, 0.001, 0.0025]
+float64 dAUROC: [-0.015, -0.085, 0.052, -0.014, 0.065] RMS 0.054 max|dS| [0.8331, 0.9933, 0.0322, 0.0145, 0.0064]

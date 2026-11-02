@@ -1,0 +1,1 @@
+varsortability d=10: iSCM 0.546 | same generator unstandardised 0.921 | src.synthetic 0.933
