@@ -15,6 +15,7 @@ from g1_pilot import fit as spade_fit, curve_metrics as spade_curve_metrics
 from spade_variants import zscore, score
 import shape_bench as G2
 from spire import fit_spire, spire_curve
+from basil import fit_basil
 
 
 def gen(n, d, seed, noise="unif"):
@@ -64,7 +65,10 @@ def edge_curve_metrics(curve_fn, X, A, f, sd):
     return float(np.mean(r2)), float(np.median(sl))
 
 
+EXTRA = {}
+
 def run_method(name, X, A, f, sd, seed):
+    EXTRA.clear()
     Xz = zscore(X); Xt = torch.tensor(Xz); t0 = time.time(); cr = (np.nan, np.nan)
     if name.startswith("SPIRE"):
         kw = {}
@@ -76,6 +80,20 @@ def run_method(name, X, A, f, sd, seed):
             elif tok[0] == "E": kw["T"] = int(tok[1:])
         S, model = fit_spire(Xz, seed, return_model=True, **kw)
         cr = edge_curve_metrics(lambda c, e, xs: spire_curve(model, c, e, xs), Xz, A, f, sd)
+    elif name.startswith("BASIL"):
+        gm, pm_, kmax = 1.0, 1.0, 3
+        for tok in name.split("_")[1:]:
+            if tok[0] == "g": gm = float(tok[1:])
+            elif tok[0] == "p": pm_ = float(tok[1:])
+            elif tok[0] == "k": kmax = int(tok[1:])
+        n_, d_ = Xz.shape
+        o = fit_basil(Xz, seed, g=gm * n_, pi=pm_ * 2.0 / (d_ - 1), kmax=kmax)
+        S = o["P"]; cr = edge_curve_metrics(lambda c, e, xs: o["mean_curve"](c, e), Xz, A, f, sd)
+        cover = []
+        for c, e in zip(*np.nonzero(A)):
+            lo_, hi_ = o["band"](c, e); gt = f[(c, e)](Xz[:, c].astype(float)) / sd[e]; gt = gt - gt.mean()
+            cover.append(np.mean((gt >= lo_ - 1e-9) & (gt <= hi_ + 1e-9)))
+        EXTRA.update(cover=float(np.mean(cover)), rhat=o["rhat"], gap=o["chain_gap"])
     elif name == "SPADE":
         m = spade_fit(Xt, seed); S = m.importance(Xt).numpy().T; cr = spade_curve_metrics(m, Xt, A, f, sd)
     elif name == "SPADE-adaptive":
@@ -91,6 +109,14 @@ def run_method(name, X, A, f, sd, seed):
         S = sortnregress(X.astype(np.float64), np.argsort(r2_all(X.astype(np.float64))))
     else: raise ValueError(name)
     return np.asarray(S, float), cr, time.time() - t0
+
+
+def ece(P, A, bins=10):
+    d = A.shape[0]; msk = ~np.eye(d, dtype=bool); p = P[msk]; t = A[msk]; tot = 0.0
+    for b in range(bins):
+        sel = (p >= b / bins) & (p < (b + 1) / bins + (b == bins - 1))
+        if sel.any(): tot += sel.mean() * abs(p[sel].mean() - t[sel].mean())
+    return float(tot)
 
 
 def metrics(S, A):
@@ -112,7 +138,7 @@ if __name__ == "__main__":
             if (s, m) in done: continue
             S, cr, t = run_method(m, X, A, f, sd, 0); au, ap, ska, oa = metrics(S, A)
             rows.append(dict(d=d, n=n, noise=noise, seed=s, method=m, auroc=au, auprc=ap, skel_auroc=ska, orient=oa,
-                             curve_r2=cr[0], slope=cr[1], nnz=int((S > 1e-6).sum()), n_edges=int(A.sum()), time=t))
+                             curve_r2=cr[0], slope=cr[1], ece=ece(S, A) if m.startswith('BASIL') else np.nan, **EXTRA, nnz=int((S > 1e-6).sum()), n_edges=int(A.sum()), time=t))
         if rows:
             pd.DataFrame(rows).to_csv(out, mode="a", header=not os.path.exists(out), index=False)
         print(s, [(r["method"], round(r["auroc"], 3), round(r["orient"], 2)) for r in rows], flush=True)
