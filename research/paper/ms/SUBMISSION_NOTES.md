@@ -72,4 +72,8 @@ Build: `./build.sh` (figures, tables, PDF), or by hand: `python3.13 make_example
 - The Sachs sign-sanity relations were typed from memory in the real-data run; the manuscript states this.
 
 ## 9. Status of dependent experiments at the time of the last build
-(see the block below; updated at the end of the drafting session)
+Checked at the end of the drafting session (git log for research/semisyn, research/replication2, research/adaptive2 showed only the two pre-registration commits, 58c4b1f and e3f6316; no README_results.md existed in any of the three):
+- replication2: about 11 of 60 per-dataset files (uniform cell only, seeds from 3000) were present, 4 to 5 datasets with all four arms; running at roughly 6 files per 10 minutes. Not usable yet. Table `tab_rep2` and `tab_rep2b` show the partial uniform rows if rebuilt now; do not quote them.
+- adaptive2: grid files for seeds 2000-2004 partly present, no d=500 file; the grid table shows partial means.
+- semisyn: code only (gen.py, bench.py), no results, no PLAN.md or README at that time.
+When these finish: run each directory's aggregate script, `python3.13 make_tables.py && python3.13 make_figures.py`, then rewrite `sections/rep2_text.tex`, `sections/adaptive2_text.tex`, `sections/semisyn_text.tex` (currently one-line PENDING status paragraphs) with the results and caveats from the respective README_results.md, and update the abstract only if the picture changes. Figure 2 gets its second panel automatically from replication2.
