@@ -1,0 +1,17 @@
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{p{2.9cm}p{3.2cm}p{6.2cm}p{2.6cm}}
+\toprule
+Attempt & Setting & Outcome & Verdict \\
+\midrule
+SPIRE (group-MCP + HSIC term) & $d=10$, $n=1000$, 30 datasets & AUROC $-0.021$ [$-0.031,-0.010$] vs SPADE; slope 0.75 (kill line 0.80); HSIC term adds $+0.05$ orientation at best, not significant on validation & H1 fails, H2 inconclusive \\
+BASIL-S cold start & $d=100$--$500$, 5 datasets (1 at $d=500$) & chain end-scores differ by hundreds of nats; AUROC $-0.02$ to $-0.03$ vs SPADE-scaled; orientation 0.83 vs 0.94 at $d=200$ (original); $d=500$: orientation 0.71, slope 0.51 & does not scale as specified \\
+BASIL-S, cold start (ablation) & $d=100$, 8 datasets & NRMSE 0.324 vs 0.177, orientation 0.809 vs 0.943 (8/8 worse) & warm start essential \\
+Full BASIL & $d=50$ & about 11 min per dataset; no better than BASIL-W on Sachs (AUROC 0.544) & not scalable \\
+SCORE / NoGAM & $d=10$, 10 datasets & AUROC 0.858 / 0.895 vs 0.980 (SPADE), 5--10$\times$ slower & baseline only \\
+Pre-registered BASIL-W do-effects & $d\ge100$, 4 of 45 datasets & indirect do-effect NRMSE up to 185 (coefficients up to $1.4\times10^7$); fixed post hoc by a ridge map & instability; fixed, 0/75 on fresh seeds \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+
+\smallskip
+{\footnotesize Numbers from research/spire (README\_results, README\_basil, README\_scale, README\_do), research/ablation and research/real\_data.}

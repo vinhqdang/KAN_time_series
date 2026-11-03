@@ -1,0 +1,17 @@
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{llrrrrr}
+\toprule
+Noise (datasets) & $\kappa$ & all edges & found & missed & whole curve & mean width \\
+\midrule
+uniform (8) & 1 & 0.798 & 0.877 & 0.095 & 0.15 & 0.140 \\
+uniform (8) & 1.55 & 0.894 & 0.981 & 0.112 & 0.61 & 0.216 \\
+Laplace (5) & 1 & 0.796 & 0.850 & 0.207 & 0.05 & 0.141 \\
+Laplace (5) & 1.55 & 0.904 & 0.964 & 0.249 & 0.32 & 0.219 \\
+hetero (5) & 1 & 0.790 & 0.835 & 0.304 & 0.03 & 0.174 \\
+hetero (5) & 1.55 & 0.908 & 0.960 & 0.357 & 0.23 & 0.269 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+
+\smallskip
+{\footnotesize Pointwise coverage of the 90\% band (5th/95th percentile of $m+\kappa(D-m)$ for posterior draws $D$ and mean $m$) over true edges, mean over datasets (found/missed: pooled over edges). $\kappa^*=1.55$ was chosen as the smallest value reaching coverage 0.90 on 5 validation datasets (seeds 3000--3004) and frozen. `found' = posterior inclusion $P>0.9$; `missed' = $P\le0.9$; `whole curve' = share of curves entirely inside the band.}

@@ -1,0 +1,19 @@
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{llrrrrrrrrr}
+\toprule
+Cell & Setting & $N$ & SSC & refit & BASIL-W & ratio & BASIL-W $-$ refit [95\% CI] & wins & Holm p (refit) & Holm p (SSC) \\
+\midrule
+C1 & d100 uniform & 10 & 0.612 & 0.213 & 0.169 & 0.28 & -0.043 [-0.071, -0.016] & 8/10 & 0.082 & 0.014 \\
+C2 & d100 Laplace & 10 & 0.803 & 0.470 & 0.252 & 0.31 & -0.218 [-0.249, -0.189] & 10/10 & 0.014 & 0.014 \\
+C3 & d100 hetero & 10 & 0.768 & 0.359 & 0.294 & 0.38 & -0.065 [-0.087, -0.045] & 10/10 & 0.014 & 0.014 \\
+C4 & d100 Gaussian & 10 & 0.692 & 0.278 & 0.150 & 0.22 & -0.128 [-0.156, -0.100] & 10/10 & 0.014 & 0.014 \\
+C5 & d100 n=500 & 10 & 0.617 & 0.231 & 0.201 & 0.33 & -0.030 [-0.056, -0.004] & 6/10 & 0.131 & 0.014 \\
+C6 & d100 n=2000 & 10 & 0.611 & 0.199 & 0.152 & 0.25 & -0.047 [-0.078, -0.017] & 8/10 & 0.082 & 0.014 \\
+C7 & d100 mech. 2 & 10 & 0.625 & 0.270 & 0.155 & 0.25 & -0.115 [-0.142, -0.088] & 10/10 & 0.014 & 0.014 \\
+C8 & d200 uniform & 5 & 0.612 & 0.203 & 0.173 & 0.28 & -0.031 [-0.049, -0.011] & 4/5 & -- & -- \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+
+\smallskip
+{\footnotesize Edge-function NRMSE (mean over datasets; lower is better); a missed true edge counts as 1. Ratio = BASIL-W / SSC of the cell means. Difference = BASIL-W minus refit with 95\% bootstrap interval over datasets. Holm: two-sided exact Wilcoxon signed-rank p, Holm-adjusted over C1--C7 (C8 has 5 datasets, minimum attainable p = 0.0625, not testable), for BASIL-W vs refit and BASIL-W vs SSC. BASIL-W is below SSC in all 75 datasets. Cells share graphs across seeds (C1--C6 use the same 10 DAGs), so they are not independent replications.}

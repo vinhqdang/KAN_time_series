@@ -1,0 +1,15 @@
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrrrrrrrrr}
+\toprule
+Cell & $N$ & SSC & SSA & refit & BASIL-W & SSA $-$ refit & SSA $-$ BASIL-W & p & AUROC SSA & AUROC BASIL-W \\
+\midrule
+d100 uniform & 10 & 0.612 & 0.241 & 0.213 & 0.169 & +0.029 (8/10) & +0.072 (10/10) & 0.002 & 0.998 & 0.973 \\
+d100 Laplace & 5 & 0.805 & 0.520 & 0.470 & 0.261 & +0.049 (5/5) & +0.258 (5/5) & 0.062 & 0.984 & 0.953 \\
+d100 hetero & 5 & 0.766 & 0.375 & 0.349 & 0.294 & +0.027 (4/5) & +0.082 (5/5) & 0.062 & 0.996 & 0.977 \\
+d200 uniform & 3 & 0.606 & 0.230 & 0.193 & 0.176 & +0.037 (3/3) & +0.055 (3/3) & 0.250 & 0.997 & 0.977 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+
+\smallskip
+{\footnotesize Adaptive group lasso (SSA: weights $(\|\theta\|+0.01)^{-1}$, same $\lambda=0.2/d$, $\gamma$ and $\epsilon$ not tuned) on the replication seeds; SSC, refit and BASIL-W values are the replication runs on the same seeds. Differences SSA minus comparator, in parentheses the number of datasets in which SSA is worse. Wilcoxon p (uncorrected) for SSA vs BASIL-W; with 5 or 3 datasets the minimum attainable p is 0.0625 or 0.25.}

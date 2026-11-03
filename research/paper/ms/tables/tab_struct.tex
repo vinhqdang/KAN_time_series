@@ -1,0 +1,19 @@
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrrrrrccrr}
+\toprule
+Cell & AUROC SSC & refit & BASIL-W & orient. SSC & refit & BASIL-W & do direct & do indirect & cover. & ECE \\
+\midrule
+C1 & 0.998 & 0.982 & 0.973 & 0.95 & 0.92 & 0.94 & 0.60 / 0.19 / 0.15 & 0.86 / 0.26 / 0.22 & 0.793 & 0.0014 \\
+C2 & 0.991 & 0.908 & 0.959 & 0.74 & 0.75 & 0.92 & 0.76 / 0.41 / 0.18 & 0.92 / 0.50 / 0.33 & 0.753 & 0.0024 \\
+C3 & 0.998 & 0.968 & 0.976 & 0.89 & 0.84 & 0.95 & 0.73 / 0.32 / 0.20 & 0.93 / 0.54 / 0.48 & 0.781 & 0.0016 \\
+C4 & 0.997 & 0.972 & 0.992 & 0.90 & 0.88 & 0.98 & 0.66 / 0.22 / 0.13 & 0.87 / 0.34 / 0.23 & 0.808 & 0.0008 \\
+C5 & 0.998 & 0.980 & 0.978 & 0.95 & 0.92 & 0.95 & 0.60 / 0.21 / 0.18 & 0.86 / 0.30 / 0.27 & 0.798 & 0.0012 \\
+C6 & 0.999 & 0.981 & 0.967 & 0.95 & 0.92 & 0.93 & 0.60 / 0.16 / 0.15 & 0.86 / 0.23 / 0.21 & 0.774 & 0.0016 \\
+C7 & 0.998 & 0.959 & 0.969 & 0.91 & 0.90 & 0.94 & 0.59 / 0.22 / 0.15 & 0.82 / 0.31 / 0.27 & 0.742 & 0.0015 \\
+C8 & 0.997 & 0.967 & 0.979 & 0.95 & 0.93 & 0.95 & 0.58 / 0.16 / 0.14 & 0.86 / 0.27 / 0.21 & 0.788 & 0.0006 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+
+\smallskip
+{\footnotesize Means over datasets. do-effect NRMSE for up to 20 direct and 20 indirect true pairs per dataset (SSC / refit / BASIL-W). Coverage: pointwise coverage of the 90\% BASIL-W band over true edges, kappa = 1; ECE of the edge probabilities. BASIL-W AUROC is lower than SSC in 9 or 10 of 10 datasets in every $d=100$ cell.}
