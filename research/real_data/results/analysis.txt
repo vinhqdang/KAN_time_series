@@ -1,0 +1,129 @@
+== STRUCTURE (mean +- sd over 10 subsamples; bootstrap 95% CI of mean AUROC)
+                           auroc         auprc        skel_auroc        orient        hits18          time        
+                            mean    std   mean    std       mean    std   mean    std   mean    std   mean     std
+method                                                                                                            
+BASIL                      0.544  0.052  0.227  0.030      0.683  0.046  0.511  0.094    5.3  1.636   1.11   0.179
+BASILW                     0.563  0.058  0.248  0.034      0.703  0.043  0.583  0.088    5.8  0.789   4.94   0.513
+DAGMA-linear               0.435  0.030  0.168  0.006      0.688  0.012  0.306  0.060    3.0  0.000   1.26   0.184
+GAM-ridge                  0.584  0.024  0.287  0.009      0.735  0.009  0.400  0.035    6.1  0.316   1.59   0.160
+NOTEARS-linear             0.566  0.015  0.239  0.005      0.634  0.023  0.533  0.060    5.0  0.000   1.30   2.460
+SSC                        0.613  0.042  0.291  0.072      0.690  0.021  0.511  0.094    5.8  0.919  19.78  49.058
+SSR_k1.5                   0.595  0.044  0.266  0.067      0.688  0.032  0.531  0.055    6.1  1.101   9.61   3.152
+var-sortnregress           0.503  0.071  0.207  0.044      0.664  0.047  0.442  0.108    3.3  1.337   0.00   0.000
+var-sortnregress-logscale  0.555  0.041  0.255  0.047      0.659  0.022  0.486  0.062    4.1  0.876   0.01   0.032
+  BASIL                        n=10 AUROC CI[0.513,0.574]
+  BASILW                       n=10 AUROC CI[0.529,0.596]
+  DAGMA-linear                 n=10 AUROC CI[0.416,0.450]
+  GAM-ridge                    n=10 AUROC CI[0.570,0.598]
+  NOTEARS-linear               n=10 AUROC CI[0.557,0.575]
+  SSC                          n=10 AUROC CI[0.591,0.639]
+  SSR_k1.5                     n=10 AUROC CI[0.569,0.620]
+  var-sortnregress             n=10 AUROC CI[0.460,0.544]
+  var-sortnregress-logscale    n=10 AUROC CI[0.530,0.578]
+
+== PAIRED (method minus reference)
+SSR_k1.5                   - SSC             auroc   diff -0.017 CI[-0.034,+0.002] wilcoxon p=0.049
+SSR_k1.5                   - SSC             auprc   diff -0.025 CI[-0.038,-0.013] wilcoxon p=0.004
+SSR_k1.5                   - SSC             orient  diff +0.019 CI[-0.028,+0.067] wilcoxon p=0.361
+BASILW                     - SSC             auroc   diff -0.050 CI[-0.097,-0.008] wilcoxon p=0.105
+BASILW                     - SSC             auprc   diff -0.043 CI[-0.088,-0.004] wilcoxon p=0.105
+BASILW                     - SSC             orient  diff +0.072 CI[-0.006,+0.150] wilcoxon p=0.094
+BASIL                      - SSC             auroc   diff -0.069 CI[-0.106,-0.033] wilcoxon p=0.014
+BASIL                      - SSC             auprc   diff -0.064 CI[-0.107,-0.023] wilcoxon p=0.037
+BASIL                      - SSC             orient  diff +0.000 CI[-0.056,+0.061] wilcoxon p=0.984
+GAM-ridge                  - SSC             auroc   diff -0.028 CI[-0.054,-0.005] wilcoxon p=0.068
+GAM-ridge                  - SSC             auprc   diff -0.005 CI[-0.047,+0.033] wilcoxon p=1.000
+GAM-ridge                  - SSC             orient  diff -0.111 CI[-0.167,-0.056] wilcoxon p=0.010
+NOTEARS-linear             - SSC             auroc   diff -0.047 CI[-0.079,-0.019] wilcoxon p=0.012
+NOTEARS-linear             - SSC             auprc   diff -0.053 CI[-0.097,-0.013] wilcoxon p=0.084
+NOTEARS-linear             - SSC             orient  diff +0.022 CI[-0.056,+0.089] wilcoxon p=0.410
+DAGMA-linear               - SSC             auroc   diff -0.178 CI[-0.222,-0.149] wilcoxon p=0.002
+DAGMA-linear               - SSC             auprc   diff -0.124 CI[-0.171,-0.083] wilcoxon p=0.002
+DAGMA-linear               - SSC             orient  diff -0.206 CI[-0.283,-0.144] wilcoxon p=0.002
+var-sortnregress           - SSC             auroc   diff -0.110 CI[-0.166,-0.055] wilcoxon p=0.010
+var-sortnregress           - SSC             auprc   diff -0.084 CI[-0.139,-0.031] wilcoxon p=0.020
+var-sortnregress           - SSC             orient  diff -0.069 CI[-0.161,+0.019] wilcoxon p=0.312
+var-sortnregress-logscale  - SSC             auroc   diff -0.058 CI[-0.095,-0.026] wilcoxon p=0.006
+var-sortnregress-logscale  - SSC             auprc   diff -0.037 CI[-0.088,+0.011] wilcoxon p=0.322
+var-sortnregress-logscale  - SSC             orient  diff -0.025 CI[-0.083,+0.028] wilcoxon p=0.648
+SSC                        - NOTEARS-linear  auroc   diff +0.047 CI[+0.020,+0.080] wilcoxon p=0.012
+SSC                        - NOTEARS-linear  auprc   diff +0.053 CI[+0.013,+0.099] wilcoxon p=0.084
+SSC                        - NOTEARS-linear  orient  diff -0.022 CI[-0.089,+0.056] wilcoxon p=0.410
+SSR_k1.5                   - NOTEARS-linear  auroc   diff +0.029 CI[-0.000,+0.060] wilcoxon p=0.232
+SSR_k1.5                   - NOTEARS-linear  auprc   diff +0.027 CI[-0.010,+0.069] wilcoxon p=0.322
+SSR_k1.5                   - NOTEARS-linear  orient  diff -0.003 CI[-0.053,+0.050] wilcoxon p=1.000
+BASILW                     - NOTEARS-linear  auroc   diff -0.003 CI[-0.038,+0.028] wilcoxon p=1.000
+BASILW                     - NOTEARS-linear  auprc   diff +0.009 CI[-0.013,+0.029] wilcoxon p=0.432
+BASILW                     - NOTEARS-linear  orient  diff +0.050 CI[-0.011,+0.117] wilcoxon p=0.250
+BASIL                      - NOTEARS-linear  auroc   diff -0.022 CI[-0.055,+0.011] wilcoxon p=0.232
+BASIL                      - NOTEARS-linear  auprc   diff -0.012 CI[-0.030,+0.007] wilcoxon p=0.275
+BASIL                      - NOTEARS-linear  orient  diff -0.022 CI[-0.100,+0.044] wilcoxon p=0.883
+GAM-ridge                  - NOTEARS-linear  auroc   diff +0.018 CI[+0.002,+0.035] wilcoxon p=0.084
+GAM-ridge                  - NOTEARS-linear  auprc   diff +0.048 CI[+0.042,+0.054] wilcoxon p=0.002
+GAM-ridge                  - NOTEARS-linear  orient  diff -0.133 CI[-0.172,-0.094] wilcoxon p=0.002
+DAGMA-linear               - NOTEARS-linear  auroc   diff -0.132 CI[-0.149,-0.115] wilcoxon p=0.002
+DAGMA-linear               - NOTEARS-linear  auprc   diff -0.071 CI[-0.076,-0.066] wilcoxon p=0.002
+DAGMA-linear               - NOTEARS-linear  orient  diff -0.228 CI[-0.283,-0.167] wilcoxon p=0.002
+var-sortnregress           - NOTEARS-linear  auroc   diff -0.063 CI[-0.108,-0.020] wilcoxon p=0.037
+var-sortnregress           - NOTEARS-linear  auprc   diff -0.032 CI[-0.056,-0.005] wilcoxon p=0.049
+var-sortnregress           - NOTEARS-linear  orient  diff -0.092 CI[-0.183,-0.003] wilcoxon p=0.105
+var-sortnregress-logscale  - NOTEARS-linear  auroc   diff -0.011 CI[-0.040,+0.015] wilcoxon p=0.695
+var-sortnregress-logscale  - NOTEARS-linear  auprc   diff +0.016 CI[-0.014,+0.044] wilcoxon p=0.232
+var-sortnregress-logscale  - NOTEARS-linear  orient  diff -0.047 CI[-0.094,+0.008] wilcoxon p=0.115
+
+== STABILITY, plan definition: edges in method's own top-18 in >=3 subsamples
+   method  n_edges  r2aff  corr  n_true  r2aff_true  corr_true
+      SSC       24  0.986 0.993       8       0.988      0.994
+ SSR_k1.5       24  0.832 0.853       8       0.835      0.858
+   BASILW       26  0.950 0.974       8       0.957      0.978
+    BASIL       21  0.954 0.976       6       0.955      0.977
+GAM-ridge       18  0.974 0.986       6       0.987      0.994
+
+== STABILITY, common edge set (SSC top-18 in >=3 subsamples), per-subsample score = mean over edges and other subsamples of R2_aff; paired over subsamples
+edges: [('praf', 'pmek', 3, 1), ('pmek', 'praf', 7, 0), ('pmek', 'plcg', 10, 0), ('pmek', 'PIP2', 4, 0), ('pmek', 'pakts473', 10, 0), ('pmek', 'PKA', 10, 0), ('pmek', 'PKC', 3, 0), ('pmek', 'P38', 6, 0), ('pmek', 'pjnk', 6, 0), ('plcg', 'PIP2', 4, 1), ('plcg', 'PKA', 10, 0), ('plcg', 'PKC', 8, 1), ('plcg', 'pjnk', 5, 0), ('PIP2', 'plcg', 6, 0), ('PIP2', 'PIP3', 10, 1), ('p44/42', 'pakts473', 10, 0), ('PKA', 'p44/42', 10, 1), ('PKA', 'pakts473', 10, 1), ('PKC', 'P38', 10, 1), ('PKC', 'pjnk', 3, 1), ('P38', 'PKA', 10, 0), ('pjnk', 'plcg', 4, 0), ('pjnk', 'PKC', 7, 0), ('pjnk', 'P38', 9, 0)]
+  SSC          mean R2_aff 0.978 CI[0.975,0.981]
+  SSR_k1.5     mean R2_aff 0.491 CI[0.472,0.509]
+  BASILW       mean R2_aff 0.538 CI[0.496,0.572]
+  BASIL        mean R2_aff 0.618 CI[0.586,0.646]
+  GAM-ridge    mean R2_aff 0.945 CI[0.941,0.948]
+  SSR_k1.5 - SSC : diff -0.487 CI[-0.504,-0.472] wilcoxon p=0.002
+  BASILW - SSC : diff -0.440 CI[-0.482,-0.405] wilcoxon p=0.002
+  BASIL - SSC : diff -0.361 CI[-0.393,-0.331] wilcoxon p=0.002
+  GAM-ridge - SSC : diff -0.034 CI[-0.037,-0.031] wilcoxon p=0.002
+
+== STABILITY, common edge set, CONDITIONAL on both subsamples having a non-zero curve (edge selected in both); mean R2_aff over edges/pairs; n_pairs = number of such pairs
+  SSC          mean R2_aff 0.978 over 1080 of 1080 edge-pairs; share of zero-curve edge-subsamples 0.00
+  SSR_k1.5     mean R2_aff 0.968 over 548 of 1080 edge-pairs; share of zero-curve edge-subsamples 0.35
+  BASILW       mean R2_aff 0.961 over 605 of 1080 edge-pairs; share of zero-curve edge-subsamples 0.34
+  BASIL        mean R2_aff 0.953 over 700 of 1080 edge-pairs; share of zero-curve edge-subsamples 0.28
+  GAM-ridge    mean R2_aff 0.945 over 1080 of 1080 edge-pairs; share of zero-curve edge-subsamples 0.00
+
+== AMPLITUDE ratio of curve std on SSC top-18 edges (per subsample mean of per-edge ratios; CI over subsamples)
+  SSR_k1.5  /SSC mean 1.60 CI[1.57,1.64] (min 1.54, max 1.69)
+  BASILW    /SSC mean 1.41 CI[1.32,1.50] (min 1.23, max 1.63)
+  BASIL     /SSC mean 1.22 CI[1.15,1.30] (min 1.06, max 1.46)
+  GAM-ridge /SSC mean 1.63 CI[1.56,1.70] (min 1.49, max 1.85)
+  mean curve std over SSC top-18 edges, SSC: 0.243
+  mean curve std over SSC top-18 edges, SSR_k1.5: 0.385
+  mean curve std over SSC top-18 edges, BASILW: 0.316
+  mean curve std over SSC top-18 edges, BASIL: 0.284
+  mean curve std over SSC top-18 edges, GAM-ridge: 0.374
+
+== SIGN SANITY: correlation(curve, cause) > 0 counted correct (curve with zero amplitude counted as absent)
+  praf->pmek (marginal corr in log data +0.785): SSC: +10/-0/absent0; SSR_k1.5: +3/-0/absent7; BASILW: +1/-0/absent9; BASIL: +1/-0/absent9; GAM-ridge: +10/-0/absent0 | mean score SSC 0.170 BASILW 0.100
+  pmek->p44/42 (marginal corr in log data -0.071): SSC: +2/-8/absent0; SSR_k1.5: +0/-0/absent10; BASILW: +0/-10/absent0; BASIL: +0/-10/absent0; GAM-ridge: +0/-10/absent0 | mean score SSC 0.001 BASILW 1.000
+  PIP3->pakts473 (marginal corr in log data -0.135): SSC: +1/-9/absent0; SSR_k1.5: +0/-0/absent10; BASILW: +0/-0/absent10; BASIL: +0/-0/absent10; GAM-ridge: +2/-8/absent0 | mean score SSC 0.000 BASILW 0.000
+
+== TOP EDGES by mean SSC score (mean over subsamples), with truth flag and rank-score of other methods
+  p44/42->pakts473 truth=0 reverse_truth=0 SSC=0.465 SSR=0.606 BASILW=1.000 BASIL=1.000
+  pmek->praf truth=0 reverse_truth=1 SSC=0.414 SSR=0.525 BASILW=0.900 BASIL=0.900
+  PKC->P38 truth=1 reverse_truth=0 SSC=0.352 SSR=0.583 BASILW=0.524 BASIL=0.345
+  PKA->p44/42 truth=1 reverse_truth=0 SSC=0.244 SSR=0.475 BASILW=1.000 BASIL=0.762
+  plcg->PKA truth=0 reverse_truth=0 SSC=0.234 SSR=0.351 BASILW=0.954 BASIL=0.998
+  pjnk->PKC truth=0 reverse_truth=1 SSC=0.232 SSR=0.356 BASILW=0.634 BASIL=0.381
+  PIP2->PIP3 truth=1 reverse_truth=0 SSC=0.218 SSR=0.379 BASILW=1.000 BASIL=0.984
+  pmek->PKA truth=0 reverse_truth=1 SSC=0.210 SSR=0.262 BASILW=0.033 BASIL=0.056
+  pmek->plcg truth=0 reverse_truth=0 SSC=0.208 SSR=0.332 BASILW=0.000 BASIL=0.021
+  PIP2->plcg truth=0 reverse_truth=1 SSC=0.181 SSR=0.287 BASILW=1.000 BASIL=1.000
+  praf->pmek truth=1 reverse_truth=0 SSC=0.170 SSR=0.220 BASILW=0.100 BASIL=0.100
+  pmek->pakts473 truth=0 reverse_truth=0 SSC=0.156 SSR=0.401 BASILW=1.000 BASIL=1.000
