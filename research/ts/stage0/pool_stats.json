@@ -1,0 +1,34 @@
+{
+ "east_germany": {
+  "n_stations": 666,
+  "6h": {
+   "pass_20pct": 601,
+   "complete_after_interp": 92
+  },
+  "12h": {
+   "pass_20pct": 601,
+   "complete_after_interp": 103
+  },
+  "24h": {
+   "pass_20pct": 601,
+   "complete_after_interp": 110
+  },
+  "eligible_all_res": 92
+ },
+ "bavaria": {
+  "n_stations": 494,
+  "6h": {
+   "pass_20pct": 485,
+   "complete_after_interp": 371
+  },
+  "12h": {
+   "pass_20pct": 485,
+   "complete_after_interp": 392
+  },
+  "24h": {
+   "pass_20pct": 485,
+   "complete_after_interp": 412
+  },
+  "eligible_all_res": 371
+ }
+}
