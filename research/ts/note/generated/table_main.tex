@@ -1,0 +1,33 @@
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\multicolumn{3}{@{}l}{\textbf{12 h} (424 contemporaneous edges in 93 subgraphs)}\\
+Method & Directed AUROC [95\% CI] & Orientation acc. [95\% CI] \\
+\midrule
+VAR (lag-only) & 0.568 [0.547, 0.588] & 0.5 (by def.) \\
+$|$correlation$|$ & 0.687 [0.661, 0.710] & 0.5 (by def.) \\
+\midrule
+PCMCI+ & 0.704 [0.674, 0.733] & 0.567 [0.529, 0.605] \\
+VAR-LiNGAM & 0.634 [0.603, 0.663] & 0.611 [0.565, 0.660] \\
+DYNOTEARS (own) & 0.690 [0.659, 0.718] & 0.495 [0.446, 0.546] \\
+NOTEARS-SVAR (ref.) & 0.571 [0.547, 0.592] & 0.455 [0.401, 0.512] \\
+\midrule
+var-sortnregress & 0.501 [0.474, 0.527] & 0.500 [0.459, 0.542] \\
+R$^2$-sortnregress & 0.655 [0.629, 0.681] & 0.738 [0.705, 0.771] \\
+random & 0.515 [0.489, 0.542] & 0.585 [0.542, 0.626] \\
+\midrule
+\multicolumn{3}{@{}l}{\textbf{24 h} (533 contemporaneous edges in 99 subgraphs)}\\
+Method & Directed AUROC [95\% CI] & Orientation acc. [95\% CI] \\
+\midrule
+VAR (lag-only) & 0.531 [0.509, 0.552] & 0.5 (by def.) \\
+$|$correlation$|$ & 0.684 [0.658, 0.707] & 0.5 (by def.) \\
+\midrule
+PCMCI+ & 0.689 [0.661, 0.714] & 0.532 [0.498, 0.565] \\
+VAR-LiNGAM & 0.614 [0.582, 0.645] & 0.598 [0.546, 0.646] \\
+DYNOTEARS (own) & 0.648 [0.617, 0.678] & 0.462 [0.423, 0.500] \\
+NOTEARS-SVAR (ref.) & 0.541 [0.515, 0.566] & 0.417 [0.375, 0.457] \\
+\midrule
+var-sortnregress & 0.549 [0.521, 0.579] & 0.561 [0.523, 0.599] \\
+R$^2$-sortnregress & 0.654 [0.628, 0.679] & 0.720 [0.691, 0.751] \\
+random & 0.502 [0.475, 0.528] & 0.497 [0.455, 0.539] \\
+\bottomrule
+\end{tabular}
