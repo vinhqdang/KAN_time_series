@@ -16,6 +16,8 @@ import instantaneous_dag_benchmark as IB
 torch.set_num_threads(1)   # IB sets SPADE_THREADS (default 4) at import
 
 PER_EDGE = []
+COLS = ["d", "n", "noise", "seed", "method", "auroc", "auprc", "skel_auroc", "orient", "curve_r2", "slope", "ece", "nrmse", "do_direct", "do_indirect", "n_do_d", "n_do_i", "sk_do",
+        "cover", "recall", "gap", "t_ss", "t_cost", "t_refit", "t_mcmc", "t_extract", "nnz", "n_edges", "time"]
 
 
 def edge_metrics_logged(curve_fn, X, A, f, sd):
@@ -61,7 +63,7 @@ if __name__ == "__main__":
             S, cr, t = run(m, X, A, f, sd, raw_sd); au, ap, ska, oa = B.metrics(S, A)
             row = dict(d=d, n=n, noise=noise, seed=s, method=m, auroc=au, auprc=ap, skel_auroc=ska, orient=oa, curve_r2=cr[0], slope=cr[1],
                        ece=B.ece(S, A) if m.startswith("BASIL") else np.nan, **B.EXTRA, nnz=int((S > 1e-6).sum()), n_edges=int(A.sum()), time=t)
-            pd.DataFrame([row]).to_csv(fn, mode="a", header=not os.path.exists(fn), index=False)
+            pd.DataFrame([row]).reindex(columns=COLS).to_csv(fn, mode="a", header=not os.path.exists(fn), index=False)   # fixed columns: EXTRA keys differ by method
             if PER_EDGE:
                 pe = pd.DataFrame(PER_EDGE); pe.insert(0, "method", m); pe.insert(0, "seed", s); pe.insert(0, "n", n); pe.insert(0, "noise", noise); pe.insert(0, "d", d)
                 efn = os.path.join(out, "edges", os.path.basename(fn)); pe.to_csv(efn, mode="a", header=not os.path.exists(efn), index=False)
