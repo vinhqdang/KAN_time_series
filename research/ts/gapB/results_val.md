@@ -170,3 +170,57 @@ east_germany_d5_24h  dynotears   -0.041    0.067    -0.082
                      pcmci+       0.083    0.082     0.072
                      thrvar       0.030    0.008     0.001
                      varlingam    0.005   -0.025     0.002
+
+
+## netsim (secondary)
+
+
+### all datasets
+
+datasets (dataset x family rows / 5): 300, clusters: 6
+
+                    0       1          2       3          4
+family          lasso  thrvar  dynotears  pcmci+  varlingam
+n                 300     300        300     300        300
+rho_med          0.09   0.036        0.1  -0.143      0.187
+rho_lo          0.012  -0.102       -0.1  -0.314     -0.286
+rho_hi          0.234     0.3        0.3  -0.059      0.586
+rho_nan_frac      0.0   0.003        0.0     0.0      0.037
+rho_med_nan0     0.09   0.027        0.1  -0.143      0.127
+rho_ap_med      0.324   -0.03        0.2  -0.086      0.061
+auc_fc          0.571   0.541      0.643   0.729      0.719
+auc_sp          0.566   0.535      0.642   0.714      0.703
+auc_bic         0.574   0.536      0.665   0.709      0.687
+auc_spt         0.567   0.536      0.642   0.714      0.703
+auc_rnd         0.565   0.545      0.637   0.742      0.722
+auc_orc         0.638   0.605      0.772    0.85      0.778
+gain_fc         0.005  -0.003      0.007  -0.013     -0.002
+gain_sp         0.001  -0.009      0.006  -0.027     -0.019
+gain_bic        0.009  -0.009      0.028  -0.032     -0.034
+gain_spt        0.001  -0.009      0.006  -0.028     -0.018
+regret_fc      -0.067  -0.063     -0.128  -0.121     -0.059
+regret_sp      -0.072  -0.069     -0.129  -0.135     -0.075
+regret_bic     -0.064  -0.069     -0.107   -0.14     -0.091
+p_gain          0.169   0.748      0.246     1.0      0.667
+p_fc_gt_sp      0.284   0.215      0.453   0.031       0.25
+p_fc_gt_bic     0.704    0.09      0.986   0.016      0.044
+nec_med         0.547    0.52       0.53   0.541       0.52
+nec_lo          0.524   0.506      0.507     0.5      0.497
+nec_hi           0.58   0.547      0.553   0.597      0.573
+nec_auc_mean    0.541   0.529      0.535   0.541      0.529
+nec_auc_S_mean  0.571   0.541      0.643   0.729      0.719
+nec_auc_G_med   0.553   0.547       0.55     0.5      0.543
+S_auc_G_med     0.573     0.6      0.667   0.625       0.75
+p_nec_gt_S      0.984   0.856        1.0     1.0        1.0
+p_gain_holm     0.843     1.0      0.982     1.0        1.0
+p_sp_holm         1.0     1.0        1.0   0.277        1.0
+p_bic_holm        1.0   0.633        1.0   0.156      0.356
+p_nec_holm        1.0     1.0        1.0     1.0        1.0
+H1_pass         False   False      False   False      False
+H2_pass         False   False      False   False      False
+H3_pass         False   False      False   False      False
+
+H1 families passing: 0/5 -> NEGATIVE; H2: 0/5 -> not supported; H3: 0/5 -> not supported
+
+
+(netsim: clusters = sims)
