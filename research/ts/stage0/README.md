@@ -31,3 +31,39 @@ See the last section of `gates.md` (committed before any method ran): verdict me
 3. DYNOTEARS lambda grid extended after validation (above). Chosen on validation seeds only.
 4. G1 passes overall (0.797) but not in East Germany alone (0.624, 37% of edges have peak lag 0 at 15 min). The plan's gate is pooled, so it passes; the regional failure is reported here and in `gates.md`.
 5. The G3 R2-sortnregress control reaches 0.73 to 0.74 on standardised contemporaneous edges, below the pre-registered 0.8 flag but far above 0.5.
+
+## Results (full tables in `results.md`; test seeds 5005..5029, 100 subgraphs, standardised, p=1)
+Gates: G1 0.797 (pass; Bavaria 0.970, East Germany 0.624), G2 pass at 12 h and 24 h (24 h: 79.5% contemporaneous; 6 h fails the 100-edge condition in Bavaria, 84), G3 no flag (R2-sortnregress 0.72 to 0.74 on standardised contemporaneous edges, var-sortnregress 0.50 by construction; raw scale 0.92 to 0.94).
+
+| 24 h | directed AUROC | orientation acc (contemporaneous, n=533 edges in 99 subgraphs) |
+|---|---|---|
+| VAR (lag-only) | 0.531 | 0.5 by definition |
+| |corr| | 0.684 | 0.5 by definition |
+| PCMCI+ | 0.689 | 0.532 [0.498, 0.565] |
+| VAR-LiNGAM | 0.614 | 0.598 [0.546, 0.646] |
+| DYNOTEARS (own) | 0.648 | 0.462 [0.423, 0.500] |
+| NOTEARS-SVAR (reference) | 0.541 | 0.417 [0.375, 0.457] |
+| R2-sortnregress (control) | 0.654 | 0.720 [0.690, 0.750] |
+
+Verdicts by the pre-fixed rules:
+- H1: does not hold. At 12 h VAR-LiNGAM meets every condition (accuracy 0.611, CI [0.565, 0.660], AUROC +0.066 over VAR, Holm p 7.7e-06). At 24 h no method does: VAR-LiNGAM accuracy 0.598 (threshold 0.60, CI lower bound 0.546) with AUROC +0.083; PCMCI+ and DYNOTEARS accuracies are 0.532 and 0.462.
+- Negative (i) (every capable method within 2 SE of 0.5 at 24 h): not met (VAR-LiNGAM is clearly above; PCMCI+ at 0.532 is inside 2 SE, DYNOTEARS is below 0.5).
+- Negative (ii) (VAR AUROC >= every capable method at 24 h): not met; VAR is the worst or near-worst, every capable method beats it at every resolution by 0.016 to 0.158 (all Holm p < 0.05 except VAR-LiNGAM at 6 h).
+- Overall: ambiguous.
+
+What the numbers say beyond the verdicts (my reading, not a pre-registered claim):
+- The AUROC gain over VAR is not evidence for contemporaneous machinery. The symmetric |correlation| score, which cannot orient anything, reaches 0.684 at 24 h and beats VAR-LiNGAM and DYNOTEARS and ties PCMCI+. Lag-only VAR is simply a poor skeleton detector at coarse resolution. Directed AUROC mixes skeleton detection with orientation.
+- Orientation of contemporaneous edges is weak: best 0.60 (VAR-LiNGAM), PCMCI+ 0.53 to 0.57, DYNOTEARS and the NOTEARS reference at or below chance on standardised data. The label-rule sensitivity (Delta/4, Delta) does not change this picture (VAR-LiNGAM 0.575 to 0.620; PCMCI+ 0.51 to 0.61).
+- A control that uses no causal mechanism, R2-sortnregress, orients contemporaneous edges at 0.72 to 0.74, better than every method; on raw scale var-sortnregress reaches 0.92 to 0.94 and the NOTEARS reference 0.87. Orientation by "downstream station is better explained by the others" and by magnitude is available in this data. That did not trip the pre-registered 0.8 flag, but it means orientation accuracy on this benchmark cannot be credited to modelling the contemporaneous mechanism.
+- Hidden-driver diagnostic (gates.md): at 24 h the VAR(1) residual correlation among sibling stations is 0.51, about the same as among unrelated non-adjacent stations in the same subgraph (0.51) and below adjacent pairs (0.65). Shared regional forcing is large and the contemporaneous dependence is not specific to the river edges.
+- p=2 does not change conclusions. The raw-scale DYNOTEARS/NOTEARS solves use the same lambda as the standardised ones (not re-tuned for scale).
+
+## Novelty caveat: does it hold? (CausalRivers paper, arXiv 2503.17452v1, full text read)
+Read: abstract, Sections 3.3 (baselines), 3.x challenges (causal lag, sampling rate), 4 (experiments 1 to 3), appendix A.2 (hyperparameters), Tables 3, 7, 8 and Figure 3. Findings:
+- The paper evaluates resolutions 15 min, 1 h, 6 h, 12 h, 24 h, but only as a hyperparameter: the reported number per method is the best hyperparameter combination (resolution, normalisation, max lag 3 or 5) averaged over samples. No per-resolution results are shown in the main tables (the one disclosed pick is a GRU Causal Pretraining network at 12 h without normalisation).
+- It mentions "misalignment of causal lag and sampling rate" and cites Gong et al. on subsampling as a challenge, and says the data allow exploring aggregation rates. It never mentions instantaneous or contemporaneous effects, never labels edges by travel time versus resolution, and never scores contemporaneous edges separately.
+- It uses maximum lags 3 and 5 for VAR, PCMCI, DYNOTEARS and VAR-LiNGAM, ignores autoregressive links, and its naive baselines include a magnitude-based orientation (RP, 0.62 to 0.80 AUROC on its graph sets) and cross-correlation orientation. So scale-based orientation leakage was already visible there; our R2/scale-leakage result is consistent with it.
+So the plan's caveat holds in this form: the paper already covers coarse resolutions but only as a tuning knob, and contemporaneous-edge scoring with travel-time labels is not in it. The novelty is narrow (the labelling and scoring protocol), not the use of aggregated CausalRivers. I did not search other literature for the same protocol in this stage.
+
+## Limitations
+One data cut (2019 to 2023 windows of 377 to 1826 days per subgraph, selection toward well-measured stations, see D1); linear methods only; tau_e is a single static estimate while the true lag varies with discharge; DYNOTEARS is my implementation and its poor orientation on standardised data may partly reflect the Gaussian objective rather than the implementation (checked only on one synthetic example); the 100 test subgraphs contain overlapping river sections, so the bootstrap over subgraphs may be somewhat optimistic.
