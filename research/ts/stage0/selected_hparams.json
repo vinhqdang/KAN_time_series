@@ -1,0 +1,44 @@
+{
+ "6h": {
+  "dynotears": {
+   "lam": 0.1
+  },
+  "notears_svar2": {
+   "lam": 0.1
+  },
+  "pcmci+": {
+   "alpha": 0.01
+  },
+  "varlingam": {
+   "prune": false
+  }
+ },
+ "12h": {
+  "dynotears": {
+   "lam": 0.1
+  },
+  "notears_svar2": {
+   "lam": 0.1
+  },
+  "pcmci+": {
+   "alpha": 0.01
+  },
+  "varlingam": {
+   "prune": true
+  }
+ },
+ "24h": {
+  "dynotears": {
+   "lam": 0.1
+  },
+  "notears_svar2": {
+   "lam": 0.1
+  },
+  "pcmci+": {
+   "alpha": 0.01
+  },
+  "varlingam": {
+   "prune": true
+  }
+ }
+}
