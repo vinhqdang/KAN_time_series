@@ -67,7 +67,7 @@ for col in ['nrmse', 'do_direct', 'do_indirect', 'auroc', 'orient']:
 wr = []
 for c, _ in CELLS:
     w = wide('nrmse', c).dropna()
-    if len(w) == 0: continue
+    if len(w) < 3: continue
     r = dict(cell=c, k=len(w)); rk = w.rank(axis=1)
     for M in w.columns: r[f'{M} best'] = int((rk[M] == 1).sum())
     for M in w.columns: r[f'{M} mean rank'] = round(rk[M].mean(), 2)
@@ -77,7 +77,7 @@ P('## Per-dataset NRMSE: number of datasets where each method is best (of 4) and
 P('## Hypothesis checks\n'); H = []
 for c, _ in CELLS:
     w = wide('nrmse', c).dropna()
-    if not len(w): continue
+    if len(w) < 3: continue
     wa = wide('auroc', c).dropna(); dd = wide('do_direct', c).dropna(); di = wide('do_indirect', c).dropna(); tc = wide('t_cost', c).dropna()
     r = dict(cell=c, k=len(w))
     r['H1 BW<SSC'] = f"{int((w['BASIL-W'] < w['SSC']).sum())}/{len(w)}"
@@ -91,7 +91,7 @@ for c, _ in CELLS:
     H.append(r)
 P(md(pd.DataFrame(H))); P('')
 # pooled
-w = pd.concat([wide('nrmse', c).dropna() for c, _ in CELLS])
+w = pd.concat([wide('nrmse', c).dropna() for c, _ in CELLS if len(wide('nrmse', c).dropna()) >= 3])
 if len(w):
     P('## Pooled over cells (exploratory; graphs independent across cells)\n')
     for a, b in [('BASIL-W', 'SSC'), ('BASIL-W', 'SSA'), ('SSA', 'SSC'), ('BASIL-W', 'SSR'), ('SSA', 'SSR')]:
