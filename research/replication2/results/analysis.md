@@ -4,7 +4,8 @@ Datasets completed per cell and method:
 
 | noise   |   BASIL-W |   SSA |   SSC |   SSR |
 |:--------|----------:|------:|------:|------:|
-| laplace |         2 |     2 |     2 |     2 |
+| hetero  |         3 |     3 |     3 |     3 |
+| laplace |        20 |    20 |    20 |    20 |
 | unif    |        20 |    20 |    20 |    20 |
 
 ## Per-cell means (t_cost = median seconds)
@@ -15,91 +16,160 @@ Datasets completed per cell and method:
 | unif    | SSA      |  20 |   0.238 |   0.906 |   0.998 |   0.885 |    0.954 |       0.2   |         0.378 |       83 |      0.037 | 0.178-0.323   |         0.66 | nan     | nan     |
 | unif    | SSR      |  20 |   0.215 |   0.952 |   0.975 |   0.83  |    0.919 |       0.169 |         0.278 |       82 |      0.04  | 0.154-0.322   |         0.55 | nan     | nan     |
 | unif    | BASIL-W  |  20 |   0.176 |   0.994 |   0.975 |   0.891 |    0.944 |       0.164 |         0.262 |       67 |      0.04  | 0.101-0.263   |         0.61 |   0.789 |   0.001 |
-| laplace | SSC      |   2 |   0.776 |   0.201 |   0.994 |   0.724 |    0.81  |       0.757 |         0.927 |       54 |      0.006 | 0.772-0.780   |         0.95 | nan     | nan     |
-| laplace | SSA      |   2 |   0.473 |   0.746 |   0.989 |   0.722 |    0.819 |       0.43  |         0.579 |       87 |      0.019 | 0.460-0.487   |         0.62 | nan     | nan     |
-| laplace | SSR      |   2 |   0.415 |   0.818 |   0.925 |   0.722 |    0.808 |       0.32  |         0.36  |       91 |      0.02  | 0.401-0.429   |         0.43 | nan     | nan     |
-| laplace | BASIL-W  |   2 |   0.258 |   0.982 |   0.964 |   0.842 |    0.929 |       0.194 |         0.19  |       72 |      0.005 | 0.254-0.261   |         0.2  |   0.762 |   0.002 |
+| laplace | SSC      |  20 |   0.786 |   0.187 |   0.994 |   0.682 |    0.778 |       0.75  |         0.927 |       55 |      0.016 | 0.761-0.819   |         0.99 | nan     | nan     |
+| laplace | SSA      |  20 |   0.477 |   0.717 |   0.987 |   0.681 |    0.783 |       0.413 |         0.639 |       91 |      0.037 | 0.410-0.559   |         0.87 | nan     | nan     |
+| laplace | SSR      |  20 |   0.426 |   0.8   |   0.926 |   0.691 |    0.779 |       0.362 |         0.52  |       92 |      0.037 | 0.382-0.499   |         0.82 | nan     | nan     |
+| laplace | BASIL-W  |  20 |   0.253 |   0.979 |   0.964 |   0.862 |    0.922 |       0.205 |         0.307 |       74 |      0.035 | 0.204-0.325   |         0.57 |   0.761 |   0.002 |
+| hetero  | SSC      |   3 |   0.762 |   0.236 |   0.997 |   0.838 |    0.895 |       0.726 |         0.916 |       33 |      0.029 | 0.743-0.795   |         0.93 | nan     | nan     |
+| hetero  | SSA      |   3 |   0.376 |   0.882 |   0.996 |   0.861 |    0.892 |       0.283 |         0.494 |       57 |      0.054 | 0.325-0.433   |         0.58 | nan     | nan     |
+| hetero  | SSR      |   3 |   0.343 |   0.899 |   0.971 |   0.843 |    0.856 |       0.253 |         0.486 |       57 |      0.068 | 0.300-0.421   |         0.59 | nan     | nan     |
+| hetero  | BASIL-W  |   3 |   0.308 |   0.991 |   0.965 |   0.847 |    0.935 |       0.221 |         0.611 |       44 |      0.036 | 0.285-0.349   |         0.99 |   0.751 |   0.002 |
 
 ## Paired differences: nrmse (a minus b; a_lower = datasets where a has the lower value; Holm family = primary (BASIL-W/SSA/SSC pairs) and secondary (SSR pairs) separately)
 
-| cell   | a       | b   |   k |   diff |     lo |     hi |       p |      dz |    rbc |   a_lower |   b_lower |   tie | fam       |   p_holm |
-|:-------|:--------|:----|----:|-------:|-------:|-------:|--------:|--------:|-------:|----------:|----------:|------:|:----------|---------:|
-| unif   | BASIL-W | SSC |  20 | -0.439 | -0.45  | -0.427 | 1.9e-06 | -15.582 | -1     |        20 |         0 |     0 | primary   |  5.7e-06 |
-| unif   | BASIL-W | SSA |  20 | -0.062 | -0.078 | -0.046 | 3.8e-06 |  -1.646 | -0.99  |        19 |         1 |     0 | primary   |  5.7e-06 |
-| unif   | SSA     | SSC |  20 | -0.376 | -0.386 | -0.367 | 1.9e-06 | -17.097 | -1     |        20 |         0 |     0 | primary   |  5.7e-06 |
-| unif   | BASIL-W | SSR |  20 | -0.039 | -0.057 | -0.021 | 0.001   |  -0.937 | -0.79  |        16 |         4 |     0 | secondary |  0.002   |
-| unif   | SSA     | SSR |  20 |  0.023 |  0.011 |  0.035 | 0.0042  |   0.805 |  0.705 |         5 |        15 |     0 | secondary |  0.0042  |
-| unif   | SSR     | SSC |  20 | -0.399 | -0.414 | -0.384 | 1.9e-06 | -11.542 | -1     |        20 |         0 |     0 | secondary |  5.7e-06 |
+| cell    | a       | b   |   k |   diff |     lo |     hi |       p |      dz |    rbc |   a_lower |   b_lower |   tie | fam       |   p_holm |
+|:--------|:--------|:----|----:|-------:|-------:|-------:|--------:|--------:|-------:|----------:|----------:|------:|:----------|---------:|
+| unif    | BASIL-W | SSC |  20 | -0.439 | -0.45  | -0.427 | 1.9e-06 | -15.582 | -1     |        20 |         0 |     0 | primary   |  1.7e-05 |
+| unif    | BASIL-W | SSA |  20 | -0.062 | -0.078 | -0.046 | 3.8e-06 |  -1.646 | -0.99  |        19 |         1 |     0 | primary   |  1.7e-05 |
+| unif    | SSA     | SSC |  20 | -0.376 | -0.386 | -0.367 | 1.9e-06 | -17.097 | -1     |        20 |         0 |     0 | primary   |  1.7e-05 |
+| unif    | BASIL-W | SSR |  20 | -0.039 | -0.057 | -0.021 | 0.001   |  -0.937 | -0.79  |        16 |         4 |     0 | secondary |  0.0051  |
+| unif    | SSA     | SSR |  20 |  0.023 |  0.011 |  0.035 | 0.0042  |   0.805 |  0.705 |         5 |        15 |     0 | secondary |  0.017   |
+| unif    | SSR     | SSC |  20 | -0.399 | -0.414 | -0.384 | 1.9e-06 | -11.542 | -1     |        20 |         0 |     0 | secondary |  1.7e-05 |
+| laplace | BASIL-W | SSC |  20 | -0.533 | -0.546 | -0.52  | 1.9e-06 | -16.731 | -1     |        20 |         0 |     0 | primary   |  1.7e-05 |
+| laplace | BASIL-W | SSA |  20 | -0.224 | -0.239 | -0.209 | 1.9e-06 |  -6.353 | -1     |        20 |         0 |     0 | primary   |  1.7e-05 |
+| laplace | SSA     | SSC |  20 | -0.309 | -0.32  | -0.297 | 1.9e-06 | -11.588 | -1     |        20 |         0 |     0 | primary   |  1.7e-05 |
+| laplace | BASIL-W | SSR |  20 | -0.173 | -0.185 | -0.16  | 1.9e-06 |  -5.84  | -1     |        20 |         0 |     0 | secondary |  1.7e-05 |
+| laplace | SSA     | SSR |  20 |  0.051 |  0.04  |  0.063 | 1.9e-06 |   1.888 |  1     |         0 |        20 |     0 | secondary |  1.7e-05 |
+| laplace | SSR     | SSC |  20 | -0.36  | -0.373 | -0.346 | 1.9e-06 | -11.369 | -1     |        20 |         0 |     0 | secondary |  1.7e-05 |
+| hetero  | BASIL-W | SSC |   3 | -0.454 | -0.462 | -0.447 | 0.25    | -58.534 | -1     |         3 |         0 |     0 | primary   |  0.75    |
+| hetero  | BASIL-W | SSA |   3 | -0.068 | -0.085 | -0.036 | 0.25    |  -2.411 | -1     |         3 |         0 |     0 | primary   |  0.75    |
+| hetero  | SSA     | SSC |   3 | -0.386 | -0.417 | -0.363 | 0.25    | -13.575 | -1     |         3 |         0 |     0 | primary   |  0.75    |
+| hetero  | BASIL-W | SSR |   3 | -0.035 | -0.072 | -0.016 | 0.25    |  -1.1   | -1     |         3 |         0 |     0 | secondary |  0.75    |
+| hetero  | SSA     | SSR |   3 |  0.033 |  0.012 |  0.069 | 0.25    |   1.033 |  1     |         0 |         3 |     0 | secondary |  0.75    |
+| hetero  | SSR     | SSC |   3 | -0.419 | -0.447 | -0.374 | 0.25    | -10.78  | -1     |         3 |         0 |     0 | secondary |  0.75    |
 
 ## Paired differences: do_direct (a minus b; a_lower = datasets where a has the lower value; Holm family = primary (BASIL-W/SSA/SSC pairs) and secondary (SSR pairs) separately)
 
-| cell   | a       | b   |   k |   diff |     lo |     hi |       p |      dz |    rbc |   a_lower |   b_lower |   tie | fam       |   p_holm |
-|:-------|:--------|:----|----:|-------:|-------:|-------:|--------:|--------:|-------:|----------:|----------:|------:|:----------|---------:|
-| unif   | BASIL-W | SSC |  20 | -0.427 | -0.467 | -0.385 | 1.9e-06 |  -4.436 | -1     |        20 |         0 |     0 | primary   |  5.7e-06 |
-| unif   | BASIL-W | SSA |  20 | -0.037 | -0.074 |  0.007 | 0.07    |  -0.38  | -0.467 |        14 |         6 |     0 | primary   |  0.07    |
-| unif   | SSA     | SSC |  20 | -0.391 | -0.405 | -0.377 | 1.9e-06 | -12.06  | -1     |        20 |         0 |     0 | primary   |  5.7e-06 |
-| unif   | BASIL-W | SSR |  20 | -0.005 | -0.041 |  0.035 | 0.43    |  -0.059 | -0.21  |        13 |         7 |     0 | secondary |  0.43    |
-| unif   | SSA     | SSR |  20 |  0.031 |  0.016 |  0.045 | 0.0012  |   0.904 |  0.781 |         3 |        17 |     0 | secondary |  0.0024  |
-| unif   | SSR     | SSC |  20 | -0.422 | -0.439 | -0.405 | 1.9e-06 | -10.189 | -1     |        20 |         0 |     0 | secondary |  5.7e-06 |
+| cell    | a       | b   |   k |   diff |     lo |     hi |       p |      dz |    rbc |   a_lower |   b_lower |   tie | fam       |   p_holm |
+|:--------|:--------|:----|----:|-------:|-------:|-------:|--------:|--------:|-------:|----------:|----------:|------:|:----------|---------:|
+| unif    | BASIL-W | SSC |  20 | -0.427 | -0.468 | -0.386 | 1.9e-06 |  -4.436 | -1     |        20 |         0 |     0 | primary   |  1.7e-05 |
+| unif    | BASIL-W | SSA |  20 | -0.037 | -0.075 |  0.009 | 0.07    |  -0.38  | -0.467 |        14 |         6 |     0 | primary   |  0.28    |
+| unif    | SSA     | SSC |  20 | -0.391 | -0.405 | -0.377 | 1.9e-06 | -12.06  | -1     |        20 |         0 |     0 | primary   |  1.7e-05 |
+| unif    | BASIL-W | SSR |  20 | -0.005 | -0.041 |  0.036 | 0.43    |  -0.059 | -0.21  |        13 |         7 |     0 | secondary |  1       |
+| unif    | SSA     | SSR |  20 |  0.031 |  0.016 |  0.045 | 0.0012  |   0.904 |  0.781 |         3 |        17 |     0 | secondary |  0.006   |
+| unif    | SSR     | SSC |  20 | -0.422 | -0.44  | -0.404 | 1.9e-06 | -10.189 | -1     |        20 |         0 |     0 | secondary |  1.7e-05 |
+| laplace | BASIL-W | SSC |  20 | -0.545 | -0.572 | -0.518 | 1.9e-06 |  -8.661 | -1     |        20 |         0 |     0 | primary   |  1.7e-05 |
+| laplace | BASIL-W | SSA |  20 | -0.208 | -0.239 | -0.178 | 1.9e-06 |  -2.93  | -1     |        20 |         0 |     0 | primary   |  1.7e-05 |
+| laplace | SSA     | SSC |  20 | -0.337 | -0.361 | -0.314 | 1.9e-06 |  -6.208 | -1     |        20 |         0 |     0 | primary   |  1.7e-05 |
+| laplace | BASIL-W | SSR |  20 | -0.157 | -0.19  | -0.122 | 3.8e-06 |  -1.961 | -0.99  |        19 |         1 |     0 | secondary |  2.7e-05 |
+| laplace | SSA     | SSR |  20 |  0.052 |  0.028 |  0.077 | 0.00071 |   0.887 |  0.81  |         3 |        17 |     0 | secondary |  0.0042  |
+| laplace | SSR     | SSC |  20 | -0.388 | -0.418 | -0.359 | 1.9e-06 |  -5.784 | -1     |        20 |         0 |     0 | secondary |  1.7e-05 |
+| hetero  | BASIL-W | SSC |   3 | -0.505 | -0.537 | -0.479 | 0.25    | -17.215 | -1     |         3 |         0 |     0 | primary   |  0.75    |
+| hetero  | BASIL-W | SSA |   3 | -0.063 | -0.102 | -0.027 | 0.25    |  -1.657 | -1     |         3 |         0 |     0 | primary   |  0.75    |
+| hetero  | SSA     | SSC |   3 | -0.442 | -0.472 | -0.42  | 0.25    | -16.45  | -1     |         3 |         0 |     0 | primary   |  0.75    |
+| hetero  | BASIL-W | SSR |   3 | -0.032 | -0.079 | -0.003 | 0.25    |  -0.785 | -1     |         3 |         0 |     0 | secondary |  1       |
+| hetero  | SSA     | SSR |   3 |  0.031 |  0.012 |  0.057 | 0.25    |   1.321 |  1     |         0 |         3 |     0 | secondary |  1       |
+| hetero  | SSR     | SSC |   3 | -0.473 | -0.484 | -0.458 | 0.25    | -35.342 | -1     |         3 |         0 |     0 | secondary |  1       |
 
 ## Paired differences: do_indirect (a minus b; a_lower = datasets where a has the lower value; Holm family = primary (BASIL-W/SSA/SSC pairs) and secondary (SSR pairs) separately)
 
-| cell   | a       | b   |   k |   diff |     lo |     hi |       p |     dz |    rbc |   a_lower |   b_lower |   tie | fam       |   p_holm |
-|:-------|:--------|:----|----:|-------:|-------:|-------:|--------:|-------:|-------:|----------:|----------:|------:|:----------|---------:|
-| unif   | BASIL-W | SSC |  20 | -0.587 | -0.629 | -0.537 | 1.9e-06 | -5.464 | -1     |        20 |         0 |     0 | primary   |  5.7e-06 |
-| unif   | BASIL-W | SSA |  20 | -0.116 | -0.17  | -0.052 | 0.0012  | -0.846 | -0.781 |        18 |         2 |     0 | primary   |  0.0012  |
-| unif   | SSA     | SSC |  20 | -0.471 | -0.501 | -0.44  | 1.9e-06 | -6.519 | -1     |        20 |         0 |     0 | primary   |  5.7e-06 |
-| unif   | BASIL-W | SSR |  20 | -0.016 | -0.069 |  0.043 | 0.23    | -0.12  | -0.314 |        12 |         8 |     0 | secondary |  0.23    |
-| unif   | SSA     | SSR |  20 |  0.1   |  0.07  |  0.128 | 3.6e-05 |  1.445 |  0.933 |         3 |        17 |     0 | secondary |  7.2e-05 |
-| unif   | SSR     | SSC |  20 | -0.571 | -0.603 | -0.539 | 1.9e-06 | -7.787 | -1     |        20 |         0 |     0 | secondary |  5.7e-06 |
+| cell    | a       | b   |   k |   diff |     lo |     hi |       p |     dz |    rbc |   a_lower |   b_lower |   tie | fam       |   p_holm |
+|:--------|:--------|:----|----:|-------:|-------:|-------:|--------:|-------:|-------:|----------:|----------:|------:|:----------|---------:|
+| unif    | BASIL-W | SSC |  20 | -0.587 | -0.629 | -0.537 | 1.9e-06 | -5.464 | -1     |        20 |         0 |     0 | primary   |  1.7e-05 |
+| unif    | BASIL-W | SSA |  20 | -0.116 | -0.169 | -0.053 | 0.0012  | -0.846 | -0.781 |        18 |         2 |     0 | primary   |  0.0048  |
+| unif    | SSA     | SSC |  20 | -0.471 | -0.501 | -0.439 | 1.9e-06 | -6.519 | -1     |        20 |         0 |     0 | primary   |  1.7e-05 |
+| unif    | BASIL-W | SSR |  20 | -0.016 | -0.068 |  0.044 | 0.23    | -0.12  | -0.314 |        12 |         8 |     0 | secondary |  0.92    |
+| unif    | SSA     | SSR |  20 |  0.1   |  0.07  |  0.129 | 3.6e-05 |  1.445 |  0.933 |         3 |        17 |     0 | secondary |  0.00018 |
+| unif    | SSR     | SSC |  20 | -0.571 | -0.602 | -0.54  | 1.9e-06 | -7.787 | -1     |        20 |         0 |     0 | secondary |  1.7e-05 |
+| laplace | BASIL-W | SSC |  20 | -0.62  | -0.668 | -0.57  | 1.9e-06 | -5.351 | -1     |        20 |         0 |     0 | primary   |  1.7e-05 |
+| laplace | BASIL-W | SSA |  20 | -0.332 | -0.377 | -0.286 | 1.9e-06 | -3.072 | -1     |        20 |         0 |     0 | primary   |  1.7e-05 |
+| laplace | SSA     | SSC |  20 | -0.288 | -0.324 | -0.249 | 1.9e-06 | -3.281 | -1     |        20 |         0 |     0 | primary   |  1.7e-05 |
+| laplace | BASIL-W | SSR |  20 | -0.213 | -0.268 | -0.159 | 1.9e-06 | -1.667 | -1     |        20 |         0 |     0 | secondary |  1.7e-05 |
+| laplace | SSA     | SSR |  20 |  0.119 |  0.075 |  0.163 | 2.7e-05 |  1.155 |  0.943 |         1 |        19 |     0 | secondary |  0.00016 |
+| laplace | SSR     | SSC |  20 | -0.407 | -0.466 | -0.347 | 1.9e-06 | -2.923 | -1     |        20 |         0 |     0 | secondary |  1.7e-05 |
+| hetero  | BASIL-W | SSC |   3 | -0.305 | -0.499 |  0.065 | 0.5     | -0.951 | -0.667 |         2 |         1 |     0 | primary   |  1       |
+| hetero  | BASIL-W | SSA |   3 |  0.116 | -0.068 |  0.405 | 0.75    |  0.46  |  0.333 |         1 |         2 |     0 | primary   |  1       |
+| hetero  | SSA     | SSC |   3 | -0.421 | -0.511 | -0.34  | 0.25    | -4.904 | -1     |         3 |         0 |     0 | primary   |  0.75    |
+| hetero  | BASIL-W | SSR |   3 |  0.124 | -0.014 |  0.392 | 1       |  0.536 |  0     |         2 |         1 |     0 | secondary |  1       |
+| hetero  | SSA     | SSR |   3 |  0.008 | -0.017 |  0.054 | 1       |  0.202 |  0     |         2 |         1 |     0 | secondary |  1       |
+| hetero  | SSR     | SSC |   3 | -0.429 | -0.493 | -0.327 | 0.25    | -4.799 | -1     |         3 |         0 |     0 | secondary |  0.92    |
 
 ## Paired differences: auroc (a minus b; a_lower = datasets where a has the lower value; Holm family = primary (BASIL-W/SSA/SSC pairs) and secondary (SSR pairs) separately)
 
-| cell   | a       | b   |   k |   diff |     lo |     hi |       p |     dz |    rbc |   a_lower |   b_lower |   tie | fam       |   p_holm |
-|:-------|:--------|:----|----:|-------:|-------:|-------:|--------:|-------:|-------:|----------:|----------:|------:|:----------|---------:|
-| unif   | BASIL-W | SSC |  20 | -0.023 | -0.028 | -0.019 | 1.9e-06 | -2.384 | -1     |        20 |         0 |     0 | primary   |  5.7e-06 |
-| unif   | BASIL-W | SSA |  20 | -0.023 | -0.028 | -0.019 | 1.9e-06 | -2.413 | -1     |        20 |         0 |     0 | primary   |  5.7e-06 |
-| unif   | SSA     | SSC |  20 |  0     | -0     |  0     | 0.65    |  0.091 |  0.124 |         7 |        13 |     0 | primary   |  0.65    |
-| unif   | BASIL-W | SSR |  20 | -0.001 | -0.007 |  0.006 | 0.7     | -0.052 | -0.105 |        10 |        10 |     0 | secondary |  0.7     |
-| unif   | SSA     | SSR |  20 |  0.022 |  0.017 |  0.028 | 1.9e-06 |  1.846 |  1     |         0 |        20 |     0 | secondary |  5.7e-06 |
-| unif   | SSR     | SSC |  20 | -0.022 | -0.028 | -0.017 | 1.9e-06 | -1.811 | -1     |        20 |         0 |     0 | secondary |  5.7e-06 |
+| cell    | a       | b   |   k |   diff |     lo |     hi |       p |     dz |    rbc |   a_lower |   b_lower |   tie | fam       |   p_holm |
+|:--------|:--------|:----|----:|-------:|-------:|-------:|--------:|-------:|-------:|----------:|----------:|------:|:----------|---------:|
+| unif    | BASIL-W | SSC |  20 | -0.023 | -0.028 | -0.019 | 1.9e-06 | -2.384 | -1     |        20 |         0 |     0 | primary   |  1.7e-05 |
+| unif    | BASIL-W | SSA |  20 | -0.023 | -0.028 | -0.019 | 1.9e-06 | -2.413 | -1     |        20 |         0 |     0 | primary   |  1.7e-05 |
+| unif    | SSA     | SSC |  20 |  0     | -0     |  0     | 0.65    |  0.091 |  0.124 |         7 |        13 |     0 | primary   |  1       |
+| unif    | BASIL-W | SSR |  20 | -0.001 | -0.007 |  0.006 | 0.7     | -0.052 | -0.105 |        10 |        10 |     0 | secondary |  1       |
+| unif    | SSA     | SSR |  20 |  0.022 |  0.017 |  0.028 | 1.9e-06 |  1.846 |  1     |         0 |        20 |     0 | secondary |  1.7e-05 |
+| unif    | SSR     | SSC |  20 | -0.022 | -0.028 | -0.017 | 1.9e-06 | -1.811 | -1     |        20 |         0 |     0 | secondary |  1.7e-05 |
+| laplace | BASIL-W | SSC |  20 | -0.03  | -0.038 | -0.022 | 1.9e-06 | -1.57  | -1     |        20 |         0 |     0 | primary   |  1.7e-05 |
+| laplace | BASIL-W | SSA |  20 | -0.023 | -0.031 | -0.015 | 9.5e-06 | -1.26  | -0.971 |        19 |         1 |     0 | primary   |  4.8e-05 |
+| laplace | SSA     | SSC |  20 | -0.007 | -0.008 | -0.005 | 1.9e-06 | -2.161 | -1     |        20 |         0 |     0 | primary   |  1.7e-05 |
+| laplace | BASIL-W | SSR |  20 |  0.038 |  0.029 |  0.046 | 9.5e-06 |  1.822 |  0.971 |         1 |        19 |     0 | secondary |  4.8e-05 |
+| laplace | SSA     | SSR |  20 |  0.061 |  0.051 |  0.072 | 1.9e-06 |  2.455 |  1     |         0 |        20 |     0 | secondary |  1.7e-05 |
+| laplace | SSR     | SSC |  20 | -0.068 | -0.079 | -0.057 | 1.9e-06 | -2.618 | -1     |        20 |         0 |     0 | secondary |  1.7e-05 |
+| hetero  | BASIL-W | SSC |   3 | -0.032 | -0.068 | -0.011 | 0.25    | -1.013 | -1     |         3 |         0 |     0 | primary   |  1       |
+| hetero  | BASIL-W | SSA |   3 | -0.031 | -0.066 | -0.009 | 0.25    | -1.006 | -1     |         3 |         0 |     0 | primary   |  1       |
+| hetero  | SSA     | SSC |   3 | -0.001 | -0.002 |  0.001 | 0.5     | -0.706 | -0.667 |         2 |         1 |     0 | primary   |  1       |
+| hetero  | BASIL-W | SSR |   3 | -0.007 | -0.029 |  0.01  | 0.75    | -0.337 | -0.333 |         2 |         1 |     0 | secondary |  1       |
+| hetero  | SSA     | SSR |   3 |  0.024 |  0.008 |  0.037 | 0.25    |  1.63  |  1     |         0 |         3 |     0 | secondary |  1       |
+| hetero  | SSR     | SSC |   3 | -0.025 | -0.039 | -0.01  | 0.25    | -1.694 | -1     |         3 |         0 |     0 | secondary |  1       |
 
 ## Paired differences: orient (a minus b; a_lower = datasets where a has the lower value; Holm family = primary (BASIL-W/SSA/SSC pairs) and secondary (SSR pairs) separately)
 
-| cell   | a       | b   |   k |   diff |     lo |     hi |       p |     dz |    rbc |   a_lower |   b_lower |   tie | fam       |   p_holm |
-|:-------|:--------|:----|----:|-------:|-------:|-------:|--------:|-------:|-------:|----------:|----------:|------:|:----------|---------:|
-| unif   | BASIL-W | SSC |  20 | -0.01  | -0.022 |  0.003 | 0.14    | -0.342 | -0.389 |        14 |         5 |     1 | primary   |  0.32    |
-| unif   | BASIL-W | SSA |  20 | -0.01  | -0.022 |  0.001 | 0.11    | -0.395 | -0.419 |        14 |         6 |     0 | primary   |  0.32    |
-| unif   | SSA     | SSC |  20 |  0.001 | -0.002 |  0.004 | 0.69    |  0.083 |  0.286 |         3 |         3 |    14 | primary   |  0.69    |
-| unif   | BASIL-W | SSR |  20 |  0.025 |  0.012 |  0.039 | 0.0037  |  0.797 |  0.714 |         5 |        15 |     0 | secondary |  0.0037  |
-| unif   | SSA     | SSR |  20 |  0.035 |  0.025 |  0.047 | 1.9e-06 |  1.345 |  1     |         0 |        20 |     0 | secondary |  5.7e-06 |
-| unif   | SSR     | SSC |  20 | -0.035 | -0.046 | -0.025 | 1.9e-06 | -1.414 | -1     |        20 |         0 |     0 | secondary |  5.7e-06 |
+| cell    | a       | b   |   k |   diff |     lo |     hi |       p |     dz |    rbc |   a_lower |   b_lower |   tie | fam       |   p_holm |
+|:--------|:--------|:----|----:|-------:|-------:|-------:|--------:|-------:|-------:|----------:|----------:|------:|:----------|---------:|
+| unif    | BASIL-W | SSC |  20 | -0.01  | -0.022 |  0.002 | 0.14    | -0.342 | -0.389 |        14 |         5 |     1 | primary   |  0.72    |
+| unif    | BASIL-W | SSA |  20 | -0.01  | -0.022 |  0.001 | 0.11    | -0.395 | -0.419 |        14 |         6 |     0 | primary   |  0.63    |
+| unif    | SSA     | SSC |  20 |  0.001 | -0.002 |  0.004 | 0.69    |  0.083 |  0.286 |         3 |         3 |    14 | primary   |  1       |
+| unif    | BASIL-W | SSR |  20 |  0.025 |  0.012 |  0.038 | 0.0037  |  0.797 |  0.714 |         5 |        15 |     0 | secondary |  0.022   |
+| unif    | SSA     | SSR |  20 |  0.035 |  0.025 |  0.047 | 1.9e-06 |  1.345 |  1     |         0 |        20 |     0 | secondary |  1.7e-05 |
+| unif    | SSR     | SSC |  20 | -0.035 | -0.046 | -0.025 | 1.9e-06 | -1.414 | -1     |        20 |         0 |     0 | secondary |  1.7e-05 |
+| laplace | BASIL-W | SSC |  20 |  0.144 |  0.128 |  0.16  | 1.9e-06 |  3.763 |  1     |         0 |        20 |     0 | primary   |  1.7e-05 |
+| laplace | BASIL-W | SSA |  20 |  0.139 |  0.121 |  0.157 | 1.9e-06 |  3.295 |  1     |         0 |        20 |     0 | primary   |  1.7e-05 |
+| laplace | SSA     | SSC |  20 |  0.006 |  0     |  0.012 | 0.084   |  0.422 |  0.636 |         3 |         7 |    10 | primary   |  0.59    |
+| laplace | BASIL-W | SSR |  20 |  0.143 |  0.125 |  0.161 | 1.9e-06 |  3.466 |  1     |         0 |        20 |     0 | secondary |  1.7e-05 |
+| laplace | SSA     | SSR |  20 |  0.004 | -0.009 |  0.017 | 0.56    |  0.135 |  0.192 |         6 |         9 |     5 | secondary |  1       |
+| laplace | SSR     | SSC |  20 |  0.002 | -0.011 |  0.014 | 0.82    |  0.061 |  0.072 |         7 |        10 |     3 | secondary |  1       |
+| hetero  | BASIL-W | SSC |   3 |  0.039 |  0.01  |  0.06  | 0.25    |  1.498 |  1     |         0 |         3 |     0 | primary   |  1       |
+| hetero  | BASIL-W | SSA |   3 |  0.043 |  0     |  0.08  | 0.5     |  1.06  |  1     |         0 |         2 |     1 | primary   |  1       |
+| hetero  | SSA     | SSC |   3 | -0.003 | -0.02  |  0.01  | 1       | -0.224 | -0.333 |         1 |         1 |     1 | primary   |  1       |
+| hetero  | BASIL-W | SSR |   3 |  0.078 |  0.07  |  0.083 | 0.25    | 10.764 |  1     |         0 |         3 |     0 | secondary |  1       |
+| hetero  | SSA     | SSR |   3 |  0.036 | -0.01  |  0.083 | 0.5     |  0.764 |  0.667 |         1 |         2 |     0 | secondary |  1       |
+| hetero  | SSR     | SSC |   3 | -0.039 | -0.074 | -0.01  | 0.25    | -1.217 | -1     |         3 |         0 |     0 | secondary |  1       |
 
 ## Per-dataset NRMSE: number of datasets where each method is best (of 4) and mean rank
 
-| cell   |   k |   BASIL-W best |   SSA best |   SSC best |   SSR best |   BASIL-W mean rank |   SSA mean rank |   SSC mean rank |   SSR mean rank |
-|:-------|----:|---------------:|-----------:|-----------:|-----------:|--------------------:|----------------:|----------------:|----------------:|
-| unif   |  20 |             15 |          1 |          0 |          4 |                1.25 |             2.7 |               4 |            2.05 |
+| cell    |   k |   BASIL-W best |   SSA best |   SSC best |   SSR best |   BASIL-W mean rank |   SSA mean rank |   SSC mean rank |   SSR mean rank |
+|:--------|----:|---------------:|-----------:|-----------:|-----------:|--------------------:|----------------:|----------------:|----------------:|
+| unif    |  20 |             15 |          1 |          0 |          4 |                1.25 |             2.7 |               4 |            2.05 |
+| laplace |  20 |             20 |          0 |          0 |          0 |                1    |             3   |               4 |            2    |
+| hetero  |   3 |              3 |          0 |          0 |          0 |                1    |             3   |               4 |            2    |
 
 ## Hypothesis checks
 
-| cell   |   k | H1 BW<SSC   |   H2 gap SSA-BW | H2 BW wins   |   H2 Holm p |   H3 SSA-SSC auroc |   H3 BW-SSC auroc | H4 direct BW/SSA/SSC   | H4 direct ok   | H4 indirect BW/SSA/SSC   | H4 indirect ok   | H5 cost x SSC (SSA/SSR/BW)   |
-|:-------|----:|:------------|----------------:|:-------------|------------:|-------------------:|------------------:|:-----------------------|:---------------|:-------------------------|:-----------------|:-----------------------------|
-| unif   |  20 | 20/20       |           0.062 | 19/20        |     5.7e-06 |             0.0001 |           -0.0232 | 0.164/0.200/0.591      | True           | 0.262/0.378/0.849        | True             | 1.65/1.62/1.34               |
+| cell    |   k | H1 BW<SSC   |   H2 gap SSA-BW | H2 BW wins   |   H2 Holm p |   H3 SSA-SSC auroc |   H3 BW-SSC auroc | H4 direct BW/SSA/SSC   | H4 direct ok   | H4 indirect BW/SSA/SSC   | H4 indirect ok   | H5 cost x SSC (SSA/SSR/BW)   |
+|:--------|----:|:------------|----------------:|:-------------|------------:|-------------------:|------------------:|:-----------------------|:---------------|:-------------------------|:-----------------|:-----------------------------|
+| unif    |  20 | 20/20       |           0.062 | 19/20        |     1.7e-05 |             0.0001 |           -0.0232 | 0.164/0.200/0.591      | True           | 0.262/0.378/0.849        | True             | 1.65/1.62/1.34               |
+| laplace |  20 | 20/20       |           0.224 | 20/20        |     1.7e-05 |            -0.0067 |           -0.0302 | 0.205/0.413/0.750      | True           | 0.307/0.639/0.927        | True             | 1.65/1.69/1.35               |
+| hetero  |   3 | 3/3         |           0.068 | 3/3          |     0.75    |            -0.0011 |           -0.032  | 0.221/0.283/0.726      | True           | 0.611/0.494/0.916        | False            | 1.74/1.73/1.35               |
 
 ## Pooled over cells (exploratory; graphs independent across cells)
 
-- NRMSE BASIL-W - SSC: n=20, mean -0.439 [-0.451, -0.426], Wilcoxon p=1.9e-06, BASIL-W lower in 20/20
-- NRMSE BASIL-W - SSA: n=20, mean -0.062 [-0.078, -0.046], Wilcoxon p=3.8e-06, BASIL-W lower in 19/20
-- NRMSE SSA - SSC: n=20, mean -0.376 [-0.386, -0.367], Wilcoxon p=1.9e-06, SSA lower in 20/20
-- NRMSE BASIL-W - SSR: n=20, mean -0.039 [-0.057, -0.022], Wilcoxon p=0.001, BASIL-W lower in 16/20
-- NRMSE SSA - SSR: n=20, mean +0.023 [+0.011, +0.035], Wilcoxon p=0.0042, SSA lower in 5/20
+- NRMSE BASIL-W - SSC: n=43, mean -0.484 [-0.500, -0.468], Wilcoxon p=1.1e-08, BASIL-W lower in 43/43
+- NRMSE BASIL-W - SSA: n=43, mean -0.138 [-0.165, -0.112], Wilcoxon p=1.2e-08, BASIL-W lower in 42/43
+- NRMSE SSA - SSC: n=43, mean -0.345 [-0.358, -0.333], Wilcoxon p=1.1e-08, SSA lower in 43/43
+- NRMSE BASIL-W - SSR: n=43, mean -0.101 [-0.123, -0.079], Wilcoxon p=5.9e-08, BASIL-W lower in 39/43
+- NRMSE SSA - SSR: n=43, mean +0.037 [+0.028, +0.046], Wilcoxon p=2.1e-07, SSA lower in 5/43
 
 ## BASIL-W calibration/coverage and failures
 
 | noise   |   cover |    ece |   recall |      gap |
 |:--------|--------:|-------:|---------:|---------:|
-| laplace |  0.7624 | 0.0022 |        1 | 194.992  |
-| unif    |  0.7891 | 0.0014 |        1 |  35.2103 |
+| hetero  |  0.7507 | 0.0024 |    1     |  74.6772 |
+| laplace |  0.7612 | 0.0021 |    0.999 | 138.594  |
+| unif    |  0.7891 | 0.0014 |    1     |  35.2103 |
 
 Datasets with indirect do-NRMSE > 2: SSC: 0, SSA: 0, SSR: 0, BASIL-W: 0
