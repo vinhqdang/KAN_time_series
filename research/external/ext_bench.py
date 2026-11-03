@@ -138,7 +138,7 @@ def run(name, X, A, f, sd, sim, key):
         elif name == "CAM-like": M = EL.CAMLike(Xz, 0)
         elif name in ("NAM-SSC", "NAM-SSR_k1.5"):
             import scale_instantaneous as SI
-            if not B.SS_CACHE: B.run_method("SSC", X, A, f, sd, 0)
+            if not B.SS_CACHE or next(iter(B.SS_CACHE)) != (0, X.shape, float(X.sum())): B.run_method("SSC", X, A, f, sd, 0)
             mk = next(iter(B.SS_CACHE.values()))[0].selfmask.squeeze(-1).detach().numpy(); d_ = X.shape[1]; t0 = time.time()
             if name == "NAM-SSC": M = EL.NAMSpade(Xz, 0, SI.lg_rule(d_, 0.2), mask=mk)
             else:
