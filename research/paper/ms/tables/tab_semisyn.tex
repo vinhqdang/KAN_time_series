@@ -1,1 +1,16 @@
-\fbox{\parbox{0.9\linewidth}{\textbf{PENDING:} data not yet available when this PDF was built; the script fills this table from \texttt{research/semisyn/results} when it exists.}}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{rrllrrrrrrrll}
+\toprule
+$d$ & $n$ & Noise & $N$ & SSC & SSA & refit & BASIL-W & GAM-ridge & ratio & AUROC SSC / BASIL-W & cover. \\
+\midrule
+11 & 2000 & bootstrap residuals & 20 & 0.826 & 0.711 & 0.730 & 0.391 & 0.394 & 0.47 & 0.821 / 0.893 & 0.52 \\
+11 & 2000 & Gaussian & 20 & 0.714 & 0.495 & 0.516 & 0.283 & 0.362 & 0.40 & 0.860 / 0.993 & 0.63 \\
+11 & 500 & bootstrap residuals & 20 & 0.835 & 0.741 & 0.759 & 0.652 & 0.539 & 0.78 & 0.817 / 0.837 & 0.39 \\
+11 & 500 & Gaussian & 20 & 0.721 & 0.563 & 0.586 & 0.585 & 0.530 & 0.81 & 0.856 / 0.965 & 0.45 \\
+110 & 2000 & bootstrap residuals & 5 & 0.930 & 0.820 & 0.757 & 0.398 & -- & 0.43 & 0.957 / 0.919 & 0.53 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+
+\smallskip
+{\footnotesize Semi-synthetic Sachs benchmark (research/semisyn; 17 true edges on 11 nodes, ten copies at $d=110$): edge-function NRMSE, mean over datasets. Ratio: mean of per-dataset BASIL-W/SSC. Coverage: 95\% band of BASIL-W over true curves. GAM-ridge did not finish at $d=110$. At $d=11$ SSC and plain SPADE are identical. The truth is a fitted model of contested data.}

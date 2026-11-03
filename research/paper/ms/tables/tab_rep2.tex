@@ -1,12 +1,14 @@
 \begin{adjustbox}{max width=\textwidth}
 \begin{tabular}{lrrrrrrrrrrr}
 \toprule
-Noise & $N$ & SSC & SSA & refit & BASIL-W & BASIL-W $-$ SSA [95\% CI] & wins & p & BASIL-W $-$ refit & BASIL-W$<$SSC \\
+Noise & $N$ & SSC & SSA & refit & BASIL-W & BASIL-W $-$ SSA [95\% CI] & wins & Holm p & BASIL-W $-$ refit & BASIL-W$<$SSC \\
 \midrule
-uniform & 8 & 0.606 & 0.235 & 0.218 & 0.154 & -0.081 [-0.102, -0.058] & 8/8 & 0.0078 & -0.064 (8/8) & 8/8 \\
+uniform & 20 & 0.614 & 0.238 & 0.215 & 0.176 & -0.062 [-0.079, -0.046] & 19/20 & $<$0.001 & -0.039 (16/20) & 20/20 \\
+Laplace & 20 & 0.786 & 0.477 & 0.426 & 0.253 & -0.224 [-0.239, -0.210] & 20/20 & $<$0.001 & -0.173 (20/20) & 20/20 \\
+heteroscedastic & 20 & 0.770 & 0.379 & 0.338 & 0.311 & -0.068 [-0.082, -0.054] & 19/20 & $<$0.001 & -0.027 (14/20) & 20/20 \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}
 
 \smallskip
-{\footnotesize Independent-DAG replication (\texttt{research/replication2}): complete datasets only (all four arms present), edge-function NRMSE, mean over datasets. BASIL-W $-$ SSA: mean paired difference with 95\% bootstrap interval, number of datasets in which BASIL-W is lower, uncorrected exact two-sided Wilcoxon p (the plan's Holm-adjusted results are in research/replication2/results/analysis.md). BASIL-W $-$ refit: mean difference (wins). Last column: datasets where BASIL-W $<$ SSC. The uniform seeds 3000--3012 coincide with the ablation datasets.}
+{\footnotesize Independent-DAG replication (\texttt{research/replication2}): complete datasets only (all four arms present), edge-function NRMSE, mean over datasets. BASIL-W $-$ SSA: mean paired difference with 95\% bootstrap interval, number of datasets in which BASIL-W is lower, Holm-adjusted exact two-sided Wilcoxon p over the 9 pre-registered NRMSE tests (research/replication2/results/pairwise.csv). BASIL-W $-$ refit: mean difference (wins). Last column: datasets where BASIL-W $<$ SSC. The uniform seeds 3000--3012 coincide with the ablation datasets.}

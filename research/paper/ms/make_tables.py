@@ -216,6 +216,15 @@ def t_rep2():
         pending("tab_rep2b.tex", "research/replication2/results/d*_s*.csv")
         return
     rows, rows2 = [], []
+    pw = os.path.join(R, "replication2/results/pairwise.csv")
+    pwd = pd.read_csv(pw) if exists(pw) else None
+    def holm_p(c, a, b):
+        if pwd is None:
+            return None
+        x = pwd[(pwd.metric == "nrmse") & (pwd.cell == c) & (pwd.a == a) & (pwd.b == b)]
+        return float(x.p_holm.iloc[0]) if len(x) else None
+    def pfmt(p):
+        return "--" if p is None else ("$<$0.001" if p < 0.001 else f"{p:.3f}")
     for c in ["unif", "laplace", "hetero"]:
         g = d[d.cell == c]
         if len(g) == 0:
@@ -229,7 +238,7 @@ def t_rep2():
         p_bc = paired(full, "BASIL-W", "SSC")
         p_br = paired(full, "BASIL-W", "SSR")
         rows.append([NOISE_LABEL[c], str(len(full))] + [fmt(full[m].mean()) for m in ms] +
-                    [f"{p_bs[0]:+.3f} [{p_bs[1][0]:+.3f}, {p_bs[1][1]:+.3f}]", f"{p_bs[2]}/{p_bs[3]}", fmt(p_bs[4], 4),
+                    [f"{p_bs[0]:+.3f} [{p_bs[1][0]:+.3f}, {p_bs[1][1]:+.3f}]", f"{p_bs[2]}/{p_bs[3]}", pfmt(holm_p(c, "BASIL-W", "SSA")),
                      f"{p_br[0]:+.3f} ({p_br[2]}/{p_br[3]})", f"{p_bc[2]}/{p_bc[3]}"])
         def mean_of(m, col):
             v = g[g.M == m][col].dropna()
@@ -243,10 +252,10 @@ def t_rep2():
                      ["%s / %s / %s / %s" % tuple(mean_of(m, "do_indirect") for m in ms)] +
                      [mean_of("BASIL-W", "cover"), mean_of("BASIL-W", "ece"), "%s / %s / %s" % (cost("SSA"), cost("SSR"), cost("BASIL-W"))])
     note = ("Independent-DAG replication (\\texttt{research/replication2}): complete datasets only (all four arms present), edge-function NRMSE, mean over datasets. "
-            "BASIL-W $-$ SSA: mean paired difference with 95\\% bootstrap interval, number of datasets in which BASIL-W is lower, uncorrected exact two-sided Wilcoxon p "
-            "(the plan's Holm-adjusted results are in research/replication2/results/analysis.md). BASIL-W $-$ refit: mean difference (wins). Last column: datasets where BASIL-W $<$ SSC. "
+            "BASIL-W $-$ SSA: mean paired difference with 95\\% bootstrap interval, number of datasets in which BASIL-W is lower, Holm-adjusted exact two-sided Wilcoxon p over the 9 pre-registered NRMSE tests "
+            "(research/replication2/results/pairwise.csv). BASIL-W $-$ refit: mean difference (wins). Last column: datasets where BASIL-W $<$ SSC. "
             "The uniform seeds 3000--3012 coincide with the ablation datasets.")
-    write_table("tab_rep2.tex", booktab("lrrrrrrrrrrr", ["Noise", "$N$", "SSC", "SSA", "refit", "BASIL-W", "BASIL-W $-$ SSA [95\\% CI]", "wins", "p", "BASIL-W $-$ refit", "BASIL-W$<$SSC"], rows, note))
+    write_table("tab_rep2.tex", booktab("lrrrrrrrrrrr", ["Noise", "$N$", "SSC", "SSA", "refit", "BASIL-W", "BASIL-W $-$ SSA [95\\% CI]", "wins", "Holm p", "BASIL-W $-$ refit", "BASIL-W$<$SSC"], rows, note))
     note2 = ("Means over complete datasets (SSC / SSA / refit / BASIL-W). Cost: median over datasets of the per-dataset cost ratio to SSC (SSA / refit / BASIL-W), "
              "excluding metric code, shared loaded machine.")
     write_table("tab_rep2b.tex", booktab("lccccccc", ["Noise", "AUROC", "do direct", "do indirect", "cover. (BASIL-W)", "ECE", "cost ratio"], rows2, note2))
@@ -278,7 +287,12 @@ def t_adaptive2(rep):
                     r = g.iloc[0]
                     rows.append([str(sd), m if m != "SSR" else "refit", fmt(r.nrmse), fmt(r.slope, 2), fmt(r.auroc), fmt(r.orient, 3), fmt(r.get("do_direct", np.nan), 2) if "do_direct" in r else "--",
                                  fmt(r.get("t_cost", np.nan), 0)])
-        body += "\\textbf{(a) $d=500$ (individual datasets).}\n\n" + booktab("llrrrrrr", ["Seed", "Method", "NRMSE", "slope", "AUROC", "orient.", "do direct", "time (s)"], rows, "Two datasets: no significance claims.")
+        for m in ["SSC", "SSR", "SSA", "BASIL-W"]:
+            g = a[a.M == m]
+            if len(g):
+                rows.append(["mean", (m if m != "SSR" else "refit") + (" (1 dataset: BASIL-W time)" if False else ""), fmt(g.nrmse.mean()), fmt(g.slope.mean(), 2), fmt(g.auroc.mean()), fmt(g.orient.mean(), 3),
+                             fmt(g.do_direct.mean(), 2), "--"])
+        body += "\\textbf{(a) $d=500$ (individual datasets and mean).}\n\n" + booktab("llrrrrrr", ["Seed", "Method", "NRMSE", "slope", "AUROC", "orient.", "do direct", "time (s)"], rows, "Two datasets: no significance claims.")
     # Part B: grid at d=100
     b = d[(d.d == 100) & d.gam_eps.notna()]
     if len(b):
@@ -302,15 +316,61 @@ def t_semisyn():
     if d is None:
         pending("tab_semisyn.tex", "research/semisyn/results")
         return
+    ms = ["SSC", "SSA", "SSR", "BASIL-W", "GAM-ridge"]
     rows = []
-    for (dd, no), g in d.groupby(["d", "noise"]):
+    order = [(11, 2000, "boot"), (11, 2000, "gauss"), (11, 500, "boot"), (11, 500, "gauss"), (110, 2000, "boot")]
+    for key in order:
+        g = d[(d.d == key[0]) & (d.n == key[1]) & (d.noise == key[2])]
+        if len(g) == 0:
+            continue
         w = g.pivot(index="seed", columns="M", values="nrmse")
-        ms = [m for m in ["SSC", "SSA", "SSR", "BASIL-W"] if m in w.columns]
-        cells = [fmt(w[m].mean()) if m in w else "--" for m in ["SSC", "SSA", "SSR", "BASIL-W"]]
-        au = ["%s" % fmt(g[g.M == m].auroc.mean()) if m in set(g.M) else "--" for m in ["SSC", "SSA", "SSR", "BASIL-W"]]
-        rows.append([str(dd), NOISE_LABEL.get(no, no), str(g.seed.nunique())] + cells + ["/".join(au)])
-    write_table("tab_semisyn.tex", booktab("llrrrrrl", ["$d$", "Noise", "$N$", "SSC", "SSA", "refit", "BASIL-W", "AUROC (same order)"], rows,
-                "Semi-synthetic Sachs benchmark: edge-function NRMSE, mean over datasets (research/semisyn). See the text for the construction and caveats."))
+        cells = [fmt(w[m].mean()) if m in w and w[m].notna().any() else "--" for m in ms]
+        au = [fmt(g[g.M == m].auroc.mean(), 3) if m in set(g.M) else "--" for m in ["SSC", "BASIL-W"]]
+        ratio = (w["BASIL-W"] / w["SSC"]).mean()
+        cv = g[g.M == "BASIL-W"].cover.mean()
+        rows.append([str(key[0]), str(key[1]), NOISE_LABEL.get(key[2], key[2]), str(g.seed.nunique()), *cells, fmt(ratio, 2), "%s / %s" % tuple(au), fmt(cv, 2)])
+    note = ("Semi-synthetic Sachs benchmark (research/semisyn; 17 true edges on 11 nodes, ten copies at $d=110$): edge-function NRMSE, mean over datasets. "
+            "Ratio: mean of per-dataset BASIL-W/SSC. Coverage: 95\\% band of BASIL-W over true curves. GAM-ridge did not finish at $d=110$. "
+            "At $d=11$ SSC and plain SPADE are identical. The truth is a fitted model of contested data.")
+    write_table("tab_semisyn.tex", booktab("rrllrrrrrrrll", ["$d$", "$n$", "Noise", "$N$", "SSC", "SSA", "refit", "BASIL-W", "GAM-ridge", "ratio", "AUROC SSC / BASIL-W", "cover."], rows, note))
+
+
+def t_external():
+    fs = sorted(glob.glob(os.path.join(R, "external/results/E*.csv")))
+    if not fs:
+        pending("tab_external.tex", "research/external/results/E*.csv")
+        return
+    d = pd.concat([pd.read_csv(f) for f in fs], ignore_index=True)
+    d = d[d.error.isna()] if "error" in d.columns else d
+    cells = [("E1_d10_unif", "$d=10$ unif."), ("E3_d10_laplace", "$d=10$ Lap."), ("E2_d20_unif", "$d=20$ unif.")]
+    meth = [("SSC", "SSC"), ("SSA", "SSA"), ("SSR_k1.5", "refit"), ("BASILWs", "BASIL-W"), ("CAM-like", "CAM-like (own Python)"), ("GAM-ridge", "GAM-ridge"),
+            ("NAM-SSR_k1.5", "NAM-refit (untuned)"), ("NOTEARS-MLP", "NOTEARS-MLP"), ("NOTEARS-MLP-gc", "NOTEARS-MLP-gc"), ("DAGMA-nonlinear", "DAGMA-nonlinear"),
+            ("DCE-like", "DCE-like"), ("GraN-DAG", "GraN-DAG")]
+    rows = []
+    for k, lab in meth:
+        r = [lab]
+        for col in ["nrmse_topk", "auroc"]:
+            for c, _ in cells:
+                v = d[(d.method == k) & (d.cell == c)][col]
+                r.append(fmt(v.mean()) if len(v) else "--")
+            v = d[d.method == k][col]
+            r.append(fmt(v.mean()))
+        rows.append(r)
+    # paired CAM-like vs BASIL-W
+    pr = []
+    for c, lab in cells + [(None, "pooled (30)")]:
+        g = d if c is None else d[d.cell == c]
+        w = g.pivot(index=["cell", "seed"], columns="method", values="nrmse_topk")
+        x = (w["BASILWs"] - w["CAM-like"]).dropna().values
+        ci = boot_ci(x)
+        pr.append([lab, str(len(x)), f"{x.mean():+.3f} [{ci[0]:+.3f}, {ci[1]:+.3f}]", fmt(wilcoxon_p(x), 3), f"{int((x < 0).sum())}/{len(x)}"])
+    note = ("Edge-function NRMSE under the TOPK rule (oracle edge count; missed true edges count 1) and directed AUROC; mean over 10 datasets per cell (seeds 4000--4009), iSCM, mechanism family 1, $n=1000$. "
+            "Pooled = 30 datasets that are not independent (E1 and E3 share DAGs). CAM-like is our own Python reimplementation of the CAM recipe, not the original R code. "
+            "External methods were run with default or repository settings and untuned.")
+    s = booktab("lrrrrrrrr", ["Method", "NRMSE E1", "E3", "E2", "pooled", "AUROC E1", "E3", "E2", "pooled"], rows, note)
+    s += "\\bigskip\n\n\\textbf{Paired difference BASIL-W $-$ CAM-like (TOPK NRMSE; positive = CAM-like better).}\n\n"
+    s += booktab("lrrrr", ["Cell", "$N$", "mean diff [95\\% CI]", "Wilcoxon p (uncorrected)", "BASIL-W lower"], pr)
+    write_table("tab_external.tex", s)
 
 
 def write_status():
@@ -340,5 +400,6 @@ if __name__ == "__main__":
     t_rep2()
     t_adaptive2(rep)
     t_semisyn()
+    t_external()
     write_status()
     print("tables written:", sorted(os.listdir(os.path.join(HERE, "tables"))))

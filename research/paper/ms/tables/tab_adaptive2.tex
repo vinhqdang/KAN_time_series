@@ -1,3 +1,27 @@
+\textbf{(a) $d=500$ (individual datasets and mean).}
+
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{llrrrrrr}
+\toprule
+Seed & Method & NRMSE & slope & AUROC & orient. & do direct & time (s) \\
+\midrule
+1000 & SSC & 0.693 & 0.31 & 0.999 & 0.920 & 0.73 & 472 \\
+1000 & refit & 0.229 & 0.93 & 0.955 & 0.912 & 0.28 & 696 \\
+1000 & SSA & 0.308 & 0.84 & 0.999 & 0.918 & 0.27 & 726 \\
+1000 & BASIL-W & 0.166 & 1.00 & 0.974 & 0.947 & 0.13 & 540 \\
+1001 & SSC & 0.686 & 0.34 & 0.997 & 0.917 & 0.63 & 471 \\
+1001 & refit & 0.228 & 0.94 & 0.951 & 0.911 & 0.10 & 730 \\
+1001 & SSA & 0.282 & 0.88 & 0.996 & 0.919 & 0.12 & 717 \\
+mean & SSC & 0.690 & 0.33 & 0.998 & 0.919 & 0.68 & -- \\
+mean & refit & 0.229 & 0.93 & 0.953 & 0.912 & 0.19 & -- \\
+mean & SSA & 0.295 & 0.86 & 0.997 & 0.918 & 0.19 & -- \\
+mean & BASIL-W & 0.166 & 1.00 & 0.974 & 0.947 & 0.13 & -- \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+
+\smallskip
+{\footnotesize Two datasets: no significance claims.}
 
 \bigskip
 \textbf{(b) $(\gamma,\epsilon)$ grid, $d=100$, uniform, seeds 2000--2004.}
