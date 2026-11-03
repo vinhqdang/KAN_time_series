@@ -1,0 +1,23 @@
+SSA = SPADE-scaled + adaptive group lasso; compared by seed with replication CSVs (same seeds, independent runs)
+                    nrmse  slope  curve_r2  auroc  auprc  orient  do_direct  do_indirect
+cell        method                                                                      
+100|hetero  SSA     0.375  0.868     0.758  0.996  0.862   0.910      0.262        0.545
+            SSC     0.766  0.228     0.377  0.997  0.850   0.900      0.720        0.936
+100|laplace SSA     0.520  0.655     0.590  0.984  0.615   0.742      0.423        0.573
+            SSC     0.805  0.141     0.311  0.989  0.616   0.736      0.745        0.919
+100|unif    SSA     0.241  0.902     0.871  0.998  0.889   0.950      0.215        0.390
+            SSC     0.612  0.444     0.576  0.998  0.878   0.952      0.603        0.855
+200|unif    SSA     0.230  0.919     0.878  0.997  0.872   0.949      0.196        0.318
+            SSC     0.606  0.467     0.587  0.997  0.875   0.946      0.566        0.834
+100|hetero   SSA minus SSC       NRMSE -0.391 (SSA 0.375 vs 0.766, n=5, SSA worse in 0/5) p=0.0625
+100|hetero   SSA minus SSR_k1.5  NRMSE +0.027 (SSA 0.375 vs 0.349, n=5, SSA worse in 4/5) p=0.188
+100|hetero   SSA minus BASILWs   NRMSE +0.082 (SSA 0.375 vs 0.294, n=5, SSA worse in 5/5) p=0.0625
+100|laplace  SSA minus SSC       NRMSE -0.285 (SSA 0.520 vs 0.805, n=5, SSA worse in 0/5) p=0.0625
+100|laplace  SSA minus SSR_k1.5  NRMSE +0.049 (SSA 0.520 vs 0.470, n=5, SSA worse in 5/5) p=0.0625
+100|laplace  SSA minus BASILWs   NRMSE +0.258 (SSA 0.520 vs 0.261, n=5, SSA worse in 5/5) p=0.0625
+100|unif     SSA minus SSC       NRMSE -0.371 (SSA 0.241 vs 0.612, n=10, SSA worse in 0/10) p=0.00195
+100|unif     SSA minus SSR_k1.5  NRMSE +0.029 (SSA 0.241 vs 0.213, n=10, SSA worse in 8/10) p=0.0371
+100|unif     SSA minus BASILWs   NRMSE +0.072 (SSA 0.241 vs 0.169, n=10, SSA worse in 10/10) p=0.00195
+200|unif     SSA minus SSC       NRMSE -0.376 (SSA 0.230 vs 0.606, n=3, SSA worse in 0/3) p=nan
+200|unif     SSA minus SSR_k1.5  NRMSE +0.037 (SSA 0.230 vs 0.193, n=3, SSA worse in 3/3) p=nan
+200|unif     SSA minus BASILWs   NRMSE +0.055 (SSA 0.230 vs 0.176, n=3, SSA worse in 3/3) p=nan
