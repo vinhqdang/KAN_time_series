@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 
 from msdata import (CELLS, COL, HERE, LABEL, MARK, R, SHORT, boot_ci, exists, load_adaptive, load_family,
-                    load_replication)
+                    load_replication, load_runs)
 
 plt.rcParams.update({"font.size": 8, "axes.titlesize": 9, "axes.labelsize": 8, "legend.fontsize": 7,
                      "pdf.fonttype": 42, "axes.spines.top": False, "axes.spines.right": False,
@@ -84,12 +84,12 @@ def fig1(d):
 def fig2(d, d2=None):
     npan = 2 if d2 is not None else 1
     fig, axs = plt.subplots(1, npan, figsize=(7.0 if npan == 1 else 7.2, 3.0), squeeze=False)
-    for ax, dd, title in zip(axs[0], [d, d2], ["(a) fresh seeds 2000-2009 (replication)", "(b) independent DAGs, 20 datasets per cell (replication2)"]):
+    for ax, dd, title in zip(axs[0], [d, d2], ["(a) fresh seeds 2000-2009 (replication)", "(b) independent DAGs, up to 20 datasets per cell (replication2)"]):
         if dd is None:
             continue
         meths = ["SSC", "SSR", "SSA", "BASIL-W"]
         off = np.linspace(-0.27, 0.27, len(meths))
-        cells = [c for c, _ in CELLS if c in set(dd.cell)]
+        cells = [c for c, _ in CELLS if c in set(dd.cell)] or [c for c in ["unif", "laplace", "hetero"] if c in set(dd.cell)]
         for k, m in enumerate(meths):
             xs, ys, lo, hi = [], [], [], []
             for i, c in enumerate(cells):
@@ -100,7 +100,7 @@ def fig2(d, d2=None):
                 xs.append(i + off[k]); ys.append(g.mean()); lo.append(g.mean() - ci[0]); hi.append(ci[1] - g.mean())
             ax.errorbar(xs, ys, yerr=[lo, hi], fmt=MARK[m], color=COL[m], ms=4.5, capsize=2, lw=0.9, label=LABEL[m])
         ax.set_xticks(range(len(cells)))
-        ax.set_xticklabels([SHORT[c] for c in cells])
+        ax.set_xticklabels([SHORT.get(c, c) for c in cells])
         ax.set_ylabel("edge-function NRMSE")
         ax.set_title(title)
         ax.set_ylim(0, 0.95)
@@ -294,12 +294,7 @@ if __name__ == "__main__":
     rep = load_replication()
     ada = load_adaptive()
     d = method_table(rep, ada)
-    rep2 = None
-    p2 = os.path.join(R, "replication2/results/all.csv")
-    if exists(p2):
-        r2 = pd.read_csv(p2)
-        if {"cell", "seed", "M", "nrmse"} <= set(r2.columns):
-            rep2 = r2.drop_duplicates(["cell", "seed", "M"])
+    rep2 = load_runs("replication2")
     fig1(d)
     fig2(d, rep2)
     fig3()

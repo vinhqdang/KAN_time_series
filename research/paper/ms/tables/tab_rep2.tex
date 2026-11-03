@@ -1,1 +1,12 @@
-\fbox{\parbox{0.9\linewidth}{\textbf{PENDING:} data not yet available when this PDF was built; the script fills this table from \texttt{research/replication2/results/all.csv (expected columns cell, seed, M, nrmse)} when it exists.}}
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{lrrrrrrrrrrr}
+\toprule
+Noise & $N$ & SSC & SSA & refit & BASIL-W & BASIL-W $-$ SSA [95\% CI] & wins & p & BASIL-W $-$ refit & BASIL-W$<$SSC \\
+\midrule
+uniform & 5 & 0.611 & 0.237 & 0.236 & 0.170 & -0.067 [-0.097, -0.040] & 5/5 & 0.0625 & -0.067 (5/5) & 5/5 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+
+\smallskip
+{\footnotesize Independent-DAG replication (\texttt{research/replication2}): complete datasets only (all four arms present), edge-function NRMSE, mean over datasets. BASIL-W $-$ SSA: mean paired difference with 95\% bootstrap interval, number of datasets in which BASIL-W is lower, uncorrected exact two-sided Wilcoxon p (the plan's Holm-adjusted results are in research/replication2/results/analysis.md). BASIL-W $-$ refit: mean difference (wins). Last column: datasets where BASIL-W $<$ SSC. The uniform seeds 3000--3012 coincide with the ablation datasets.}

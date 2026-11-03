@@ -127,3 +127,30 @@ def write_table(name, body):
     os.makedirs(os.path.join(HERE, "tables"), exist_ok=True)
     with open(os.path.join(HERE, "tables", name), "w") as fh:
         fh.write(body)
+
+
+MNAME = {"SSC": "SSC", "SSA": "SSA", "SSR_k1.5": "SSR", "BASILWs": "BASIL-W", "BASILW": "BASIL-W"}
+
+
+def load_runs(subdir, recursive=False):
+    """Per-dataset CSVs written by the bench.py runners (columns d,n,noise,mech,seed,method,...).
+    Adds M (display method name) and cell. None when no file exists yet. Skips 'edges' sub-folders."""
+    pat = "results/**/*.csv" if recursive else "results/d*_s*.csv"
+    fs = [f for f in sorted(glob.glob(os.path.join(R, subdir, pat), recursive=recursive))
+          if "/edges/" not in f and os.path.basename(f) not in ("all.csv",)]
+    parts = []
+    for f in fs:
+        try:
+            x = pd.read_csv(f)
+        except Exception:
+            continue
+        if {"d", "noise", "seed", "method", "nrmse"} <= set(x.columns):
+            parts.append(x)
+    if not parts:
+        return None
+    d = pd.concat(parts, ignore_index=True)
+    key = [c for c in ["d", "n", "noise", "mech", "seed", "method"] if c in d.columns]
+    d = d.drop_duplicates(key)
+    d["M"] = d.method.map(lambda m: MNAME.get(m, m))
+    d["cell"] = d.noise.astype(str)
+    return d

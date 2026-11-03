@@ -194,27 +194,137 @@ def t_negative():
                 "Numbers from research/spire (README\\_results, README\\_basil, README\\_scale, README\\_do), research/ablation and research/real\\_data."))
 
 
-# ---------------------------------------------------------------- placeholders / later sections
-def t_pending_all(rep):
-    """replication2, adaptive2, semisyn. Filled by dedicated code once their result files are known; see SUBMISSION_NOTES.md."""
-    p2 = os.path.join(R, "replication2/results/all.csv")
-    if exists(p2):
-        r2 = pd.read_csv(p2)
-        if {"cell", "seed", "M", "nrmse"} <= set(r2.columns):
-            rows = []
-            for c, _ in CELLS:
-                w = r2[r2.cell == c].pivot_table(index="seed", columns="M", values="nrmse")
-                if len(w) == 0 or "BASIL-W" not in w:
-                    continue
-                cols = [m for m in ["SSC", "SSR", "SSA", "BASIL-W"]]
-                rows.append([CELLNAME[c], str(len(w))] + [fmt(w[m].mean()) if m in w else "--" for m in cols])
-            write_table("tab_rep2.tex", booktab("lrrrrr", ["Cell", "$N$", "SSC", "refit", "SSA", "BASIL-W"], rows, "Independent-DAG replication (research/replication2); edge-function NRMSE, mean over datasets."))
-        else:
-            pending("tab_rep2.tex", "research/replication2/results/all.csv (expected columns cell, seed, M, nrmse)")
-    else:
-        pending("tab_rep2.tex", "research/replication2/results/all.csv")
-    pending("tab_adaptive2.tex", "research/adaptive2/results")
-    pending("tab_semisyn.tex", "research/semisyn/results")
+# ---------------------------------------------------------------- independent-DAG replication, adaptive2, semisyn (read whatever exists)
+from msdata import load_runs
+
+NOISE_LABEL = {"unif": "uniform", "laplace": "Laplace", "hetero": "heteroscedastic", "boot": "bootstrap residuals", "gauss": "Gaussian"}
+
+
+def paired(w, a, b):
+    """mean difference a-b, CI, wins of a (lower), Wilcoxon p"""
+    x = (w[a] - w[b]).dropna().values
+    if len(x) < 2:
+        return None
+    ci = boot_ci(x)
+    return x.mean(), ci, int((x < 0).sum()), len(x), wilcoxon_p(x)
+
+
+def t_rep2():
+    d = load_runs("replication2")
+    if d is None:
+        pending("tab_rep2.tex", "research/replication2/results/d*_s*.csv")
+        pending("tab_rep2b.tex", "research/replication2/results/d*_s*.csv")
+        return
+    rows, rows2 = [], []
+    for c in ["unif", "laplace", "hetero"]:
+        g = d[d.cell == c]
+        if len(g) == 0:
+            continue
+        w = g.pivot(index="seed", columns="M", values="nrmse")
+        full = w.dropna()
+        ms = ["SSC", "SSA", "SSR", "BASIL-W"]
+        if not set(ms) <= set(full.columns):
+            continue
+        p_bs = paired(full, "BASIL-W", "SSA")
+        p_bc = paired(full, "BASIL-W", "SSC")
+        p_br = paired(full, "BASIL-W", "SSR")
+        rows.append([NOISE_LABEL[c], str(len(full))] + [fmt(full[m].mean()) for m in ms] +
+                    [f"{p_bs[0]:+.3f} [{p_bs[1][0]:+.3f}, {p_bs[1][1]:+.3f}]", f"{p_bs[2]}/{p_bs[3]}", fmt(p_bs[4], 4),
+                     f"{p_br[0]:+.3f} ({p_br[2]}/{p_br[3]})", f"{p_bc[2]}/{p_bc[3]}"])
+        def mean_of(m, col):
+            v = g[g.M == m][col].dropna()
+            return fmt(v.mean(), 3) if len(v) else "--"
+        def cost(m):
+            a = g[g.M == m].set_index("seed").t_cost; b = g[g.M == "SSC"].set_index("seed").t_cost
+            r = (a / b).dropna()
+            return fmt(r.median(), 2) if len(r) else "--"
+        rows2.append([NOISE_LABEL[c]] + ["%s / %s / %s / %s" % tuple(mean_of(m, "auroc") for m in ms)] +
+                     ["%s / %s / %s / %s" % tuple(mean_of(m, "do_direct") for m in ms)] +
+                     ["%s / %s / %s / %s" % tuple(mean_of(m, "do_indirect") for m in ms)] +
+                     [mean_of("BASIL-W", "cover"), mean_of("BASIL-W", "ece"), "%s / %s / %s" % (cost("SSA"), cost("SSR"), cost("BASIL-W"))])
+    note = ("Independent-DAG replication (\\texttt{research/replication2}): complete datasets only (all four arms present), edge-function NRMSE, mean over datasets. "
+            "BASIL-W $-$ SSA: mean paired difference with 95\\% bootstrap interval, number of datasets in which BASIL-W is lower, uncorrected exact two-sided Wilcoxon p "
+            "(the plan's Holm-adjusted results are in research/replication2/results/analysis.md). BASIL-W $-$ refit: mean difference (wins). Last column: datasets where BASIL-W $<$ SSC. "
+            "The uniform seeds 3000--3012 coincide with the ablation datasets.")
+    write_table("tab_rep2.tex", booktab("lrrrrrrrrrrr", ["Noise", "$N$", "SSC", "SSA", "refit", "BASIL-W", "BASIL-W $-$ SSA [95\\% CI]", "wins", "p", "BASIL-W $-$ refit", "BASIL-W$<$SSC"], rows, note))
+    note2 = ("Means over complete datasets (SSC / SSA / refit / BASIL-W). Cost: median over datasets of the per-dataset cost ratio to SSC (SSA / refit / BASIL-W), "
+             "excluding metric code, shared loaded machine.")
+    write_table("tab_rep2b.tex", booktab("lccccccc", ["Noise", "AUROC", "do direct", "do indirect", "cover. (BASIL-W)", "ECE", "cost ratio"], rows2, note2))
+
+
+def t_adaptive2(rep):
+    d = load_runs("adaptive2", recursive=True)
+    if d is None:
+        pending("tab_adaptive2.tex", "research/adaptive2/results")
+        return
+    def parse(m):
+        if m == "SSA":
+            return (1.0, 0.01)
+        if m.startswith("SSA_g"):
+            g, e = m[5:].split("_e")
+            return (float(g), float(e))
+        return None
+    d = d.copy()
+    d["gam_eps"] = d.method.map(parse)
+    body = ""
+    # Part A: d = 500
+    a = d[d.d == 500]
+    if len(a):
+        rows = []
+        for sd in sorted(a.seed.unique()):
+            for m in ["SSC", "SSR", "SSA", "BASIL-W"]:
+                g = a[(a.seed == sd) & (a.M == m)]
+                if len(g):
+                    r = g.iloc[0]
+                    rows.append([str(sd), m if m != "SSR" else "refit", fmt(r.nrmse), fmt(r.slope, 2), fmt(r.auroc), fmt(r.orient, 3), fmt(r.get("do_direct", np.nan), 2) if "do_direct" in r else "--",
+                                 fmt(r.get("t_cost", np.nan), 0)])
+        body += "\\textbf{(a) $d=500$ (individual datasets).}\n\n" + booktab("llrrrrrr", ["Seed", "Method", "NRMSE", "slope", "AUROC", "orient.", "do direct", "time (s)"], rows, "Two datasets: no significance claims.")
+    # Part B: grid at d=100
+    b = d[(d.d == 100) & d.gam_eps.notna()]
+    if len(b):
+        seeds = sorted(set(b.seed))
+        ssc = b[b.M == "SSC"].groupby("seed").nrmse.mean()
+        rows = []
+        for ge, g in sorted(b.groupby("gam_eps"), key=lambda kv: kv[0]):
+            n = g.seed.nunique()
+            rows.append([f"{ge[0]:g}", f"{ge[1]:g}", str(n), fmt(g.nrmse.mean()), fmt(g.slope.mean(), 2), fmt(g.auroc.mean())])
+        bw = rep[(rep.cell == "C1") & (rep.M == "BASIL-W") & rep.seed.isin(seeds)].nrmse.mean()
+        sc = rep[(rep.cell == "C1") & (rep.M == "SSC") & rep.seed.isin(seeds)].nrmse.mean()
+        sr = rep[(rep.cell == "C1") & (rep.M == "SSR") & rep.seed.isin(seeds)].nrmse.mean()
+        body += "\n\\bigskip\n\\textbf{(b) $(\\gamma,\\epsilon)$ grid, $d=100$, uniform, seeds %d--%d.}\n\n" % (min(seeds), max(seeds)) + booktab(
+            "llrrrr", ["$\\gamma$", "$\\epsilon$", "$N$", "NRMSE", "slope", "AUROC"], rows,
+            "Reference on the same seeds (replication): SSC %s, refit %s, BASIL-W %s. The default $(1,0.01)$ is the configuration used for all headline numbers; the grid is a sensitivity analysis and no setting was selected." % (fmt(sc), fmt(sr), fmt(bw)))
+    write_table("tab_adaptive2.tex", body if body else "\\fbox{no complete rows yet}\n")
+
+
+def t_semisyn():
+    d = load_runs("semisyn", recursive=True)
+    if d is None:
+        pending("tab_semisyn.tex", "research/semisyn/results")
+        return
+    rows = []
+    for (dd, no), g in d.groupby(["d", "noise"]):
+        w = g.pivot(index="seed", columns="M", values="nrmse")
+        ms = [m for m in ["SSC", "SSA", "SSR", "BASIL-W"] if m in w.columns]
+        cells = [fmt(w[m].mean()) if m in w else "--" for m in ["SSC", "SSA", "SSR", "BASIL-W"]]
+        au = ["%s" % fmt(g[g.M == m].auroc.mean()) if m in set(g.M) else "--" for m in ["SSC", "SSA", "SSR", "BASIL-W"]]
+        rows.append([str(dd), NOISE_LABEL.get(no, no), str(g.seed.nunique())] + cells + ["/".join(au)])
+    write_table("tab_semisyn.tex", booktab("llrrrrrl", ["$d$", "Noise", "$N$", "SSC", "SSA", "refit", "BASIL-W", "AUROC (same order)"], rows,
+                "Semi-synthetic Sachs benchmark: edge-function NRMSE, mean over datasets (research/semisyn). See the text for the construction and caveats."))
+
+
+def write_status():
+    """Macros with the amount of data available at build time (used by the PENDING status paragraphs)."""
+    def count(sub, rec=False, key="seed"):
+        d = load_runs(sub, recursive=rec)
+        return 0 if d is None else d.drop_duplicates(["d", "noise", "seed"]).shape[0]
+    r2 = load_runs("replication2")
+    n_full = 0
+    if r2 is not None:
+        w = r2.pivot_table(index=["noise", "seed"], columns="M", values="nrmse")
+        n_full = int(w.dropna(subset=[c for c in ["SSC", "SSA", "SSR", "BASIL-W"] if c in w.columns]).shape[0]) if all(c in w.columns for c in ["SSC", "SSA", "SSR", "BASIL-W"]) else 0
+    body = "\\newcommand{\\nRepTwoDone}{%d}\n\\newcommand{\\nAdaTwoDone}{%d}\n\\newcommand{\\nSemiDone}{%d}\n" % (n_full, count("adaptive2", True), count("semisyn", True))
+    write_table("status.tex", body)
 
 
 if __name__ == "__main__":
@@ -227,5 +337,8 @@ if __name__ == "__main__":
     t_bands()
     t_sachs()
     t_negative()
-    t_pending_all(rep)
+    t_rep2()
+    t_adaptive2(rep)
+    t_semisyn()
+    write_status()
     print("tables written:", sorted(os.listdir(os.path.join(HERE, "tables"))))
