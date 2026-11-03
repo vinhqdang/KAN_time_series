@@ -1,0 +1,7 @@
+NODO=1 results/grid_d100_unif_m1_n1000_s2000.csv 100 1000 unif 2000 2001 SSC,SSA_g0.5_e0.001,SSA_g0.5_e0.01,SSA_g0.5_e0.1,SSA_g1_e0.001,SSA,SSA_g1_e0.1,SSA_g2_e0.001,SSA_g2_e0.01,SSA_g2_e0.1 m1
+NODO=1 results/grid_d100_unif_m1_n1000_s2001.csv 100 1000 unif 2001 2002 SSC,SSA_g0.5_e0.001,SSA_g0.5_e0.01,SSA_g0.5_e0.1,SSA_g1_e0.001,SSA,SSA_g1_e0.1,SSA_g2_e0.001,SSA_g2_e0.01,SSA_g2_e0.1 m1
+NODO=1 results/grid_d100_unif_m1_n1000_s2002.csv 100 1000 unif 2002 2003 SSC,SSA_g0.5_e0.001,SSA_g0.5_e0.01,SSA_g0.5_e0.1,SSA_g1_e0.001,SSA,SSA_g1_e0.1,SSA_g2_e0.001,SSA_g2_e0.01,SSA_g2_e0.1 m1
+NODO=1 results/grid_d100_unif_m1_n1000_s2003.csv 100 1000 unif 2003 2004 SSC,SSA_g0.5_e0.001,SSA_g0.5_e0.01,SSA_g0.5_e0.1,SSA_g1_e0.001,SSA,SSA_g1_e0.1,SSA_g2_e0.001,SSA_g2_e0.01,SSA_g2_e0.1 m1
+NODO=1 results/grid_d100_unif_m1_n1000_s2004.csv 100 1000 unif 2004 2005 SSC,SSA_g0.5_e0.001,SSA_g0.5_e0.01,SSA_g0.5_e0.1,SSA_g1_e0.001,SSA,SSA_g1_e0.1,SSA_g2_e0.001,SSA_g2_e0.01,SSA_g2_e0.1 m1
+results/d500_unif_m1_n1000_s1000.csv 500 1000 unif 1000 1001 SSC,SSR_k1.5,SSA,BASILWs m1
+results/d500_unif_m1_n1000_s1001.csv 500 1000 unif 1001 1002 SSC,SSR_k1.5,SSA m1
