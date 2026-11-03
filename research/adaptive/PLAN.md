@@ -1,0 +1,8 @@
+# Adaptive group lasso arm (the standard fix a reviewer will ask for)
+
+Committed BEFORE running. Motivation: lit_verify/REPORT.md — adaptive group lasso for additive models (Huang, Horowitz & Wei 2010) is the textbook remedy for penalty-induced shrinkage; the paper's grids have no adaptive arm at d >= 100.
+
+Arm SSA = SPADE-scaled + adaptive group lasso: first fit = SPADE-scaled (screen K=15, lambda = 0.2/d); weights w_ij = (||theta_ij|| + 0.01)^-1 over the screened edges, normalised to mean 1 over screened edges; refit from scratch with the same lambda and the weights (research/spire/spade_variants.fit(weights=...)). Same gamma=1, eps=0.01 as the d<=20 variant (not tuned; no validation seeds used).
+Data: the replication seeds (research/replication/PLAN.md: seeds 2000-2009, d=100, n=1000, iSCM, mech m1) for noise unif (10 datasets), laplace (5), hetero (5), and d=200 unif (3 datasets, seeds 2000-2002). SSA is compared by seed with SSC, SSR and BASIL-W from the replication CSVs (same generator and seeds, computed independently).
+Metrics: edge-function NRMSE, slope, curve R2, do-effect NRMSE (direct/indirect), AUROC, AUPRC, orientation.
+Predictions (written now): A1 SSA lands between SSC and SSR on NRMSE (0.3-0.5) with slope 0.7-0.9; A2 SSA keeps SSC-level structure (AUROC within 0.01). Decision rule: if SSA NRMSE <= BASIL-W + 0.05 on unif d=100 the Bayesian method's advantage over a standard adaptive baseline is small and the paper must say so; if SSA is clearly worse (> BASIL-W + 0.10) the adaptive arm does not close the gap. Not to be concluded: anything beyond these cells, anything about significance beyond a paired Wilcoxon on 5-10 datasets.
