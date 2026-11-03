@@ -40,7 +40,7 @@ The three relations are standard MAPK/PI3K signalling that I did not verify agai
 Structure: weakly positive for SSC, ambiguous for SSR, negative-leaning for BASIL-W and BASIL (they lose AUROC relative to SSC and tie NOTEARS-linear). Stability: corrected curves less stable than SSC through selection flips (negative on the pre-registered criterion), shape-stable otherwise. Amplitude: shrinkage visible, plausible. Sign sanity: not supportive, but uninformative. The pre-registered overall-NEGATIVE condition (structure negative AND corrected curves less stable) is NOT met because SSC structure passes; but for the paper's specific claim that refit/BASIL-W improve edge functions, the real-data evidence is neutral to unfavourable: no way to check accuracy, and the structure/selection stability cost is visible.
 
 ## Caveats
-- d=11, 18 edges: a difference of 0.05 AUPRC is about one edge. The consensus graph is contested and acyclic by construction; reverse-of-consensus edges (pmek -> praf, pjnk -> PKC) rank high and are counted as errors although feedback is known biology.
+- d=11, 18 edges: a difference of 0.05 AUPRC is about one edge. The consensus graph is contested and, as research/semisyn/gen.py found, contains one directed cycle (so it is not a DAG as used here); reverse-of-consensus edges (pmek -> praf, pjnk -> PKC) rank high and are counted as errors although feedback is known biology.
 - The pooled data mix interventional conditions (not iid, not one SEM); interventions are not used.
 - Subsamples overlap (~27% pairwise) and share cells; bootstrap/Wilcoxon p-values are anti-conservative; Wilcoxon with n=10 has minimum p 0.002.
 - No ground truth for functions: stability and amplitude measure reproducibility and shrinkage, not accuracy.
