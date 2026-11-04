@@ -6,14 +6,19 @@ exhaustive enumeration check, \cref{app:agg} the proofs of \cref{sec:agg},
 \cref{app:finite} the proofs of \cref{sec:finite}, \cref{app:sims} the
 simulation checks of F1--F3, \cref{app:lean} the map from statements to Lean
 names, \cref{app:real} details of the real-data studies, \cref{app:prereg}
-the pre-registration timeline and deviations, and \cref{app:e1,app:e2} the
-experiments E1 and E2 in full.
+the pre-registration timeline and deviations, \cref{app:e1,app:e2} the
+experiments E1 and E2 in full, and \cref{app:noloop,app:er,app:x3} the
+loop-free graphs, the random summary graphs and the accuracy interpretation.
 
 Status labels. \emph{Machine-checked}: a Lean theorem with no \texttt{sorry}
 and only the standard axioms. \emph{Proved}: a complete paper proof given
-here. \emph{Asymptotic}: the argument uses the standard central limit theorem
-for quadratic forms of stationary Gaussian processes with summable
-covariances, which we cite and do not prove.
+here. \emph{Asymptotic}: the argument assumes a joint central limit theorem for the
+sample variances and cross-covariance of a bivariate stationary Gaussian
+process; scalar versions are surveyed in \citet{ginovyan2021survey}, and we do
+not prove the joint statement (a Lindeberg argument for the weighted
+chi-square sums is possible but is not written out here).
+\emph{Sketched}: a derivation with one analytic step left out, stated as such.
+\emph{Enumerated}: checked by exact computation on many instances, not proved.
 
 %=============================================================================
 \section{Proofs for Section~\ref{sec:exact}}
@@ -397,7 +402,7 @@ multi-filter part of \cref{prop:f3} predicts.
 \label{app:lean}
 
 Lean 4.35.0 and Mathlib v4.35.0. The build log of a clean rebuild, the
-\texttt{\#print axioms} output for each of the 116 main theorems (all
+\texttt{\#print axioms} output for each of the 133 main theorems (all
 \texttt{[propext, Classical.choice, Quot.sound]}) and a grep showing no
 \texttt{sorry}/\texttt{admit}/\texttt{axiom} are in the supplementary
 material.
@@ -416,6 +421,13 @@ statement & Lean names & status \\
 \cref{cor:statiff} & \lname{sBurn_eq_half_iff}, \lname{sBurn_eq_half_iff_common_anc}, \lname{sZ_eq_half_iff}, \lname{upEdges_eq_empty_tfae}, \lname{stat_half_of_strong}, \lname{stat_half_of_outForest}, \lname{inForest_isRel_iff}, \lname{inForest_up_iff}, \lname{statValue_inForest}, \lname{statValue_inForest_gt_iff} & checked \\
 \cref{tab:examples} & \lname{collider_limit}, \lname{fork_limit}, \lname{chain3_limit}, \lname{collider_stat}, \lname{fork_stat}, \lname{chain3_stat} & checked \\
 self-loop remark & \lname{edgeLoops_limit}, \lname{edgeNoLoops_sRho} & checked \\
+\cref{thm:noloop} (ancestors, relatives, edge value) & \lname{isRel_unrolled_iff_NL}, \lname{reduce_ancestor}, \lname{relSet_unrolled_eq_iff_NL}, \lname{edge_score_NL} & checked \\
+\cref{cor:noloop} & \lname{sRho_unrolled_eq_NL}, \lname{sRho_unrolled_ge_half_NL} & checked \\
+\cref{prop:noloopcross} (witness $u=j$, fresh parent) & \lname{strictNL_of_closed_walk}, \lname{strictNL_of_fresh_parent}, \lname{sRho_unrolled_eq_one_NL} & checked \\
+loop-free examples (\cref{tab:noloop}) & \lname{colliderNL_sRho}, \lname{edgeLoopHead_sRho}, \lname{edgeNoLoops_sRho} & checked \\
+eventual periodicity, limit, same-SCC edges, \cref{thm:noloopstat} & -- & paper / enumerated \\
+\cref{prop:er} & -- & sketch + numerics \\
+\cref{prop:x3} (oracle sort accuracy; optimality) & \lname{accRule_sortRule}, \lname{accRule_sortRule_rho}, \lname{accRule_le_sOf}, \lname{accRule_le_sRho}, \lname{edgeAcc_sortRule_strict}, \lname{rho_not_gt_of_edge} & checked \\
 \cref{prop:zero} & -- & paper only \\
 \cref{thm:agg}(a) & \lname{fejer_identity} (counting identity) & partial \\
 \cref{thm:agg}(b) & \lname{longrun_factor}, \lname{longrun_inv}, \lname{selfloop_sum_lt_one} & partial \\
@@ -758,3 +770,298 @@ wind $D{=}10$, $L{=}3$ & [0.536, 0.554] & 0.524 & [0.016, 0.027] / 0.008 & 0.628
 
 All six checks pass. With lags the observed detection sits at or slightly below $\bar p_{\max}$, consistent with strongly correlated lag statistics; the independence formula overstates both detection and false positives, as the theory said it would.
 For \texttt{citris\_\allowbreak 1} the predicted accuracy is undefined because no full-set edge of $G_{\mathrm{lin}}$ is predicted $1$ inside a block.
+
+%=============================================================================
+\section{Summary Graphs without Self-Loops}
+\label{app:noloop}
+
+Here $\GS=(V,\Es)$ is an arbitrary directed graph with $|\Es|\ge1$; no loop
+assumption is made. $B_n$ is the boolean $n$-th power of the adjacency matrix
+($B_0=I$), $\Lambda(u,v)=\{n:B_n[u,v]=1\}$ the set of lengths of walks from $u$
+to $v$, and $u$ is \emph{fresh} if it has no incoming edge in $\Es$ (a self-loop
+is an incoming edge). Status: \cref{thm:noloop} and \cref{cor:noloop} are
+machine-checked; the rest of this section is proved on paper and checked by
+enumeration, as marked.
+
+\begin{lemma}[ancestors and roots without loops]\label{lem:noloopanc}
+$u(a)\in\anc(v(t))$ iff $a\le t$ and $t-a\in\Lambda(u,v)$. A node $u(a)$ is a
+root of $\GT$ iff $a=1$ or $u$ is fresh.
+\lean{\lname{unrolled_reach_iff} (already free of the loop hypothesis).}
+\end{lemma}
+\begin{proof}
+Every edge of $\GT$ raises time by one, so paths from $u(a)$ to $v(t)$ are the
+lifts of walks of length exactly $t-a$, and every walk lifts. Without loops one
+cannot pad. A node $u(a)$ with $a\ge2$ has a parent iff some edge $(w,u)$ exists.
+\end{proof}
+
+\begin{theorem}[edge value without loop assumption]\label{thm:noloop}
+Let $(i,j)\in\Es$ and $e_t=(i(t),j(t{+}1))$, $1\le t<T$. Then
+$\srho(e_t)\in\{\tfrac12,1\}$ independently of $T$, and $\srho(e_t)=1$ iff
+$\mathrm{Strict}_{ij}(t)$ holds, where $\mathrm{Strict}_{ij}(t)$ is
+\[
+\exists u:\ t\in\Lambda(u,j),\ t-1\notin\Lambda(u,i)
+\quad\text{or}\quad
+\exists\text{ fresh }u,\ \exists n\in\{1,\dots,t\}:\ n\in\Lambda(u,j),\ n-1\notin\Lambda(u,i).
+\]
+\lean{\lname{isRel_unrolled_iff_NL}, \lname{reduce_ancestor}, \lname{relSet_unrolled_eq_iff_NL}, \lname{edge_score_NL}.}
+\end{theorem}
+\begin{proof}
+As in \cref{thm:edge}, $\rel(i(t))\subseteq\rel(j(t{+}1))$, and the score is $1$
+iff $\mathrm{roots}(j(t{+}1))\setminus\mathrm{roots}(i(t))\ne\emptyset$
+\citep[Thm.~1, Lemma~1]{reisach2026topological}. By \cref{lem:noloopanc} an
+element of the difference is $u(a)$ with ($a=1$ or $u$ fresh),
+$n=t+1-a\in\Lambda(u,j)$ and $u(a)\notin\mathrm{roots}(i(t))$. The case $a=t+1$
+would make $j$ fresh, impossible since $j$ has the parent $i$; so $a\le t$ and,
+by the lemma again, $u(a)$ is not a root of $i(t)$'s ancestry iff
+$n-1=t-a\notin\Lambda(u,i)$. The branch $a=1$ is $n=t$ with no condition on $u$;
+the other is a fresh $u$ with $1\le n\le t$. (The Lean proof avoids Lemma~1: the
+extra relative is $u(0)$ in the first case and a node of a fresh $u$ in the
+second, and \lname{reduce_ancestor} pushes any common ancestor back along parents
+to slice $0$ or to a fresh node.)
+\end{proof}
+
+\begin{corollary}\label{cor:noloop}
+For every summary graph and $T\ge2$,
+$\srho(\GT)=\tfrac12+\frac{1}{2(T-1)|\Es|}\sum_{(i,j)\in\Es}N_T(i,j)$ with
+$N_T(i,j)=\#\{t<T:\mathrm{Strict}_{ij}(t)\}$; in particular $\srho(\GT)\ge1/2$.
+With a loop at every node no node is fresh, $\Lambda(u,j)=[d(u,j),\infty)$, and
+$\mathrm{Strict}_{ij}(t)$ becomes $\exists u:d(u,j)\le t\le d(u,i)$, i.e.\
+\cref{thm:edge}.
+\lean{\lname{sRho_unrolled_eq_NL}, \lname{sRho_unrolled_ge_half_NL}.}
+\end{corollary}
+Exhaustive check of \cref{thm:noloop} against brute-force relatives: $p=2,3$
+($T=2,\dots,9$), all $65{,}535$ graphs with $p=4$ ($T=3,5,8$), and random graphs
+with $p=5,6$; $0$ mismatches in $120$, $3{,}577$, $196{,}605$, $8{,}928$ and
+$4{,}494$ (graph,~$T$) cases (enumerated, not part of the Lean proof).
+
+\begin{proposition}[limit exists and is rational; paper proof, enumerated]\label{prop:noloopperiod}
+$(B_n)$ is eventually periodic: there are $n_0,\pi\ge1$ with $B_{n+\pi}=B_n$
+for $n\ge n_0$. Hence $L=\lim_T\srho(\GT)=\tfrac12+\frac1{2|\Es|}\sum_e\delta_e$
+with $\delta_e=1$ if some fresh $u$ has $n\ge1$, $n\in\Lambda(u,j)$,
+$n-1\notin\Lambda(u,i)$, and otherwise $\delta_e$ the density, over one period
+of $t>n_0$, of $t$ with some $u$, $B_t[u,j]=1$, $B_{t-1}[u,i]=0$; and
+$|\srho(\GT)-L|\le(n_0+\pi+1)/(2(T-1))$.
+\end{proposition}
+\begin{proof}
+$B_{n+1}$ is a function of $B_n$ and there are finitely many boolean matrices.
+A fresh witness is monotone in $t$ and has its first $n$ at most $n_0+1+\pi$
+(the set $\Lambda(u,j)\setminus(\Lambda(u,i)+1)$ is eventually periodic), so
+such an edge is strict for all $t\ge n_0+1+\pi$. Without a witness,
+$\mathrm{Strict}_{ij}(t)$ depends for $t>n_0$ only on $t\bmod\pi$. Counting
+strict $t<T$ gives the error bound; average over edges.
+\end{proof}
+Checked on $1{,}115$ graphs (all $15+511$ graphs with $p=2,3$, $390$ random with
+$p=4$, $199$ random with $p=5,6$): the exact value at $T=600$ is within the
+bound and $(L-\tfrac12)\,2|\Es|\,\pi$ is an integer in every case.
+
+\begin{proposition}[edges inside an SCC; paper proof, enumerated]\label{prop:noloopscc}
+Let $(i,j)\in\Es$ with $j$ reaching $i$ and no fresh witness. Then
+$\mathrm{Strict}_{ij}(t)$ fails for every $t\ge n_0+1$.
+\end{proposition}
+\begin{proof}
+Fix $u$; put $f(n)=B_n[u,j]$, $h(n)=B_{n-1}[u,i]$. The edge gives $h(n)\le f(n)$.
+If $m$ is the length of a walk $j\to i$ and $c=m+1$, then $f(n)\le h(n+c)$. Take
+$k\ge1$ with $kc$ a multiple of $\pi$. For $n\ge n_0+1$,
+$h(n)\le f(n)\le h(n+c)\le\dots\le h(n+kc)=h(n)$, so $f(n)=h(n)$ for every $u$.
+\end{proof}
+
+\begin{proposition}[crossing edge into a cyclic node]\label{prop:noloopcross}
+If $(i,j)$ is crossing and $j$ lies on a cycle with period $g$ (gcd of the
+closed-walk lengths at $j$), then $\mathrm{Strict}_{ij}(t)$ holds for every
+$t\in\Lambda(j,j)$, which contains all large multiples of $g$, so
+$\delta_e\ge1/g$, and $\delta_e=1$ if $g=1$. A fresh parent $u\ne i$ of $j$ makes
+every layer strict.
+\lean{\lname{strictNL_of_closed_walk}, \lname{strictNL_of_fresh_parent}, \lname{sRho_unrolled_eq_one_NL}.}
+\end{proposition}
+\begin{proof}
+Take $u=j$: $t\in\Lambda(j,j)$ and $t-1\notin\Lambda(j,i)=\emptyset$. Closed-walk
+lengths at $j$ form a numerical semigroup in $g\mathbb Z$, which contains all
+large multiples of $g$.
+\end{proof}
+
+\begin{corollary}[loop-free versions of the loop-dependent statements]\label{cor:noloopmain}
+(a) If every weakly connected component of $\GS$ is strongly connected (any
+loop pattern, any periods), then $L=1/2$ and $\srho(\GT)-\tfrac12\le n_0/(2(T-1))$
+(paper proof from \cref{prop:noloopscc}; Reisach et al.'s Theorem~4 without
+loops). (b) The converse and the closed form are false without loops
+(\cref{tab:noloop}). (c) If every crossing edge has a head on a cycle, then
+$L>1/2$ iff $\Ex\ne\emptyset$.
+\end{corollary}
+\begin{table}[h]
+\caption{Loop-free examples ($L$: finite limit, $S$: stationary). Lean: \lname{edgeNoLoops_sRho}, \lname{colliderNL_sRho}, \lname{edgeLoopHead_sRho}; the others are computed values (example scripts in the supplement).}
+\label{tab:noloop}
+\centering\small
+\begin{tabular}{lcc}
+\toprule
+summary graph & without loops & with loops \\
+\midrule
+single edge $0\to1$ & $\srho(\GT)=1/2$ for all $T$ & $L=2/3$, $S=1/2$ \\
+chain $0\to1\to2$ & $L=1/2$ & $L=0.7$ \\
+2-cycle $\{0,1\}$ plus $0\to2$ & $L=1/2$ & loop at $2$ only: $L=5/8$ \\
+collider & $L=S=1$ & $L=S=0.7$ \\
+edge, loop at head only & $L=S=1$ & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+For an acyclic loop-free graph, $L(u,v)$ is
+finite, $B_n=0$ for $n\ge p$, and $L=\tfrac12+\#\{e:\text{fresh witness}\}/(2|\Es|)$
+(paper proof); for a loop-free in-forest an edge $(i,j)$ has a fresh witness iff
+$j$ has another parent, so $L=\tfrac12+(m-n_1)/(2m)$ with $m=|\Es|$ and $n_1$ the
+number of nodes with one parent, which equals the stationary value below. On
+$362$ random acyclic loop-free graphs $L=S$ in all cases, and the in-forest
+formula holds on $298$ in-forests.
+
+\begin{theorem}[stationary value without loops; (a), (c) proved, (b) sketched]\label{thm:noloopstat}
+Let $\GS$ be arbitrary, $G_{\mathbb Z}$ the infinite-past unrolled DAG on
+$V\times\mathbb Z$, and $\Delta(v,w)=\{m-n:\exists u,\ n\in\Lambda(u,v),\ m\in\Lambda(u,w)\}$.
+Then $\rel_{G_\mathbb Z}(v(t))=\{w(t+d):d\in\Delta(v,w)\}$ (proved), the edge
+$(i(t),j(t{+}1))$ is strict iff $\Delta(j,w)+1\ne\Delta(i,w)$ for some $w$
+(proved; always $\Delta(i,w)\subseteq\Delta(j,w)+1$), and
+$S^{\mathbb Z}=\tfrac12+|E^{\mathbb Z}_\uparrow|/(2|\Es|)$. (a) Outside
+$|d|<n_0+\pi$, $\Delta(v,w)$ is $\pi$-periodic, so $E^{\mathbb Z}_\uparrow$ is detected
+with witnesses of $|d|\le n_0+2\pi$ (proved). (b) In a finite window after a
+burn-in $B\ge 2n_0+3\pi+1$ the windowed value equals $S^{\mathbb Z}+O(K_0/T)$,
+$K_0=n_0+2\pi$ (\emph{sketched}). (c) $S^{\mathbb Z}=1/2$ whenever every weak
+component is strongly connected, whatever its periods (a node colouring
+$\mathrm{lab}$ with $\Delta(v,w)=\mathrm{lab}(w)-\mathrm{lab}(v)+g\mathbb Z$)
+(proved). With loops everywhere $\Delta$ is $\mathbb Z$ or empty and this is
+\cref{thm:stat}.
+\end{theorem}
+Brute-force relatives in $G_{B+T}$ ($B=40$, $T=90$, edges at distance $\ge30$
+from the window ends) agree with $E_\uparrow^{\mathbb Z}$ on every edge of all
+$15+511$ graphs with $p=2,3$ and $248$ random graphs with $p=4$ (enumerated).
+Not formalised in Lean: periodicity, \cref{prop:noloopscc}, \cref{cor:noloopmain}(a),
+\cref{thm:noloopstat}.
+
+%=============================================================================
+\section{Random Summary Graphs: Derivations and Checks}
+\label{app:er}
+
+All graphs here are a non-loop random graph plus a self-loop at every node, so
+$|\Es|=p+m$ with $m$ the number of non-loop edges, and for acyclic graphs
+$|\Ex|=m$.
+
+\textbf{In-forests (proved identities).} Let the non-loop part be an in-forest
+with $m$ edges and $n_1$ nodes with exactly one parent. By
+\cref{cor:iff,cor:statiff},
+$L=\tfrac12+\frac{m}{2(m+p)}$, $S=\tfrac12+\frac{m-n_1}{2(m+p)}$,
+$L-S=\frac{n_1}{2(m+p)}$ (the last checked to machine precision on $18$ random
+forests). For a sequence of in-forests with parent-count distribution $\pi$ and
+mean $\mu$: $L\to\tfrac12+\frac\mu{2(1+\mu)}$ and
+$S\to\tfrac12+\frac{\mu-\pi_1}{2(1+\mu)}$. Exact computation at $p=20{,}000$
+(6 seeds each): uniform recursive in-tree ($\pi_1=1/4$, $S\to11/16=0.6875$,
+measured $0.68739\pm0.00026$); preferential attachment (measured $\pi_1=0.1656$,
+$S=0.70859\pm0.00028$); uniform random labelled tree rooted and oriented to the
+root (Poisson(1) parents, $\pi_1\to e^{-1}$, $S\to\tfrac12+(1-e^{-1})/4=0.65803$,
+measured $0.65783\pm0.00020$). In all three $L=0.74999$.
+
+\textbf{Directed ER, finite limit (sketch).} $G(p,c/p)$, $m/p\to c$, so it
+suffices to show that the fraction of non-loop edges inside an SCC tends to
+$x^2$. Around a uniformly chosen non-loop edge $(i,j)$ the local limit is: $i$
+has an independent Galton--Watson Poisson$(c)$ tree of ancestors, $j$ an
+independent one of descendants, with further independent Poisson$(c)$ parents
+and children. A node lies in the giant SCC iff both its ancestor and descendant
+trees are infinite (the product form for a factorising degree law is stated in
+\citealp{dorogovtsev2001giant}; we checked only its abstract). Since $i\to j$,
+both endpoints are in the giant SCC iff the ancestor tree of $i$ and the
+descendant tree of $j$ are infinite: probability $x^2$. Outside the giant the
+graph is subcritical in the dual sense and non-trivial SCCs carry $o(p)$ edges.
+The two analytic inputs are classical; \emph{the concentration step (second-moment
+bound for the edge counts) is not written out.}
+
+\textbf{Directed ER, stationary value (sketch).} Source SCCs are, up to $O(1)$,
+the nodes without non-loop parents, and $(i,j)\in E_\uparrow$ iff some other
+parent $k$ of $j$ has a source ancestor not reaching $i$. In the local limit, a
+source $s$ reaches $i$ iff $s$ has an infinite descendant tree and $i$ an
+infinite ancestor tree (a tree path would use the edge $i\to j$ backwards). If
+the ancestor tree of $i$ is finite (probability $1-x$) any other parent works:
+contribution $(1-x)(1-e^{-c})$. Otherwise a witness needs a source with finite
+descendant tree; let $d$ be the probability that a node has in-degree $0$ or a
+parent all of whose other children have finite descendant trees (each with
+probability $1-x$) and which again satisfies the property. It solves
+$1-d=e^{-c(1-x)d}-e^{-c}$ and is the smallest fixed point because the event is
+an increasing union of depth-truncated events. The number of qualifying other
+parents is Poisson$(c(1-x)d)$, giving $x(1-x)(1-e^{-c(1-x)d})$. \emph{This fixed
+point is derived heuristically and not proved.} Large $c$: $1-x\sim e^{-c}$,
+$L-\tfrac12\sim e^{-c}$, $S-\tfrac12\sim e^{-c}/2$.
+
+\textbf{Layered DAG (sketch; $L$ proved given edge concentration).} $M$ layers of
+width $w$, each node of layer $l+1$ receiving an edge from each node of layer $l$
+with probability $c/w$; as $w\to\infty$ with $\mu=c(M-1)/M$,
+$L\to\tfrac12+\frac\mu{2(1+\mu)}$ and
+$S\to\tfrac12+\frac{\mu(1-e^{-c})}{2(1+\mu)}$. For fixed $w$ and deep $M$ the
+stationary value falls below this (observed $0.7824$ against $0.7878$ at
+$w=50$, $M=400$, $c=2$); this correction is not derived.
+
+\begin{table}[h]
+\caption{Exact computation (means $\pm$ s.d.\ over seeds; SCCs by scipy and source sets by bitsets) against \cref{prop:er}.}
+\label{tab:er}
+\centering\small
+\begin{tabular}{rrcccc}
+\toprule
+$c$ & $p$ & $L$ exact & $L$ formula & $S$ exact & $S$ formula \\
+\midrule
+0.5 & 20000 & $0.6666\pm0.0011$ & $0.6667$ & $0.5658\pm0.0014$ & $0.5656$ \\
+1.0 & 20000 & $0.7486\pm0.0008$ & $0.7500$ & $0.6557\pm0.0013$ & $0.6580$ \\
+1.5 & 50000 & $0.6975\pm0.0020$ & $0.6981$ & $0.6159\pm0.0018$ & $0.6163$ \\
+2.0 & 50000 & $0.6214\pm0.0022$ & $0.6217$ & $0.5629\pm0.0014$ & $0.5632$ \\
+3.0 & 100000 & $0.5434\pm0.0010$ & $0.5433$ & $0.5215\pm0.0006$ & $0.5214$ \\
+5.0 & 20000 & $0.5059\pm0.0005$ & $0.5058$ & $0.5028\pm0.0003$ & $0.5029$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+$L$ at $c=1$ converges as $p$ grows: $0.7466$ ($p=2000$), $0.7486$ ($2\cdot10^4$),
+$0.74976$ ($2\cdot10^5$), $0.74992$ ($10^6$); at $c=2$, $0.62162\pm0.00023$ at
+$p=10^6$ against $0.62170$. The giant-SCC fraction matches $x^2$ ($0.6353$ against
+$0.6349$ at $c=2$). The second fixed point matters: with $d=1$ the formula would
+give $S=0.6312$, $0.5766$, $0.5246$ at $c=1.5,2,3$, outside the error bars,
+whereas the fixed points $d=0.485$, $0.221$, $0.061$ give $0.6163$, $0.5632$,
+$0.5214$. No systematic mismatch was found, so the status ``sketch'' is limited
+by the missing concentration proof, not by a numerical discrepancy. The Barak--Erd\H{o}s
+phase-transition paper cited by \citet{reisach2026topological} concerns
+monotone-path reachability at the dense scale $\log n/n$ and is not used here.
+
+%=============================================================================
+\section{Accuracy Interpretation of $\srho$}
+\label{app:x3}
+
+An edge $\{x,y\}$ of a DAG is shown in a uniformly random order together with
+$(\rho_{\mathrm{first}},\rho_{\mathrm{second}})$. A \emph{pairwise count rule} is
+$f(a,b)\in[0,1]$, the probability of declaring ``first is the tail''; the
+\emph{sort rule} is $f_{\mathrm{sort}}=1,\tfrac12,0$ for $a<,=,>b$. For the true
+edge $x\to y$ the accuracy is $\tfrac12f(\rho_x,\rho_y)+\tfrac12(1-f(\rho_y,\rho_x))$.
+
+\begin{proposition}[elementary]\label{prop:x3}
+On every DAG, (i) the accuracy of $f_{\mathrm{sort}}$ is exactly $\srho$;
+(ii) every pairwise count rule has accuracy at most $\srho$; (iii)
+$f_{\mathrm{sort}}$ never errs on an edge with $\rho_x\ne\rho_y$.
+\lean{\lname{accRule_sortRule}, \lname{accRule_sortRule_rho}, \lname{accRule_le_sOf}, \lname{accRule_le_sRho}, \lname{edgeAcc_sortRule_strict}, \lname{rho_not_gt_of_edge}.}
+\end{proposition}
+\begin{proof}
+By Reisach et al.'s Theorem~1, $\rho_x\le\rho_y$ on an edge $x\to y$. If
+$\rho_x<\rho_y$ the accuracy is at most $1$, attained by the sort rule; if
+$\rho_x=\rho_y=a$ it is $\tfrac12f(a,a)+\tfrac12(1-f(a,a))=\tfrac12$ for every
+$f$, because the random order forces the tie decision to $1/2$. These are the edge
+scores. (i) restates the definition of $\srho$; (ii) is a three-line consequence of
+their Theorem~1.
+\end{proof}
+Combined with \cref{thm:stat}, the best accuracy of any pairwise count rule on the
+stationary unrolled DAG is $\tfrac12+|\Eu|/(2|\Es|)$, at most $0.665$ for ER
+summary graphs and $0.75$ for river-like in-forests ($\mu\le1$). The restriction
+to counts is necessary (exhaustive enumeration over labelled DAGs, not proved):
+
+\begin{center}\small
+\begin{tabular}{lcccc}
+\toprule
+nodes $p$ & 2 & 3 & 4 & 5 \\
+\midrule
+Bayes rule on the two counts (= edge-pooled $\srho$) & 0.5 & 0.5625 & 0.592262 & 0.605547 \\
+Bayes rule on counts and the two node degrees & 0.5 & 0.625 & 0.660714 & 0.669238 \\
+\bottomrule
+\end{tabular}
+\end{center}
+For the skeleton $a-c-b$ the collider has counts $(2,2,3)$ (all edges strict)
+while the chain and the fork have all counts equal to $3$; among the tied graphs the
+centre $c$ is the tail with probability $2/3$ under a uniform prior, so a
+degree-aware rule beats the coin. So $\srho$ is the Bayes accuracy of pairwise
+count rules only. This section is interpretive, not a new theorem.

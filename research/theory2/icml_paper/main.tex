@@ -87,33 +87,36 @@
 \printAffiliationsAndNotice{}
 
 \begin{abstract}
-Simulated causal-discovery benchmarks can be solved by sorting variables by
-marginal statistics (var-, $R^2$- and rel-sortability). Time-unrolled DAGs have
-recently been proposed as a remedy, with a sufficient condition for their
-rel-sortability to tend to $1/2$. We give the exact rel-sortability of the
+Causal-discovery benchmarks can be solved by sorting variables by marginal
+statistics (var-, $R^2$- and rel-sortability). Time-unrolled DAGs were proposed
+as a remedy, with a sufficient condition for rel-sortability to tend to $1/2$.
+We give the exact rel-sortability of the
 time-unrolled DAG for every summary graph, every horizon $T$ and every edge,
-with an explicit $O(1/T)$ rate. The condition of the earlier result is also
-necessary, and every non-strongly-connected summary graph, for instance any
-river network, stays strictly above $1/2$. This excess is caused by the fixed
-start at $t=1$: with a stationary start the value is exact for every $T$ and
-depends only on the source strongly connected components of the summary graph.
-We show that block-mean aggregation and point subsampling leave this value
-unchanged but move var- and $R^2$-sortability to different limits. A
-finite-sample analysis explains why the population value is hard to see in
-real series: raw correlation tests are inconsistent under autocorrelation, a
-latent common driver saturates the relatives count at $n\approx z_c^2/\ell^2$,
-and proxy conditioning works only with near-perfect reliability and a rank-one
-driver. All graph-theoretic results and the algebraic core of the finite-sample
-results are machine-checked in Lean~4 (116 theorems). In pre-registered
-real-data studies, a river benchmark fails as the theory predicts, and a
-physical testbed with designed independent sources gives a partial positive
-result, including out-of-sample predictions of detection rates. A
-fourth pre-registration (E1) asks whether the theorem's edge values beat eight
-naive predictors on a multi-layer light-tunnel series. It does, mostly through
-predicted ties, and only for the linearly dependent relatives (on the published
-graph one naive predictor is significantly better on the strictly ordered edges).
-A lagged-relatives estimator (E2) raises detection on wind-tunnel data, but its
-pre-registered graded criterion fails, as P9 did.
+with an explicit $O(1/T)$ rate. For the finite DAG the earlier condition is
+also necessary: every other summary graph, for instance any river network,
+has a finite-DAG value strictly above $1/2$. This excess is caused by the
+fixed start at $t=1$: with a stationary start the value is exact for every $T$
+and depends only on the source strongly connected components. Without
+self-loops the exact edge value survives, but the closed form and the converse
+fail (counterexamples). For Erd\H{o}s--R\'enyi summary graphs we derive the
+limiting values, which peak near the percolation threshold at $0.754$ (finite)
+and $0.665$ (stationary); this derivation is a sketch whose concentration step
+is not proved, and it agrees with exact computation to 3--4 digits. Block-mean
+aggregation and point subsampling leave the relatives unchanged but move var-
+and $R^2$-sortability to different limits. Raw correlation tests are classically
+inconsistent under autocorrelation; we add an effective sample size for the
+relatives count, a non-asymptotic recovery bound, saturation by a latent driver
+at $n\approx z_c^2/\ell^2$, and conditions for a proxy to repair it. The graph
+results and the algebraic core of the finite-sample results are machine-checked
+in Lean~4 (133 theorems). In pre-registered real-data studies a river benchmark
+fails as the theory predicts, and a physical testbed gives a partial positive
+result, including out-of-sample predictions of detection rates. A fourth pre-registration (E1) shows that the theorem's edge values beat eight
+naive predictors on a light-tunnel series, mostly through predicted ties and
+only for linearly dependent relatives (on the published graph one naive
+predictor is significantly better on strictly ordered edges). A lagged-relatives
+estimator (E2) fails its pre-registered graded criterion, as P9 did. In short,
+the paper completes the unrolled-graph analysis of the earlier work and adds a
+finite-sample and real-data layer.
 \end{abstract}
 
 %=============================================================================
@@ -140,7 +143,8 @@ criterion cannot be removed by reweighting. For random DAGs it is high; for
 \emph{time-unrolled} DAGs built from a summary graph with self-loops,
 \citet[Thm.~4]{reisach2026topological} show that it tends to $1/2$ if every
 weakly connected component of the summary graph is strongly connected, and
-they propose such graphs as benchmarks.
+they propose such graphs as benchmarks. Only sufficiency is shown in the arXiv
+version; they do not analyse the value beyond this case.
 
 Three questions remain open, and they matter for real time series, whose
 summary graphs are often feed-forward (rivers, supply chains, signalling
@@ -152,59 +156,86 @@ autocorrelated record, so that a method could actually exploit it?
 
 \textbf{Contributions.}
 \textbf{(1)} The exact rel-sortability of every edge of the time-unrolled DAG
-$\GT$, for every summary graph and every $T$ (\cref{thm:edge}), its limit
-$\tfrac12+|\Ex|/(2|\Es|)$ with $\Ex$ the edges between strongly connected
-components, and an explicit $O(1/T)$ rate (\cref{thm:limit}). The condition
-of \citet[Thm.~4]{reisach2026topological} is also necessary
-(\cref{cor:iff}). The excess above $1/2$ for, e.g., chains and out-trees is a
+$\GT$, for every summary graph with self-loops and every $T$ (\cref{thm:edge}),
+its limit $\tfrac12+|\Ex|/(2|\Es|)$ with $\Ex$ the edges between strongly
+connected components, and an explicit $O(1/T)$ rate (\cref{thm:limit}). The
+condition of \citet[Thm.~4]{reisach2026topological} is also necessary
+(\cref{cor:iff}). Without self-loops the exact edge value still holds, but the
+closed form and the converse are false (\cref{sec:noloop}). The excess above $1/2$ for, e.g., chains and out-trees is a
 boundary effect of the deterministic start at $t=1$ (\cref{prop:boundary}).
 \textbf{(2)} A stationary version (latent burn-in of $p-1$ slices or an
 infinite past) whose value is exact for every $T$ and is fixed by the
 \emph{source} strongly connected components (\cref{thm:stat}); river networks
 exceed $1/2$ iff they contain a confluence (\cref{cor:statiff}).
-\textbf{(3)} Under temporal aggregation the relatives are unchanged, whereas
-var- and $R^2$-sortability converge to those of a long-run structural model
-under block means and stay at the snapshot values under subsampling
+\textbf{(3)} Random summary graphs (\cref{sec:er}): limits $L(c)$, $S(c)$ for
+directed Erd\H{o}s--R\'enyi graphs with mean degree $c$ (a sketch with
+numerical support: the concentration step and the second fixed point are not
+proved), exact in-forest identities, and an elementary reading of $\srho$ as the
+accuracy of the ideal count-sort-orient rule.
+\textbf{(4)} Under aggregation the relatives are unchanged, whereas var- and
+$R^2$-sortability converge to those of a long-run structural model under block
+means (a model due to \citealp{gong2017aggregated}; we add the sortability
+consequences and a rate) and stay at the snapshot values under subsampling
 (\cref{sec:agg}).
-\textbf{(4)} Finite-sample theory (F1--F3, \cref{sec:finite}): a recovery bound
-with an effective sample size and the inconsistency of the nominal-$n$ test
-under autocorrelation; saturation by a latent driver at
-$n\approx z_c^2/\ell^2$; and a proxy-conditioning analysis showing that the
-proxy needs reliability close to $1$ and the driver must be one-dimensional.
-\textbf{(5)} Machine-checked proofs in Lean~4 with Mathlib of all graph results
-and of the deterministic core of F1--F3 (116 theorems, standard axioms only;
-\cref{sec:lean}). Every theorem below names its Lean counterpart.
-\textbf{(6)} Four pre-registered real-data studies (\cref{sec:real}). On
-CausalRivers \citep{stein2025causalrivers} the relatives sort carries no
-orientation information, and F2/F3 predict the observed dependence rates. On
-the Causal Chambers \citep{gamella2025chambers} two of three pre-registered
-wind-tunnel criteria pass, a light-tunnel replication passes all three, and
-F1/F2 predict held-out detection rates within $0.02$. A fourth study (E1)
-tests the theorem against eight naive edge predictors on a light-tunnel series
-with multi-layer ground truth: it passes 8/8, but under a refined graph of
-linearly dependent relatives and mostly through predicted ties, and it fails
-for the published graph on strictly ordered edges. A lagged-relatives
-estimator (E2) passes three of four criteria and fails the graded one. We
-report every failed pre-registered test in the main text (\cref{tab:real}).
+\textbf{(5)} Finite-sample theory (F1--F3, \cref{sec:finite}). Inconsistency of
+the nominal-$n$ test under autocorrelation is classical
+\citep{bartlett1935,clifford1989,roy1989,afyouni2019effective}; we add an
+effective sample size and a non-asymptotic recovery bound for the relatives
+count, saturation by a latent driver at $n\approx z_c^2/\ell^2$, and the
+conditions for a proxy to repair it, in line with known results on unreliable
+covariates \citep{westfall2016confounding}.
+\textbf{(6)} Lean~4 proofs of all graph results, the loop-free edge formula and
+the deterministic core of F1--F3 (133 theorems, standard axioms only;
+\cref{sec:lean}); to our knowledge the first machine-checked development of
+sortability results, while Lean libraries for other parts of causal inference
+exist \citep{tan2026causalsmith}.
+\textbf{(7)} Four pre-registered real-data studies (\cref{sec:real}), to our
+knowledge the first pre-registered tests of rel-sortability on real data
+(var- and $R^2$-sortability were measured on river and chamber data by
+\citealp{lohse2025sortability}): CausalRivers \citep{stein2025causalrivers}
+fails as F2/F3 predict, and the Causal Chambers \citep{gamella2025chambers} give
+a partial positive result, with E1 and E2 as described in the abstract. We
+report every failed pre-registered test (\cref{tab:real}).
 
 The graph results of contributions (1)--(2) are short consequences of a
 walk-length lemma and of \citet[Lemma~1]{reisach2026topological}. Their value
-is that they settle the question completely, are machine-checked, and change
-what a benchmark designer should conclude: much of the rel-sortability of
-time-unrolled benchmarks is an artefact of how the simulation is started.
-The finite-sample results use textbook tools; their value is that they
-predicted, quantitatively and in one case out of sample, the outcome of
-real-data tests.
+is that they determine the value for every summary graph and horizon, are
+machine-checked, and change what a benchmark designer should conclude: much of
+the rel-sortability of time-unrolled benchmarks is an artefact of how the
+simulation is started. The random-graph results are a sketch plus numerics
+rather than a proof. The finite-sample results use textbook tools; their value
+is that they predicted, quantitatively and in one case out of sample, the
+outcome of real-data tests. A referee should read the whole as a completion of
+the unrolled-graph analysis of \citet{reisach2026topological} (their
+Section~5) plus a finite-sample and real-data layer, not as a new theory of
+sortability.
 
-\textbf{Related work.} Beyond the sortability papers above,
-\citet{lohse2025sortability} measure var- and $R^2$-sortability of real and
-simulated time series and note that cyclic pairs push the signal towards
-$1/2$; they give no theorem on relatives or aggregation. Identifiability from
-subsampled \citep{gong2015subsampled} and aggregated
-\citep{gong2017aggregated} series is a separate question from sortability.
-Time-series discovery methods such as PCMCI \citep{runge2019detecting} test
-conditional independences, and our finite-sample results concern only the
-marginal tests that define relatives.
+\textbf{Related work.} Varsortability~\citep{reisach2021beware} and
+$R^2$-sortability~\citep{reisach2023scale} have been analysed for standardised
+SCMs~\citep{ormaniec2025standardizing}, for unit-free generators with a time-series
+extension~\citep{herman2025unitless}, and, for time series, by
+\citet{lohse2025sortability}, who adapt both criteria to summary graphs, note that
+cyclic pairs push the signal towards $1/2$, and measure them on river-flow and Causal
+Chambers data; they give no theorem and do not study relatives or observation
+schemes. \citet{reisach2026topological} introduce rel-sortability and the
+time-unrolled DAG, and prove that strong connectivity of every weak component of the
+summary graph is sufficient for the limit $1/2$. We determine the value exactly for
+every summary graph, horizon and start, and show that the condition is necessary for
+the finite DAG. Block means of a VAR converge to a static linear SEM with coefficients
+$A_{ji}/(1-A_{jj})$~\citep{gong2017aggregated}; that work and
+\citet{gong2015subsampled} study identifiability of the causal-frequency model from
+aggregated or subsampled data, not sortability. The inconsistency of a Pearson test
+with the nominal sample size under autocorrelation is classical~\citep{bartlett1935,
+clifford1989, roy1989} and is used in practice~\citep{runge2019detecting,
+afyouni2019effective}; we add an effective sample size for the relatives count with a
+non-asymptotic recovery bound, and quantify how a latent driver or an imperfect proxy
+defeats it, in line with known residual-confounding results for unreliable
+covariates~\citep{westfall2016confounding}. Formal libraries for causal inference
+exist~\citep{tan2026causalsmith}; we machine-check the sortability results and the
+deterministic core of the finite-sample theory. Identifiability from subsampled and
+aggregated series is a separate question from sortability, and time-series discovery
+methods such as PCMCI~\citep{runge2019detecting} test conditional independences,
+whereas our finite-sample results concern only the marginal tests that define relatives.
 
 %=============================================================================
 \section{Setting}
@@ -354,15 +385,84 @@ collider $a\!\to\! c\!\leftarrow\! b$ & $0.7$ & $0.7$ \\
 \vskip -0.1in
 \end{table}
 
-\Cref{tab:examples} shows the two versions side by side. In the finite
-generator every summary DAG with the same $m/p$ has the same value, so a
-benchmark built this way rewards relatives-sorting on chains and forks, where
-the stationary process gives no signal. For a discovery method applied to
-long stationary records, the stationary value is the relevant one, and it is
-what our real-data predictions use. We verified all statements of this
-section by exhaustive enumeration of all summary graphs with $p\le4$ and
-$10^4$ random graphs with $p\le7$ (46{,}724 (graph,~$T$) cases, 0 failures;
-\cref{app:enum}) before the Lean proofs were written.
+\Cref{tab:examples} shows the two versions. In the finite generator every
+summary DAG with the same $m/p$ has the same value, so a benchmark built this
+way rewards relatives-sorting on chains and forks, where the stationary
+process gives no signal; for long stationary records the stationary value is
+the relevant one and is what our real-data predictions use. All statements of
+this section were checked by exhaustive enumeration ($p\le4$ and $10^4$ random
+graphs with $p\le7$; 46{,}724 cases, 0 failures; \cref{app:enum}).
+
+\subsection{Without self-loops}\label{sec:noloop}
+Without self-loops an ancestor needs a walk of \emph{exactly} the right
+length, and nodes with no incoming edge (``fresh'') inject a new root at every
+slice. The exact edge value survives: for any summary graph every edge of $\GT$
+scores $1/2$ or $1$, independently of $T$, by an explicit criterion
+(\cref{thm:noloop}, \cref{app:noloop}), so the finite-$T$ value is exact. The
+limit exists and is rational (eventual periodicity; paper proof only), and
+\citet[Thm.~4]{reisach2026topological} still holds. The closed form $L=\tfrac12+|\Ex|/(2|\Es|)$ and the
+converse of \cref{cor:iff} do not: for the single edge $0\to1$ without loops
+$\srho(\GT)=1/2$ for every $T$; for the 2-cycle $\{0,1\}$ plus the edge
+$0\to2$, all without loops, $L=1/2$ although $(0,2)$ is crossing (with a loop at
+$2$, $L=5/8$). So the loop assumption is necessary for the closed form and the converse.
+\lean{\lname{edge_score_NL}, \lname{sRho_unrolled_eq_NL}, \lname{sRho_unrolled_ge_half_NL}, \lname{edgeNoLoops_sRho}; limit, periodicity and the stationary version without loops are paper-only or enumerated.}
+
+\subsection{Random summary graphs}\label{sec:er}
+Let $\GS$ be the directed Erd\H{o}s--R\'enyi graph $G(p,c/p)$ plus a self-loop at
+every node, and $x$ the largest root of $x=1-e^{-cx}$ ($x=0$ for $c\le1$). By
+\cref{thm:limit,thm:stat} only $|\Ex|$ and $|\Eu|$ matter.
+
+\begin{proposition}[ER limits; sketch]\label{prop:er}
+In probability as $p\to\infty$,
+$L(c)=\tfrac12+\frac{c(1-x^2)}{2(1+c)}$ and
+$S(c)=\tfrac12+\frac{c\,F_\uparrow}{2(1+c)}$ with
+$F_\uparrow=(1-x)(1-e^{-c})+x(1-x)\big(1-e^{-c(1-x)d}\big)$, where $d$ is the
+smallest fixed point in $[0,1]$ of $d=1+e^{-c}-e^{-c(1-x)d}$ ($d=1$ for $c\le1$).
+\nolean{a local-limit sketch, \cref{app:er}: the concentration step is not proved and the fixed point $d$ is derived heuristically; the formulas agree with exact computation to 3--4 digits}
+\end{proposition}
+The first formula says that the fraction of non-loop edges inside an SCC tends
+to $x^2$ (giant strongly connected component, \citealp{dorogovtsev2001giant}).
+$L(1)=3/4$, $L$ peaks at $0.754$ near $c=1.07$ and then decays like $e^{-c}$;
+$S$ peaks at $0.665$ near $c=1.09$ (\cref{fig:er}). Random summary graphs are thus rel-sortable only near or below
+criticality, as the giant SCC removes the signal. For in-forests (rivers; mean
+parent count $\mu$, fraction $\pi_1$ with exactly one parent) the identities are
+exact: $L\to\tfrac12+\mu/(2(1+\mu))$ is shape-independent while
+$S\to\tfrac12+(\mu-\pi_1)/(2(1+\mu))$ counts pass-through nodes
+(\cref{app:er}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=\columnwidth, height=0.5\columnwidth, xmin=0, xmax=6, ymin=0.49, ymax=0.78,
+  xlabel={mean degree $c$}, ylabel={rel-sortability},
+  tick label style={font=\scriptsize}, label style={font=\footnotesize},
+  legend style={font=\scriptsize, draw=none, fill=none, at={(0.98,0.97)}, anchor=north east},
+  axis line style={gray}, tick style={gray}]
+\input{er_curves}
+\addplot[only marks, mark=square*, mark size=1.8pt, color={rgb,255:red,235;green,104;blue,52}]
+  coordinates {(0.5,0.6666) (1,0.7486) (1.5,0.6975) (2,0.6214) (3,0.5434) (5,0.5059)};
+\addplot[only marks, mark=*, mark size=1.8pt, color={rgb,255:red,42;green,120;blue,214}]
+  coordinates {(0.5,0.5658) (1,0.6557) (1.5,0.6159) (2,0.5629) (3,0.5215) (5,0.5028)};
+\legend{$L(c)$,$S(c)$,exact $L$,exact $S$}
+\end{axis}
+\end{tikzpicture}
+\vskip -0.1in
+\caption{\cref{prop:er} (lines) against exact computation on seeded graphs
+($p=2\cdot10^4$ to $10^5$; points, means over seeds). The standard deviations
+over seeds are at most $0.0022$ (\cref{app:er}).}
+\label{fig:er}
+\vskip -0.15in
+\end{figure}
+
+\textbf{What the value means.} Show an edge in random order with the two
+relatives counts; the rule ``orient towards the larger count, flip a coin on
+ties'' has accuracy exactly $\srho$, never errs on an edge it decides, and no
+pairwise rule on the two counts does better (Reisach et al.'s Theorem~1 plus
+three lines, \cref{app:x3}). So $\srho=0.7$ caps such a method at $70\%$
+orientation accuracy: precision $1$ on decided edges and coverage
+$2(\srho-\tfrac12)$. This is elementary. Rules that also see node degrees can
+exceed it (\cref{app:x3}).
+\lean{\lname{accRule_sortRule}, \lname{accRule_le_sRho}, \lname{edgeAcc_sortRule_strict}, \lname{rho_not_gt_of_edge}.}
 
 %=============================================================================
 \section{Aggregation versus Subsampling}
@@ -391,7 +491,7 @@ Var- and $R^2$-sortability behave differently.
 (a) $\|D\,\mathrm{Cov}(\bar Y)-S_{LR}\|\le\frac1D\sum_h|h|\|\Gamma(h)\|$,
 with $S_{LR}=(I-A(1))^{-1}\Sigma(I-A(1))^{-\top}$.
 (b) If $\GS$ is acyclic apart from self-loops, $S_{LR}$ is the covariance of a
-static SEM on $\GS$ with weights $A(1)_{ji}/(1-\lambda_j)$ and noise variances
+static SEM (this long-run SEM is due to \citealp[Eqs.~(5), (10)]{gong2017aggregated}) on $\GS$ with weights $A(1)_{ji}/(1-\lambda_j)$ and noise variances
 $\sigma_j^2/(1-\lambda_j)^2$, $\lambda_j=A(1)_{jj}<1$.
 (c) $\mathrm{Cov}(Z_s)=\Gamma(0)$ for every $D$.
 (d) Hence, for large $D$, block-mean $R^2$-sortability is $0$ on out-stars and
@@ -400,13 +500,11 @@ contemporaneous criterion keeps its $\Gamma(0)$ value.
 \lean{(a) counting identity \lname{fejer_identity}; (b) \lname{longrun_factor}, \lname{selfloop_sum_lt_one}; the probabilistic steps, the rate and (c)--(d) are not machine-checked.}
 \end{theorem}
 
-Block means and subsampling therefore converge to different contemporaneous
-objects (a long-run SEM versus the stationary snapshot), and block means can
-reverse the $R^2$ order a snapshot has: in our exact computations on
-out-stars, subsampled data are $R^2$-sorted correctly on average ($0.84$)
-while block means drift to $0$ (\cref{app:agg}). Rel-sortability is the only
-one of the three criteria that depends on the graph alone and is invariant to
-the observation scheme, which is why we study it further.
+We claim the rate (a) and the sortability consequences (d), not the long-run
+model. Block means can thus reverse the $R^2$ order a snapshot has: on out-stars,
+subsampled data are $R^2$-sorted correctly on average ($0.84$) while block means
+drift to $0$ (\cref{app:agg}). Rel-sortability is the only criterion that
+depends on the graph alone and is invariant to the observation scheme.
 
 %=============================================================================
 \section{Finite-Sample Theory}
@@ -423,7 +521,13 @@ $z_c=\Phi^{-1}(1-\alpha/2m)$; $\hat\rho(v)=1+\#$declared partners. The
 $B_{ab}=\sum_h|\gamma_{aa}(h)\gamma_{bb}(h)+\gamma_{ab}(h)\gamma_{ab}(-h)|$
 (for an independent pair, the Bartlett sum $\sum_h\rho_a(h)\rho_b(h)$).
 
-\textbf{F1: recovery and effective sample size.}
+\textbf{F1: recovery and effective sample size.} That the nominal-$n$ test
+is inconsistent under autocorrelation is classical: effective degrees of
+freedom of a correlation go back to \citet{bartlett1935}, with spatial and
+multivariate versions in \citet{clifford1989} and \citet{roy1989}, and the
+variance with exactly our summand $B_{ab}$ is in \citet{afyouni2019effective}
+(see also the supplement of \citealp{runge2019detecting}). What is new here is
+the non-asymptotic exact-recovery bound for the relatives set.
 \begin{theorem}[recovery bound]\label{thm:f1}
 For $x,y>0$ let
 $\varepsilon_{ab}=\sqrt{2B_{ab}x/n}+\kappa_2x/n+2\kappa_1y/n$,
@@ -448,12 +552,14 @@ exact finite-$n$ variance identity for $\hat r$, and a deterministic
 perturbation lemma.
 
 \begin{proposition}[the nominal test is inconsistent; asymptotic]\label{prop:nominal}
-Assuming the standard CLT for quadratic forms of stationary Gaussian processes,
-a non-relative pair is declared by the nominal test with probability
+Assume a joint CLT for the sample variances and cross-covariance of the
+bivariate stationary Gaussian process (the scalar-process CLTs for quadratic
+forms are surveyed by \citealp{ginovyan2021survey}; the joint statement we
+need is an assumption, not a proved step). Then a non-relative pair is declared by the nominal test with probability
 $\to2\bar\Phi(z_c/\sqrt{B_{ab}})$, which does not vanish. With
 $\neff=n(1-\rho^2)^2/W_{ab}$ ($W$ the delta-method Bartlett variance) the
 false-positive rate tends to $\alpha/m$.
-\nolean{relies on a CLT not available in Mathlib}
+\nolean{relies on the assumed joint CLT, which is not in Mathlib}
 \end{proposition}
 
 \textbf{F2: saturation by a latent driver.} Let $X_v=Y_v+b_vC$ with $C$ a
@@ -473,12 +579,10 @@ effective test, the same bound on $\neff$).
 \end{proposition}
 $\nhalf$ does not depend on autocorrelation, which only sets the width of the
 transition. A driver with share $\ell=0.1$ saturates at $n\approx10^3$, and
-one with $\ell=0.64$ at $n\approx25$. Since $\tau_n\to0$ for any consistent
-test, a relatives count on a long record can recover the summary relatives
-only inside a window $\max_{\text{non-rel}}|\kappa|<\tau_n<\min_{\text{rel}}|\rho|$,
-which closes at $n$ of order $\nhalf$. Autocorrelation (\cref{prop:nominal})
-and a latent driver are two separate failure modes; both push $\hat s$
-towards $1/2$.
+one with $\ell=0.64$ at $n\approx25$. A relatives count on a long record can recover the summary relatives only
+while $\max_{\text{non-rel}}|\kappa|<\tau_n<\min_{\text{rel}}|\rho|$, a window
+that closes at $n$ of order $\nhalf$. Autocorrelation (\cref{prop:nominal}) and
+a latent driver are separate failure modes; both push $\hat s$ towards $1/2$.
 
 \textbf{F3: conditioning on a proxy.} Let $Z=\sqrt r\,C+\sqrt{1-r}\,e$ with
 reliability $r=\mathrm{corr}(Z,C)^2$, and let $\pi_{uv}$ be the partial
@@ -493,21 +597,22 @@ At $r=1$ the conditional relatives are the summary relatives and
 \cref{thm:stat} is restored. For non-relatives with $\ell_u,\ell_v\in(0,1)$,
 $|\pi_{uv}|$ is strictly decreasing in $r$ and vanishes only at $r=1$.
 Spurious conditional relatives therefore appear for every $r<1$ once $n$ is
-large; fewer than half of the non-relative pairs are declared only if
+large, in line with known residual-confounding results for unreliable
+covariates \citep{westfall2016confounding}; fewer than half of the non-relative pairs are declared only if
 $r>r_{\mathrm{crit}}=1-\frac{\tau'(1-\ell)}{\ell(1-\tau')}$, $\tau'=\tanh(z_c/\sqrt{n'-4})$
 (equal shares). If the driver reaches nodes through different filters (e.g.\
 travel times $k_v$), a scalar proxy leaves a nonzero residual even at $r=1$.
-The reliability is identified by $\rho_{uZ}\rho_{vZ}/\rho_{uv}=r$.
+The reliability is identified by $\rho_{uZ}\rho_{vZ}/\rho_{uv}=r$ (the
+classical three-indicator identity; we did not trace its source).
 \lean{\lname{prop31_std}, \lname{cor32}, \lname{absPi_strictAntiOn}, \lname{absPi_eq_zero_iff}, \lname{rcrit_iff}, \lname{thm35_bracket}, \lname{pc_lipschitz}, \lname{prop36_ar1_ne_zero}, \lname{prop36_rank_one}, \lname{prop38_ratio}.}
 \end{proposition}
-Formalisation found four missing nondegeneracy hypotheses in our own earlier
-statements (e.g.\ $b_ub_v\ne0$ for strict monotonicity); they are included
-above and listed in \cref{app:lean}. For $\ell=0.64$ and a typical threshold
+Formalisation found four missing nondegeneracy hypotheses in our earlier
+statements (e.g.\ $b_ub_v\ne0$); they are included above (\cref{app:lean}). For $\ell=0.64$ and a typical threshold
 $\tau'=0.082$, $r_{\mathrm{crit}}=0.95$.
 
-The non-asymptotic bounds are valid but loose (factors 3--13 in $n$ in
-simulation, \cref{app:sims}); the asymptotic statements matched every
-simulation to within $0.03$ and are what we use for prediction below.
+The non-asymptotic bounds are loose (factors 3--13 in $n$,
+\cref{app:sims}); the asymptotic statements matched every simulation to within
+$0.03$ and are used for prediction below.
 
 %=============================================================================
 \section{Machine-Checked Proofs}
@@ -515,17 +620,17 @@ simulation to within $0.03$ and are what we use for prediction below.
 
 All results of \cref{sec:exact} and the deterministic and algebraic parts of
 \cref{sec:agg,sec:finite} are formalised in Lean~4 \citep{demoura2021lean4}
-with Mathlib \citep{mathlib2020} (3{,}343 lines). The axiom report lists 116
+with Mathlib \citep{mathlib2020} (3{,}711 lines). The axiom report lists 133
 theorems, each depending only on \texttt{propext}, \texttt{Classical.choice}
 and \texttt{Quot.sound}; the sources contain no \texttt{sorry}, \texttt{admit}
-or \texttt{axiom}. Relatives, $\srho$, $\GT$, burn-in windows and the
-infinite-past graph are defined from scratch following
-\citet{reisach2026topological}; the one modelling convention is that ``a
-directed path exists'' is read as reflexive-transitive reachability. Not
-formalised: Gaussian tail bounds, Isserlis' theorem, the CLT, the SVAR
-moving-average representation and genericity (\cref{prop:zero}). These are the
-parts a referee must check by hand; \cref{app:lean} maps every statement to
-its Lean name and status.
+or \texttt{axiom}. Relatives, $\srho$, $\GT$ and the stationary windows
+are defined from scratch following \citet{reisach2026topological}; ``a directed
+path exists'' is read as reflexive-transitive reachability. The 17
+newest theorems cover the loop-free edge formula and the accuracy statements.
+Not formalised: the random-graph limits (\cref{prop:er}), eventual periodicity
+and the loop-free stationary value, Gaussian tail bounds, Isserlis' theorem, the CLT, the SVAR
+moving-average representation and genericity (\cref{prop:zero}). \Cref{app:lean} maps every statement to its Lean name and
+status.
 
 %=============================================================================
 \section{Pre-Registered Real-Data Evidence}
@@ -539,7 +644,9 @@ predicted value for an observed node set $S$ is the stationary value
 latent, averaged over the induced non-self-loop edges ($\tilde s$). The
 estimator is the relatives count of \cref{sec:finite} at $\alpha=0.01$ with
 Bonferroni; orientation accuracy is the mean edge score of $\hat\rho$. CIs are
-cluster bootstraps (2{,}000 resamples).
+cluster bootstraps (2{,}000 resamples). \citet{lohse2025sortability} measured var- and $R^2$-sortability on the same
+families (river variances tend to decrease along the causal order; chamber
+variances increase); we know of no earlier test of rel-sortability on real data.
 
 \begin{table*}[t]
 \caption{Pre-registered tests. Pass/fail is by the pre-registered point rule.
@@ -656,9 +763,9 @@ $r_{\mathrm{crit}}\approx0.87$ required at the observed $\neff$ (only 26\% of
 pairs exceed it), and the plug-in prediction of the post-conditioning
 dependent fraction is $0.743$ ($0.736$) against an observed $0.741$ ($0.735$)
 at 12\,h (24\,h). This check is in-sample, because $\hat r$ and $\hat\ell$ come
-from the tested correlations. Post hoc, conditioning on 10 principal
-components still leaves 49\% of non-relative pairs dependent, consistent with
-a driver of rank $>1$ (\cref{prop:f3}).
+from the tested correlations. Post hoc, 10 principal components still
+leave 49\% of non-relative pairs dependent, consistent with a driver of rank
+$>1$.
 
 \textbf{Causal Chambers: designed independent sources.} The third study chose
 data in which \cref{cor:statiff}'s non-trivial case holds by design: in the
@@ -703,115 +810,93 @@ orientation accuracy & 0.630 & 0.620 & 0.999 & 1.000 \\
  A measured driver (ambient pressure,
 shared by four barometers with no graph edge) is detected exactly where F2
 predicts ($\kappa=0.19$--$0.32$, $\nhalf=145$--$426<\neff$), and conditioning on
-it removes it (dependent fraction $0.039\to0.001$). Two caveats: the wind
-tunnel graph is bipartite, so the prediction coincides with ``sensors have
-more relatives than actuators'' (the motivation for E1, below); and all units of a chamber share one device.
+it removes it (dependent fraction $0.039\to0.001$). Caveats: the wind tunnel graph is bipartite, so the prediction coincides with
+``sensors have more relatives than actuators'' (the motivation for E1); all
+units of a chamber share one device.
 
 \textbf{E1: does the theorem beat naive predictors?} Pre-registered
 (\cref{app:prereg}) to answer the bipartite caveat. The test unit is an edge
-instance: the theorem's value $\srho\in\{0,\frac12,1\}$ against the observed value
-from the estimated counts, with absolute loss, on the instances where the theorem and a
-competitor disagree. The eight competitors are the sensor indicator;
-ancestor count, in-degree and depth (each on the full graph and on the
-induced subgraph); and the finite-$T$ limit ``every edge is $1$''. A
-competitor counts as beaten if $\Delta\le-0.10$ with an exact sign-flip test over
-units and Holm correction over the eight. The primary data are the
-light-tunnel series \texttt{citris\_1} (10 units), the only real time series
-we found whose ground truth has several layers among measured variables
-(red$\to$green$\to$blue$\to$sensors). \textbf{It passes 8/8.} The pre-registered
-power prerequisites hold (non-relatives declared $0.000$, relatives detected
-$0.969$); $\Delta=-0.502$ (sensor indicator) to $-0.533$, in 10/10 units each, Holm
-$p=0.0078$, the smallest attainable; restricted to pairs declared dependent, $\Delta=-0.500$.
-The theorem's value equals the observed one on $99.2\%$ of 1,662 instances,
-the competitors' on $11$--$20\%$; its three anti-sorted predictions (red and blue $\to$ pol$_2$, true edges
-whose head has fewer relatives) hold in $99.1\%$ of 110 instances. The same
-test on 45 i.i.d.\ structural-model units (pooled, 8,734 instances) also passes 8/8 ($\Delta\approx-0.49$, 45/45 units); the
-chain gives $1/2$ everywhere and the collider $1$ into the collider, as
-\cref{cor:statiff} predicts.
-Four statements bound this result.
-\emph{(i) The primary prediction uses a refined graph.} It removes six real causal edges
-(red, blue $\to$ pol$_2$; the polarisers $\to$ two sensors) because, by a symmetry lemma
-(\cref{app:e1}) that assumes ideal polariser sensors, they carry no linear dependence at any lag. The
-claim is therefore only that the theory predicts the \emph{linearly dependent}
-relatives. On the published graph the theorem still beats all eight overall
-($\Delta=-0.32$ to $-0.42$), but on the 442 edges where it predicts strict order the sensor indicator is significantly
-better ($\Delta=+0.453$, reverse Holm $p=0.002$), and the theorem's exact-match rate ($71.4\%$) is
-below that of a constant-$1/2$ rule ($81.5\%$, post hoc).
-\emph{(ii) Most of the separation comes from ties.} Single-source components are predicted $1/2$, which none of the
-naive rules can express: $1{,}365$ of the 1,662 predictions are $1/2$. Strict $0/1$ predictions are
-fewer (297 on \texttt{citris\_1}, 2,768 on the snapshot sets). On \texttt{citris\_1} the theorem also wins on them against all eight
-($\Delta=-0.54$ to $-0.99$), where an estimator without power would favour the competitors.
-Post hoc, a constant-$1/2$ rule matches $81.5\%$ of \texttt{citris\_1} ($68.8\%$ of the snapshot sets) against $99.2\%$ ($92.3\%$).
-\emph{(iii) The evidence is one device in a favourable regime}: a light tunnel
-with strongly responding sensors and detection of $0.97$; the snapshot sets are also light-tunnel data.
-\emph{(iv) The wind tunnel does not replicate the strength.} On the 64
-held-out regimes the theorem passes the same test (primary $\Delta=-0.225$, secondary $-0.203$), but
-detection is only $0.33$--$0.59$ (limited by F1), so part of this is power-induced. On the primary
-configuration a constant-$1/2$ rule has lower absolute error than the theorem ($0.311$ vs.\ $0.363$); at $D{=}10$ the two are close ($0.313$ vs.\ $0.294$).
+instance: the theorem's value $\srho\in\{0,\frac12,1\}$ against the observed
+value from the estimated counts, with absolute loss, on instances where the
+theorem and a competitor disagree. The eight competitors are the sensor
+indicator; ancestor count, in-degree and depth (each on the full and the
+induced graph); and the finite-$T$ limit ``every edge is $1$''. A competitor is
+beaten if $\Delta\le-0.10$ with an exact sign-flip test over units and Holm
+correction. The primary data are the light-tunnel series \texttt{citris\_1} (10
+units), the only real time series we found with several ground-truth layers
+among measured variables. \textbf{It passes 8/8}: the power prerequisites hold
+(non-relatives declared $0.000$, relatives detected $0.969$), $\Delta=-0.502$
+to $-0.533$ in 10/10 units, Holm $p=0.0078$ (the smallest attainable). The
+theorem's value equals the observed one on $99.2\%$ of 1,662 instances, the
+competitors' on $11$--$20\%$. The same test on 45 i.i.d.\ structural-model
+units (8,734 instances) also passes 8/8; the chain gives $1/2$ everywhere and
+the collider $1$ into the collider, as \cref{cor:statiff} predicts.
+Four statements bound this result (details and numbers in \cref{app:e1}).
+\emph{(i) The primary prediction uses a refined graph.} It removes six real
+causal edges because, by a symmetry lemma that assumes ideal polariser sensors,
+they carry no linear dependence; the claim is only that the theory predicts the
+\emph{linearly dependent} relatives. On the published graph the theorem still
+beats all eight overall ($\Delta=-0.32$ to $-0.42$), but on the 442 edges where
+it predicts strict order the sensor indicator is significantly better
+($\Delta=+0.453$, reverse Holm $p=0.002$), and the theorem's exact-match rate
+($71.4\%$) is below that of a constant-$1/2$ rule ($81.5\%$, post hoc).
+\emph{(ii) Most of the separation comes from ties}: $1{,}365$ of the 1,662
+predictions are $1/2$, which no naive rule can express; the 297 strict
+predictions are also won against all eight. A constant-$1/2$ rule matches
+$81.5\%$ of \texttt{citris\_1} against $99.2\%$ (post hoc). \emph{(iii) One device in a favourable regime} (detection $0.97$).
+\emph{(iv) The wind tunnel does not replicate the strength}: the theorem passes
+the same test on 64 held-out regimes ($\Delta=-0.225$), but detection is only
+$0.33$--$0.59$, and on the primary configuration a constant-$1/2$ rule has lower
+absolute error ($0.311$ vs.\ $0.363$).
 
-\textbf{E2: lagged relatives.} E2 tests whether a relatives test that uses
-cross-correlations at lags $|h|\le L$ (Bonferroni over lags; same population
-relatives under lag-$L$ faithfulness, \cref{app:e2}) recovers the weak lag-0
-edges behind P9, on 64 held-out regimes (primary: first differences, $L=30$,
-against $L=0$). Success required Q7--Q10 to pass. \textbf{It does not}, because Q9 fails
-(\cref{tab:real}): false positives stay rare (Q7 $0.003$), the accuracy on edges predicted $1$
-is $0.553$ (Q8), detection rises from $0.328$ to $0.398$ ($+0.069$, Q10), but the graded agreement is
-$0.243<0.3$ (Q9). The secondary configuration (block means, $L=3$) fails Q9 ($0.202$) and
-Q10 ($-0.007\,[-0.012,-0.003]$): the Bonferroni cost exceeds the gain. On \texttt{citris\_1} lags add
-$+0.008\,[0,0.024]$ (detection is already $0.97$). The lag-0 estimator of P7--P9, rerun on these held-out
-regimes, again fails the graded criterion ($0.202$ at $D{=}10$, $0.120$ at $D{=}1$): the P9 failure repeats,
-and its original verdict ($0.267$) stands. E2 does not rescue P9. Re-drawing only the subgraph sample on the
-P9 data moved that statistic from $0.267$ to $0.338$ (development, not a verdict); we report this as
-variability of the statistic of about $0.07$, not as a pass. Lags recover some edges (load\_in $\to$ upwind pressure
-$0.56\to0.98$) and lose others to the larger threshold ($\mathrm{pot}_1\to\mathrm{signal}_1$ $0.36\to0.16$); every
-microphone edge stays undetected, so the F1 shortfall is not mainly a lag problem. Out-of-sample F1/F2 checks pass in all six
-configurations (\cref{app:e2}).
+\textbf{E2: lagged relatives.} E2 tests whether a relatives test using
+cross-correlations at lags $|h|\le L$ (Bonferroni over lags; \cref{app:e2})
+recovers the weak lag-0 edges behind P9, on 64 held-out regimes (primary: first
+differences, $L=30$ against $L=0$). Success required Q7--Q10. \textbf{It does not
+succeed}: Q9 fails (\cref{tab:real}). False positives stay rare (Q7 $0.003$),
+accuracy is $0.553$ (Q8), detection rises from $0.328$ to $0.398$ (Q10), but the
+graded agreement is $0.243<0.3$ (Q9). The secondary configuration (block means,
+$L=3$) fails Q9 and Q10 ($-0.007$): the Bonferroni cost exceeds the gain. The
+lag-0 estimator rerun on these regimes again fails the graded criterion
+($0.202$ at $D{=}10$, $0.120$ at $D{=}1$), so P9's verdict ($0.267$) stands; a
+redraw of the subgraph sample moved that statistic to $0.338$ (development, not
+a verdict), which we report as variability of about $0.07$, not as a pass. Every
+microphone edge stays undetected, so the F1 shortfall is not mainly a lag
+problem.
 
 %=============================================================================
 \section{Discussion and Limitations}
 \label{sec:disc}
 
 \textbf{For benchmark design.} The finite time-unrolled generator is
-rel-sortable above $1/2$ for every summary graph that is not a union of strongly
-connected components (\cref{cor:iff}), and part of the excess comes only from
-the start at $t=1$. Benchmarks should either use strongly connected summary
+rel-sortable above $1/2$ for every summary graph that is not a union of
+strongly connected components (\cref{cor:iff}), and part of the excess comes
+only from the start at $t=1$. Benchmarks should use strongly connected summary
 graphs or a burn-in of at least $p-1$ slices, after which the value is the
-graph property of \cref{thm:stat}, for every $T$. Reporting $|\Ex|/|\Es|$ or
-$|\Eu|/|\Es|$ alongside a benchmark costs nothing.
+graph property of \cref{thm:stat}. Random summary graphs are sortable only near criticality (\cref{fig:er}).
 
 \textbf{For real data.} Population rel-sortability above $1/2$ does not imply
-that a relatives count can be estimated. Two conditions are needed, and F1--F3
-quantify both: the absence of a latent common driver with share $\ell$ such
-that $n\gtrsim z_c^2/\ell^2$ (or a near-perfect, rank-one proxy for it), and
-relatives that are detectable at lag~0 at the available $\neff$. CausalRivers
-violates the first, the wind tunnel partly the second. A cheap diagnostic
-follows: before relying on relatives-based orderings (or before reading a
-benchmark result as evidence that a method uses them), estimate the typical
-correlation $\hat\kappa$ of pairs believed to be unrelated and compare
-$\neff$ with $3+(z_c/\atanh\hat\kappa)^2$; if $\neff$ is far above it, the
-relatives count will be saturated whatever the graph. A practical consequence
-for method developers is that a time-series discovery method cannot gain much
-from rel-sortability on real records with a shared driver, even when the
-summary graph would make it informative in population.
+that a relatives count can be estimated. Two conditions are needed: no latent
+common driver with share $\ell$ such that $n\gtrsim z_c^2/\ell^2$ (or a
+near-perfect, rank-one proxy), and relatives detectable at lag~0 at the
+available $\neff$. CausalRivers violates the first, the wind tunnel partly the
+second. Diagnostic: compare $\neff$ with $3+(z_c/\atanh\hat\kappa)^2$, where
+$\hat\kappa$ is the typical correlation of pairs believed unrelated; if $\neff$
+is far above it, the count is saturated whatever the graph.
 
-\textbf{Open questions.} Summary graphs without self-loops, contemporaneous
-effects at the native time step, and nonlinear mechanisms (where
-\cref{prop:zero} still gives the zero pattern but faithfulness can fail, as
-the Malus-law pairs of the light tunnel show) are not covered. Lagged cross-correlations raise detection at fine
-resolution (E2) but did not repair the graded agreement of P9; weak, nonlinear or
-undetectable effects remain the limiting factor on the wind tunnel.
+\textbf{Open questions.} Proofs of the random-graph limits and of the windowed
+loop-free stationary value; contemporaneous effects; nonlinear mechanisms
+(faithfulness can fail, as the Malus-law pairs of the light tunnel show).
 
-\textbf{Limitations.} The graph results assume self-loops at every node
-(without them a single edge gives $1/2$ instead of $2/3$; \cref{app:exact}).
-\Cref{sec:agg} covers linear SVARs only. The finite-sample bounds are loose,
-and the asymptotic statements rest on a CLT that we cite rather than prove.
-\Cref{prop:zero} and the probabilistic parts of F1--F3 are proved on paper
-only. The real-data evidence comes from two benchmark families, and the
-positive part from one physical device per chamber (E1 uses light tunnels only).
-The strongest result (E1) holds for linearly dependent relatives, relies on
-an assumption about ideal polariser sensors, and is carried mainly by predicted
-ties; faithfulness to linear dependence fails by design for six real edges.
-The graded criteria P2, P3, P4, P6, P9 and Q9 failed.
+\textbf{Limitations.} The closed forms assume self-loops at every node (without
+them a single edge gives $1/2$ instead of $2/3$; \cref{sec:noloop}). The ER
+limits are a sketch with numerical support. \Cref{sec:agg} covers linear SVARs
+only. The finite-sample bounds are loose, and the asymptotic statements rest on
+an assumed joint CLT. \Cref{prop:zero} and the probabilistic parts of F1--F3
+are proved on paper only. The positive real-data evidence comes from one
+device per chamber; E1 holds for linearly dependent relatives, assumes ideal
+polariser sensors, and is carried mainly by predicted ties. The graded criteria
+P2, P3, P4, P6, P9 and Q9 failed.
 
 \section*{Impact Statement}
 This paper presents work whose goal is to advance the field of Machine
