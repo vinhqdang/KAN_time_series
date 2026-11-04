@@ -1,0 +1,136 @@
+F1 simulation; reps per cell 1000 ; seeds 1000+case*100+n-index
+
+== C1 d=5 lam=0.5 w=0.5: rho_min(relatives) = 0.0722, max|rho| non-rel = 0.0e+00, Bartlett B(null) range [1.67,2.07], W(null)==B(null): True, max B 3.53, D 5.63, kappa1 5.06, kappa2 9.09
+ n | tau | P_emp(Rhat=R) | F1 bound | P_emp(|r-rho|<=delta all) | 1-fail(x*,y*) | P_emp(s_hat=s) | FP rate/null pair (nominal) | predicted FP (asympt.)
+    200 nominal            approx 0.001 tau~0.230 | 0.004 | 0.000 | nan | nan | 0.286 | 0.0124 | 0.0139
+    200 oracle_neff        approx 0.000 tau~0.310 | 0.000 | 0.000 | nan | nan | 0.623 | 0.0002 | 0.0010
+    200 fixed_half_rhomin  approx 0.001 tau~0.036 | 0.005 | 0.000 | nan | nan | 0.148 | 0.6988 | 0.7031
+    500 nominal            approx 0.011 tau~0.147 | 0.011 | 0.000 | nan | nan | 0.024 | 0.0148 | 0.0143
+    500 oracle_neff        approx 0.000 tau~0.198 | 0.000 | 0.000 | nan | nan | 0.073 | 0.0010 | 0.0010
+    500 fixed_half_rhomin  approx 0.011 tau~0.036 | 0.008 | 0.000 | nan | nan | 0.180 | 0.5454 | 0.5468
+   1000 nominal            approx 0.053 tau~0.104 | 0.041 | 0.000 | nan | nan | 0.048 | 0.0188 | 0.0144
+   1000 oracle_neff        approx 0.002 tau~0.141 | 0.004 | 0.000 | nan | nan | 0.004 | 0.0010 | 0.0010
+   1000 fixed_half_rhomin  approx 0.052 tau~0.036 | 0.062 | 0.000 | nan | nan | 0.226 | 0.3950 | 0.3943
+   2000 nominal            approx 0.217 tau~0.074 | 0.214 | 0.000 | nan | nan | 0.229 | 0.0130 | 0.0145
+   2000 oracle_neff        approx 0.024 tau~0.100 | 0.029 | 0.000 | nan | nan | 0.029 | 0.0010 | 0.0010
+   2000 fixed_half_rhomin  approx 0.208 tau~0.036 | 0.217 | 0.000 | nan | nan | 0.338 | 0.2294 | 0.2287
+   5000 nominal            approx 0.753 tau~0.047 | 0.741 | 0.000 | nan | nan | 0.750 | 0.0174 | 0.0146
+   5000 oracle_neff        approx 0.385 tau~0.063 | 0.377 | 0.000 | nan | nan | 0.377 | 0.0010 | 0.0010
+   5000 fixed_half_rhomin  approx 0.691 tau~0.036 | 0.705 | 0.000 | nan | nan | 0.734 | 0.0622 | 0.0576
+  10000 nominal            approx 0.924 tau~0.033 | 0.920 | 0.000 | nan | nan | 0.923 | 0.0156 | 0.0146
+  10000 oracle_neff        approx 0.925 tau~0.045 | 0.931 | 0.000 | nan | nan | 0.931 | 0.0012 | 0.0010
+  10000 fixed_half_rhomin  approx 0.953 tau~0.036 | 0.960 | 0.000 | nan | nan | 0.961 | 0.0060 | 0.0075
+  20000 nominal            approx 0.929 tau~0.023 | 0.937 | 0.000 | nan | nan | 0.943 | 0.0142 | 0.0146
+  20000 oracle_neff        approx 0.995 tau~0.032 | 0.999 | 0.266 | 0.998 | 0.266 | 0.999 | 0.0000 | 0.0010
+  20000 fixed_half_rhomin  approx 0.999 tau~0.036 | 0.999 | 0.041 | 0.995 | 0.041 | 0.999 | 0.0000 | 0.0002
+ smallest n with F1 bound >= 0.9 (oracle_neff): 21429207
+ smallest n with F1 bound >= 0.9 (fixed_half_rhomin): 32695
+ Bartlett/delta-method check n=5000, 2000 reps: empirical n*Var(r)/W over pairs: min 0.928 median 0.989 max 1.054
+
+== C2 d=5 lam=0.9 w=0.3: rho_min(relatives) = 0.2479, max|rho| non-rel = 0.0e+00, Bartlett B(null) range [9.53,15.63], W(null)==B(null): True, max B 45.90, D 63.84, kappa1 49.24, kappa2 91.22
+ n | tau | P_emp(Rhat=R) | F1 bound | P_emp(|r-rho|<=delta all) | 1-fail(x*,y*) | P_emp(s_hat=s) | FP rate/null pair (nominal) | predicted FP (asympt.)
+    200 nominal            approx 0.032 tau~0.230 | 0.018 | 0.000 | nan | nan | 0.155 | 0.3246 | 0.3243
+    200 oracle_neff        approx 0.000 tau~0.677 | 0.000 | 0.000 | nan | nan | 0.835 | 0.0002 | 0.0010
+    200 fixed_half_rhomin  approx 0.005 tau~0.124 | 0.008 | 0.000 | nan | nan | 0.148 | 0.6016 | 0.6009
+    500 nominal            approx 0.076 tau~0.147 | 0.085 | 0.000 | nan | nan | 0.259 | 0.3298 | 0.3265
+    500 oracle_neff        approx 0.000 tau~0.457 | 0.000 | 0.000 | nan | nan | 0.295 | 0.0002 | 0.0010
+    500 fixed_half_rhomin  approx 0.046 tau~0.124 | 0.070 | 0.000 | nan | nan | 0.263 | 0.4046 | 0.4092
+   1000 nominal            approx 0.112 tau~0.104 | 0.163 | 0.000 | nan | nan | 0.383 | 0.3340 | 0.3272
+   1000 oracle_neff        approx 0.016 tau~0.330 | 0.006 | 0.000 | nan | nan | 0.007 | 0.0004 | 0.0010
+   1000 fixed_half_rhomin  approx 0.189 tau~0.124 | 0.254 | 0.000 | nan | nan | 0.428 | 0.2500 | 0.2450
+   2000 nominal            approx 0.132 tau~0.074 | 0.242 | 0.000 | nan | nan | 0.516 | 0.3266 | 0.3275
+   2000 oracle_neff        approx 0.204 tau~0.236 | 0.108 | 0.000 | nan | nan | 0.108 | 0.0004 | 0.0010
+   2000 fixed_half_rhomin  approx 0.525 tau~0.124 | 0.591 | 0.000 | nan | nan | 0.699 | 0.1038 | 0.1028
+   5000 nominal            approx 0.135 tau~0.047 | 0.227 | 0.000 | nan | nan | 0.479 | 0.3188 | 0.3278
+   5000 oracle_neff        approx 0.919 tau~0.150 | 0.898 | 0.000 | nan | nan | 0.898 | 0.0008 | 0.0010
+   5000 fixed_half_rhomin  approx 0.935 tau~0.124 | 0.950 | 0.000 | nan | nan | 0.965 | 0.0118 | 0.0117
+  10000 nominal            approx 0.135 tau~0.033 | 0.238 | 0.000 | nan | nan | 0.478 | 0.3224 | 0.3278
+  10000 oracle_neff        approx 0.995 tau~0.107 | 0.994 | 0.000 | nan | nan | 0.994 | 0.0010 | 0.0010
+  10000 fixed_half_rhomin  approx 0.997 tau~0.124 | 0.996 | 0.000 | nan | nan | 0.996 | 0.0004 | 0.0005
+  20000 nominal            approx 0.135 tau~0.023 | 0.216 | 0.000 | nan | nan | 0.484 | 0.3300 | 0.3279
+  20000 oracle_neff        approx 0.995 tau~0.075 | 0.995 | 0.000 | nan | nan | 0.996 | 0.0012 | 0.0010
+  20000 fixed_half_rhomin  approx 1.000 tau~0.124 | 1.000 | 0.000 | nan | nan | 1.000 | 0.0000 | 0.0000
+ smallest n with F1 bound >= 0.9 (oracle_neff): 332090365
+ smallest n with F1 bound >= 0.9 (fixed_half_rhomin): 62794
+ Bartlett/delta-method check n=5000, 2000 reps: empirical n*Var(r)/W over pairs: min 0.962 median 0.996 max 1.060
+
+== C3 d=5 lam=0.97 w=0.1 (break attempt): rho_min(relatives) = 0.2705, max|rho| non-rel = 0.0e+00, Bartlett B(null) range [32.84,54.19], W(null)==B(null): True, max B 162.71, D 223.14, kappa1 171.50, kappa2 318.15
+ n | tau | P_emp(Rhat=R) | F1 bound | P_emp(|r-rho|<=delta all) | 1-fail(x*,y*) | P_emp(s_hat=s) | FP rate/null pair (nominal) | predicted FP (asympt.)
+    200 nominal            approx 0.003 tau~0.230 | 0.006 | 0.000 | nan | nan | 0.178 | 0.5718 | 0.5946
+    200 oracle_neff        approx 0.000 tau~0.970 | 0.000 | 0.000 | nan | nan | 0.011 | 0.0000 | 0.0010
+    200 fixed_half_rhomin  approx 0.000 tau~0.135 | 0.000 | 0.000 | nan | nan | 0.154 | 0.7454 | 0.7586
+    500 nominal            approx 0.005 tau~0.147 | 0.006 | 0.000 | nan | nan | 0.138 | 0.5896 | 0.5963
+    500 oracle_neff        approx 0.000 tau~0.764 | 0.000 | 0.000 | nan | nan | 0.650 | 0.0002 | 0.0010
+    500 fixed_half_rhomin  approx 0.004 tau~0.135 | 0.006 | 0.000 | nan | nan | 0.143 | 0.6144 | 0.6273
+   1000 nominal            approx 0.007 tau~0.104 | 0.015 | 0.000 | nan | nan | 0.208 | 0.6142 | 0.5968
+   1000 oracle_neff        approx 0.000 tau~0.582 | 0.000 | 0.000 | nan | nan | 0.642 | 0.0004 | 0.0010
+   1000 fixed_half_rhomin  approx 0.019 tau~0.135 | 0.030 | 0.000 | nan | nan | 0.205 | 0.5106 | 0.4928
+   2000 nominal            approx 0.009 tau~0.074 | 0.018 | 0.000 | nan | nan | 0.279 | 0.5924 | 0.5971
+   2000 oracle_neff        approx 0.002 tau~0.428 | 0.001 | 0.000 | nan | nan | 0.083 | 0.0006 | 0.0010
+   2000 fixed_half_rhomin  approx 0.092 tau~0.135 | 0.124 | 0.000 | nan | nan | 0.304 | 0.3292 | 0.3334
+   5000 nominal            approx 0.010 tau~0.047 | 0.027 | 0.000 | nan | nan | 0.328 | 0.6046 | 0.5973
+   5000 oracle_neff        approx 0.139 tau~0.277 | 0.070 | 0.000 | nan | nan | 0.070 | 0.0010 | 0.0010
+   5000 fixed_half_rhomin  approx 0.443 tau~0.135 | 0.522 | 0.000 | nan | nan | 0.638 | 0.1276 | 0.1292
+  10000 nominal            approx 0.010 tau~0.033 | 0.030 | 0.000 | nan | nan | 0.303 | 0.5934 | 0.5973
+  10000 oracle_neff        approx 0.684 tau~0.197 | 0.640 | 0.000 | nan | nan | 0.640 | 0.0006 | 0.0010
+  10000 fixed_half_rhomin  approx 0.818 tau~0.135 | 0.871 | 0.000 | nan | nan | 0.898 | 0.0284 | 0.0343
+  20000 nominal            approx 0.010 tau~0.023 | 0.029 | 0.000 | nan | nan | 0.311 | 0.6032 | 0.5973
+  20000 oracle_neff        approx 0.989 tau~0.140 | 0.985 | 0.000 | nan | nan | 0.985 | 0.0010 | 0.0010
+  20000 fixed_half_rhomin  approx 0.981 tau~0.135 | 0.987 | 0.000 | nan | nan | 0.989 | 0.0026 | 0.0035
+ smallest n with F1 bound >= 0.9 (oracle_neff): 1168014579
+ smallest n with F1 bound >= 0.9 (fixed_half_rhomin): 201297
+ Bartlett/delta-method check n=5000, 2000 reps: empirical n*Var(r)/W over pairs: min 0.945 median 0.989 max 1.112
+
+== C4 d=10 in-forest lam=0.7 w=0.4: rho_min(relatives) = 0.0588, max|rho| non-rel = 0.0e+00, Bartlett B(null) range [2.92,7.85], W(null)==B(null): True, max B 13.30, D 17.89, kappa1 14.55, kappa2 27.29
+ n | tau | P_emp(Rhat=R) | F1 bound | P_emp(|r-rho|<=delta all) | 1-fail(x*,y*) | P_emp(s_hat=s) | FP rate/null pair (nominal) | predicted FP (asympt.)
+    200 nominal            approx 0.000 tau~0.257 | 0.000 | 0.000 | nan | nan | 0.034 | 0.0728 | 0.0681
+    200 oracle_neff        approx 0.000 tau~0.483 | 0.000 | 0.000 | nan | nan | 0.000 | 0.0001 | 0.0002
+    200 fixed_half_rhomin  approx 0.000 tau~0.029 | 0.000 | 0.000 | nan | nan | 0.003 | 0.8353 | 0.8329
+    500 nominal            approx 0.000 tau~0.164 | 0.000 | 0.000 | nan | nan | 0.019 | 0.0703 | 0.0693
+    500 oracle_neff        approx 0.000 tau~0.316 | 0.000 | 0.000 | nan | nan | 0.000 | 0.0001 | 0.0002
+    500 fixed_half_rhomin  approx 0.000 tau~0.029 | 0.000 | 0.000 | nan | nan | 0.014 | 0.7365 | 0.7389
+   1000 nominal            approx 0.000 tau~0.116 | 0.003 | 0.000 | nan | nan | 0.043 | 0.0692 | 0.0696
+   1000 oracle_neff        approx 0.000 tau~0.226 | 0.000 | 0.000 | nan | nan | 0.000 | 0.0002 | 0.0002
+   1000 fixed_half_rhomin  approx 0.000 tau~0.029 | 0.000 | 0.000 | nan | nan | 0.020 | 0.6334 | 0.6377
+   2000 nominal            approx 0.005 tau~0.082 | 0.012 | 0.000 | nan | nan | 0.107 | 0.0677 | 0.0698
+   2000 oracle_neff        approx 0.000 tau~0.161 | 0.000 | 0.000 | nan | nan | 0.000 | 0.0002 | 0.0002
+   2000 fixed_half_rhomin  approx 0.000 tau~0.029 | 0.000 | 0.000 | nan | nan | 0.049 | 0.5037 | 0.5063
+   5000 nominal            approx 0.040 tau~0.052 | 0.089 | 0.000 | nan | nan | 0.240 | 0.0685 | 0.0700
+   5000 oracle_neff        approx 0.001 tau~0.102 | 0.001 | 0.000 | nan | nan | 0.002 | 0.0001 | 0.0002
+   5000 fixed_half_rhomin  approx 0.000 tau~0.029 | 0.002 | 0.000 | nan | nan | 0.094 | 0.2984 | 0.2964
+  10000 nominal            approx 0.086 tau~0.037 | 0.219 | 0.000 | nan | nan | 0.366 | 0.0661 | 0.0700
+  10000 oracle_neff        approx 0.033 tau~0.072 | 0.031 | 0.000 | nan | nan | 0.031 | 0.0003 | 0.0002
+  10000 fixed_half_rhomin  approx 0.009 tau~0.029 | 0.055 | 0.000 | nan | nan | 0.210 | 0.1421 | 0.1440
+  20000 nominal            approx 0.115 tau~0.026 | 0.269 | 0.000 | nan | nan | 0.444 | 0.0728 | 0.0700
+  20000 oracle_neff        approx 0.371 tau~0.051 | 0.376 | 0.000 | nan | nan | 0.377 | 0.0002 | 0.0002
+  20000 fixed_half_rhomin  approx 0.261 tau~0.029 | 0.455 | 0.000 | nan | nan | 0.618 | 0.0451 | 0.0432
+ smallest n with F1 bound >= 0.9 (oracle_neff): 1677721600
+ smallest n with F1 bound >= 0.9 (fixed_half_rhomin): 166809
+ Bartlett/delta-method check n=5000, 2000 reps: empirical n*Var(r)/W over pairs: min 0.928 median 0.992 max 1.059
+
+== C5 d=5 iid-like lam=0.05 w=0.9 (contrast): rho_min(relatives) = 0.0011, max|rho| non-rel = 0.0e+00, Bartlett B(null) range [1.01,1.01], W(null)==B(null): True, max B 1.03, D 2.04, kappa1 1.23, kappa2 2.24
+ n | tau | P_emp(Rhat=R) | F1 bound | P_emp(|r-rho|<=delta all) | 1-fail(x*,y*) | P_emp(s_hat=s) | FP rate/null pair (nominal) | predicted FP (asympt.)
+    200 nominal            approx 0.000 tau~0.230 | 0.000 | 0.000 | nan | nan | 0.005 | 0.0012 | 0.0010
+    200 oracle_neff        approx 0.000 tau~0.231 | 0.000 | 0.000 | nan | nan | 0.005 | 0.0012 | 0.0010
+    200 fixed_half_rhomin  approx 0.000 tau~0.001 | 0.000 | 0.000 | nan | nan | 0.003 | 0.9944 | 0.9936
+    500 nominal            approx 0.000 tau~0.147 | 0.000 | 0.000 | nan | nan | 0.034 | 0.0006 | 0.0010
+    500 oracle_neff        approx 0.000 tau~0.147 | 0.000 | 0.000 | nan | nan | 0.034 | 0.0004 | 0.0010
+    500 fixed_half_rhomin  approx 0.000 tau~0.001 | 0.000 | 0.000 | nan | nan | 0.013 | 0.9900 | 0.9898
+   1000 nominal            approx 0.000 tau~0.104 | 0.000 | 0.000 | nan | nan | 0.106 | 0.0012 | 0.0010
+   1000 oracle_neff        approx 0.000 tau~0.104 | 0.000 | 0.000 | nan | nan | 0.104 | 0.0010 | 0.0010
+   1000 fixed_half_rhomin  approx 0.000 tau~0.001 | 0.000 | 0.000 | nan | nan | 0.014 | 0.9856 | 0.9856
+   2000 nominal            approx 0.000 tau~0.074 | 0.000 | 0.000 | nan | nan | 0.349 | 0.0012 | 0.0010
+   2000 oracle_neff        approx 0.000 tau~0.074 | 0.000 | 0.000 | nan | nan | 0.346 | 0.0012 | 0.0010
+   2000 fixed_half_rhomin  approx 0.000 tau~0.001 | 0.000 | 0.000 | nan | nan | 0.014 | 0.9808 | 0.9796
+   5000 nominal            approx 0.000 tau~0.047 | 0.000 | 0.000 | nan | nan | 0.747 | 0.0010 | 0.0010
+   5000 oracle_neff        approx 0.000 tau~0.047 | 0.000 | 0.000 | nan | nan | 0.749 | 0.0010 | 0.0010
+   5000 fixed_half_rhomin  approx 0.000 tau~0.001 | 0.000 | 0.000 | nan | nan | 0.030 | 0.9678 | 0.9678
+  10000 nominal            approx 0.000 tau~0.033 | 0.000 | 0.000 | nan | nan | 0.504 | 0.0010 | 0.0010
+  10000 oracle_neff        approx 0.000 tau~0.033 | 0.000 | 0.000 | nan | nan | 0.508 | 0.0010 | 0.0010
+  10000 fixed_half_rhomin  approx 0.000 tau~0.001 | 0.000 | 0.000 | nan | nan | 0.039 | 0.9536 | 0.9545
+  20000 nominal            approx 0.000 tau~0.023 | 0.000 | 0.000 | nan | nan | 0.081 | 0.0010 | 0.0010
+  20000 oracle_neff        approx 0.000 tau~0.023 | 0.000 | 0.000 | nan | nan | 0.081 | 0.0010 | 0.0010
+  20000 fixed_half_rhomin  approx 0.000 tau~0.001 | 0.000 | 0.000 | nan | nan | 0.044 | 0.9332 | 0.9356
+ smallest n with F1 bound >= 0.9 (oracle_neff): 33172995
+ smallest n with F1 bound >= 0.9 (fixed_half_rhomin): 33011805
+ Bartlett/delta-method check n=5000, 2000 reps: empirical n*Var(r)/W over pairs: min 0.935 median 1.006 max 1.039
