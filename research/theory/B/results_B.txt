@@ -1,0 +1,27 @@
+B0 closed form R2_i = 1 - u_i/(1+omega_i c_i): max abs err over 500 random SEMs = 8.88e-16
+B1 bivariate R2: [0.49 0.49] (tie)
+B2 chain(7) rho=.6 R2 profile: [0.36   0.5294 0.5294 0.5294 0.5294 0.5294 0.36  ]
+B3 graph=er d=10 reps=150: R2-sortability on true edges (pairs: ancestor-descendant) by window D (native step=1, delays U{1..8}):
+   D:           1       2       4       8      16      32      64     inf
+   edges:   0.627   0.673   0.647   0.581   0.535   0.534   0.530   0.526
+   pairs:   0.637   0.682   0.644   0.591   0.564   0.561   0.555   0.553
+   SE edges (max): 0.016 ; fraction of nodes with zero cross-cov at D=1 (isolated => tied R2=0): 0.803
+B3 graph=intree d=10 reps=150: R2-sortability on true edges (pairs: ancestor-descendant) by window D (native step=1, delays U{1..8}):
+   D:           1       2       4       8      16      32      64     inf
+   edges:   0.500   0.567   0.675   0.795   0.828   0.837   0.855   0.867
+   pairs:   0.500   0.570   0.672   0.765   0.843   0.868   0.884   0.892
+   SE edges (max): 0.011 ; fraction of nodes with zero cross-cov at D=1 (isolated => tied R2=0): 1.000
+B3 graph=outtree d=10 reps=150: R2-sortability on true edges (pairs: ancestor-descendant) by window D (native step=1, delays U{1..8}):
+   D:           1       2       4       8      16      32      64     inf
+   edges:   0.567   0.477   0.386   0.291   0.231   0.230   0.216   0.215
+   pairs:   0.585   0.507   0.412   0.322   0.263   0.240   0.226   0.225
+   SE edges (max): 0.016 ; fraction of nodes with zero cross-cov at D=1 (isolated => tied R2=0): 0.717
+B3 graph=chain d=10 reps=150: R2-sortability on true edges (pairs: ancestor-descendant) by window D (native step=1, delays U{1..8}):
+   D:           1       2       4       8      16      32      64     inf
+   edges:   0.500   0.500   0.500   0.509   0.528   0.533   0.536   0.534
+   pairs:   0.500   0.507   0.507   0.529   0.559   0.569   0.573   0.576
+   SE edges (max): 0.008 ; fraction of nodes with zero cross-cov at D=1 (isolated => tied R2=0): 1.000
+B4 two nodes delay tau=3, contemporaneous correlation of aggregated data: D=1: corr=0.000; D=2: corr=0.000; D=3: corr=0.000; D=4: corr=0.156; D=6: corr=0.312; D=12: corr=0.469
+     closed form check D=12: cov=7.2000 vs b(D-tau)=7.2000
+B4 two nodes delay tau=6, contemporaneous correlation of aggregated data: D=1: corr=0.000; D=2: corr=0.000; D=3: corr=0.000; D=4: corr=0.000; D=6: corr=0.000; D=12: corr=0.312
+     closed form check D=12: cov=4.8000 vs b(D-tau)=4.8000

@@ -1,0 +1,18 @@
+T1 resolvent identity max abs error: 3.82e-14 | max violation of abs-path bound: 9.96e-15
+T1 bound looseness (bound/actual) median 1.00, 90pct 4.57, max 13202.6
+T2 alpha=0.44 path length m=1: relative error 0.5600  predicted 1-alpha^m=0.5600
+T2 alpha=0.44 path length m=2: relative error 0.8064  predicted 1-alpha^m=0.8064
+T2 alpha=0.44 path length m=3: relative error 0.9148  predicted 1-alpha^m=0.9148
+T2 alpha=0.44 path length m=4: relative error 0.9625  predicted 1-alpha^m=0.9625
+T2 alpha=0.7 path length m=1: relative error 0.3000  predicted 1-alpha^m=0.3000
+T2 alpha=0.7 path length m=2: relative error 0.5100  predicted 1-alpha^m=0.5100
+T2 alpha=0.7 path length m=3: relative error 0.6570  predicted 1-alpha^m=0.6570
+T2 alpha=0.7 path length m=4: relative error 0.7599  predicted 1-alpha^m=0.7599
+T3 group-soft-threshold: numeric [ 0.69449 -1.38899  0.34725] closed form [ 0.69449 -1.38899  0.34725]
+T4 nonlinear path-Lipschitz bound: violations 0 | looseness bound/actual median 3.52, 90pct 23.1
+T5 delta=1.0: obs L2 error 8.283e-05, error at do(X1=6): 1.0  (Lipschitz const of error bump ~ 2.0)
+T5 delta=10.0: obs L2 error 8.283e-04, error at do(X1=6): 10.0  (Lipschitz const of error bump ~ 20.3)
+T5 delta=100.0: obs L2 error 8.283e-03, error at do(X1=6): 100.0  (Lipschitz const of error bump ~ 203.3)
+T6 cancel: alpha_direct=0.5, alpha_edge(indirect)=0.5: learned total +0.250 vs true 0.000; effect-size NRMSE undefined (true 0). direct-only effect error 0.50
+T6 cancel: alpha_direct=0.5, alpha_edge(indirect)=0.9: learned total -0.310 vs true 0.000; effect-size NRMSE undefined (true 0). direct-only effect error 0.50
+T6 cancel: alpha_direct=0.9, alpha_edge(indirect)=0.5: learned total +0.650 vs true 0.000; effect-size NRMSE undefined (true 0). direct-only effect error 0.10

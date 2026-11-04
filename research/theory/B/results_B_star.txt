@@ -1,0 +1,3 @@
+out-star (m in 2..7, random weights/noise, 20000 draws): draws with ANY correctly ordered edge = 0  (theory: 0)
+in-star  (same): draws with ANY misordered edge = 0  (theory: 0)
+m=1: R2 = [0.45799458 0.45799458] (tie)

@@ -1,0 +1,20 @@
+C1 random SVAR(d=6, contemporaneous+lag-1): over 11436 node-targets, mean #non-parent lag-1 predictors in supp(Phi) = 0.79; share of targets with >=1 spurious predictor = 0.40
+C1 excess forecast risk of using ONLY the true lag-1 parent set vs best lag-1 predictor: mean 0.0517, share with gap>1e-6: 0.39
+C1b two different causal structures (contemporaneous edge 1->2 vs correlated innovations) share Phi and Cov(u): max |risk diff| over all supports of node 2 = 0.00e+00; Phi[1,:]=[0.4 0.  0. ] (lag parent set of node 2 is EMPTY in A1, Phi says {0})
+C2 hidden-forcing counterexample (a=0.3 true edge X0->X2 lag1; H AR(1) rho=0.9 loads X1,X2; noise sd small): population one-step MSE of target X2 by predictor support (from X(t-1)):
+     support (0, 1, 2): MSE 1.1524
+     support (0, 1): MSE 1.1795
+     support (1, 2): MSE 1.2424
+     support (0, 2): MSE 1.2485
+     support (1,): MSE 1.2695
+     support (2,): MSE 1.3385
+     support (0,): MSE 5.3632
+     support (): MSE 5.4532
+C2 best 1-parent predictor = (1,)  (true causal lag parent is (0,)) -> forecast-risk selection under budget 1 picks the NON-CAUSAL node; gap to true-parent model: 4.0937
+C2 population MSE reduction from ADDING spurious X1(t-1) to {X0,X2}: 0.0961; to {X0}: 4.1837
+C2b random parameter scan (5000 draws): share where non-causal X1 is the better 1-parent predictor of X2 than the true parent X0: 0.60
+C2c control without hidden forcing: MSE support(0,)=0.1000, (1,)=0.1900, (2,)=0.1900
+C3 sufficiency check (A0=0, no hidden, random VAR(1), d=5, exhaustive supports): targets where the unique minimal risk-minimiser != true parents: 0 of 3000 (theory: 0)
+C4 proxy noise s=0.1: MSE(true parent X0)=5.3632  MSE(proxy X1)=1.2695
+C4 proxy noise s=0.5: MSE(true parent X0)=5.7632  MSE(proxy X1)=1.9599
+C4 proxy noise s=2.0: MSE(true parent X0)=7.2632  MSE(proxy X1)=4.2639
