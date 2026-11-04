@@ -6,8 +6,8 @@ exhaustive enumeration check, \cref{app:agg} the proofs of \cref{sec:agg},
 \cref{app:finite} the proofs of \cref{sec:finite}, \cref{app:sims} the
 simulation checks of F1--F3, \cref{app:lean} the map from statements to Lean
 names, \cref{app:real} details of the real-data studies, \cref{app:prereg}
-the pre-registration timeline and deviations, and \cref{app:ph} the
-placeholders for experiments E1 and E2.
+the pre-registration timeline and deviations, and \cref{app:e1,app:e2} the
+experiments E1 and E2 in full.
 
 Status labels. \emph{Machine-checked}: a Lean theorem with no \texttt{sorry}
 and only the standard axioms. \emph{Proved}: a complete paper proof given
@@ -498,7 +498,9 @@ relative pairs were never detected, without affecting orientation.
 \label{app:prereg}
 
 Times are commit timestamps relative to the first pre-registration commit
-($T_0$); all events occurred on one day. Commit hashes are withheld for
+($T_0$); all events occurred on one day. The plan 4 commit was made about
+3 min 36 s before its results commit, which includes a run of
+about two minutes; as before, the process is short and agent-driven. Commit hashes are withheld for
 anonymity and will be provided with the de-anonymised version. Commit
 timestamps are set by the committing client; the hosting service's push
 records are the stronger evidence and can be supplied to the area chair on
@@ -519,7 +521,9 @@ $T_0+1{:}44$ & study 2 results (P4, P6 fail; kill rule triggered) \\
 $T_0+4{:}58$ & plan 3 committed: candidate scoping, graph-only predictions, P7--P9 (before any dependence statistic) \\
 $T_0+5{:}02$ & study 3 results (P7, P8 pass; P9 fails; replication passes) \\
 $T_0+5{:}14$--$5{:}24$ & Lean formalisation of the finite-sample lemmas; errata \\
-\PH{E1/E2 times} & \PH{pre-registration and result commits of E1 and E2} \\
+$T_0+5{:}45$ & manuscript draft committed (with placeholders for E1/E2) \\
+$T_0+5{:}50$ & plan 4 committed: E1 (test of the theorem against eight naive predictors), E2 (lagged relatives), theory addendum A1--A3 and B1--B3, graph-only predictions, design check; development runs on the study-3 data only; no dependence statistic of any held-out dataset computed \\
+$T_0+5{:}54$ & E1/E2 results committed as pre-registered (E1 passes 8/8 on the primary graph; Q7, Q8, Q10 pass, Q9 fails); out-of-sample F checks; run logs \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -538,16 +542,219 @@ was fixed as primary before data, and the nominal test fails P4 as well.
 measured driver reaches only four mutually related barometers) and is not
 interpreted. (6) The P9 failure is close to the threshold and its CI contains
 $0.3$; as pre-registered, the point estimate decides.
+(7) Plan 4 (E1/E2): no threshold, unit, seed, $K$, $L$, $D$, graph or node set
+changed after the results were seen. A stray cache file committed with plan 4 was removed in the results
+commit (no content change). The F-check tolerance of $\pm0.03$ is the one fixed in plan 4; the citris
+``predicted accuracy'' is undefined (no full-set edge of $G_{\mathrm{lin}}$ is predicted $1$). The
+constant-$1/2$ comparison is post hoc. The choice of $G_{\mathrm{lin}}$ as the primary graph was
+pre-registered, together with the secondary analysis on the published graph $G_D$, which is the one on which
+the theorem fails against the sensor indicator on strictly ordered edges.
+
+
 
 %=============================================================================
-\section{Placeholders for Experiments E1 and E2}
-\label{app:ph}
+\section{Experiment E1: Discriminating Test Against Naive Predictors}
+\label{app:e1}
 
-\PH{E1 (discriminating test against naive predictors): design, pre-registration
-time relative to $T_0$, naive predictors compared, thresholds, full results
-table, deviations. To be filled from the experiment folder once the run and
-its README are committed. Do not fill with estimates.}
+\textbf{Status and provenance.} Pre-registered in plan 4 (\cref{app:prereg}); the plan was
+committed before any dependence statistic of any held-out dataset was computed. Done
+before it: file hashes, column and row counts, regeneration of the
+\texttt{citris\_1} input protocol from its published generator (it matches the recorded inputs exactly),
+graph-only predictions, and development runs on the study-3 data only. All numbers below come from the
+committed result files of the experiment folder (\texttt{results4.json}, \texttt{summary4.txt}); none is estimated or rounded beyond the printed digits.
 
-\PH{E2 (lagged relatives): lag window, test, effective sample size, effect on
-the weak edges that limited P9, full results table, deviations. To be filled
-from the experiment folder once the run and its README are committed.}
+\textbf{Why \texttt{citris\_\allowbreak 1}.} Every published Causal Chambers graph is bipartite except the pressure-control
+configuration, whose only experiment varies no independent input, so we rejected it. The light-tunnel
+\texttt{citris\_1} series (100{,}000 steps about 1.8\,s apart) is generated by a time-series structural model among the actuators:
+red is a reflected random walk, green moves halfway towards red and blue a quarter of the way towards green (each plus a uniform step),
+pol$_1$ is a random walk and pol$_2$ moves towards or away from pol$_1$ according to $\mathrm{sign}(\mathrm{blue}-\mathrm{red})$.
+With the sensors this is a chain of length 3, red $\to$ green $\to$ blue $\to$ sensors. The secondary data are
+snapshot (i.i.d.) structural models among the actuators
+(\texttt{buchholz\_\allowbreak 1\_\allowbreak obs}; \texttt{scm\_\allowbreak \{1,2,4,5\}\_\allowbreak reference}, including a chain and a collider)
+and the wind-tunnel regime-jump runs (bipartite; disagreements arise only from latent-node ties).
+
+\textbf{Linear-zero lemma (the refinement).} Write $\mathcal C$ for the colour block (red, green, blue, ir$_1$,
+vis$_1$, ir$_2$, vis$_2$, ir$_3$, vis$_3$, current) and $\mathcal Q$ for the polariser block (pol$_1$, pol$_2$, angle$_1$, angle$_2$).
+\emph{B1 (proved for the actuators).} Conditionally on the flag and the colour paths, the law of the polariser
+paths is invariant under negation, because every update (uniform draw on a symmetric interval, move towards or
+away with a sign fixed by the colours, reflection at $\pm90$, rounding to $0.1$) commutes with negation.
+\emph{B2 (assumed).} The first-two-layer sensors depend only on the colours and independent noise; ir$_3$ and vis$_3$
+depend on the polarisers only through an even function of $\theta_1-\theta_2$ (Malus' law with aligned zero marks); each angle sensor is affine in its polariser plus
+independent noise. This is a physical assumption that the design documents do not let us check.
+\emph{B3.} Under B1 and B2 every variable of $\mathcal C$ has zero cross-covariance, at every pair of times, with every variable of
+$\mathcal Q$ (a product of an even and an odd function of the polariser path has conditional mean zero). The six real edges
+red $\to$ pol$_2$, blue $\to$ pol$_2$ and pol$_k\to$ ir$_3$, vis$_3$ therefore carry no linear dependence. The relatives that a
+correlation-based estimator targets are those of the \emph{linear-dependence graph} $G_{\mathrm{lin}}$ (the design graph $G_D$ without these six edges),
+which has two weak components, each with a single source (red; pol$_1$). By \cref{cor:statiff}, every edge inside a block has predicted value $1/2$ for every node set; the six cross-block
+edges are compared by block size: red $\to$ pol$_2$ and blue $\to$ pol$_2$ are predicted $0$ (anti-sorted) and pol$_k\to$ ir$_3$, vis$_3$ are predicted $1$ for the full set.
+Faithfulness inside the blocks is assumed, as in \cref{prop:zero}. A zero-mark offset or a non-affine angle sensor would break B2 and move the prediction towards $G_D$.
+
+\textbf{Metric and tests.} For each edge instance (the full node set plus 20 subgraphs per unit) the observed value is
+$o\in\{0,\frac12,1\}$ from the estimated counts, and the loss is $|o-p|$ for the predicted value $p$. For each competitor take the instances where it disagrees with the theorem;
+$\Delta=$ loss(theory) $-$ loss(competitor), pooled, with a unit-level exact sign-flip test (1{,}024 flips for 10 units) and Holm correction over eight competitors, and a unit-bootstrap CI.
+E1a (prerequisites): non-relatives declared $<0.5$ and relatives detected $\ge0.8$. E1b: $\Delta\le-0.10$ and Holm $p\le0.05$ for all eight. E1c: the same restricted to instances whose own pair is declared dependent ($\Delta<0$).
+Separation was to be claimed iff E1a, E1b and E1c all pass on \texttt{citris\_\allowbreak 1}. Kill rules: K1 (E1a fails: no claim), K2 (a competitor is significantly better: no claim against it), K3 (E1b passes and E1c fails: attributed to power-induced ties).
+None was triggered on the primary analysis.
+
+\begin{table}[h]
+\caption{E1 primary, \texttt{citris\_\allowbreak 1}, graph $G_{\mathrm{lin}}$, lag 0, 1{,}662 instances. $\Delta$ [95\% CI]; all rows: 10/10 units, Holm $p=0.0078$. ``Exact'': share of instances whose predicted value equals the observed one. ``Spearman'': agreement of the mean predicted edge value with observed accuracy over 200 subgraphs.}
+\label{tab:e1prim}
+\centering\small
+\begin{tabular}{lcccc}
+\toprule
+predictor & $\Delta$ [CI] & $\Delta$, detected edges & exact & Spearman \\
+\midrule
+theorem & --- & --- & 0.992 & 0.962 \\
+sensor indicator & $-0.502$ [$-0.507,-0.496$] & $-0.500$ & 0.203 & 0.408 \\
+ancestors, full graph & $-0.515$ [$-0.519,-0.510$] & $-0.500$ & 0.147 & 0.334 \\
+ancestors, subgraph & $-0.509$ [$-0.513,-0.505$] & $-0.500$ & 0.120 & 0.121 \\
+in-degree, full graph & $-0.515$ [$-0.520,-0.511$] & $-0.500$ & 0.180 & 0.349 \\
+in-degree, subgraph & $-0.510$ [$-0.514,-0.505$] & $-0.500$ & 0.143 & 0.105 \\
+depth, full graph & $-0.515$ [$-0.519,-0.510$] & $-0.500$ & 0.147 & 0.334 \\
+depth, subgraph & $-0.510$ [$-0.514,-0.505$] & $-0.500$ & 0.114 & 0.113 \\
+every edge 1 & $-0.533$ [$-0.536,-0.530$] & $-0.500$ & 0.115 & undefined \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Observed values given the theorem's prediction: predicted $1/2$ (1{,}365 instances) observed exactly $1/2$ in $99.2\%$; predicted $1$ (187 instances,
+polariser $\to$ ir$_3$, vis$_3$) observed $1$ in $99.5\%$; predicted $0$ (110 instances, red and blue $\to$ pol$_2$) observed $0$ in $99.1\%$. The detected-edge subset has 1{,}338 instances, all observed exactly $1/2$.
+Prerequisites: non-relatives declared $0.000$ [0, 0] (40 pairs per unit), relatives detected $0.969$ [0.945, 0.992] (51 pairs per unit).
+
+\textbf{Strict subset and the power safeguard.} On the 297 instances where the theorem predicts $0$ or $1$ it beats all eight ($\Delta=-0.539$ for the sensor indicator, $-0.948$ for ancestors and depth on the full graph, $-0.991$ for ``every edge 1'';
+Holm $p=0.0078$, 10/10 units). There, an estimator without power would favour the competitors (the ``all counts tied'' baseline is $+0.443$ to $0$), so this part cannot come from power-induced ties.
+
+\textbf{Published graph $G_D$ (secondary).} Applying the theorem to the unmodified design graph, relatives detection is $0.659$ [0.643, 0.675] (75 relative pairs per unit) and non-relatives declared $0.000$.
+Overall the theorem still beats all eight ($\Delta=-0.323$ for the sensor indicator; $-0.424$ for ancestors, depth and ``every edge 1''; $-0.420$ and $-0.417$ for in-degree; 10/10 units, Holm $p=0.0078$), and its exact-match rate is $0.714$.
+But on the 442 edges where $G_D$ predicts strict order ($1$), the theorem matches $0.222$ and the sensor indicator $0.319$; the sensor indicator is significantly better
+($\Delta=+0.453$ [0.410, 0.492], theorem better in 0/10 units, reverse Holm $p=0.002$). A constant-$1/2$ rule (post hoc) matches $0.815$ of all instances, against $0.714$ for the theorem on $G_D$ and $0.992$ on $G_{\mathrm{lin}}$;
+mean $|o-1/2|=0.092$ against $0.166$ for the theorem on $G_D$. The Spearman statistic is $0.341$ (theorem on $G_D$) against $0.408$ (sensor indicator). This is why the claim is restricted to the linearly dependent relatives.
+
+\textbf{Lagged estimator on \texttt{citris\_\allowbreak 1} (secondary).} With $L=5$ and $G_{\mathrm{lin}}$: detection $0.976$ [0.953, 0.992], non-relatives declared $0.000$, 8/8 passed ($\Delta=-0.505$ to $-0.535$), theorem exact match $0.998$, Spearman $0.996$.
+
+\begin{table}[h]
+\caption{E1 on i.i.d.\ structural-model sets (no verdict; secondary). Competitors' exact-match range over the eight predictors. Units: \texttt{scm\_\allowbreak 1} 5, the others 10 each (45 pooled).}
+\label{tab:e1iid}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lccccc}
+\toprule
+set & instances & theorem exact & competitors exact & $\Delta$ range & result \\
+\midrule
+\texttt{buchholz\_1\_obs} & 1{,}712 & 0.791 & 0.328--0.375 & $-0.499$ to $-0.496$ & pass 8/8 \\
+\texttt{scm\_1\_reference} & 867 & 1.000 & 0.314--0.392 & $-0.500$ & not met$^\dagger$ \\
+\texttt{scm\_2\_reference} & 1{,}650 & 0.812 & 0.324--0.408 & $-0.443$ to $-0.426$ & pass 8/8 \\
+\texttt{scm\_4\_reference} (chain) & 2{,}267 & 1.000 & 0.000--0.088 & $-0.500$ & pass 8/8 \\
+\texttt{scm\_5\_reference} (collider) & 2{,}238 & 1.000 & 0.464--0.495 & $-0.500$ & pass 8/8 \\
+pooled (45 units) & 8{,}734 & 0.923 & 0.283--0.322 & $-0.489$ to $-0.487$ & pass 8/8, Holm $p=8\times10^{-5}$ \\
+\bottomrule
+\end{tabular}
+\\[2pt]{\footnotesize $^\dagger$Five units: the smallest attainable Holm-adjusted $p$ is $8/32=0.25$.}
+\end{table}
+
+On the snapshot sets, relatives detected: $0.933$ (\texttt{buchholz\_\allowbreak 1\_\allowbreak obs}), $1.000$ (\texttt{scm\_\allowbreak 1}), $0.965$ (\texttt{scm\_\allowbreak 2}), $1.000$ (\texttt{scm\_\allowbreak 4}, \texttt{scm\_\allowbreak 5}); non-relatives declared $0.000$ wherever non-relative pairs exist (\texttt{scm\_\allowbreak 4} has none).
+The chain (\texttt{scm\_\allowbreak 4}) gives $1/2$ on all 2{,}267 instances (observed exactly $1/2$ every time); the collider gives $1$ on edges into the collider and its sensors and $1/2$ elsewhere (all 2{,}238 instances exact).
+Pooled, the theorem's strict predictions number 2{,}768 (observed value $1$ on 2{,}403, $1/2$ on 349, $0$ on 16: exact $0.868$); on them only the sensor indicator disagrees often (390 instances, $\Delta=-0.5$, 35/35 units) and the other competitors coincide with the theorem. The pooled Spearman is $0.913$ for the theorem and $-0.138$ for the sensor indicator.
+Post hoc, a constant-$1/2$ rule matches $0.688$ of the pooled instances against $0.923$.
+
+\textbf{Wind-tunnel regimes (tertiary, 64 units, no verdict).} The same test passes against all eight in each configuration. $D=10$, $L=0$: non-relatives declared $0.014$, relatives detected $0.592$, $\Delta=-0.203$ [$-0.227,-0.179$] in 63/64 units, exact match $0.539$ against $0.432$; detected-edge subset $\Delta=-0.169$.
+$D=1$, $L=30$: $0.003$, $0.398$, $\Delta=-0.225$ [$-0.250,-0.197$] in 62/64 units, exact $0.443$ against $0.353$; detected-edge subset $\Delta=-0.134$. $D=1$, $L=0$: $\Delta=-0.218$ (64/64 units), exact $0.411$ against $0.326$; $D=10$, $L=3$: $\Delta=-0.218$, exact $0.533$ against $0.411$.
+Detection of $0.33$--$0.59$ means that part of the advantage is power-induced, as plan 4 stated in advance. Post hoc, the constant-$1/2$ rule has mean absolute error $0.311$ against $0.363$ for the theorem at $D=1$, $L=30$ (and $0.313$ against $0.294$ at $D=10$, $L=0$), and matches $0.378$ ($0.375$) of the instances against $0.443$ ($0.539$).
+
+\textbf{What E1 does and does not show.} It shows that, on one multi-layer light-tunnel series, the estimated relatives counts are tied along the whole chain red $\to$ green $\to$ blue $\to$ sensors and between the polariser block and the angle sensors, and strictly ordered (including against the causal direction) on red, blue $\to$ pol$_2$ --- and that the source-component rule of \cref{thm:stat} and \cref{cor:statiff} predicts this while eight naive rules do not. It does not show that the theorem predicts relatives under the published graph; the faithfulness of the graph to linear dependence fails here by design. Most of the separation is in the ties, which naive rules cannot express. The evidence is one device in a favourable regime, and the wind tunnel, where detection is limited by F1, gives weaker support.
+
+%-----------------------------------------------------------------------------
+\section{Experiment E2: Lagged Relatives}
+\label{app:e2}
+
+\textbf{Theory (plan 4, addendum A).} For $L\in\{0,1,\dots\}$ let the lag-$L$ relatives of $u$ be $u$ and every $v$ with $\gamma_{uv}(h)\neq0$ for some $|h|\le L$.
+\emph{A1 (proved).} Under the independent-innovations assumption behind \cref{prop:zero}, $\rel_0\subseteq\rel_L\subseteq\rel_\infty\subseteq\rel_S$; for a VAR model all are equal for almost every parameter value;
+and \cref{thm:stat}, \cref{cor:statiff} hold verbatim with ``relatives'' read as $\rel_L$ under lag-$L$ faithfulness. Lag-0 faithfulness implies lag-$L$ faithfulness; the converse fails
+(a white-noise source $s$ with an edge $s\to j$ and no self-loop at $s$ has $\gamma_{sj}(0)=0\ne\gamma_{js}(1)$).
+\emph{Estimator.} Declare $u,v$ relatives iff $\max_{|h|\le L}|\atanh \hat r_{uv}(h)|\sqrt{\hat n_{\mathrm{eff},uv}(h)-3}>z_c(L)$, with $\hat n_{\mathrm{eff},uv}(h)=(n-|h|)/\hat B_{uv}$ and
+$z_c(L)=\Phi^{-1}(1-\alpha/(2m(2L+1)))$, a Bonferroni correction over the $m$ pairs and the $2L+1$ lags; $L=0$ is exactly the study-3 test.
+\emph{A2 (proved for finite $n$).} For independent stationary Gaussian $a,b$ the null variance of the lag-$h$ cross-covariance has the same bound at every $h$, so one Bartlett factor serves all lags.
+\emph{A3 (deterministic part proved, constants sketched).} The recovery bound of F1 holds with $\rho_{\min}$ replaced by $\rho^*_{\min,L}=\min_{\text{relative pairs}}\max_{|h|\le L}|\rho_{ab}(h)|\ge\rho_{\min}$ (the gain) and a factor $2L+1$ in the failure probability and the Bonferroni count (the cost):
+for 105 pairs at $\alpha=0.01$, $z_c$ rises from $3.90$ ($L=0$) to $4.35$ ($L=3$) and $4.80$ ($L=30$). A lagged correlation must therefore exceed the lag-0 correlation by about $1.12$ ($L=3$) or $1.23$ ($L=30$) times to help.
+
+\textbf{Design.} Held-out data: the wind-tunnel regime-jump runs (\texttt{regime\_\allowbreak jumps\_\allowbreak single}, \texttt{regime\_\allowbreak jumps\_\allowbreak multi}), $2\times32=64$ regimes of $10{,}000$ steps, in the same archive as the study-3 data but never analysed in study 3.
+Load\_\allowbreak in, load\_\allowbreak out, pot$_1$, pot$_2$ follow independent mirrored random walks within a regime; the hatch and sensor parameters are constant within a regime. The first 100 rows of each regime are dropped. Graph: 20 edges without the hatch (19 predicted $1$, pot$_1\to$ signal$_1$ predicted $1/2$); 54 non-relative and 51 relative pairs; 1{,}280 subgraphs (10 of size 5 and 10 of size 8 per unit). Primary: $D=1$ (first differences), $L=30$ (about 9\,s) against $L=0$; secondary: block means with $D=10$ and $L=3$ against $L=0$.
+Success required Q7--Q10 all to pass at the primary configuration. Kill rules: Q7 fails (saturation) or Q10 fails (lags do not help detection, and the lagged estimator is not recommended). Plan 4 states that E2 is not a re-analysis of P9 and that P9's verdict is final.
+
+\begin{table}[h]
+\caption{E2, 64 held-out regimes, 95\% unit-bootstrap CIs. Q8: accuracy on the 1{,}216 instances predicted $1$. Q10: relatives detected, lagged minus lag 0 (non-relatives declared difference in the last column).}
+\label{tab:e2}
+\centering\tiny
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lccccc}
+\toprule
+configuration & Q7 & Q8 & Q9 & Q10 & non-rel.\ diff. \\
+\midrule
+\textbf{primary $D{=}1$, $L{=}30$} & 0.003 [0.001, 0.005] pass & 0.553 [0.527, 0.579] pass & 0.243 [0.193, 0.294] \textbf{fail} & $+0.069$ [0.060, 0.079] pass & $+0.001$ [$-0.001$, 0.002] \\
+secondary $D{=}10$, $L{=}3$ & 0.011 [0.008, 0.014] & 0.711 [0.692, 0.729] & 0.202 [0.152, 0.253] fail & $-0.007$ [$-0.012,-0.003$] fail & $-0.002$ [$-0.004$, $-0.0003$] \\
+lag 0, $D{=}10$ (replication of study 3) & 0.014 [0.010, 0.018] & 0.742 [0.722, 0.760] & 0.202 [0.145, 0.259] fail & --- & --- \\
+lag 0, $D{=}1$ & 0.002 [0.001, 0.004] & 0.552 [0.532, 0.570] & 0.120 [0.066, 0.176] fail & --- & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Detection of the 51 relative pairs: $D=1$: $0.328$ [0.312, 0.345] at lag 0 and $0.398$ [0.383, 0.412] with $L=30$; $D=10$: $0.592$ [0.584, 0.599] and $0.585$ [0.576, 0.592] with $L=3$ (lags reduce detection: the Bonferroni cost exceeds the gain).
+On \texttt{citris\_\allowbreak 1} with $L=5$ against $L=0$: $0.976$ against $0.969$, difference $+0.008$ [0, 0.024], so Q10 fails there; detection is already nearly saturated at lag 0.
+\textbf{Verdict.} Q9 fails at the primary configuration, so E2 does not succeed; no kill rule is triggered (Q7 and Q10 pass). Lags raise detection at fine resolution without adding false positives, as A1 and A3 predict.
+The study-3 estimator (lag 0) rerun on these held-out regimes fails the graded criterion again ($0.202$ at $D=10$, $0.120$ at $D=1$): the P9-type failure repeats on held-out data. P9's original verdict ($0.267$, failed) stands; E2 is not presented as rescuing it.
+The development check of plan 4 showed that, on the study-3 data with the same estimator, drawing different subgraph seeds moves the P9 statistic from $0.267$ to $0.338$. We report this as variability of the statistic (about $0.07$ from the subgraph draw alone); it is a development run, not a verdict, and it does not change the P9 outcome.
+
+\begin{table}[h]
+\caption{Detection rate per edge over 64 regimes: share of regimes in which the pair was declared dependent.}
+\label{tab:e2edges}
+\centering\small
+\begin{tabular}{lccc}
+\toprule
+edge & $D{=}1$, $L{=}0$ & $D{=}1$, $L{=}30$ & $D{=}10$, $L{=}0$ \\
+\midrule
+load\_in $\to$ rpm\_in & 0.859 & 0.875 & 1.000 \\
+load\_in $\to$ rpm\_out & 0.000 & 0.172 & 0.094 \\
+load\_in $\to$ current\_in & 1.000 & 1.000 & 1.000 \\
+load\_in $\to$ current\_out & 0.000 & 0.000 & 0.047 \\
+load\_out $\to$ rpm\_in & 0.000 & 0.016 & 0.000 \\
+load\_out $\to$ rpm\_out & 0.844 & 0.969 & 1.000 \\
+load\_out $\to$ current\_out & 1.000 & 1.000 & 1.000 \\
+load\_out $\to$ current\_in & 0.000 & 0.000 & 0.000 \\
+load\_in $\to$ pressure\_intake & 0.000 & 0.094 & 0.953 \\
+load\_out $\to$ pressure\_intake & 0.000 & 0.031 & 0.906 \\
+load\_in $\to$ pressure\_upwind & 0.562 & 0.984 & 1.000 \\
+load\_out $\to$ pressure\_upwind & 0.016 & 0.812 & 1.000 \\
+load\_in $\to$ pressure\_downwind & 0.734 & 0.953 & 1.000 \\
+load\_out $\to$ pressure\_downwind & 0.750 & 1.000 & 1.000 \\
+pot$_1\to$ signal$_1$ & 0.359 & 0.156 & 0.969 \\
+pot$_1\to$ signal$_2$ & 0.266 & 0.109 & 0.969 \\
+pot$_2\to$ signal$_2$ & 0.000 & 0.000 & 0.266 \\
+pot$_1$, load\_in, load\_out $\to$ mic & 0.000 & 0.000 & 0.016 (pot$_1$), 0.000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Lags recover the pressure edges at fine resolution (load\_\allowbreak in $\to$ upwind pressure $0.562\to0.984$, load\_\allowbreak out $\to$ upwind pressure $0.016\to0.812$) but lose the pot edges to the larger threshold ($0.359\to0.156$ and $0.266\to0.109$); every microphone edge, pot$_2\to$ signal$_2$ and the cross-current edges stay undetected.
+Even at its best ($D=10$, lag 0) wind-tunnel detection ($0.592$) is far below that of the light tunnel, so lags are not the main cause of the F1 shortfall.
+
+\begin{table}[h]
+\caption{Out-of-sample F-theory checks: the first half of each unit predicts the second half. Predicted detection is a bracket [$\bar p_{\max}$, $\bar p_{\mathrm{ind}}$] when lags are used. Pass if the observed value lies within 0.03 of the bracket (criterion fixed in plan 4).}
+\label{tab:fcheck}
+\centering\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lcccc}
+\toprule
+configuration & predicted detection & observed & non-rel.\ declared, pred.\ / obs. & accuracy, pred.\ / obs. \\
+\midrule
+wind $D{=}1$, $L{=}0$ & 0.250 & 0.242 & 0.007 / 0.003 & 0.573 / 0.590 \\
+wind $D{=}1$, $L{=}30$ & [0.344, 0.426] & 0.332 & [0.021, 0.074] / 0.003 & 0.504 / 0.506 \\
+wind $D{=}10$, $L{=}0$ & 0.548 & 0.533 & 0.014 / 0.008 & 0.649 / 0.632 \\
+wind $D{=}10$, $L{=}3$ & [0.536, 0.554] & 0.524 & [0.016, 0.027] / 0.008 & 0.628 / 0.618 \\
+\texttt{citris\_1}, $L{=}0$ & 0.935 & 0.945 & 0.007 / 0.000 & undefined \\
+\texttt{citris\_1}, $L{=}5$ & [0.940, 0.988] & 0.945 & [0.010, 0.045] / 0.000 & undefined \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+All six checks pass. With lags the observed detection sits at or slightly below $\bar p_{\max}$, consistent with strongly correlated lag statistics; the independence formula overstates both detection and false positives, as the theory said it would.
+For \texttt{citris\_\allowbreak 1} the predicted accuracy is undefined because no full-set edge of $G_{\mathrm{lin}}$ is predicted $1$ inside a block.

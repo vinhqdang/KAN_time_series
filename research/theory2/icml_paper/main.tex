@@ -104,10 +104,16 @@ real series: raw correlation tests are inconsistent under autocorrelation, a
 latent common driver saturates the relatives count at $n\approx z_c^2/\ell^2$,
 and proxy conditioning works only with near-perfect reliability and a rank-one
 driver. All graph-theoretic results and the algebraic core of the finite-sample
-results are machine-checked in Lean~4 (116 theorems). In three pre-registered
-real-data studies, a river benchmark fails as the theory predicts, while a
+results are machine-checked in Lean~4 (116 theorems). In pre-registered
+real-data studies, a river benchmark fails as the theory predicts, and a
 physical testbed with designed independent sources gives a partial positive
-result, including out-of-sample predictions of detection rates.
+result, including out-of-sample predictions of detection rates. A
+fourth pre-registration (E1) asks whether the theorem's edge values beat eight
+naive predictors on a multi-layer light-tunnel series. It does, mostly through
+predicted ties, and only for the linearly dependent relatives (on the published
+graph one naive predictor is significantly better on the strictly ordered edges).
+A lagged-relatives estimator (E2) raises detection on wind-tunnel data, but its
+pre-registered graded criterion fails, as P9 did.
 \end{abstract}
 
 %=============================================================================
@@ -168,13 +174,18 @@ proxy needs reliability close to $1$ and the driver must be one-dimensional.
 \textbf{(5)} Machine-checked proofs in Lean~4 with Mathlib of all graph results
 and of the deterministic core of F1--F3 (116 theorems, standard axioms only;
 \cref{sec:lean}). Every theorem below names its Lean counterpart.
-\textbf{(6)} Three pre-registered real-data studies (\cref{sec:real}). On
+\textbf{(6)} Four pre-registered real-data studies (\cref{sec:real}). On
 CausalRivers \citep{stein2025causalrivers} the relatives sort carries no
 orientation information, and F2/F3 predict the observed dependence rates. On
 the Causal Chambers \citep{gamella2025chambers} two of three pre-registered
-criteria pass, a light-tunnel replication passes all three, and F1/F2 predict
-held-out detection rates within $0.02$. We report the failed pre-registered
-tests in the main text.
+wind-tunnel criteria pass, a light-tunnel replication passes all three, and
+F1/F2 predict held-out detection rates within $0.02$. A fourth study (E1)
+tests the theorem against eight naive edge predictors on a light-tunnel series
+with multi-layer ground truth: it passes 8/8, but under a refined graph of
+linearly dependent relatives and mostly through predicted ties, and it fails
+for the published graph on strictly ordered edges. A lagged-relatives
+estimator (E2) passes three of four criteria and fails the graded one. We
+report every failed pre-registered test in the main text (\cref{tab:real}).
 
 The graph results of contributions (1)--(2) are short consequences of a
 walk-length lemma and of \citet[Lemma~1]{reisach2026topological}. Their value
@@ -520,7 +531,7 @@ its Lean name and status.
 \section{Pre-Registered Real-Data Evidence}
 \label{sec:real}
 
-\textbf{Protocol.} We ran three studies. Each prediction, threshold, estimator,
+\textbf{Protocol.} We ran four pre-registered studies (P1--P9, then E1/E2). Each prediction, threshold, estimator,
 seed and kill rule was committed to version control before any dependence
 statistic of the data was computed (timeline in \cref{app:prereg}). The
 predicted value for an observed node set $S$ is the stationary value
@@ -538,7 +549,7 @@ edges predicted to be strictly sorted.}
 \label{tab:real}
 \vskip -0.05in
 \centering\footnotesize
-\setlength{\tabcolsep}{3pt}
+\setlength{\tabcolsep}{2.8pt}
 \begin{tabular}{llll}
 \toprule
 study (units) & test (threshold) & result (12\,h / 24\,h) & verdict \\
@@ -558,6 +569,16 @@ tunnel (15 runs, primary) & P8: Acc.\ $>0.5$, CI excl.\ $0.5$ & $0.656\,[0.637,0
 \midrule
 light tunnel (10 segments, & R7 / R8 / R9 (same thresholds) & $0.000$ / $1.000$ / $0.779\,[0.696,0.864]$ & pass (replication)$^c$ \\
 replication) &&& \\
+\midrule
+E1, light tunnel & E1a: non-rel.\ dep.\ $<0.5$; det.\ $\ge0.8$ & $0.000$; $0.969\,[0.945,0.992]$ & pass \\
+(10 units, $G_{\mathrm{lin}}$) & E1b: $\Delta\le-0.10$, Holm $p\le0.05$, all 8 & $\Delta=-0.502$ to $-0.533$ (10/10) & pass (8/8)$^d$ \\
+ & E1c: as E1b, detected edges & $\Delta=-0.500$ & pass (8/8) \\
+\midrule
+E2, wind regimes & Q7: non-rel.\ dep.\ $<0.5$ & $0.003\,[0.001,0.005]$ & pass \\
+(64 units; $D{=}1$, & Q8: Acc.\ $>0.5$, CI excl.\ $0.5$ & $0.553\,[0.527,0.579]$ & pass \\
+lags $L{=}30$ vs.\ 0) & Q9: Spearman $\ge0.3$ (1,280 subgr.) & $0.243\,[0.193,0.294]$ & \textbf{fail} \\
+ & Q10: detection gain, CI lower bound $>0$ & $+0.069\,[0.060,0.079]$ & pass \\
+ & E2 success (Q7--Q10 all) & & \textbf{not met} \\
 \bottomrule
 \end{tabular}
 \\[2pt]
@@ -565,7 +586,11 @@ replication) &&& \\
 single source, for which the theorem itself predicts $1/2$.
 $^b$Kill rule (P4 failed at both resolutions): P5 is reported, not
 interpreted. $^c$Pre-registered as not counting towards a positive
-demonstration (i.i.d.\ inputs, weak time-series aspect).}
+demonstration (i.i.d.\ inputs, weak time-series aspect).
+$^d$$G_{\mathrm{lin}}$ is the pre-registered primary graph. It omits six real causal edges
+that, under a symmetry lemma and an assumption of ideal polariser sensors, carry no linear dependence.
+On the published graph the theorem still beats all eight overall, but not on its strictly
+ordered edges (\cref{sec:real}, \cref{app:e1}).}
 \vskip -0.1in
 \end{table*}
 
@@ -680,20 +705,67 @@ shared by four barometers with no graph edge) is detected exactly where F2
 predicts ($\kappa=0.19$--$0.32$, $\nhalf=145$--$426<\neff$), and conditioning on
 it removes it (dependent fraction $0.039\to0.001$). Two caveats: the wind
 tunnel graph is bipartite, so the prediction coincides with ``sensors have
-more relatives than actuators''; and all units of a chamber share one device.
+more relatives than actuators'' (the motivation for E1, below); and all units of a chamber share one device.
 
-\textbf{E1: discriminating test against naive predictors.}
-\PH{E1 results from the experiment currently running. Intended content:
-whether the theorem-predicted $\tilde s$ predicts estimated accuracy better
-than naive graph predictors (to address the bipartite caveat above). State
-pre-registration commit, design, thresholds, verdicts. No numbers until the
-run is complete.}
+\textbf{E1: does the theorem beat naive predictors?} Pre-registered
+(\cref{app:prereg}) to answer the bipartite caveat. The test unit is an edge
+instance: the theorem's value $\srho\in\{0,\frac12,1\}$ against the observed value
+from the estimated counts, with absolute loss, on the instances where the theorem and a
+competitor disagree. The eight competitors are the sensor indicator;
+ancestor count, in-degree and depth (each on the full graph and on the
+induced subgraph); and the finite-$T$ limit ``every edge is $1$''. A
+competitor counts as beaten if $\Delta\le-0.10$ with an exact sign-flip test over
+units and Holm correction over the eight. The primary data are the
+light-tunnel series \texttt{citris\_1} (10 units), the only real time series
+we found whose ground truth has several layers among measured variables
+(red$\to$green$\to$blue$\to$sensors). \textbf{It passes 8/8.} The pre-registered
+power prerequisites hold (non-relatives declared $0.000$, relatives detected
+$0.969$); $\Delta=-0.502$ (sensor indicator) to $-0.533$, in 10/10 units each, Holm
+$p=0.0078$, the smallest attainable; restricted to pairs declared dependent, $\Delta=-0.500$.
+The theorem's value equals the observed one on $99.2\%$ of 1,662 instances,
+the competitors' on $11$--$20\%$; its three anti-sorted predictions (red and blue $\to$ pol$_2$, true edges
+whose head has fewer relatives) hold in $99.1\%$ of 110 instances. The same
+test on 45 i.i.d.\ structural-model units (pooled, 8,734 instances) also passes 8/8 ($\Delta\approx-0.49$, 45/45 units); the
+chain gives $1/2$ everywhere and the collider $1$ into the collider, as
+\cref{cor:statiff} predicts.
+Four statements bound this result.
+\emph{(i) The primary prediction uses a refined graph.} It removes six real causal edges
+(red, blue $\to$ pol$_2$; the polarisers $\to$ two sensors) because, by a symmetry lemma
+(\cref{app:e1}) that assumes ideal polariser sensors, they carry no linear dependence at any lag. The
+claim is therefore only that the theory predicts the \emph{linearly dependent}
+relatives. On the published graph the theorem still beats all eight overall
+($\Delta=-0.32$ to $-0.42$), but on the 442 edges where it predicts strict order the sensor indicator is significantly
+better ($\Delta=+0.453$, reverse Holm $p=0.002$), and the theorem's exact-match rate ($71.4\%$) is
+below that of a constant-$1/2$ rule ($81.5\%$, post hoc).
+\emph{(ii) Most of the separation comes from ties.} Single-source components are predicted $1/2$, which none of the
+naive rules can express: $1{,}365$ of the 1,662 predictions are $1/2$. Strict $0/1$ predictions are
+fewer (297 on \texttt{citris\_1}, 2,768 on the snapshot sets). On \texttt{citris\_1} the theorem also wins on them against all eight
+($\Delta=-0.54$ to $-0.99$), where an estimator without power would favour the competitors.
+Post hoc, a constant-$1/2$ rule matches $81.5\%$ of \texttt{citris\_1} ($68.8\%$ of the snapshot sets) against $99.2\%$ ($92.3\%$).
+\emph{(iii) The evidence is one device in a favourable regime}: a light tunnel
+with strongly responding sensors and detection of $0.97$; the snapshot sets are also light-tunnel data.
+\emph{(iv) The wind tunnel does not replicate the strength.} On the 64
+held-out regimes the theorem passes the same test (primary $\Delta=-0.225$, secondary $-0.203$), but
+detection is only $0.33$--$0.59$ (limited by F1), so part of this is power-induced. On the primary
+configuration a constant-$1/2$ rule has lower absolute error than the theorem ($0.311$ vs.\ $0.363$); at $D{=}10$ the two are close ($0.313$ vs.\ $0.294$).
 
-\textbf{E2: lagged relatives.}
-\PH{E2 results from the experiment currently running. Intended content:
-whether a relatives test that uses lagged cross-correlations recovers the
-weak lag-0 edges that limit P9 (F1 caveat). State pre-registration, design,
-verdicts. No numbers until the run is complete.}
+\textbf{E2: lagged relatives.} E2 tests whether a relatives test that uses
+cross-correlations at lags $|h|\le L$ (Bonferroni over lags; same population
+relatives under lag-$L$ faithfulness, \cref{app:e2}) recovers the weak lag-0
+edges behind P9, on 64 held-out regimes (primary: first differences, $L=30$,
+against $L=0$). Success required Q7--Q10 to pass. \textbf{It does not}, because Q9 fails
+(\cref{tab:real}): false positives stay rare (Q7 $0.003$), the accuracy on edges predicted $1$
+is $0.553$ (Q8), detection rises from $0.328$ to $0.398$ ($+0.069$, Q10), but the graded agreement is
+$0.243<0.3$ (Q9). The secondary configuration (block means, $L=3$) fails Q9 ($0.202$) and
+Q10 ($-0.007\,[-0.012,-0.003]$): the Bonferroni cost exceeds the gain. On \texttt{citris\_1} lags add
+$+0.008\,[0,0.024]$ (detection is already $0.97$). The lag-0 estimator of P7--P9, rerun on these held-out
+regimes, again fails the graded criterion ($0.202$ at $D{=}10$, $0.120$ at $D{=}1$): the P9 failure repeats,
+and its original verdict ($0.267$) stands. E2 does not rescue P9. Re-drawing only the subgraph sample on the
+P9 data moved that statistic from $0.267$ to $0.338$ (development, not a verdict); we report this as
+variability of the statistic of about $0.07$, not as a pass. Lags recover some edges (load\_in $\to$ upwind pressure
+$0.56\to0.98$) and lose others to the larger threshold ($\mathrm{pot}_1\to\mathrm{signal}_1$ $0.36\to0.16$); every
+microphone edge stays undetected, so the F1 shortfall is not mainly a lag problem. Out-of-sample F1/F2 checks pass in all six
+configurations (\cref{app:e2}).
 
 %=============================================================================
 \section{Discussion and Limitations}
@@ -725,9 +797,9 @@ summary graph would make it informative in population.
 \textbf{Open questions.} Summary graphs without self-loops, contemporaneous
 effects at the native time step, and nonlinear mechanisms (where
 \cref{prop:zero} still gives the zero pattern but faithfulness can fail, as
-the Malus-law pairs of the light tunnel show) are not covered. A test that
-uses lagged cross-correlations could recover the weak lag-0 relatives that
-limited P9 (experiment E2).
+the Malus-law pairs of the light tunnel show) are not covered. Lagged cross-correlations raise detection at fine
+resolution (E2) but did not repair the graded agreement of P9; weak, nonlinear or
+undetectable effects remain the limiting factor on the wind tunnel.
 
 \textbf{Limitations.} The graph results assume self-loops at every node
 (without them a single edge gives $1/2$ instead of $2/3$; \cref{app:exact}).
@@ -735,7 +807,11 @@ limited P9 (experiment E2).
 and the asymptotic statements rest on a CLT that we cite rather than prove.
 \Cref{prop:zero} and the probabilistic parts of F1--F3 are proved on paper
 only. The real-data evidence comes from two benchmark families, and the
-positive part from one physical device per chamber.
+positive part from one physical device per chamber (E1 uses light tunnels only).
+The strongest result (E1) holds for linearly dependent relatives, relies on
+an assumption about ideal polariser sensors, and is carried mainly by predicted
+ties; faithfulness to linear dependence fails by design for six real edges.
+The graded criteria P2, P3, P4, P6, P9 and Q9 failed.
 
 \section*{Impact Statement}
 This paper presents work whose goal is to advance the field of Machine
