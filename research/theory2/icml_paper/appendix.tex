@@ -1,0 +1,553 @@
+% Appendix (unlimited length). Included from main.tex after \appendix\onecolumn.
+
+\section*{Appendix overview}
+\Cref{app:exact} gives full proofs of \cref{sec:exact}, \cref{app:enum} the
+exhaustive enumeration check, \cref{app:agg} the proofs of \cref{sec:agg},
+\cref{app:finite} the proofs of \cref{sec:finite}, \cref{app:sims} the
+simulation checks of F1--F3, \cref{app:lean} the map from statements to Lean
+names, \cref{app:real} details of the real-data studies, \cref{app:prereg}
+the pre-registration timeline and deviations, and \cref{app:ph} the
+placeholders for experiments E1 and E2.
+
+Status labels. \emph{Machine-checked}: a Lean theorem with no \texttt{sorry}
+and only the standard axioms. \emph{Proved}: a complete paper proof given
+here. \emph{Asymptotic}: the argument uses the standard central limit theorem
+for quadratic forms of stationary Gaussian processes with summable
+covariances, which we cite and do not prove.
+
+%=============================================================================
+\section{Proofs for Section~\ref{sec:exact}}
+\label{app:exact}
+
+Throughout, $\GS=(V,\Es)$ has a self-loop at every node, $p=|V|\ge2$, and
+$d(u,v)$ is as in \cref{sec:setting}. We use two facts of
+\citet{reisach2026topological}, proved there for DAGs: (Thm.~1) if
+$x\in\anc(y)$ then $\rel(x)\subseteq\rel(y)$; (Lemma~1, eq.~(10)) if
+$x\in\anc(y)$ then $\rel(x)\subsetneq\rel(y)$ iff $\mathrm{roots}(y)\setminus
+\mathrm{roots}(x)\ne\emptyset$, where $\mathrm{roots}(y)=\{x\in\anc(y):\anc(x)=\{x\}\}$.
+Both are also machine-checked independently
+(\lname{relSet_subset_of_edge}, and the direct characterisation
+\lname{isRel_unrolled_iff}).
+
+\begin{lemma}[ancestors in $\GT$]\label{lem:anc}
+$u(s)\in\anc(v(t))$ iff $s\le t$ and $d(u,v)\le t-s$.
+\lean{\lname{unrolled_reach_iff}, \lname{unrolled_reach_iff_dist}.}
+\end{lemma}
+\begin{proof}
+Every edge of $\GT$ increases time by one, so a directed path from $u(s)$ to
+$v(t)$ has $t-s$ edges, and its projection to $V$ is a walk of length $t-s$
+from $u$ to $v$ in $\GS$ (self-loops allowed as steps). Such a walk exists iff
+$d(u,v)\le t-s$: a walk contains a path, so its length is at least
+$d(u,v)$; conversely, pad a shortest path with $t-s-d(u,v)$ self-loop steps at
+$u$. Every such walk lifts to a directed path in $\GT$.
+\end{proof}
+
+\begin{lemma}[roots]\label{lem:roots}
+$\mathrm{roots}(v(t))=\{u(1):d(u,v)\le t-1\}$, and
+$\desc(u(1))=\{w(s):d(u,w)\le s-1\}$.
+\lean{\lname{roots_unrolled_iff}, \lname{isRoot_unrolled_iff}, \lname{desc_root_unrolled_iff}.}
+\end{lemma}
+\begin{proof}
+A node $u(s)$ with $s\ge2$ has the parent $u(s-1)$ through the self-loop, so
+it is not a root; $u(1)$ has no parent. Apply \cref{lem:anc} with $s=1$, in
+both directions.
+\end{proof}
+
+\begin{proof}[Proof of \cref{thm:edge}]
+$i(t)$ is a parent of $j(t{+}1)$, so $\rel(i(t))\subseteq\rel(j(t{+}1))$ and
+$\srho(e)\in\{1/2,1\}$, with value $1$ iff the inclusion is strict, iff
+$\mathrm{roots}(j(t{+}1))\setminus\mathrm{roots}(i(t))\neq\emptyset$. By
+\cref{lem:roots} this set is $\{u(1):d(u,j)\le t,\ d(u,i)>t-1\}$, and since
+$d$ is integer-valued or $\infty$, $d(u,i)>t-1$ iff $d(u,i)\ge t$.
+\end{proof}
+
+\begin{proof}[Proof of \cref{prop:boundary} (and the general count)]
+Since every ancestor of $y$ descends from a root of $y$ that is itself an
+ancestor, $\rel(y)=\desc(\mathrm{roots}(y))$. By \cref{lem:roots},
+$w(s)\in\rel(v(t))$ iff some $u$ has $d(u,v)\le t-1$ and $d(u,w)\le s-1$,
+i.e.\ iff $s\ge1+m_t(v,w)$ with $m_t(v,w)=\min\{d(u,w):d(u,v)\le t-1\}$.
+Counting $s\in\{1,\dots,T\}$ gives
+$\rho(v(t))=\sum_{w}\max(T-m_t(v,w),0)$ (\lname{rho_unrolled_eq}). For
+$t\ge p$ every finite $d(u,v)$ is at most $p-1\le t-1$, so the admissible $u$
+are $\anc_S(v)$ and $m_t(v,w)=d(\anc_S(v),w)$, finite iff $w\in\rel_S(v)$ and
+then at most $p-1<t\le T$. (The Lean statement \lname{rho_unrolled_large_t}
+needs only $t\ge p$; an earlier hypothesis $T\ge p$ is redundant.)
+\end{proof}
+
+\begin{proof}[Proof of \cref{thm:limit}]
+Crossing edge $(i,j)\in\Ex$: $j$ does not reach $i$, so $d(j,i)=\infty$, and
+$u=j$ gives $d(j,j)=0\le t\le\infty$ for every $t$: all $T-1$ copies score
+$1$. Edge in $\Eo$: $i$ and $j$ reach each other (or $i=j$), so for every $u$,
+$d(u,i)<\infty$ iff $d(u,j)<\infty$. If the condition of \cref{thm:edge} held
+with $d(u,i)=\infty$ then $d(u,j)=\infty>t$, a contradiction; hence it forces
+$t\le d(u,i)\le p-1$, and at most $N_T(i,j)\le\min(p-1,T-1)$ copies score
+$1$. Summing over the $(T-1)|\Es|$ edges,
+\[
+\srho(\GT)=\tfrac12+\frac{1}{2(T-1)|\Es|}\Big[(T-1)|\Ex|+\sum_{(i,j)\in\Eo}N_T(i,j)\Big],
+\]
+which gives both bounds; let $T\to\infty$.
+\end{proof}
+
+\begin{proof}[Proof of \cref{cor:iff}]
+$\Ex=\emptyset$ iff no edge joins two SCCs. A weakly connected component made of
+two or more SCCs is connected by undirected edges, one of which joins two
+different SCCs; conversely a strongly connected component has no crossing
+edge. The uniform bound is \cref{thm:limit} with $|\Ex|\ge1$. For the DAG case,
+every SCC is a singleton, $\Ex$ consists of the $m$ non-loop edges, and
+$|\Es|=m+p$.
+\end{proof}
+
+\begin{proof}[Proof of \cref{thm:stat}]
+In $G_{B+T}$, by \cref{lem:roots} shifted by $B$, $w(s)\in\rel(v(t))$ iff some
+$u$ has $d(u,v)\le t-1$ and $d(u,w)\le s-1$. For window nodes $t-1,s-1\ge
+B\ge p-1$, and every finite distance is at most $p-1$, so the condition is
+$u\in\anc_S(v)\cap\anc_S(w)$, independent of $s,t$. Hence
+$\rel_W(v(t))=\{w(s)\in W: w\in\rel_S(v)\}$, of size $T|\rel_S(v)|$. On
+$V\times\mathbb Z$, \cref{lem:anc} holds verbatim and the common ancestor can
+be taken arbitrarily early, giving the same set. Each copy of $(i,j)$ therefore
+compares $|\rel_S(i)|$ with $|\rel_S(j)|$; as $i\in\anc_S(j)$,
+$\rel_S(i)\subseteq\rel_S(j)$, so the score is $1$ iff
+$\rel_S(i)\ne\rel_S(j)$, and $1/2$ for self-loops.
+Source SCCs: $\rel_S(j)\setminus\rel_S(i)\ne\emptyset$ iff
+$\anc_S(j)\not\subseteq\rel_S(i)$ (if $z\in\rel_S(i)$ then
+$\desc_S(z)\subseteq\rel_S(i)$). Every node of $\anc_S(j)$ is reached from some
+$\sigma\in\Src(j)$, and $\desc_S(\sigma)\subseteq\rel_S(i)$ whenever
+$\sigma\subseteq\rel_S(i)$. A source SCC meets $\rel_S(i)$ iff it reaches $i$
+(its only ancestors are its own nodes), and then it is contained in
+$\rel_S(i)$. So the condition is $\Src(j)\not\subseteq\Src(i)$, which, as
+$\Src(i)\subseteq\Src(j)$, is $\Src(i)\ne\Src(j)$.
+\end{proof}
+
+\begin{proof}[Proof of \cref{cor:statiff}]
+If each weak component $C$ has a unique source SCC $\sigma_C$, then
+$\Src(v)=\{\sigma_C\}$ on $C$ and $\Eu=\emptyset$. Conversely, if
+$\Eu=\emptyset$, $\Src$ is constant along edges and hence on each weak
+component; a node $v$ of a source SCC $\sigma$ has $\Src(v)=\{\sigma\}$, so
+there is only one. Out-forests (at most one parent besides itself; acyclicity
+is not needed, \lname{stat_half_of_outForest}) and strongly connected graphs
+(\lname{stat_half_of_strong}) have one source SCC per component. In an
+in-forest (acyclic apart from self-loops, out-degree at most one), if
+$u\in\anc(v)$ then $\desc(u)$ is the unique downstream path through $v$, so
+$\rel(v)=\anc(v)\cup\desc(v)$ (\lname{inForest_isRel_iff}); the source SCCs
+are the headwaters, and $\Src(j)=\Src(i)\cup\bigcup_{k}\Src(k)$ over the other
+parents $k$ of $j$, with disjoint headwater sets on different branches, so
+$\Src(j)\ne\Src(i)$ iff $j$ is a confluence (\lname{inForest_up_iff}).
+Out-degree at most one alone is not enough: for $a\rightleftarrows b$ with
+$c\to a$, $a$ has two parents but the only source SCC is $\{c\}$.
+\end{proof}
+
+\begin{remark}[self-loops]
+Without self-loops the lemmas fail: for the single edge $0\to1$ without loops,
+$\srho(\GT)=1/2$ for every $T\ge2$ (\lname{edgeNoLoops_sRho}); with loops the
+limit is $2/3$ (\lname{edgeLoops_limit}).
+\end{remark}
+
+%=============================================================================
+\section{Exhaustive Enumeration Check}
+\label{app:enum}
+
+Before formalisation, every statement of \cref{sec:exact} was checked by
+brute force (bitset relatives with the definitions of
+\citealp{reisach2026topological}) on all $4+64+4096$ summary graphs with
+$p=2,3,4$ (all $T\le9$) and on $10{,}000$ random graphs ($p=2$--$7$; Erd\H{o}s--R\'enyi,
+DAG, in-forest, out-forest, chain with back edge and block-SCC families;
+three values of $T\le14$ each, fixed seed). In total 46{,}724 (graph,~$T$)
+cases and 1{,}895{,}609 edges were checked with zero failures of
+\cref{thm:edge}, \cref{prop:boundary}, the bounds of \cref{thm:limit},
+\cref{thm:stat} (with $B=p-1$ and $B=2p+1$) and the source-SCC
+characterisation. The conjecture we had pre-registered (``an edge is strictly
+sorted in the limit iff $|\rel_S(j)|>|\rel_S(i)|$'') disagreed with the exact
+$\GT$ limit in 9{,}603 random graphs and never with the stationary value; the
+conjecture is \cref{thm:stat}, not the limit of $\GT$.
+
+%=============================================================================
+\section{Proofs for Section~\ref{sec:agg}}
+\label{app:agg}
+
+Assumptions: $X(t)=\sum_{\tau=1}^{L}A_\tau X(t-\tau)+\varepsilon(t)$, $t\in\mathbb Z$,
+i.i.d.\ innovations with diagonal positive-definite covariance $\Sigma$, stable
+(all roots of $\det(I-\sum_\tau A_\tau z^\tau)$ outside the unit disc),
+stationary solution; the summary graph has $i\to j$ iff $(A_\tau)_{ji}\ne0$ for
+some $\tau$.
+
+\begin{proof}[Proof of \cref{prop:zero}]
+By the MA($\infty$) representation $X(t)=\sum_k\Psi_k\varepsilon(t-k)$, and
+because $\Psi_k$ is supported on the reachability relation, $X_i(t)$ is a
+measurable function of $\{\varepsilon_k(s):k\in\anc_S(i)\}$. Disjoint ancestor
+sets mean independent innovation sets, so the processes $X_i$ and $X_j$ are
+independent, and so are any per-node transforms. For the generic part, each
+covariance entry is real-analytic in $(A,\Sigma)$ on the connected open set of
+stable parameters with the given support, hence either identically zero or
+nonzero almost everywhere. With all coefficients positive, including the
+self-loop at a common ancestor $k$, all $\Psi$ entries are nonnegative and
+$\Psi_{ik}(m),\Psi_{jk}(m)>0$ for all large $m$ (self-loops pad the walks), so
+$\Gamma(0)_{ij}>0$; the same holds for $\Gamma(h)$, $h\ge0$, and therefore for
+the Fej\'er sums and $S_{LR}$. ``Generic'' does not mean ``large'': with little
+autocorrelation, $\Gamma(0)_{ij}$ along a lagged edge can be tiny (down to
+$10^{-14}$ in our exact computations; exactly $0$ without autocorrelation).
+\end{proof}
+
+\begin{proof}[Proof of \cref{thm:agg}]
+(a) $D^2\mathrm{Cov}(\bar Y)=\sum_{u,w<D}\Gamma(u-w)=D\Gamma(0)+\sum_{h=1}^{D-1}(D-h)(\Gamma(h)+\Gamma(-h))$
+(the counting identity is \lname{fejer_identity}). The stable VAR has
+$\|\Gamma(h)\|\le C r^{|h|}$, $r<1$, so $\sum_h|h|\|\Gamma(h)\|<\infty$ and
+$S_{LR}=\sum_h\Gamma(h)=\Psi(1)\Sigma\Psi(1)^\top$ with
+$\Psi(1)=(I-A(1))^{-1}$. Then
+$S_{LR}-D\,\mathrm{Cov}(\bar Y)=\sum_{|h|\ge D}\Gamma(h)+\sum_{|h|<D}\frac{|h|}{D}\Gamma(h)$,
+and $1\le|h|/D$ in the first sum.
+(b) Write $I-A(1)=(I-\Lambda)-N$ with $\Lambda$ the diagonal and $N$ the
+off-diagonal part; then $I-A(1)=(I-\Lambda)(I-\tilde B)$ with
+$\tilde B=(I-\Lambda)^{-1}N$ strictly triangular in a topological order
+(\lname{longrun_factor}, \lname{longrun_inv}). Under acyclicity the AR
+polynomial factorises into univariate $\phi_j(z)=1-\sum_\tau(A_\tau)_{jj}z^\tau$;
+stability, $\phi_j(0)=1$ and the intermediate value theorem give
+$\phi_j(1)=1-\lambda_j>0$ (\lname{selfloop_sum_lt_one}).
+(c) Stationarity.
+(d) For a linear SEM $X=BX+e$ with noise variances $\omega$,
+$R^2_i=1-1/(\Sigma_{ii}(\Sigma^{-1})_{ii})$ and
+$(\Sigma^{-1})_{ii}=1/\omega_i+\sum_{k\in\mathrm{ch}(i)}B_{ki}^2/\omega_k$. In
+an out-star with root $0$ and leaves $k$, $1-R^2_0=1/(1+\sum_kr_k)$ and
+$1-R^2_k=1/(1+r_k)$ with $r_k=\omega_0B_{k0}^2/\omega_k>0$, so with $\ge2$
+leaves the root has strictly larger $R^2$ than every leaf; the in-star is
+symmetric. Strict inequalities in the limit SEM of (b), plus (a) and
+continuity of $S\mapsto R^2$ at positive-definite $S$, give the claim for all
+large $D$. Under subsampling every contemporaneous statistic is a function of
+$\Gamma(0)$.
+\end{proof}
+
+The $R^2$ statement for stars strengthens the three-node analysis in
+\citet[App.~D]{herman2025unitless}, whose qualitative message (that $R^2$
+reflects connectivity, with an asymmetry between colliders and confounders)
+we credit. Numerical observations (exact population moments, not proved):
+mean block-mean $R^2$-sortability over 150 in-trees moves from $0.853$
+($D=1$) to $0.834$ ($D=4$--$8$) and $0.880$ ($D=256$), so it is not monotone in
+$D$; on out-stars subsampled data are $R^2$-sorted at $0.842$ on average while
+block means give $0.546$ ($D=4$), $0.101$ ($D=16$) and $0$ in the limit.
+
+%=============================================================================
+\section{Proofs for Section~\ref{sec:finite}}
+\label{app:finite}
+
+Notation. $\hat C_{ab}=\frac1n\sum_t(X_a(t)-\bar X_a)(X_b(t)-\bar X_b)$,
+$\hat r_{ab}=\hat C_{ab}/\sqrt{\hat C_{aa}\hat C_{bb}}$. Constants:
+$B_{ab}$ as in the main text; $D_\gamma=\max_a2\sum_h\gamma_{aa}(h)^2$;
+$\kappa_1=\max_a\sum_h|\gamma_{aa}(h)|$;
+$\kappa_2=\max_{a\ne b}(\sum_h|\gamma_{aa}(h)|+\sum_h|\gamma_{ab}(h)|)$. For
+i.i.d.\ sampling, $B_{ab}=1+\rho_{ab}^2$, $D_\gamma=2$, $\kappa_1=1$.
+
+\begin{lemma}[Gaussian chaos tail]\label{lem:chaos}
+Let $g\sim N(0,I_N)$, $A$ symmetric, $S=g^\top Ag-\mathrm{tr}A$. For $x>0$,
+$P(S\ge2\|A\|_F\sqrt x+2\|A\|_{op}x)\le e^{-x}$, and the same for $-S$.
+\lean{algebraic steps \lname{phi_le}, \lname{chernoff_logmgf_le}, \lname{chernoff_choice}, \lname{sqrt_two_v_x}; the probability statement is not machine-checked.}
+\end{lemma}
+\begin{proof}
+Diagonalise; $S$ has the law of $\sum_i\lambda_i(g_i^2-1)$. For $2s\lambda<1$,
+$\log Ee^{s\lambda(g^2-1)}=\varphi(s\lambda)$ with
+$\varphi(u)=-\frac12\log(1-2u)-u=\sum_{k\ge2}(2u)^k/(2k)\le u^2/(1-2|u|)$ for
+$|u|<1/2$. With $c=2\|A\|_{op}$, $v=2\|A\|_F^2$ and $0\le s<1/c$,
+$\log Ee^{sS}\le vs^2/(2(1-cs))$. Markov's inequality with $t=\sqrt{2vx}+cx$,
+$q=\sqrt{2x/v}$ and $s=q/(1+cq)$ gives exponent exactly $x$. This is the
+Gaussian case of \citet[Prop.~1]{hsu2012tail}, who derive it from
+\citet{laurent2000adaptive}; the proof here is self-contained.
+\end{proof}
+
+\begin{lemma}[exact variance]\label{lem:var}
+With $\tilde\gamma_{ab}=\frac1n\sum_tX_a(t)X_b(t)=g^\top Ag$ for
+$A=C^{1/2}MC^{1/2}$, $M=\frac1{2n}\begin{psmallmatrix}0&I\\I&0\end{psmallmatrix}$,
+\[
+2n\|A\|_F^2=\sum_{|h|<n}\Big(1-\tfrac{|h|}{n}\Big)\big[\gamma_{aa}(h)\gamma_{bb}(h)+\gamma_{ab}(h)\gamma_{ab}(-h)\big]\le B_{ab},
+\]
+$\|A\|_{op}\le\kappa_2/(2n)$; on the diagonal $2n\|A\|_F^2\le D_\gamma$ and
+$\|A\|_{op}\le\kappa_1/n$; and $\bar X_a\sim N(0,\bar\sigma_a^2)$ with
+$\bar\sigma_a^2\le\kappa_1/n$.
+\lean{trace and Toeplitz algebra \lname{quad_M}, \lname{trace_MC}, \lname{lemma12_trace}, \lname{lemma12_fejer}, \lname{lemma12_le_B}, \lname{lemma12_diag_le_D}; the step $\|C^{1/2}MC^{1/2}\|_F^2=\mathrm{tr}(MCMC)$ and the operator-norm bounds are not machine-checked.}
+\end{lemma}
+\begin{proof}
+$\|A\|_F^2=\mathrm{tr}(MCMC)$ and, with Toeplitz blocks
+$(C_{ab})_{st}=\gamma_{ab}(s-t)$,
+$4n^2\mathrm{tr}(MCMC)=2\sum_{s,t}[\gamma_{aa}(s-t)\gamma_{bb}(s-t)+\gamma_{ab}(s-t)\gamma_{ab}(t-s)]$
+(using that $\gamma_{aa}$, $\gamma_{bb}$ are even); count pairs with $s-t=h$.
+$\|A\|_{op}\le\|C\|_{op}\|M\|_{op}$ and $\|C\|_{op}$ is at most the largest
+absolute row sum.
+\end{proof}
+
+\begin{lemma}[deviation event]\label{lem:dev}
+Let $\varepsilon_{ab}=\sqrt{2B_{ab}x/n}+\kappa_2x/n+2\kappa_1y/n$ and
+$\varepsilon_d=\sqrt{2D_\gamma y/n}+4\kappa_1y/n$. With probability at least
+$1-d(d{-}1)e^{-x}-4de^{-y}$, $|\hat C_{ab}-\rho_{ab}|\le\varepsilon_{ab}$ for all
+$a\ne b$ and $|\hat C_{aa}-1|\le\varepsilon_d$ for all $a$.
+\lean{deterministic steps \lname{centred_cov_eq}, \lname{centred_dev_offdiag}, \lname{centred_dev_diag}, \lname{lemma13_eps}, \lname{lemma13_count}.}
+\end{lemma}
+\begin{proof}
+$\hat C_{ab}=\tilde\gamma_{ab}-\bar X_a\bar X_b$. Apply \cref{lem:chaos,lem:var}
+to each off-diagonal and diagonal $\tilde\gamma$, bound $|\bar X_a|\le
+\sqrt{2\kappa_1y/n}$ by the Gaussian Chernoff bound, and take a union bound.
+\end{proof}
+
+\begin{lemma}[correlation perturbation]\label{lem:pert}
+If $a',b'\in[1-\varepsilon_d,1+\varepsilon_d]$, $\varepsilon_d<1$ and
+$|c'-\rho|\le\varepsilon$, then
+$|c'/\sqrt{a'b'}-\rho|\le(\varepsilon+|\rho|\varepsilon_d)/(1-\varepsilon_d)$.
+\lean{\lname{corr_perturb} (the hypothesis $|\rho|\le1$ of our earlier statement is not needed).}
+\end{lemma}
+\begin{proof}
+$|c'/\sqrt{a'b'}-\rho|\le|c'-\rho|/\sqrt{a'b'}+|\rho||1/\sqrt{a'b'}-1|$, with
+$1/\sqrt{a'b'}\le1/(1-\varepsilon_d)$ and $|1/\sqrt{a'b'}-1|\le\varepsilon_d/(1-\varepsilon_d)$.
+\end{proof}
+
+\begin{proof}[Proof of \cref{thm:f1}]
+Set $\delta_{ab}=(\varepsilon_{ab}+|\rho_{ab}|\varepsilon_d)/(1-\varepsilon_d)$.
+On the event of \cref{lem:dev}, \cref{lem:pert} gives
+$|\hat r_{ab}-\rho_{ab}|\le\delta_{ab}$, so non-relatives satisfy
+$|\hat r|\le\tau$ and relatives $|\hat r|>\tau$ (\lname{decide_eq_target},
+\lname{thm15_det}). Equal declared sets give equal counts and hence
+$\hat s=\srho^{\mathrm{pop}}$ (\lname{sOf_cntDecl_congr}). For a VAR observed
+as a long stationary series, $\srho^{\mathrm{pop}}$ is the stationary value
+of \cref{thm:stat} on non-self-loop edges (\cref{prop:zero}). Explicit form:
+with $y=x+\log(4/(d-1))_+$ (\lname{explicit_y}) and a common threshold
+$\tau<\rho_{\min}$,
+$P(\hat R\ne R)\le2d(d{-}1)\exp\!\big(-n\min(\tau,\rho_{\min}-\tau)^2/(2(\sqrt B+\rho_{\max}\sqrt{D_\gamma})^2)(1+o(1))\big)$.
+\end{proof}
+
+\begin{proof}[Argument for \cref{prop:nominal} (asymptotic)]
+By Isserlis' theorem, $n\,\mathrm{Cov}(\tilde\gamma_{ab},\tilde\gamma_{cd})\to
+V(ab,cd)=\sum_h[\gamma_{ac}(h)\gamma_{bd}(h)+\gamma_{ad}(h)\gamma_{bc}(h)]$ (as in
+\cref{lem:var}); centring is $O(1/n)$. Assuming the CLT for quadratic forms,
+the delta method with gradient $(-\rho/2,-\rho/2,1)$ gives $\sqrt n(\hat r-\rho)
+\Rightarrow N(0,W)$,
+$W=V(ab,ab)-\rho[V(ab,aa)+V(ab,bb)]+\frac{\rho^2}{4}[V(aa,aa)+2V(aa,bb)+V(bb,bb)]$,
+which equals $B_{ab}$ for an independent pair. Then
+$\sqrt{n}\,\atanh\hat r\Rightarrow N(0,B_{ab})$ under the null and
+$P(|\atanh\hat r|>z_c/\sqrt{n-3})\to2\bar\Phi(z_c/\sqrt{B_{ab}})$.
+\end{proof}
+
+\begin{proof}[Proof of \cref{prop:f2}]
+$\mathrm{Cov}(X_u,X_v)=\gamma^Y_{uv}(0)+b_ub_v$ and $\gamma^Y_{uv}=0$ for
+non-relatives (\cref{prop:zero}); divide by the standard deviations
+(\lname{prop21_corr_std}). For relatives the sum is nonzero except on a
+Lebesgue-null set. All counts equal $d$, so every edge scores $1/2$
+(\lname{sOf_saturated}). The rate: apply \cref{thm:f1} with target ``all
+pairs'' and $x=y=cn$, $c$ small enough that $\delta\le\kappa_{\min}/3$ and
+$\tau_n\le\kappa_{\min}/3$ eventually; $|\hat s-1/2|\le1/2$ always
+(\lname{abs_sOf_sub_half_le}). The onset: by the asymptotic normality of
+$\atanh\hat r$, the declaration probability crosses $1/2$ where
+$\tanh(z_c/\sqrt{n-3})=|\kappa|$, i.e.\ at $\nhalf$ (\lname{ncrit_eq_iff}).
+\end{proof}
+
+\begin{proof}[Proof of \cref{prop:f3}]
+$\mathrm{Cov}(X_u,Z)=b_u\sqrt r$ and $\mathrm{Var}Z=1$; the partial covariance
+is $\gamma^Y_{uv}+(1-r)b_ub_v$ and the partial variance
+$\mathrm{Var}Y_u+(1-r)b_u^2$; divide and standardise (\lname{prop31},
+\lname{prop31_std}; positive $\mathrm{Var}Y_u$ is required). At $r=1$,
+$\pi=\rho^Y$ (\lname{cor32}). For non-relatives
+$|\pi_{uv}|=\sqrt{\ell_u\ell_v}\sqrt{f_uf_v}$ with $f_w(r)=(1-r)/(1-r\ell_w)$
+and $f_w'(r)=(\ell_w-1)/(1-r\ell_w)^2<0$ (\lname{absPi_strictAntiOn},
+\lname{absPi_eq_zero_iff}; both need $b_ub_v\ne0$). Bounds
+$(1-r)\sqrt{\ell_u\ell_v}\le|\pi|\le(1-r)\sqrt{\ell_u\ell_v}/(1-\ell_{\max})$
+(\lname{absPi_lower}, \lname{absPi_upper}). $r_{\mathrm{crit}}$ solves
+$(1-r)\ell/(1-r\ell)=\tau'$ (\lname{rcrit_iff}, \lname{rcrit_example}). The
+finite-sample bracket uses the Lipschitz bound
+$|g(a',b',c')-g(a,b,c)|\le L(q)\max(|a'-a|,|b'-b|,|c'-c|)$ for
+$g(a,b,c)=(a-bc)/\sqrt{(1-b^2)(1-c^2)}$, $|b|,|c|\le q<1$,
+$L(q)=1/(1-q^2)+4q/(1-q^2)^2$ (\lname{pc_lipschitz}, \lname{thm35_bracket}),
+combined with \cref{lem:dev} for $(X,Z)$. Multi-filter driver: for
+$D_v(t)=b_vC(t-k_v)$ with $C$ an AR(1) with coefficient $\phi$ and $Z=C(t)$,
+\[
+\pi_{uv}=\frac{b_ub_v(\phi^{|k_u-k_v|}-\phi^{k_u+k_v})}{\sqrt{(s_u^2-b_u^2\phi^{2k_u})(s_v^2-b_v^2\phi^{2k_v})}},
+\]
+nonzero for $k_u,k_v>0$, $\phi\in(0,1)$, $b_ub_v\ne0$ (\lname{prop36_ar1},
+\lname{prop36_ar1_ne_zero}); in general $\pi_{uv}\propto\mathrm{Cov}(D_u-P_ZD_u,D_v-P_ZD_v)$
+vanishes for all non-relative pairs iff the residual driver components are
+uncorrelated, which holds for a rank-one driver with $Z=F$
+(\lname{prop36_pcov}, \lname{prop36_zero_iff}, \lname{prop36_rank_one}). A
+proxy that contains summary relatives of $u,v$ adds the terms
+$-c_Z(b_uq_v+b_vq_u)-q_uq_v$ to the numerator (\lname{prop37_pcov},
+\lname{prop37_bound}). Triad identity: $\rho_{uZ}\rho_{vZ}/\rho_{uv}=r$ and, for
+$r>0$, $\ell_u=\rho_{uZ}^2/r$ (\lname{prop38_ratio}, \lname{prop38_loading}).
+\end{proof}
+
+%=============================================================================
+\section{Simulation Checks of F1--F3}
+\label{app:sims}
+
+All with fixed seeds; full tables are in the supplementary material.
+\textbf{F1} (5 processes: in-forests with $d=5$ and $d=10$, self-loop
+persistence $\lambda\in\{0.5,0.9,0.97\}$, and a near-white-noise case;
+$n=200$--$20{,}000$; 1{,}000 replications per cell; nominal, oracle-effective
+and fixed thresholds). The bound was never violated in 105 cells. It is loose:
+with a fixed threshold $\rho_{\min}/2$, it reaches $0.9$ at about 3--13 times
+the $n$ at which the simulated probability does, and much later with
+Bonferroni thresholds, where the Chernoff step loses the Mills-ratio factor.
+The empirical $n\,\mathrm{Var}(\hat r)/W$ lies in $[0.93,1.11]$. With the
+nominal test, $P(\hat R=R)$ plateaus at $0.94$, $0.22$, $0.03$ and $0.27$, as
+\cref{prop:nominal} predicts (predicted vs simulated false-positive rates,
+e.g.\ $0.33$ vs $0.32$--$0.33$ at $\lambda=0.9$).
+\textbf{F2} ($\ell\in\{0.02,0.1,0.3,0.64\}$): the asymptotic detection curve
+matches the simulated fraction of declared non-relatives within $0.02$ for
+$n\ge200$; predicted $\nhalf=1{,}079$ for $\ell=0.1$, simulated $0.479$ at
+$n=1{,}000$.
+\textbf{F3}: predicted $n_{\mathrm{crit}}=472$ ($\ell=0.64$, $r=0.9$) gives a
+simulated declared fraction $0.495$ at $n=471$; over 38 cells the asymptotic
+prediction is within $0.03$. With travel-time lags $(0,1,2,4,8)$, $\phi=0.9$,
+$r=1$, the declared fraction still rises to $0.63$ at $n=10{,}000$, as the
+multi-filter part of \cref{prop:f3} predicts.
+
+%=============================================================================
+\section{Lean Formalisation: Map and Findings}
+\label{app:lean}
+
+Lean 4.35.0 and Mathlib v4.35.0. The build log of a clean rebuild, the
+\texttt{\#print axioms} output for each of the 116 main theorems (all
+\texttt{[propext, Classical.choice, Quot.sound]}) and a grep showing no
+\texttt{sorry}/\texttt{admit}/\texttt{axiom} are in the supplementary
+material.
+
+\begin{center}\small
+\begin{tabular}{p{0.26\textwidth}p{0.52\textwidth}p{0.12\textwidth}}
+\toprule
+statement & Lean names & status \\
+\midrule
+\cref{lem:anc,lem:roots} & \lname{unrolled_reach_iff}, \lname{unrolled_reach_iff_dist}, \lname{roots_unrolled_iff}, \lname{desc_root_unrolled_iff}, \lname{isRel_unrolled_iff} & checked \\
+\cref{thm:edge} & \lname{edge_score}, \lname{edge_score_dist}, \lname{strictCond_iff_dist} & checked \\
+\cref{prop:boundary} & \lname{rho_unrolled_eq}, \lname{mT_le_iff}, \lname{rho_unrolled_large_t} & checked \\
+\cref{thm:limit} & \lname{sRho_unrolled_exact}, \lname{sRho_unrolled_bounds}, \lname{tendsto_sRho_unrolled}, \lname{tendsto_sRho_GT} & checked \\
+\cref{cor:iff} & \lname{tendsto_half_iff}, \lname{crossEdges_eq_empty_tfae}, \lname{sRho_unrolled_ge_of_cross}, \lname{reisach_theorem4}, \lname{limitValue_dag} & checked \\
+\cref{thm:stat} & \lname{rhoBurn_eq}, \lname{sBurn_eq}, \lname{rhoZ_eq}, \lname{sZ_eq}, \lname{sOf_window}, \lname{relSet_eq_iff_src}, \lname{mem_upEdges_iff} & checked \\
+\cref{cor:statiff} & \lname{sBurn_eq_half_iff}, \lname{sBurn_eq_half_iff_common_anc}, \lname{sZ_eq_half_iff}, \lname{upEdges_eq_empty_tfae}, \lname{stat_half_of_strong}, \lname{stat_half_of_outForest}, \lname{inForest_isRel_iff}, \lname{inForest_up_iff}, \lname{statValue_inForest}, \lname{statValue_inForest_gt_iff} & checked \\
+\cref{tab:examples} & \lname{collider_limit}, \lname{fork_limit}, \lname{chain3_limit}, \lname{collider_stat}, \lname{fork_stat}, \lname{chain3_stat} & checked \\
+self-loop remark & \lname{edgeLoops_limit}, \lname{edgeNoLoops_sRho} & checked \\
+\cref{prop:zero} & -- & paper only \\
+\cref{thm:agg}(a) & \lname{fejer_identity} (counting identity) & partial \\
+\cref{thm:agg}(b) & \lname{longrun_factor}, \lname{longrun_inv}, \lname{selfloop_sum_lt_one} & partial \\
+\cref{thm:agg}(c,d) & -- & paper only \\
+\cref{lem:chaos} & \lname{phi_le}, \lname{chernoff_logmgf_le}, \lname{chernoff_choice}, \lname{sqrt_two_v_x} & algebra only \\
+\cref{lem:var} & \lname{quad_M}, \lname{trace_MC}, \lname{lemma12_trace}, \lname{lemma12_fejer}, \lname{avg_toeplitz_le_tsum}, \lname{lemma12_le_B}, \lname{lemma12_diag}, \lname{lemma12_diag_le_D} & algebra only \\
+\cref{lem:dev} & \lname{centred_cov_eq}, \lname{centred_dev_offdiag}, \lname{centred_dev_diag}, \lname{lemma13_eps}, \lname{lemma13_count} & deterministic part \\
+\cref{lem:pert} & \lname{corr_perturb} & checked \\
+\cref{thm:f1} & \lname{decide_eq_target}, \lname{decide_eq_support}, \lname{thm15_det}, \lname{explicit_y}, \lname{sOf_cntDecl_congr} & deterministic part \\
+\cref{prop:nominal} & -- & asymptotic \\
+\cref{prop:f2} & \lname{prop21_corr}, \lname{prop21_corr_std}, \lname{sOf_saturated}, \lname{sOf_const}, \lname{abs_sOf_sub_half_le}, \lname{thm22_const}, \lname{ncrit_iff}, \lname{ncrit_eq_iff} & deterministic part \\
+\cref{prop:f3} & \lname{pcorr_eq_pcov}, \lname{pcorr_eq_corr_resid}, \lname{prop31}, \lname{prop31_std}, \lname{cor32}, \lname{prop33}, \lname{prop33_abs}, \lname{absPi_lower}, \lname{absPi_upper}, \lname{absPi_le_kappa}, \lname{absPi_lt_kappa}, \lname{absPi_eq_zero_iff}, \lname{absPi_strictAntiOn}, \lname{absPi_equal}, \lname{rcrit_iff}, \lname{rcrit_eq_iff}, \lname{rcrit_example}, \lname{pc_lipschitz}, \lname{thm35_bracket}, \lname{prop36_pcov}, \lname{prop36_zero_iff}, \lname{prop36_rank_one}, \lname{prop36_ar1_pcov}, \lname{prop36_ar1_pvar}, \lname{prop36_ar1}, \lname{prop36_ar1_ne_zero}, \lname{prop37_pcov}, \lname{prop37_bound}, \lname{prop38_ratio}, \lname{prop38_loading} & population part checked \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Modelling choices.} Summary graphs are relations on a finite type with
+a self-loop hypothesis; $\anc$ and $\desc$ are reflexive-transitive closures
+(``a path exists iff a walk exists'' is the one convention adopted without
+proof); $\GT$ with $T=n+1$ slices lives on $V\times\mathrm{Fin}(n+1)$; source
+SCCs are represented by their member nodes (equality of SCC sets as equality of
+node unions is elementary and not formalised). In the finite-sample files,
+zero-mean variables are vectors of an arbitrary real inner-product space and
+lag-0 covariance is the inner product; independence enters only as vanishing
+inner products.
+
+\textbf{Findings.} No statement was false. Formalisation added four missing
+nondegeneracy hypotheses to our earlier finite-sample statements: (i) the
+strict claims of \cref{prop:f3} need $b_ub_v\ne0$; (ii) $\ell_u=\rho_{uZ}^2/r$
+needs $r>0$; (iii) nonvanishing of the multi-filter residual needs
+$b_ub_v\ne0$; (iv) the partial correlation needs positive partial variances
+($\mathrm{Var}Y_u>0$ suffices). It also showed that one hypothesis of
+\cref{prop:boundary} and one of \cref{lem:pert} are redundant, and that the
+in-forest statement needs acyclicity, not only out-degree at most one.
+
+%=============================================================================
+\section{Real-Data Details}
+\label{app:real}
+
+\textbf{CausalRivers} \citep{stein2025causalrivers}. Study 1 (P1--P3): the
+benchmark's connected-subgraph sampler, seeds 7000--7029, East Germany and
+Bavaria, $d\in\{5,10\}$, 120 subgraphs, 791 induced edges; block means at
+12\,h and 24\,h; nominal Fisher-$z$. Study 2 (P4--P6): seeds 8000--8029, 120
+subgraphs, 1{,}376 non-relative pairs; proxy $Z$ is the mean of standardised
+stations of the region outside the subgraph and outside 2 undirected river
+hops (429--615 stations); primary test on partial correlations with a residual
+Bartlett $\neff$ ($K=100$ steps at 12\,h, 50 at 24\,h); median $\neff$ 139/113
+(raw) and 231/211 (residual). Before conditioning, 0.98 (nominal) and 0.87
+(effective) of non-relative pairs tested dependent. Median proxy
+contamination by river relatives was 2.6\% (maximum 72\%), a case of the
+contaminated-proxy term in \cref{prop:f3}. Post hoc and without verdict:
+conditioning on $k=1,3,5,10$ principal components of the leave-out stations
+gave dependent fractions $0.745,0.605,0.576,0.491$ (12\,h), with accuracy
+$0.580$ and Spearman $0.16$ at $k=10$.
+
+\textbf{Causal Chambers} \citep{gamella2025chambers}. Candidate selection
+(recorded before analysis) compared Causal Chambers, CausalRivers with
+measured precipitation (rejected: the driver reaches each gauge through its
+own catchment filter, so by \cref{prop:f3} a scalar proxy cannot remove it),
+a semi-synthetic cross-sectional manufacturing benchmark (rejected: not real,
+not time series) and fMRI with physiological regressors (rejected: no ground
+truth). Wind tunnel: runs \texttt{actuators\_random\_walk\_2}--\texttt{16} (run
+1 excluded before analysis: truncated); 16 random variables, 26 edges, 63
+non-relative pairs per run; block means over 10 rows, first differences,
+standardisation, $n=999$; effective-$n$ Fisher-$z$ with Bartlett $K=20$.
+Light tunnel: \texttt{actuators\_white}, 20 variables, 39 edges, ten segments
+of 2{,}000 steps, levels. Predicted values come from the package's published
+ground-truth graph with constant parameters removed.
+Secondary analyses (no verdicts): nominal $n$ gives slightly more false
+positives ($0.048$), as \cref{prop:nominal} predicts; levels instead of
+increments gave $0.054$, contradicting our own secondary prediction that
+levels of random walks would produce many spurious dependences; without block
+means ($D=1$) relative recovery drops to $0.18$ and Spearman to $0.10$. In the
+light tunnel, polariser angles act on two sensors through Malus' law, a
+nonlinearity with near-zero linear correlation; as pre-registered, these
+relative pairs were never detected, without affecting orientation.
+
+%=============================================================================
+\section{Pre-Registration Timeline and Deviations}
+\label{app:prereg}
+
+Times are commit timestamps relative to the first pre-registration commit
+($T_0$); all events occurred on one day. Commit hashes are withheld for
+anonymity and will be provided with the de-anonymised version. Commit
+timestamps are set by the committing client; the hosting service's push
+records are the stronger evidence and can be supplied to the area chair on
+request.
+
+\begin{center}\small
+\begin{tabular}{p{0.17\textwidth}p{0.70\textwidth}}
+\toprule
+time & event \\
+\midrule
+$T_0+0{:}00$ & plan 1 committed: targets T1--T3, predictions P1--P3, kill rule \\
+$T_0+0{:}14$ & theory of \cref{sec:exact,sec:agg}, enumeration checks, operationalisation of P1--P3 (before data) \\
+$T_0+0{:}17$ & study 1 results (P2, P3 fail; kill rule triggered) \\
+$T_0+1{:}05$ & plan 2 committed: F1--F3 targets, Lean target, predictions P4--P6, kill rule \\
+$T_0+1{:}18$--$1{:}31$ & Lean formalisation of \cref{sec:exact} and algebraic parts of \cref{sec:agg} \\
+$T_0+1{:}38$ & finite-sample theory, simulations, operationalisation of P4--P6 (before data) \\
+$T_0+1{:}44$ & study 2 results (P4, P6 fail; kill rule triggered) \\
+$T_0+4{:}58$ & plan 3 committed: candidate scoping, graph-only predictions, P7--P9 (before any dependence statistic) \\
+$T_0+5{:}02$ & study 3 results (P7, P8 pass; P9 fails; replication passes) \\
+$T_0+5{:}14$--$5{:}24$ & Lean formalisation of the finite-sample lemmas; errata \\
+\PH{E1/E2 times} & \PH{pre-registration and result commits of E1 and E2} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Deviations (all recorded at the time).} (1) Plan 1 said
+``theorem-predicted $\srho$'' without naming the version; the stationary
+version was fixed in writing before data were loaded (the finite version would
+predict $>1/2$ for every subgraph, including chains). (2) Self-loops are
+excluded from the predicted average because the estimator cannot orient
+them; this does not change which side of $1/2$ the prediction is on.
+(3) Only 6 of 120 study-1 subgraphs lacked a confluence; the plan set no
+minimum size for that group, and its trivial pass is not interpreted. (4) Plan
+2 did not say which test defines ``dependent'' in P4; the effective-$n$ test
+was fixed as primary before data, and the nominal test fails P4 as well.
+(5) In study 3, a planned triad-reliability check was not applicable (the
+measured driver reaches only four mutually related barometers) and is not
+interpreted. (6) The P9 failure is close to the threshold and its CI contains
+$0.3$; as pre-registered, the point estimate decides.
+
+%=============================================================================
+\section{Placeholders for Experiments E1 and E2}
+\label{app:ph}
+
+\PH{E1 (discriminating test against naive predictors): design, pre-registration
+time relative to $T_0$, naive predictors compared, thresholds, full results
+table, deviations. To be filled from the experiment folder once the run and
+its README are committed. Do not fill with estimates.}
+
+\PH{E2 (lagged relatives): lag window, test, effective sample size, effect on
+the weak edges that limited P9, full results table, deviations. To be filled
+from the experiment folder once the run and its README are committed.}
