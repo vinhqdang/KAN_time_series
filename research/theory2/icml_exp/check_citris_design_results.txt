@@ -1,0 +1,6 @@
+flag equal: 1.0
+red equal int(): 1.0
+green equal int(): 1.0
+blue equal int(): 1.0
+pol_1 max |csv - protocol(0.1)|: 4.577636715907829e-06
+pol_2 max |csv - protocol(0.1)|: 4.577636715907829e-06

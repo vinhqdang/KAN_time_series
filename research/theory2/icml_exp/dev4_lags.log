@@ -1,0 +1,9 @@
+D=1 L=0 nonrel=0.025 rel_detect=0.179 acc_pred1=0.709 spearman=0.138
+D=1 L=10 nonrel=0.028 rel_detect=0.246 acc_pred1=0.596 spearman=0.251
+D=1 L=30 nonrel=0.028 rel_detect=0.241 acc_pred1=0.632 spearman=0.238
+D=3 L=0 nonrel=0.038 rel_detect=0.346 acc_pred1=0.611 spearman=0.315
+D=3 L=10 nonrel=0.039 rel_detect=0.382 acc_pred1=0.667 spearman=0.326
+D=10 L=0 nonrel=0.039 rel_detect=0.396 acc_pred1=0.656 spearman=0.338
+D=10 L=1 nonrel=0.037 rel_detect=0.393 acc_pred1=0.651 spearman=0.361
+D=10 L=3 nonrel=0.036 rel_detect=0.389 acc_pred1=0.651 spearman=0.337
+D=10 L=0 with PLAN3 subgraph seeds 10*(9000+run)+d: spearman = 0.2665
