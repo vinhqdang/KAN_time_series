@@ -100,17 +100,16 @@ and depends only on the source strongly connected components. Without
 self-loops the exact edge value survives, but the closed form and the converse
 fail (counterexamples). For Erd\H{o}s--R\'enyi summary graphs we derive the
 limiting values, which peak near the percolation threshold at $0.754$ (finite)
-and $0.665$ (stationary); this derivation is a sketch whose concentration step
-is not proved, and it agrees with exact computation to 3--4 digits. Block-mean
+and $0.665$ (stationary); we prove these limits on paper from textbook facts (no rates, no critical window); they agree with exact computation. Block-mean
 aggregation and point subsampling leave the relatives unchanged but move var-
 and $R^2$-sortability to different limits. Raw correlation tests are classically
 inconsistent under autocorrelation; we add an effective sample size for the
 relatives count, a non-asymptotic recovery bound, saturation by a latent driver
 at $n\approx z_c^2/\ell^2$, and conditions for a proxy to repair it. The graph
 results and the algebraic core of the finite-sample results are machine-checked
-in Lean~4 (133 theorems). In pre-registered real-data studies a river benchmark
+in Lean~4 (138 theorems). In pre-registered real-data studies a river benchmark
 fails as the theory predicts, and a physical testbed gives a partial positive
-result, including out-of-sample predictions of detection rates. A fourth pre-registration (E1) shows that the theorem's edge values beat eight
+result. A fourth pre-registration (E1) shows that the theorem's edge values beat eight
 naive predictors on a light-tunnel series, mostly through predicted ties and
 only for linearly dependent relatives (on the published graph one naive
 predictor is significantly better on strictly ordered edges). A lagged-relatives
@@ -168,9 +167,7 @@ infinite past) whose value is exact for every $T$ and is fixed by the
 \emph{source} strongly connected components (\cref{thm:stat}); river networks
 exceed $1/2$ iff they contain a confluence (\cref{cor:statiff}).
 \textbf{(3)} Random summary graphs (\cref{sec:er}): limits $L(c)$, $S(c)$ for
-directed Erd\H{o}s--R\'enyi graphs with mean degree $c$ (a sketch with
-numerical support: the concentration step and the second fixed point are not
-proved), exact in-forest identities, and an elementary reading of $\srho$ as the
+directed Erd\H{o}s--R\'enyi graphs with mean degree $c$ (proved on paper; no rates or critical window), exact in-forest identities, and an elementary reading of $\srho$ as the
 accuracy of the ideal count-sort-orient rule.
 \textbf{(4)} Under aggregation the relatives are unchanged, whereas var- and
 $R^2$-sortability converge to those of a long-run structural model under block
@@ -185,7 +182,7 @@ count, saturation by a latent driver at $n\approx z_c^2/\ell^2$, and the
 conditions for a proxy to repair it, in line with known results on unreliable
 covariates \citep{westfall2016confounding}.
 \textbf{(6)} Lean~4 proofs of all graph results, the loop-free edge formula and
-the deterministic core of F1--F3 (133 theorems, standard axioms only;
+the deterministic core of F1--F3 (138 theorems, standard axioms only;
 \cref{sec:lean}); to our knowledge the first machine-checked development of
 sortability results, while Lean libraries for other parts of causal inference
 exist \citep{tan2026causalsmith}.
@@ -202,8 +199,8 @@ walk-length lemma and of \citet[Lemma~1]{reisach2026topological}. Their value
 is that they determine the value for every summary graph and horizon, are
 machine-checked, and change what a benchmark designer should conclude: much of
 the rel-sortability of time-unrolled benchmarks is an artefact of how the
-simulation is started. The random-graph results are a sketch plus numerics
-rather than a proof. The finite-sample results use textbook tools; their value
+simulation is started. The random-graph limits are proved on paper (not in
+Lean), with routine couplings abbreviated (\cref{app:er}). The finite-sample results use textbook tools; their value
 is that they predicted, quantitatively and in one case out of sample, the
 outcome of real-data tests. A referee should read the whole as a completion of
 the unrolled-graph analysis of \citet{reisach2026topological} (their
@@ -412,16 +409,16 @@ Let $\GS$ be the directed Erd\H{o}s--R\'enyi graph $G(p,c/p)$ plus a self-loop a
 every node, and $x$ the largest root of $x=1-e^{-cx}$ ($x=0$ for $c\le1$). By
 \cref{thm:limit,thm:stat} only $|\Ex|$ and $|\Eu|$ matter.
 
-\begin{proposition}[ER limits; sketch]\label{prop:er}
+\begin{proposition}[ER limits; proved]\label{prop:er}
 In probability as $p\to\infty$,
 $L(c)=\tfrac12+\frac{c(1-x^2)}{2(1+c)}$ and
 $S(c)=\tfrac12+\frac{c\,F_\uparrow}{2(1+c)}$ with
 $F_\uparrow=(1-x)(1-e^{-c})+x(1-x)\big(1-e^{-c(1-x)d}\big)$, where $d$ is the
 smallest fixed point in $[0,1]$ of $d=1+e^{-c}-e^{-c(1-x)d}$ ($d=1$ for $c\le1$).
-\nolean{a local-limit sketch, \cref{app:er}: the concentration step is not proved and the fixed point $d$ is derived heuristically; the formulas agree with exact computation to 3--4 digits}
+\lean{only the witness lemmas for $E_\uparrow$ (\lname{upEdge_witness}, \lname{upEdges_subset_confluenceNL}); the probabilistic proof is on paper and uses textbook Poisson-coupling, Chernoff and Galton--Watson facts \citep{hofstad2016random} (\cref{app:er}). Not proved: rates, the window $c=1+\lambda p^{-1/3}$, a.s.\ convergence, fixed $T$ as $p$ grows.}
 \end{proposition}
 The first formula says that the fraction of non-loop edges inside an SCC tends
-to $x^2$ (giant strongly connected component, \citealp{dorogovtsev2001giant}).
+to $x^2$ (giant strongly connected component, \citealp{dorogovtsev2001giant,dovgal2020birth}).
 $L(1)=3/4$, $L$ peaks at $0.754$ near $c=1.07$ and then decays like $e^{-c}$;
 $S$ peaks at $0.665$ near $c=1.09$ (\cref{fig:er}). Random summary graphs are thus rel-sortable only near or below
 criticality, as the giant SCC removes the signal. For in-forests (rivers; mean
@@ -620,14 +617,12 @@ $0.03$ and are used for prediction below.
 
 All results of \cref{sec:exact} and the deterministic and algebraic parts of
 \cref{sec:agg,sec:finite} are formalised in Lean~4 \citep{demoura2021lean4}
-with Mathlib \citep{mathlib2020} (3{,}711 lines). The axiom report lists 133
+with Mathlib \citep{mathlib2020} (3{,}791 lines in 15 files). The axiom report lists 138
 theorems, each depending only on \texttt{propext}, \texttt{Classical.choice}
 and \texttt{Quot.sound}; the sources contain no \texttt{sorry}, \texttt{admit}
 or \texttt{axiom}. Relatives, $\srho$, $\GT$ and the stationary windows
 are defined from scratch following \citet{reisach2026topological}; ``a directed
-path exists'' is read as reflexive-transitive reachability. The 17
-newest theorems cover the loop-free edge formula and the accuracy statements.
-Not formalised: the random-graph limits (\cref{prop:er}), eventual periodicity
+path exists'' is read as reflexive-transitive reachability. Not formalised: the probabilistic steps of \cref{prop:er}, eventual periodicity
 and the loop-free stationary value, Gaussian tail bounds, Isserlis' theorem, the CLT, the SVAR
 moving-average representation and genericity (\cref{prop:zero}). \Cref{app:lean} maps every statement to its Lean name and
 status.
@@ -884,13 +879,13 @@ second. Diagnostic: compare $\neff$ with $3+(z_c/\atanh\hat\kappa)^2$, where
 $\hat\kappa$ is the typical correlation of pairs believed unrelated; if $\neff$
 is far above it, the count is saturated whatever the graph.
 
-\textbf{Open questions.} Proofs of the random-graph limits and of the windowed
+\textbf{Open questions.} Rates and critical window of the ER limits; windowed
 loop-free stationary value; contemporaneous effects; nonlinear mechanisms
 (faithfulness can fail, as the Malus-law pairs of the light tunnel show).
 
 \textbf{Limitations.} The closed forms assume self-loops at every node (without
 them a single edge gives $1/2$ instead of $2/3$; \cref{sec:noloop}). The ER
-limits are a sketch with numerical support. \Cref{sec:agg} covers linear SVARs
+limits are paper proofs (fixed $p$, $T\to\infty$). \Cref{sec:agg} covers linear SVARs
 only. The finite-sample bounds are loose, and the asymptotic statements rest on
 an assumed joint CLT. \Cref{prop:zero} and the probabilistic parts of F1--F3
 are proved on paper only. The positive real-data evidence comes from one
