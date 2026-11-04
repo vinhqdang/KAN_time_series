@@ -6,3 +6,5 @@ import RelSort.Stationary
 import RelSort.Examples
 import RelSort.Extras
 import RelSort.T2Algebra
+import RelSort.FiniteCorr
+import RelSort.FinitePartial
