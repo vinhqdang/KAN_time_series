@@ -214,3 +214,14 @@ Full clean rebuild with the two new files: `BUILD_LOG.txt` (9062 jobs, no error)
 - `RelSort/NoLoop.lean`: X2 (exact edge value and `s_ρ(G_T)` for arbitrary summary graphs, no self-loop assumption).
 - `RelSort/Predict.lean`: X3 (accuracy of the oracle sort rule, optimality among pairwise count rules).
 - `Axioms.lean`: `#print axioms` for each main theorem. Output: `AXIOMS.txt`, `BUILD_LOG.txt`.
+
+## ErLemmas.lean (x1proof/X1PROOF.md): witness lemma for E_up, no loop hypothesis
+
+| X1PROOF.md | Lean name | status |
+|---|---|---|
+| W1: (i,j) in E_up gives a second parent k not in {i,j} and a source node x reaching k, not i | `upEdge_witness` | verified |
+| W2: source reaching a parent k of j but not i puts (i,j) in E_up | `mem_upEdges_of_witness` | verified |
+| W3: parent k of j with no common ancestor with i puts (i,j) in E_up | `mem_upEdges_of_disjoint_anc` | verified |
+| W4: E_up contained in confluence edges (non-loop parents) | `upEdges_subset_confluenceNL`, `card_upEdges_le_confluenceNL` | verified |
+
+Axiom check: `AxiomsEr.lean` (lines appended to `AXIOMS.txt`). All probabilistic statements of X1PROOF.md (T1-T3) are not formalised.

@@ -1,0 +1,17 @@
+finite-p exact fractions (per non-loop edge) vs Monte Carlo of the GW local limit (1e6 samples, se ~0.0005):
+c=1.5 K=5 p=20000: A_K 0.4136 vs 0.4121; clause1 0.2777 vs 0.2774; clause2 0.0435 vs 0.0442; Psi_K 0.3060 vs 0.3060; E_up 0.3856
+c=1.5 K=5 p=100000: A_K 0.4139 vs 0.4121; clause1 0.2765 vs 0.2774; clause2 0.0441 vs 0.0442; Psi_K 0.3050 vs 0.3060; E_up 0.3856
+c=1.5 K=10 p=20000: A_K 0.3616 vs 0.3611; clause1 0.3107 vs 0.3091; clause2 0.0793 vs 0.0817; Psi_K 0.3586 vs 0.3583; E_up 0.3856
+c=1.5 K=10 p=100000: A_K 0.3618 vs 0.3611; clause1 0.3097 vs 0.3091; clause2 0.0803 vs 0.0817; Psi_K 0.3581 vs 0.3583; E_up 0.3856
+c=1.5 K=20 p=20000: A_K 0.3446 vs 0.3433; clause1 0.3220 vs 0.3219; clause2 0.0987 vs 0.1026; Psi_K 0.3800 vs 0.3821; E_up 0.3856
+c=1.5 K=20 p=100000: A_K 0.3450 vs 0.3433; clause1 0.3206 vs 0.3219; clause2 0.1006 vs 0.1026; Psi_K 0.3799 vs 0.3821; E_up 0.3856
+c=1.5 K=40 p=20000: A_K 0.3416 vs 0.3397; clause1 0.3245 vs 0.3246; clause2 0.1042 vs 0.1087; Psi_K 0.3853 vs 0.3877; E_up 0.3856
+c=1.5 K=40 p=100000: A_K 0.3415 vs 0.3397; clause1 0.3228 vs 0.3246; clause2 0.1064 vs 0.1087; Psi_K 0.3853 vs 0.3877; E_up 0.3856
+c=2.0 K=5 p=20000: A_K 0.6500 vs 0.6495; clause1 0.1686 vs 0.1677; clause2 0.0108 vs 0.0116; Psi_K 0.1774 vs 0.1772; E_up 0.1894
+c=2.0 K=5 p=100000: A_K 0.6514 vs 0.6495; clause1 0.1676 vs 0.1677; clause2 0.0115 vs 0.0116; Psi_K 0.1769 vs 0.1772; E_up 0.1894
+c=2.0 K=10 p=20000: A_K 0.6370 vs 0.6374; clause1 0.1759 vs 0.1739; clause2 0.0146 vs 0.0167; Psi_K 0.1875 vs 0.1873; E_up 0.1894
+c=2.0 K=10 p=100000: A_K 0.6381 vs 0.6374; clause1 0.1747 vs 0.1739; clause2 0.0164 vs 0.0167; Psi_K 0.1879 vs 0.1873; E_up 0.1894
+c=2.0 K=20 p=20000: A_K 0.6357 vs 0.6352; clause1 0.1764 vs 0.1756; clause2 0.0162 vs 0.0176; Psi_K 0.1894 vs 0.1896; E_up 0.1894
+c=2.0 K=20 p=100000: A_K 0.6366 vs 0.6352; clause1 0.1755 vs 0.1756; clause2 0.0173 vs 0.0176; Psi_K 0.1894 vs 0.1896; E_up 0.1894
+c=2.0 K=40 p=20000: A_K 0.6357 vs 0.6339; clause1 0.1765 vs 0.1758; clause2 0.0162 vs 0.0176; Psi_K 0.1895 vs 0.1898; E_up 0.1894
+c=2.0 K=40 p=100000: A_K 0.6366 vs 0.6339; clause1 0.1756 vs 0.1758; clause2 0.0173 vs 0.0176; Psi_K 0.1894 vs 0.1898; E_up 0.1894

@@ -1,0 +1,35 @@
+== global quantities (mean over seeds [sd]) vs limits
+p=50000 c=1.0 n=3: giant/p 0.0000 (x^2=0.0000); second SCC 3.0 max 4 (log p=10.8); N/p 0.0004 (c x^2=0.0000); L 0.74969[0.00071] pred 0.75000; S 0.65742[0.00107] pred 0.65803; nup/m 0.6302 (F_up=0.6321); up_not_confluence total 0; nontrivial source SCCs 0.33 (nodes 0.67)
+p=100000 c=1.5 n=3: giant/p 0.0000 (x^2=0.3397); second SCC 1.3 max 2 (log p=11.5); N/p 0.5116 (c x^2=0.5095); L 0.69750[0.00041] pred 0.69810; S 0.61563[0.00094] pred 0.61632; nup/m 0.3856 (F_up=0.3877); up_not_confluence total 0; nontrivial source SCCs 0.00 (nodes 0.00)
+p=100000 c=2.0 n=3: giant/p 0.0000 (x^2=0.6349); second SCC 1.3 max 2 (log p=11.5); N/p 1.2721 (c x^2=1.2698); L 0.62111[0.00133] pred 0.62170; S 0.56312[0.00078] pred 0.56321; nup/m 0.1894 (F_up=0.1896); up_not_confluence total 0; nontrivial source SCCs 0.00 (nodes 0.00)
+p=100000 c=3.0 n=3: giant/p 0.0000 (x^2=0.8845); second SCC 1.0 max 1 (log p=11.5); N/p 2.6535 (c x^2=2.6535); L 0.54308[0.00028] pred 0.54331; S 0.52141[0.00030] pred 0.52143; nup/m 0.0571 (F_up=0.0572); up_not_confluence total 0; nontrivial source SCCs 0.00 (nodes 0.00)
+
+== structure: maxSmallOut/In (largest out/in-set of a node that does not reach / is not reached from the giant), reach/from giant fraction vs x
+p=50000 c=1.0: maxSmallOut 1972, maxSmallIn 1980, log p 10.8; reach_giant 0.0148, from_giant 0.0018, x=0.0000; both = giant 0.0003 (giantfrac nan) vs x^2 0.0000
+p=100000 c=1.5: maxSmallOut 67, maxSmallIn 55, log p 11.5; reach_giant 0.5831, from_giant 0.5829, x=0.5828; both = giant 0.3401 (giantfrac nan) vs x^2 0.3397
+p=100000 c=2.0: maxSmallOut 23, maxSmallIn 28, log p 11.5; reach_giant 0.7980, from_giant 0.7961, x=0.7968; both = giant 0.6356 (giantfrac nan) vs x^2 0.6349
+p=100000 c=3.0: maxSmallOut 7, maxSmallIn 7, log p 11.5; reach_giant 0.9408, from_giant 0.9403, x=0.9405; both = giant 0.8847 (giantfrac nan) vs x^2 0.8845
+
+== local functional Ntilde_K = sum_e 1[out(j)>=K, in(i)>=K] vs N, and Psi_K vs E_up (edge by edge); sums over seeds
+p=50000 c=1.0 K=5: (Ntilde-N)/m +0.13597, Z1A0/m 0.00004, Z0A1/m 0.13601; frac out>=K 0.3713 theta_K 0.3733; up_not_Psi/m 0.18267, Psi_not_up/m 0.00002, Psi1_not_up 3, Psi2_not_up 0, up_bigin_with_bigwitness 14331/34699
+p=50000 c=1.0 K=10: (Ntilde-N)/m +0.06320, Z1A0/m 0.00005, Z0A1/m 0.06325; frac out>=K 0.2548 theta_K 0.2580; up_not_Psi/m 0.09063, Psi_not_up/m 0.00006, Psi1_not_up 9, Psi2_not_up 0, up_bigin_with_bigwitness 9736/23788
+p=50000 c=1.0 K=20: (Ntilde-N)/m +0.02950, Z1A0/m 0.00007, Z0A1/m 0.02958; frac out>=K 0.1774 theta_K 0.1804; up_not_Psi/m 0.04223, Psi_not_up/m 0.00009, Psi1_not_up 13, Psi2_not_up 0, up_bigin_with_bigwitness 6564/16286
+p=50000 c=1.0 K=40: (Ntilde-N)/m +0.01275, Z1A0/m 0.00013, Z0A1/m 0.01288; frac out>=K 0.1228 theta_K 0.1269; up_not_Psi/m 0.01838, Psi_not_up/m 0.00011, Psi1_not_up 16, Psi2_not_up 0, up_bigin_with_bigwitness 4338/10783
+p=100000 c=1.5 K=5: (Ntilde-N)/m +0.07251, Z1A0/m 0.00001, Z0A1/m 0.07252; frac out>=K 0.6422 theta_K 0.6424; up_not_Psi/m 0.08063, Psi_not_up/m 0.00000, Psi1_not_up 0, Psi2_not_up 0, up_bigin_with_bigwitness 20457/49035
+p=100000 c=1.5 K=10: (Ntilde-N)/m +0.02038, Z1A0/m 0.00001, Z0A1/m 0.02039; frac out>=K 0.6005 theta_K 0.6007; up_not_Psi/m 0.02746, Psi_not_up/m 0.00000, Psi1_not_up 0, Psi2_not_up 0, up_bigin_with_bigwitness 5821/34126
+p=100000 c=1.5 K=20: (Ntilde-N)/m +0.00361, Z1A0/m 0.00001, Z0A1/m 0.00363; frac out>=K 0.5862 theta_K 0.5860; up_not_Psi/m 0.00573, Psi_not_up/m 0.00000, Psi1_not_up 1, Psi2_not_up 0, up_bigin_with_bigwitness 1010/29217
+p=100000 c=1.5 K=40: (Ntilde-N)/m +0.00010, Z1A0/m 0.00001, Z0A1/m 0.00011; frac out>=K 0.5832 theta_K 0.5830; up_not_Psi/m 0.00031, Psi_not_up/m 0.00000, Psi1_not_up 1, Psi2_not_up 0, up_bigin_with_bigwitness 40/28229
+p=100000 c=2.0 K=5: (Ntilde-N)/m +0.01483, Z1A0/m 0.00000, Z0A1/m 0.01484; frac out>=K 0.8072 theta_K 0.8060; up_not_Psi/m 0.01250, Psi_not_up/m 0.00000, Psi1_not_up 0, Psi2_not_up 0, up_bigin_with_bigwitness 4777/13100
+p=100000 c=2.0 K=10: (Ntilde-N)/m +0.00154, Z1A0/m 0.00000, Z0A1/m 0.00154; frac out>=K 0.7989 theta_K 0.7976; up_not_Psi/m 0.00152, Psi_not_up/m 0.00000, Psi1_not_up 0, Psi2_not_up 0, up_bigin_with_bigwitness 493/8808
+p=100000 c=2.0 K=20: (Ntilde-N)/m +0.00005, Z1A0/m 0.00000, Z0A1/m 0.00005; frac out>=K 0.7981 theta_K 0.7968; up_not_Psi/m 0.00004, Psi_not_up/m 0.00000, Psi1_not_up 0, Psi2_not_up 0, up_bigin_with_bigwitness 22/8336
+p=100000 c=2.0 K=40: (Ntilde-N)/m -0.00000, Z1A0/m 0.00000, Z0A1/m 0.00000; frac out>=K 0.7980 theta_K 0.7968; up_not_Psi/m 0.00000, Psi_not_up/m 0.00000, Psi1_not_up 0, Psi2_not_up 0, up_bigin_with_bigwitness 0/8314
+p=100000 c=3.0 K=5: (Ntilde-N)/m +0.00035, Z1A0/m 0.00000, Z0A1/m 0.00035; frac out>=K 0.9410 theta_K 0.9407; up_not_Psi/m 0.00020, Psi_not_up/m 0.00000, Psi1_not_up 0, Psi2_not_up 0, up_bigin_with_bigwitness 157/758
+p=100000 c=3.0 K=10: (Ntilde-N)/m +0.00000, Z1A0/m 0.00000, Z0A1/m 0.00000; frac out>=K 0.9408 theta_K 0.9405; up_not_Psi/m 0.00000, Psi_not_up/m 0.00000, Psi1_not_up 0, Psi2_not_up 0, up_bigin_with_bigwitness 0/601
+p=100000 c=3.0 K=20: (Ntilde-N)/m +0.00000, Z1A0/m 0.00000, Z0A1/m 0.00000; frac out>=K 0.9408 theta_K 0.9405; up_not_Psi/m 0.00000, Psi_not_up/m 0.00000, Psi1_not_up 0, Psi2_not_up 0, up_bigin_with_bigwitness 0/601
+p=100000 c=3.0 K=40: (Ntilde-N)/m +0.00000, Z1A0/m 0.00000, Z0A1/m 0.00000; frac out>=K 0.9408 theta_K 0.9405; up_not_Psi/m 0.00000, Psi_not_up/m 0.00000, Psi1_not_up 0, Psi2_not_up 0, up_bigin_with_bigwitness 0/601
+
+== dichotomy (3000 random nodes per seed, exact sizes, eps=0.02): P(K<=|out|<eps p) and P(K<=|in|<eps p) vs K
+p=50000 c=1.0: K=5: meso out 0.3664 in 0.3724 (P(out>=K) 0.3681 vs theta_K 0.3733); K=10: meso out 0.2513 in 0.2563 (P(out>=K) 0.2530 vs theta_K 0.2580); K=20: meso out 0.1727 in 0.1752 (P(out>=K) 0.1743 vs theta_K 0.1804); K=40: meso out 0.1173 in 0.1168 (P(out>=K) 0.1190 vs theta_K 0.1269)
+p=100000 c=1.5: K=5: meso out 0.0596 in 0.0579 (P(out>=K) 0.6361 vs theta_K 0.6424); K=10: meso out 0.0160 in 0.0156 (P(out>=K) 0.5926 vs theta_K 0.6007); K=20: meso out 0.0033 in 0.0026 (P(out>=K) 0.5799 vs theta_K 0.5860); K=40: meso out 0.0001 in 0.0000 (P(out>=K) 0.5767 vs theta_K 0.5830)
+p=100000 c=2.0: K=5: meso out 0.0097 in 0.0079 (P(out>=K) 0.8036 vs theta_K 0.8060); K=10: meso out 0.0008 in 0.0009 (P(out>=K) 0.7947 vs theta_K 0.7976); K=20: meso out 0.0000 in 0.0000 (P(out>=K) 0.7939 vs theta_K 0.7968); K=40: meso out 0.0000 in 0.0000 (P(out>=K) 0.7939 vs theta_K 0.7968)
+p=100000 c=3.0: K=5: meso out 0.0001 in 0.0002 (P(out>=K) 0.9421 vs theta_K 0.9407); K=10: meso out 0.0000 in 0.0000 (P(out>=K) 0.9420 vs theta_K 0.9405); K=20: meso out 0.0000 in 0.0000 (P(out>=K) 0.9420 vs theta_K 0.9405); K=40: meso out 0.0000 in 0.0000 (P(out>=K) 0.9420 vs theta_K 0.9405)

@@ -131,3 +131,8 @@
 'RelSort.accRule_sortRule_rho' depends on axioms: [propext, Classical.choice, Quot.sound]
 'RelSort.edgeAcc_sortRule_strict' depends on axioms: [propext, Classical.choice, Quot.sound]
 'RelSort.rho_not_gt_of_edge' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.upEdge_witness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.mem_upEdges_of_witness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.mem_upEdges_of_disjoint_anc' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.upEdges_subset_confluenceNL' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.card_upEdges_le_confluenceNL' depends on axioms: [propext, Classical.choice, Quot.sound]

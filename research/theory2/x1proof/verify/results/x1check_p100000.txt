@@ -1,0 +1,132 @@
+p=100000 c=1.5 seed=11 m=150021 nc=66002 giant=33996 second=2 N=51245 L=0.697535
+k_src=22339 nontrivial_src_scc=0 nodes_in_nontrivial_src=0 nup=57661 S=0.615312 up_not_confluence=0
+K=5 Ntilde=61946 Z1A0=4 Z0A1=10705 frac_in_big=0.64248 frac_out_big=0.64114 | Psi=45776 Psi1=41512 Psi2=6612 up=57661 up_not_Psi=11885 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=16149 up_bigin_with_bigwitness=6940
+K=10 Ntilde=54194 Z1A0=4 Z0A1=2953 frac_in_big=0.59965 frac_out_big=0.60041 | Psi=53713 Psi1=46549 Psi2=11826 up=57661 up_not_Psi=3948 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=11112 up_bigin_with_bigwitness=1993
+K=20 Ntilde=51771 Z1A0=6 Z0A1=532 frac_in_big=0.58561 frac_out_big=0.58688 | Psi=56854 Psi1=48224 Psi2=14612 up=57661 up_not_Psi=807 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=9437 up_bigin_with_bigwitness=361
+K=40 Ntilde=51263 Z1A0=6 Z0A1=24 frac_in_big=0.58247 frac_out_big=0.58435 | Psi=57624 Psi1=48574 Psi2=15394 up=57661 up_not_Psi=37 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=9087 up_bigin_with_bigwitness=19
+reach_giant=0.58420 from_giant=0.58234 both=0.33996 giant=0.33996 maxSmallOut=51 maxSmallIn=55 logp=11.51
+dichot K=5 eps=0.02 P_meso_out=0.05333 P_meso_in=0.05700 P_out_ge_K=0.62000 P_in_ge_K=0.63300 (n=3000)
+dichot K=10 eps=0.02 P_meso_out=0.01567 P_meso_in=0.01600 P_out_ge_K=0.58233 P_in_ge_K=0.59200 (n=3000)
+dichot K=20 eps=0.02 P_meso_out=0.00267 P_meso_in=0.00133 P_out_ge_K=0.56933 P_in_ge_K=0.57733 (n=3000)
+dichot K=40 eps=0.02 P_meso_out=0.00033 P_meso_in=0.00000 P_out_ge_K=0.56700 P_in_ge_K=0.57600 (n=3000)
+p=100000 c=1.5 seed=12 m=150249 nc=65755 giant=34246 second=1 N=51613 L=0.697076
+k_src=22295 nontrivial_src_scc=0 nodes_in_nontrivial_src=0 nup=57503 S=0.614892 up_not_confluence=0
+K=5 Ntilde=62598 Z1A0=0 Z0A1=10985 frac_in_big=0.64433 frac_out_big=0.64238 | Psi=45242 Psi1=41116 Psi2=6364 up=57503 up_not_Psi=12261 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=16387 up_bigin_with_bigwitness=6780
+K=10 Ntilde=54581 Z1A0=0 Z0A1=2968 frac_in_big=0.60227 frac_out_big=0.59981 | Psi=53312 Psi1=46055 Psi2=11909 up=57503 up_not_Psi=4191 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=11448 up_bigin_with_bigwitness=1919
+K=20 Ntilde=52100 Z1A0=0 Z0A1=487 frac_in_big=0.58816 frac_out_big=0.58583 | Psi=56595 Psi1=47695 Psi2=14955 up=57503 up_not_Psi=909 Psi_not_up=1 Psi1_not_up=1 Psi2_not_up=0 up_bigin=9809 up_bigin_with_bigwitness=303
+K=40 Ntilde=51623 Z1A0=0 Z0A1=10 frac_in_big=0.58564 frac_out_big=0.58302 | Psi=57429 Psi1=47993 Psi2=15881 up=57503 up_not_Psi=75 Psi_not_up=1 Psi1_not_up=1 Psi2_not_up=0 up_bigin=9511 up_bigin_with_bigwitness=9
+reach_giant=0.58295 from_giant=0.58554 both=0.34246 giant=0.34246 maxSmallOut=67 maxSmallIn=47 logp=11.51
+dichot K=5 eps=0.02 P_meso_out=0.06433 P_meso_in=0.06000 P_out_ge_K=0.64067 P_in_ge_K=0.64333 (n=3000)
+dichot K=10 eps=0.02 P_meso_out=0.01467 P_meso_in=0.01600 P_out_ge_K=0.59100 P_in_ge_K=0.59933 (n=3000)
+dichot K=20 eps=0.02 P_meso_out=0.00400 P_meso_in=0.00133 P_out_ge_K=0.58033 P_in_ge_K=0.58467 (n=3000)
+dichot K=40 eps=0.02 P_meso_out=0.00000 P_meso_in=0.00000 P_out_ge_K=0.57633 P_in_ge_K=0.58333 (n=3000)
+p=100000 c=1.5 seed=13 m=149290 nc=66209 giant=33792 second=1 N=50627 L=0.697888
+k_src=22506 nontrivial_src_scc=0 nodes_in_nontrivial_src=0 nup=58177 S=0.616685 up_not_confluence=0
+K=5 Ntilde=61537 Z1A0=0 Z0A1=10910 frac_in_big=0.64050 frac_out_big=0.64294 | Psi=46077 Psi1=41678 Psi2=6833 up=58177 up_not_Psi=12100 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=16499 up_bigin_with_bigwitness=6737
+K=10 Ntilde=53871 Z1A0=0 Z0A1=3244 frac_in_big=0.59754 frac_out_big=0.60139 | Psi=53973 Psi1=46611 Psi2=12348 up=58177 up_not_Psi=4204 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=11566 up_bigin_with_bigwitness=1909
+K=20 Ntilde=51239 Z1A0=0 Z0A1=612 frac_in_big=0.58381 frac_out_big=0.58578 | Psi=57318 Psi1=48206 Psi2=15651 up=58177 up_not_Psi=859 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=9971 up_bigin_with_bigwitness=346
+K=40 Ntilde=50644 Z1A0=0 Z0A1=17 frac_in_big=0.58085 frac_out_big=0.58228 | Psi=58151 Psi1=48546 Psi2=16550 up=58177 up_not_Psi=26 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=9631 up_bigin_with_bigwitness=12
+reach_giant=0.58222 from_giant=0.58071 both=0.33792 giant=0.33792 maxSmallOut=46 maxSmallIn=46 logp=11.51
+dichot K=5 eps=0.02 P_meso_out=0.06100 P_meso_in=0.05667 P_out_ge_K=0.64767 P_in_ge_K=0.64100 (n=3000)
+dichot K=10 eps=0.02 P_meso_out=0.01767 P_meso_in=0.01467 P_out_ge_K=0.60433 P_in_ge_K=0.59900 (n=3000)
+dichot K=20 eps=0.02 P_meso_out=0.00333 P_meso_in=0.00500 P_out_ge_K=0.59000 P_in_ge_K=0.58933 (n=3000)
+dichot K=40 eps=0.02 P_meso_out=0.00000 P_meso_in=0.00000 P_out_ge_K=0.58667 P_in_ge_K=0.58433 (n=3000)
+p=100000 c=2 seed=11 m=200024 nc=36172 giant=63828 second=2 N=128141 L=0.619795
+k_src=13584 nontrivial_src_scc=0 nodes_in_nontrivial_src=0 nup=37336 S=0.562222 up_not_confluence=0
+K=5 Ntilde=131001 Z1A0=2 Z0A1=2862 frac_in_big=0.80763 frac_out_big=0.80783 | Psi=34894 Psi1=32963 Psi2=2366 up=37336 up_not_Psi=2442 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=4373 up_bigin_with_bigwitness=1632
+K=10 Ntilde=128436 Z1A0=2 Z0A1=297 frac_in_big=0.79950 frac_out_big=0.79987 | Psi=37067 Psi1=34405 Psi2=3334 up=37336 up_not_Psi=269 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=2931 up_bigin_with_bigwitness=194
+K=20 Ntilde=128154 Z1A0=2 Z0A1=15 frac_in_big=0.79866 frac_out_big=0.79918 | Psi=37323 Psi1=34585 Psi2=3435 up=37336 up_not_Psi=13 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=2751 up_bigin_with_bigwitness=14
+K=40 Ntilde=128139 Z1A0=2 Z0A1=0 frac_in_big=0.79857 frac_out_big=0.79918 | Psi=37336 Psi1=34599 Psi2=3435 up=37336 up_not_Psi=0 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=2737 up_bigin_with_bigwitness=0
+reach_giant=0.79918 from_giant=0.79857 both=0.63828 giant=0.63828 maxSmallOut=19 maxSmallIn=23 logp=11.51
+dichot K=5 eps=0.02 P_meso_out=0.01100 P_meso_in=0.00967 P_out_ge_K=0.80633 P_in_ge_K=0.80867 (n=3000)
+dichot K=10 eps=0.02 P_meso_out=0.00067 P_meso_in=0.00133 P_out_ge_K=0.79600 P_in_ge_K=0.80033 (n=3000)
+dichot K=20 eps=0.02 P_meso_out=0.00000 P_meso_in=0.00000 P_out_ge_K=0.79533 P_in_ge_K=0.79900 (n=3000)
+dichot K=40 eps=0.02 P_meso_out=0.00000 P_meso_in=0.00000 P_out_ge_K=0.79533 P_in_ge_K=0.79900 (n=3000)
+p=100000 c=2 seed=12 m=200288 nc=36449 giant=63552 second=1 N=127569 L=0.621082
+k_src=13709 nontrivial_src_scc=0 nodes_in_nontrivial_src=0 nup=38207 S=0.563617 up_not_confluence=0
+K=5 Ntilde=130544 Z1A0=0 Z0A1=2975 frac_in_big=0.80355 frac_out_big=0.80819 | Psi=35649 Psi1=33780 Psi2=2309 up=38207 up_not_Psi=2558 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=4427 up_bigin_with_bigwitness=1560
+K=10 Ntilde=127865 Z1A0=0 Z0A1=296 frac_in_big=0.79519 frac_out_big=0.79997 | Psi=37887 Psi1=35190 Psi2=3362 up=38207 up_not_Psi=320 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=3017 up_bigin_with_bigwitness=153
+K=20 Ntilde=127576 Z1A0=0 Z0A1=7 frac_in_big=0.79445 frac_out_big=0.79905 | Psi=38206 Psi1=35342 Psi2=3570 up=38207 up_not_Psi=1 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=2865 up_bigin_with_bigwitness=1
+K=40 Ntilde=127569 Z1A0=0 Z0A1=0 frac_in_big=0.79444 frac_out_big=0.79902 | Psi=38207 Psi1=35343 Psi2=3570 up=38207 up_not_Psi=0 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=2864 up_bigin_with_bigwitness=0
+reach_giant=0.79902 from_giant=0.79444 both=0.63552 giant=0.63552 maxSmallOut=23 maxSmallIn=20 logp=11.51
+dichot K=5 eps=0.02 P_meso_out=0.00600 P_meso_in=0.00833 P_out_ge_K=0.80400 P_in_ge_K=0.79967 (n=3000)
+dichot K=10 eps=0.02 P_meso_out=0.00100 P_meso_in=0.00067 P_out_ge_K=0.79900 P_in_ge_K=0.79200 (n=3000)
+dichot K=20 eps=0.02 P_meso_out=0.00000 P_meso_in=0.00000 P_out_ge_K=0.79800 P_in_ge_K=0.79133 (n=3000)
+dichot K=40 eps=0.02 P_meso_out=0.00000 P_meso_in=0.00000 P_out_ge_K=0.79800 P_in_ge_K=0.79133 (n=3000)
+p=100000 c=2 seed=13 m=199179 nc=36715 giant=63286 second=1 N=125913 L=0.622445
+k_src=13521 nontrivial_src_scc=0 nodes_in_nontrivial_src=0 nup=38012 S=0.563527 up_not_confluence=0
+K=5 Ntilde=128971 Z1A0=0 Z0A1=3058 frac_in_big=0.80471 frac_out_big=0.80565 | Psi=35519 Psi1=33712 Psi2=2216 up=38012 up_not_Psi=2493 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=4300 up_bigin_with_bigwitness=1585
+K=10 Ntilde=126243 Z1A0=0 Z0A1=330 frac_in_big=0.79624 frac_out_big=0.79700 | Psi=37689 Psi1=35152 Psi2=3153 up=38012 up_not_Psi=323 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=2860 up_bigin_with_bigwitness=146
+K=20 Ntilde=125920 Z1A0=0 Z0A1=7 frac_in_big=0.79538 frac_out_big=0.79593 | Psi=38005 Psi1=35292 Psi2=3365 up=38012 up_not_Psi=7 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=2720 up_bigin_with_bigwitness=7
+K=40 Ntilde=125913 Z1A0=0 Z0A1=0 frac_in_big=0.79536 frac_out_big=0.79593 | Psi=38012 Psi1=35299 Psi2=3365 up=38012 up_not_Psi=0 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=2713 up_bigin_with_bigwitness=0
+reach_giant=0.79593 from_giant=0.79536 both=0.63286 giant=0.63286 maxSmallOut=19 maxSmallIn=28 logp=11.51
+dichot K=5 eps=0.02 P_meso_out=0.01200 P_meso_in=0.00567 P_out_ge_K=0.80033 P_in_ge_K=0.80133 (n=3000)
+dichot K=10 eps=0.02 P_meso_out=0.00067 P_meso_in=0.00067 P_out_ge_K=0.78900 P_in_ge_K=0.79633 (n=3000)
+dichot K=20 eps=0.02 P_meso_out=0.00000 P_meso_in=0.00000 P_out_ge_K=0.78833 P_in_ge_K=0.79567 (n=3000)
+dichot K=40 eps=0.02 P_meso_out=0.00000 P_meso_in=0.00000 P_out_ge_K=0.78833 P_in_ge_K=0.79567 (n=3000)
+p=100000 c=3 seed=11 m=300029 nc=11500 giant=88501 second=1 N=265672 L=0.542943
+k_src=5044 nontrivial_src_scc=0 nodes_in_nontrivial_src=0 nup=17299 S=0.521622 up_not_confluence=0
+K=5 Ntilde=265790 Z1A0=0 Z0A1=118 frac_in_big=0.94005 frac_out_big=0.94196 | Psi=17213 Psi1=17023 Psi2=203 up=17299 up_not_Psi=86 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=276 up_bigin_with_bigwitness=61
+K=10 Ntilde=265672 Z1A0=0 Z0A1=0 frac_in_big=0.93985 frac_out_big=0.94176 | Psi=17299 Psi1=17084 Psi2=229 up=17299 up_not_Psi=0 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=215 up_bigin_with_bigwitness=0
+K=20 Ntilde=265672 Z1A0=0 Z0A1=0 frac_in_big=0.93985 frac_out_big=0.94176 | Psi=17299 Psi1=17084 Psi2=229 up=17299 up_not_Psi=0 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=215 up_bigin_with_bigwitness=0
+K=40 Ntilde=265672 Z1A0=0 Z0A1=0 frac_in_big=0.93985 frac_out_big=0.94176 | Psi=17299 Psi1=17084 Psi2=229 up=17299 up_not_Psi=0 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=215 up_bigin_with_bigwitness=0
+reach_giant=0.94176 from_giant=0.93985 both=0.88501 giant=0.88501 maxSmallOut=7 maxSmallIn=7 logp=11.51
+dichot K=5 eps=0.02 P_meso_out=0.00000 P_meso_in=0.00033 P_out_ge_K=0.93700 P_in_ge_K=0.93967 (n=3000)
+dichot K=10 eps=0.02 P_meso_out=0.00000 P_meso_in=0.00000 P_out_ge_K=0.93700 P_in_ge_K=0.93933 (n=3000)
+dichot K=20 eps=0.02 P_meso_out=0.00000 P_meso_in=0.00000 P_out_ge_K=0.93700 P_in_ge_K=0.93933 (n=3000)
+dichot K=40 eps=0.02 P_meso_out=0.00000 P_meso_in=0.00000 P_out_ge_K=0.93700 P_in_ge_K=0.93933 (n=3000)
+p=100000 c=3 seed=12 m=300352 nc=11655 giant=88346 second=1 N=265606 L=0.543394
+k_src=5044 nontrivial_src_scc=0 nodes_in_nontrivial_src=0 nup=17256 S=0.521551 up_not_confluence=0
+K=5 Ntilde=265716 Z1A0=0 Z0A1=110 frac_in_big=0.93976 frac_out_big=0.94032 | Psi=17202 Psi1=16987 Psi2=231 up=17256 up_not_Psi=54 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=269 up_bigin_with_bigwitness=54
+K=10 Ntilde=265606 Z1A0=0 Z0A1=0 frac_in_big=0.93954 frac_out_big=0.94014 | Psi=17256 Psi1=17041 Psi2=231 up=17256 up_not_Psi=0 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=215 up_bigin_with_bigwitness=0
+K=20 Ntilde=265606 Z1A0=0 Z0A1=0 frac_in_big=0.93954 frac_out_big=0.94014 | Psi=17256 Psi1=17041 Psi2=231 up=17256 up_not_Psi=0 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=215 up_bigin_with_bigwitness=0
+K=40 Ntilde=265606 Z1A0=0 Z0A1=0 frac_in_big=0.93954 frac_out_big=0.94014 | Psi=17256 Psi1=17041 Psi2=231 up=17256 up_not_Psi=0 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=215 up_bigin_with_bigwitness=0
+reach_giant=0.94014 from_giant=0.93954 both=0.88346 giant=0.88346 maxSmallOut=6 maxSmallIn=7 logp=11.51
+dichot K=5 eps=0.02 P_meso_out=0.00000 P_meso_in=0.00000 P_out_ge_K=0.94333 P_in_ge_K=0.94233 (n=3000)
+dichot K=10 eps=0.02 P_meso_out=0.00000 P_meso_in=0.00000 P_out_ge_K=0.94333 P_in_ge_K=0.94233 (n=3000)
+dichot K=20 eps=0.02 P_meso_out=0.00000 P_meso_in=0.00000 P_out_ge_K=0.94333 P_in_ge_K=0.94233 (n=3000)
+dichot K=40 eps=0.02 P_meso_out=0.00000 P_meso_in=0.00000 P_out_ge_K=0.94333 P_in_ge_K=0.94233 (n=3000)
+p=100000 c=3 seed=13 m=298994 nc=11450 giant=88551 second=1 N=264764 L=0.542895
+k_src=4933 nontrivial_src_scc=0 nodes_in_nontrivial_src=0 nup=16814 S=0.521070 up_not_confluence=0
+K=5 Ntilde=264854 Z1A0=0 Z0A1=90 frac_in_big=0.94165 frac_out_big=0.94064 | Psi=16772 Psi1=16601 Psi2=185 up=16814 up_not_Psi=42 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=213 up_bigin_with_bigwitness=42
+K=10 Ntilde=264764 Z1A0=0 Z0A1=0 frac_in_big=0.94149 frac_out_big=0.94051 | Psi=16814 Psi1=16643 Psi2=185 up=16814 up_not_Psi=0 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=171 up_bigin_with_bigwitness=0
+K=20 Ntilde=264764 Z1A0=0 Z0A1=0 frac_in_big=0.94149 frac_out_big=0.94051 | Psi=16814 Psi1=16643 Psi2=185 up=16814 up_not_Psi=0 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=171 up_bigin_with_bigwitness=0
+K=40 Ntilde=264764 Z1A0=0 Z0A1=0 frac_in_big=0.94149 frac_out_big=0.94051 | Psi=16814 Psi1=16643 Psi2=185 up=16814 up_not_Psi=0 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=171 up_bigin_with_bigwitness=0
+reach_giant=0.94051 from_giant=0.94149 both=0.88551 giant=0.88551 maxSmallOut=6 maxSmallIn=6 logp=11.51
+dichot K=5 eps=0.02 P_meso_out=0.00033 P_meso_in=0.00033 P_out_ge_K=0.94600 P_in_ge_K=0.93667 (n=3000)
+dichot K=10 eps=0.02 P_meso_out=0.00000 P_meso_in=0.00000 P_out_ge_K=0.94567 P_in_ge_K=0.93633 (n=3000)
+dichot K=20 eps=0.02 P_meso_out=0.00000 P_meso_in=0.00000 P_out_ge_K=0.94567 P_in_ge_K=0.93633 (n=3000)
+dichot K=40 eps=0.02 P_meso_out=0.00000 P_meso_in=0.00000 P_out_ge_K=0.94567 P_in_ge_K=0.93633 (n=3000)
+p=50000 c=1 seed=11 m=50012 nc=49964 giant=33 second=4 N=39 L=0.749835
+k_src=18347 nontrivial_src_scc=1 nodes_in_nontrivial_src=2 nup=31505 S=0.657506 up_not_confluence=0
+K=5 Ntilde=6876 Z1A0=2 Z0A1=6839 frac_in_big=0.37286 frac_out_big=0.37242 | Psi=22356 Psi1=19909 Psi2=6725 up=31505 up_not_Psi=9149 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=11596 up_bigin_with_bigwitness=5334
+K=10 Ntilde=3267 Z1A0=2 Z0A1=3230 frac_in_big=0.25648 frac_out_big=0.25486 | Psi=26965 Psi1=23527 Psi2=13648 up=31505 up_not_Psi=4542 Psi_not_up=2 Psi1_not_up=2 Psi2_not_up=0 up_bigin=7980 up_bigin_with_bigwitness=3627
+K=20 Ntilde=1551 Z1A0=2 Z0A1=1514 frac_in_big=0.17902 frac_out_big=0.17786 | Psi=29319 Psi1=25986 Psi2=19140 up=31505 up_not_Psi=2189 Psi_not_up=3 Psi1_not_up=3 Psi2_not_up=0 up_bigin=5522 up_bigin_with_bigwitness=2461
+K=40 Ntilde=711 Z1A0=2 Z0A1=674 frac_in_big=0.12190 frac_out_big=0.12408 | Psi=30540 Psi1=27743 Psi2=23173 up=31505 up_not_Psi=968 Psi_not_up=3 Psi1_not_up=3 Psi2_not_up=0 up_bigin=3765 up_bigin_with_bigwitness=1666
+reach_giant=0.03474 from_giant=0.00382 both=0.00066 giant=0.00066 maxSmallOut=994 maxSmallIn=1733 logp=10.82
+dichot K=5 eps=0.02 P_meso_out=0.36267 P_meso_in=0.37400 P_out_ge_K=0.36600 P_in_ge_K=0.37767 (n=3000)
+dichot K=10 eps=0.02 P_meso_out=0.24200 P_meso_in=0.26000 P_out_ge_K=0.24533 P_in_ge_K=0.26367 (n=3000)
+dichot K=20 eps=0.02 P_meso_out=0.16900 P_meso_in=0.17933 P_out_ge_K=0.17233 P_in_ge_K=0.18300 (n=3000)
+dichot K=40 eps=0.02 P_meso_out=0.11367 P_meso_in=0.12133 P_out_ge_K=0.11700 P_in_ge_K=0.12500 (n=3000)
+p=50000 c=1 seed=12 m=50144 nc=49994 giant=6 second=2 N=8 L=0.750320
+k_src=18395 nontrivial_src_scc=0 nodes_in_nontrivial_src=0 nup=31735 S=0.658447 up_not_confluence=0
+K=5 Ntilde=6842 Z1A0=2 Z0A1=6836 frac_in_big=0.37296 frac_out_big=0.37298 | Psi=22519 Psi1=20030 Psi2=6764 up=31735 up_not_Psi=9216 Psi_not_up=0 Psi1_not_up=0 Psi2_not_up=0 up_bigin=11705 up_bigin_with_bigwitness=4826
+K=10 Ntilde=3245 Z1A0=2 Z0A1=3239 frac_in_big=0.25682 frac_out_big=0.25640 | Psi=27151 Psi1=23676 Psi2=13627 up=31735 up_not_Psi=4585 Psi_not_up=1 Psi1_not_up=1 Psi2_not_up=0 up_bigin=8060 up_bigin_with_bigwitness=3289
+K=20 Ntilde=1523 Z1A0=2 Z0A1=1517 frac_in_big=0.17376 frac_out_big=0.17742 | Psi=29658 Psi1=26296 Psi2=19402 up=31735 up_not_Psi=2079 Psi_not_up=2 Psi1_not_up=2 Psi2_not_up=0 up_bigin=5441 up_bigin_with_bigwitness=2207
+K=40 Ntilde=638 Z1A0=8 Z0A1=638 frac_in_big=0.11528 frac_out_big=0.12310 | Psi=30845 Psi1=28177 Psi2=23479 up=31735 up_not_Psi=892 Psi_not_up=2 Psi1_not_up=2 Psi2_not_up=0 up_bigin=3560 up_bigin_with_bigwitness=1425
+reach_giant=0.00936 from_giant=0.00066 both=0.00012 giant=0.00012 maxSmallOut=1972 maxSmallIn=1980 logp=10.82
+dichot K=5 eps=0.02 P_meso_out=0.36267 P_meso_in=0.37433 P_out_ge_K=0.36433 P_in_ge_K=0.37667 (n=3000)
+dichot K=10 eps=0.02 P_meso_out=0.24633 P_meso_in=0.25600 P_out_ge_K=0.24800 P_in_ge_K=0.25833 (n=3000)
+dichot K=20 eps=0.02 P_meso_out=0.16933 P_meso_in=0.17033 P_out_ge_K=0.17100 P_in_ge_K=0.17267 (n=3000)
+dichot K=40 eps=0.02 P_meso_out=0.11700 P_meso_in=0.11500 P_out_ge_K=0.11867 P_in_ge_K=0.11733 (n=3000)
+p=50000 c=1 seed=13 m=49589 nc=49994 giant=3 second=3 N=10 L=0.748918
+k_src=18514 nontrivial_src_scc=0 nodes_in_nontrivial_src=0 nup=31134 S=0.656312 up_not_confluence=0
+K=5 Ntilde=6700 Z1A0=2 Z0A1=6692 frac_in_big=0.36894 frac_out_big=0.36840 | Psi=22148 Psi1=19739 Psi2=6591 up=31134 up_not_Psi=8989 Psi_not_up=3 Psi1_not_up=3 Psi2_not_up=0 up_bigin=11398 up_bigin_with_bigwitness=4171
+K=10 Ntilde=3009 Z1A0=4 Z0A1=3003 frac_in_big=0.25242 frac_out_big=0.25310 | Psi=26695 Psi1=23392 Psi2=13183 up=31134 up_not_Psi=4445 Psi_not_up=6 Psi1_not_up=6 Psi2_not_up=0 up_bigin=7748 up_bigin_with_bigwitness=2820
+K=20 Ntilde=1401 Z1A0=7 Z0A1=1398 frac_in_big=0.17560 frac_out_big=0.17678 | Psi=29087 Psi1=25819 Psi2=18819 up=31134 up_not_Psi=2055 Psi_not_up=8 Psi1_not_up=8 Psi2_not_up=0 up_bigin=5323 up_bigin_with_bigwitness=1896
+K=40 Ntilde=617 Z1A0=10 Z0A1=617 frac_in_big=0.11548 frac_out_big=0.12128 | Psi=30253 Psi1=27687 Psi2=22972 up=31134 up_not_Psi=892 Psi_not_up=11 Psi1_not_up=11 Psi2_not_up=0 up_bigin=3458 up_bigin_with_bigwitness=1247
+reach_giant=0.00044 from_giant=0.00092 both=0.00006 giant=0.00006 maxSmallOut=1221 maxSmallIn=1583 logp=10.82
+dichot K=5 eps=0.02 P_meso_out=0.37400 P_meso_in=0.36900 P_out_ge_K=0.37400 P_in_ge_K=0.37067 (n=3000)
+dichot K=10 eps=0.02 P_meso_out=0.26567 P_meso_in=0.25300 P_out_ge_K=0.26567 P_in_ge_K=0.25467 (n=3000)
+dichot K=20 eps=0.02 P_meso_out=0.17967 P_meso_in=0.17600 P_out_ge_K=0.17967 P_in_ge_K=0.17767 (n=3000)
+dichot K=40 eps=0.02 P_meso_out=0.12133 P_meso_in=0.11400 P_out_ge_K=0.12133 P_in_ge_K=0.11567 (n=3000)

@@ -28,3 +28,30 @@ Build completed successfully (9062 jobs).
 
 # command: grep -rnwE 'sorry|admit|axiom' RelSort RelSort.lean
 (no matches)
+
+# ---- x1proof update 2026-11-04T21:54:11Z: clean rebuild incl. ErLemmas.lean (rm -rf .lake/build && LEAN_NUM_THREADS=2 lake build), exit 0, 9063 jobs, no warning from ErLemmas
+⚠ [9047/9063] Built RelSort.Basic (9.2s)
+⚠ [9048/9063] Built RelSort.T2Algebra (10s)
+✔ [9049/9063] Built RelSort.Predict (7.5s)
+✔ [9050/9063] Built RelSort.FiniteCorr (11s)
+✔ [9051/9063] Built RelSort.Walk (7.5s)
+✔ [9052/9063] Built RelSort.FiniteTrace (8.3s)
+✔ [9053/9063] Built RelSort.Unrolled (9.2s)
+✔ [9054/9063] Built RelSort.FinitePartial (16s)
+✔ [9055/9063] Built RelSort.Limit (8.8s)
+✔ [9056/9063] Built RelSort.FiniteLipschitz (10s)
+✔ [9057/9063] Built RelSort.NoLoop (8.4s)
+✔ [9058/9063] Built RelSort.Stationary (9.7s)
+✔ [9059/9063] Built RelSort.ErLemmas (7.8s)
+✔ [9060/9063] Built RelSort.Examples (8.1s)
+✔ [9061/9063] Built RelSort.Extras (7.2s)
+✔ [9062/9063] Built RelSort (6.9s)
+Build completed successfully (9063 jobs).
+# command: LEAN_NUM_THREADS=2 lake env lean AxiomsEr.lean  (5 lines appended to AXIOMS.txt, all within propext/Classical.choice/Quot.sound)
+'RelSort.upEdge_witness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.mem_upEdges_of_witness' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.mem_upEdges_of_disjoint_anc' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.upEdges_subset_confluenceNL' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.card_upEdges_le_confluenceNL' depends on axioms: [propext, Classical.choice, Quot.sound]
+# command: grep -rnwE 'sorry|admit|axiom' RelSort RelSort.lean
+(no matches)
