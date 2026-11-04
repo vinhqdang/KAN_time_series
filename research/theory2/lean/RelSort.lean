@@ -8,3 +8,5 @@ import RelSort.Extras
 import RelSort.T2Algebra
 import RelSort.FiniteCorr
 import RelSort.FinitePartial
+import RelSort.FiniteLipschitz
+import RelSort.FiniteTrace

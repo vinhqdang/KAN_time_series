@@ -183,3 +183,18 @@ Not formalised with reasonable effort (reason): Lemma 1.1 as a probability state
 (a) Nominal test: by Cor 1.8, even a perfect proxy leaves a non-relative false-positive rate of about 2Φ̄(z_c/√B_res). This exceeds 0.5 once B_res > (z_c/0.674)² ≈ 24 (d = 5) to 30 (d = 10). With river persistence at 12 h and 24 h, the secondary (nominal) P4 is expected to fail unless B_res is small.
 (b) Effective test: P4 should hold iff the typical non-relative pair has r̂ > r_crit(n_eff, ℓ̂), and Props 3.6 and 3.7 predict a residual floor. Different travel times (multi-filter driver) and contaminated proxies keep π away from 0 even if r̂ is high.
 (c) P5 and P6 can hold only where (b) holds and the river relatives keep detectable partial correlations at n_eff (Cor 3.2 with Thm 1.5).
+
+## 8. Erratum (Lean check, added after the Lean formalisation of Section 5)
+
+The deterministic and algebraic statements listed in Section 5 were machine-checked in Lean 4 (`../lean/RelSort/Finite*.lean`; the map from statements to Lean names is in `../lean/README.md`). No statement was found to be false. Four statements need a nondegeneracy hypothesis that the text leaves implicit:
+
+- **F1 (Prop 3.3).** The strict claims need b_u b_v ≠ 0, i.e. ℓ_u, ℓ_v > 0. These claims are |π_uv| < |κ_uv| for r > 0, "π_uv = 0 iff r = 1" and "|π_uv| decreases strictly in r". If b_u b_v = 0, then π_uv = κ_uv = 0 for every r. With ℓ_u, ℓ_v ∈ (0,1) all three hold (`absPi_lt_kappa`, `absPi_eq_zero_iff`, `absPi_strictAntiOn`). The equal-shares formula holds for |π|: π = sgn(b_u b_v)(1−r)ℓ/(1−rℓ) (`absPi_equal`).
+- **F2 (Prop 3.8).** ℓ_u = ρ_uZ²/r needs r > 0. At r = 0, ρ_uZ = 0 and ℓ_u is not identified (`prop38_loading`). The ratio identity ρ_uZ ρ_vZ/ρ_uv = r holds for all r ∈ [0,1] when b_u b_v ≠ 0 (`prop38_ratio`).
+- **F3 (Prop 3.6, AR(1) case).** "π_uv is nonzero whenever k_u, k_v > 0 and φ ∈ (0,1)" also needs b_u b_v ≠ 0 (`prop36_ar1_ne_zero`). The formula needs positive partial variances. Var Y_u, Var Y_v > 0 and 0 ≤ φ ≤ 1 suffice (`prop36_ar1`).
+- **F4 (Prop 3.1).** The partial correlation is defined only when the partial variances Var Y_u + (1−r)b_u² are positive. This can fail at r = 1 with Var Y_u = 0. Var Y_u, Var Y_v > 0 suffices, and the standardised form needs it anyway because it uses ρ^Y (`prop31`, `prop31_std`).
+
+Clarifications (no change to any statement):
+- Lemma 1.4 does not need |ρ| ≤ 1.
+- The explicit form after Theorem 1.5 (y = x + log(4/(d−1))₊) uses d ≥ 2.
+- Lemma 1.2(i) uses that γ_aa and γ_bb are even, which autocovariances are.
+- Theorem 3.5 applies Lemma 3.4 with a = r̂_uv. That needs |r̂_uv| ≤ 1, which holds for sample correlations by Cauchy-Schwarz.

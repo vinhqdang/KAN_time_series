@@ -329,7 +329,7 @@ theorem absPi_upper (hr0 : 0 ≤ r) (hr1 : r ≤ 1) (hl0 : 0 ≤ lu) (hl1 : lu <
         nlinarith
 
 /-- **`|π_uv| < |κ_uv|` for `r > 0`.** This needs `ℓ_uℓ_v > 0` (i.e. `b_u b_v ≠ 0`); if
-`b_u b_v = 0` both sides are 0. FINITE.md states it without this hypothesis (erratum E2). -/
+`b_u b_v = 0` both sides are 0. FINITE.md states it without this hypothesis (erratum F1). -/
 theorem absPi_lt_kappa (hr0 : 0 < r) (hr1 : r ≤ 1) (hl0 : 0 < lu) (hl1 : lu < 1) (hm0 : 0 < lv)
     (hm1 : lv < 1) : absPi r lu lv < √(lu * lv) := by
   have hmax : max lu lv < 1 := max_lt hl1 hm1
@@ -373,7 +373,7 @@ lemma absPi_eq_sqrt (hr1 : r ≤ 1) (hl0 : 0 ≤ lu) (hl1 : lu < 1) (hm0 : 0 ≤
     sqrt_div_pos (mul_pos hu hv), Real.sqrt_mul (sq_nonneg _), Real.sqrt_sq (by linarith)]
 
 /-- **Monotonicity in `r`.** `|π_uv|` decreases strictly in `r` on `[0,1]` when
-`ℓ_u, ℓ_v ∈ (0,1)` (FINITE.md says `ℓ_u, ℓ_v < 1`; positivity is also needed, erratum E2). -/
+`ℓ_u, ℓ_v ∈ (0,1)` (FINITE.md says `ℓ_u, ℓ_v < 1`; positivity is also needed, erratum F1). -/
 theorem absPi_strictAntiOn (hl0 : 0 < lu) (hl1 : lu < 1) (hm0 : 0 < lv) (hm1 : lv < 1) :
     StrictAntiOn (fun r => absPi r lu lv) (Set.Icc 0 1) := by
   intro a ha b hb hab
@@ -522,7 +522,7 @@ theorem prop38_ratio {Yu Yv C e : E} {bu bv r : ℝ} (h : ProxyHyp Yu Yv C e) (h
   field_simp
   linear_combination hrr
 
-/-- **Prop 3.8, loading.** For `r > 0`, `ℓ_u = ρ_uZ²/r` (FINITE.md omits `r > 0`; erratum E3). -/
+/-- **Prop 3.8, loading.** For `r > 0`, `ℓ_u = ρ_uZ²/r` (FINITE.md omits `r > 0`; erratum F2). -/
 theorem prop38_loading {Yu C e : E} {bu r : ℝ} (huC : ⟪Yu, C⟫ = 0) (hue : ⟪Yu, e⟫ = 0)
     (hC : ⟪C, C⟫ = 1) (he : ⟪e, e⟫ = 1) (hCe : ⟪C, e⟫ = 0) (hr0 : 0 < r) (hr1 : r ≤ 1) :
     bu ^ 2 / (⟪Yu, Yu⟫ + bu ^ 2) = corr (Yu + bu • C) (√r • C + √(1 - r) • e) ^ 2 / r := by

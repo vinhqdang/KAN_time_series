@@ -4,11 +4,12 @@ Deterministic parts of F1 and F2 in `research/theory2/finite/FINITE.md` (Section
 * Lemma 1.4 (correlation perturbation): `corr_perturb`.
 * Lemma 1.3, the deterministic steps on the deviation event: `centred_cov_eq` (the centred sample
   covariance is the uncentred one minus the product of the means), `centred_dev_offdiag`,
-  `centred_dev_diag`, and the union-bound count `lemma13_count`.
+  `centred_dev_diag`, the thresholds `lemma13_eps`, and the union-bound count `lemma13_count`.
 * Lemma 1.1, the analytic and algebraic steps: `phi_le` (the bound on
   `φ(u) = -½ log(1-2u) - u`), `chernoff_logmgf_le` (the sum bound on the log-MGF),
   `chernoff_choice` (the choice of `s` gives exponent exactly `x`).
-* Theorem 1.5, deterministic core: `decide_eq_target`, `decide_eq_support`, `thm15_det`.
+* Theorem 1.5, deterministic core: `decide_eq_target`, `decide_eq_support`, `thm15_det`; the
+  choice of `y` in the explicit form: `explicit_y`. Theorem 2.2 constant: `thm22_const`.
 * Corollary 1.6 and the saturation step of Theorem 2.2: `cntDecl`, `sOf_cntDecl_congr`,
   `sOf_const`, `sOf_saturated`, `abs_sOf_sub_half_le`.
 -/
@@ -110,6 +111,55 @@ theorem lemma13_count (d : ℕ) (x y : ℝ) :
     (d.choose 2 : ℝ) * (2 * exp (-x)) + d * (2 * exp (-y)) + d * (2 * exp (-y)) =
       d * (d - 1) * exp (-x) + 4 * d * exp (-y) := by
   rw [Nat.cast_choose_two ℝ]
+  ring
+
+/-- **Lemma 1.3, thresholds from Lemma 1.2.** If `2n‖A‖_F² ≤ B` and `2n‖A‖_op ≤ κ` (`n > 0`),
+the Lemma 1.1 deviation `2‖A‖_F √x + 2‖A‖_op x` is at most `√(2Bx/n) + κx/n`. (Off-diagonal:
+`B = B_ab`, `κ = κ₂`; diagonal: `B = D`, `κ = 2κ₁`, since `‖A‖_op ≤ κ₁/n`.) -/
+theorem lemma13_eps {F O B κ x n : ℝ} (hF : 0 ≤ F) (hx : 0 ≤ x) (hn : 0 < n)
+    (hB : 2 * n * F ^ 2 ≤ B) (hO : 2 * n * O ≤ κ) :
+    2 * F * √x + 2 * O * x ≤ √(2 * B * x / n) + κ * x / n := by
+  have h1 : 2 * F * √x ≤ √(2 * B * x / n) := by
+    rw [show 2 * F * √x = √((2 * F) ^ 2 * x) by
+      rw [Real.sqrt_mul (sq_nonneg _), Real.sqrt_sq (by positivity)]]
+    apply Real.sqrt_le_sqrt
+    rw [le_div_iff₀ hn]
+    nlinarith
+  have h2 : 2 * O * x ≤ κ * x / n := by
+    rw [le_div_iff₀ hn]
+    nlinarith
+  linarith
+
+/-- **Theorem 1.5, explicit form, choice of `y`.** For `d ≥ 2` and
+`y = x + max(log(4/(d-1)), 0)`: `d(d-1)e^{-x} + 4d e^{-y} ≤ 2d(d-1)e^{-x}`. -/
+theorem explicit_y (d : ℕ) (hd : 2 ≤ d) (x : ℝ) :
+    (d : ℝ) * (d - 1) * exp (-x) + 4 * d * exp (-(x + max (Real.log (4 / (d - 1))) 0)) ≤
+      2 * d * (d - 1) * exp (-x) := by
+  have hd1 : (1 : ℝ) ≤ (d : ℝ) - 1 := by
+    have : (2 : ℝ) ≤ d := by exact_mod_cast hd
+    linarith
+  have hdpos : (0 : ℝ) < d := by linarith
+  have hex : 0 < exp (-x) := exp_pos _
+  rw [neg_add, Real.exp_add]
+  have key : 4 * exp (-max (Real.log (4 / (d - 1))) 0) ≤ (d : ℝ) - 1 := by
+    rcases le_total (Real.log (4 / (d - 1))) 0 with h | h
+    · rw [max_eq_right h, neg_zero, Real.exp_zero, mul_one]
+      have : 4 / ((d : ℝ) - 1) ≤ 1 := by
+        have hpos : 0 < 4 / ((d : ℝ) - 1) := by positivity
+        exact (Real.log_nonpos_iff hpos.le).mp h
+      rw [div_le_one (by linarith)] at this
+      exact this
+    · rw [max_eq_left h, Real.exp_neg, Real.exp_log (by positivity)]
+      field_simp
+      linarith
+  have : 4 * (d : ℝ) * (exp (-x) * exp (-max (Real.log (4 / (d - 1))) 0)) ≤
+      d * (d - 1) * exp (-x) := by
+    have := mul_le_mul_of_nonneg_left key (le_of_lt (mul_pos hdpos hex))
+    nlinarith
+  linarith
+
+/-- **Theorem 2.2, constant.** `½ (d(d-1) + 4d) = ½ (d² + 3d)`. -/
+theorem thm22_const (d : ℝ) : (1 / 2) * (d * (d - 1) + 4 * d) = (1 / 2) * (d ^ 2 + 3 * d) := by
   ring
 
 /-! ### Lemma 1.1, analytic and algebraic steps -/

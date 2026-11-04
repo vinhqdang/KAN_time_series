@@ -1,4 +1,4 @@
-# Lean 4 verification of THEORY.md (part L of PLAN2.md)
+# Lean 4 verification of THEORY.md (part L of PLAN2.md) and of the deterministic parts of finite/FINITE.md
 
 Lean 4.35.0, Mathlib `v4.35.0` (commit 56a0058). Build: `lake exe cache get && LEAN_NUM_THREADS=2 lake build`.
 Axiom check: `lake env lean Axioms.lean`. The full log of a clean rebuild plus the axiom check is in
@@ -75,7 +75,75 @@ notice.
 | Thm 2.2 (aggregation limit and rate) | — | — | not formalised (needs the MA(∞) representation, geometric decay of Γ(h) and summability; analytic and probabilistic) |
 | Prop 2.3 (long-run SEM) | `longrun_factor` (I − A(1) = (I − Λ)(I − B̃)), `longrun_inv`, `selfloop_sum_lt_one` (λ_j < 1 from no root of φ_j on [0,1], via the intermediate value theorem) | T2Algebra | partially: the algebraic factorisation and λ_j < 1 are verified; that the AR polynomial factorises under (A-DAG), and S_LR = Ψ(1)ΣΨ(1)ᵀ, are not |
 | Cor 2.4, Prop 2.5, Cor 2.6, Prop 2.7, Prop 2.8, Cor 2.9 | — | — | not formalised. They involve continuity of sortability in covariance matrices, an R² formula via matrix inverses, the SVAR covariance structure, and real-analytic genericity. 2.5 is matrix algebra and feasible but was not done; 2.7–2.9 need the stochastic model |
-| PLAN2 F1–F3 (finite-sample) | — | — | not formalised. They were not yet written in THEORY.md when this was done. They are probabilistic (Fisher-z tests, Bartlett variance, partial correlations) |
+| PLAN2 F1–F3 (finite-sample) | see the next section (FINITE.md) | Finite* | deterministic and algebraic parts verified; probabilistic parts not formalised |
+
+## FINITE.md (Phase F): deterministic and algebraic lemmas
+
+Files `RelSort/FiniteCorr.lean`, `RelSort/FiniteTrace.lean`, `RelSort/FinitePartial.lean`,
+`RelSort/FiniteLipschitz.lean`. Everything is stated over ℝ with explicit hypotheses.
+
+Modelling choices (Phase F):
+
+- **Covariances as inner products.** In `FinitePartial` the zero-mean, finite-variance variables
+  (Y_u, C, e, Z, ...) are vectors of an arbitrary real inner product space `E` (for example L²(Ω)),
+  and the lag-0 covariance is the inner product. Independence or uncorrelatedness at lag 0 enters
+  only as vanishing inner products, which are hypotheses (`ProxyHyp`, `AR1Hyp`). FINITE.md's proofs
+  of Props 2.1, 3.1, 3.6, 3.7 and 3.8 use nothing else (bilinearity of the covariance).
+- **Partial correlation** `pcorr x y z` is FINITE.md's three-variable formula
+  `g(ρ_xy, ρ_xz, ρ_yz) = (a − bc)/√((1−b²)(1−c²))` (`pc`). `pcorr_eq_pcov` proves it equals the
+  partial covariance over the partial standard deviations, and `pcorr_eq_corr_resid` that it equals
+  the correlation of the OLS residuals on `z` (FINITE.md's "equivalently"), under positive variances
+  and positive partial variances.
+- **Shares and signs.** `ℓ_u = b_u²/(Var Y_u + b_u²)` is written out; `sgn` is Mathlib's
+  `SignType.sign`. `|π_uv|` for non-relatives is the function `absPi r ℓ_u ℓ_v`; `prop33_abs` proves
+  `|π_uv| = absPi ...` in the model.
+- **Counts and sortability (Cor 1.6, Thm 2.2).** `cntDecl D v = 1 + #{w ≠ v : D v w}` is ρ̂(v) for a
+  declared relation `D`, and sortability reuses `sOf` from `Basic.lean`.
+- **Lemma 1.2 matrices.** `covBlock` is C = [[C_aa, C_ab],[C_abᵀ, C_bb]] with Toeplitz blocks
+  `(s,t) ↦ γ(s − t)` on `Fin n`, and `Mswap` is M = (1/2n)[[0,I],[I,0]]. ‖A‖_F² is represented by
+  tr(MCMC); the step ‖C^{1/2}MC^{1/2}‖_F² = tr(MCMC) (trace cyclicity with the matrix square root) is
+  not formalised.
+- **Lemma 3.4.** The proof goes coordinate by coordinate, (a,b,c) → (a,b,c') → (a,b',c') →
+  (a',b',c'), with the one-dimensional mean value theorem on [−q,q]. The path stays in the same box
+  and gives the same constant L(q) = 1/(1−q²) + 4q/(1−q²)² as FINITE.md's segment argument.
+- **n_crit.** The threshold is τ(n) = tanh(z/√(n − k₀)) with k₀ = 3 + k. Lean proves where τ(n)
+  equals (or falls below) the population |π| or κ. That "the probability crosses 1/2 there" is the
+  asymptotic (sketched) part and is not formalised.
+
+| FINITE.md | Lean name(s) | file | status |
+|---|---|---|---|
+| Lemma 1.1, series bound φ(u) ≤ u²/(1−2\|u\|) (§5 item 2) | `phiC`, `phi_le` | FiniteCorr | verified |
+| Lemma 1.1, log-MGF bound Σφ(sλ_i) ≤ vs²/(2(1−cs)) | `chernoff_logmgf_le` | FiniteCorr | verified |
+| Lemma 1.1, Chernoff algebra (§5 item 3): cs < 1 and exponent = x; √(2vx) = 2‖A‖_F√x | `chernoff_choice`, `sqrt_two_v_x` | FiniteCorr | verified |
+| Lemma 1.1 as a probability statement | — | — | not formalised (Gaussian MGF, rotation invariance) |
+| Lemma 1.2(i): γ̃_ab = YᵀMY, tr A = γ_ab(0) | `quad_M`, `trace_MC` | FiniteTrace | verified |
+| Lemma 1.2(i) trace identity (§5 item 10): 2n tr(MCMC) = (1/n)Σ_{s,t}[...] = Σ_{\|h\|<n}(1−\|h\|/n)[...] ≤ B_ab | `lemma12_trace`, `lemma12_fejer`, `avg_toeplitz_le_tsum`, `lemma12_le_B` | FiniteTrace | verified (needs γ_aa, γ_bb even, which autocovariances are) |
+| Lemma 1.2(ii): 2n‖A‖_F² = (2/n)Σγ_aa(s−t)² ≤ D | `lemma12_diag`, `lemma12_diag_le_D` | FiniteTrace | verified |
+| Lemma 1.2: Var = 2‖A‖_F², operator-norm bounds, (iii) | — | — | not formalised (Gaussian moments; operator norms) |
+| Lemma 1.3, deterministic steps: Ĉ_ab = γ̃_ab − X̄_aX̄_b; deviations ε_ab, ε_d on the event; thresholds from Lemma 1.2; union-bound count | `centred_cov_eq`, `centred_dev_offdiag`, `centred_dev_diag`, `lemma13_eps`, `lemma13_count` | FiniteCorr | verified |
+| Lemma 1.3, probability of the event | — | — | not formalised (Gaussian tails) |
+| **Lemma 1.4** (§5 item 1) | `corr_perturb` | FiniteCorr | verified; the hypothesis \|ρ\| ≤ 1 is not needed |
+| **Thm 1.5** deterministic core (§5 item 4) | `decide_eq_target` (any target T), `decide_eq_support` (T = R), `thm15_det` (from Ĉ with Lemma 1.4's δ_ab) | FiniteCorr | verified |
+| Thm 1.5 explicit form: y = x + log(4/(d−1))₊ gives failure ≤ 2d(d−1)e^{−x} | `explicit_y` (d ≥ 2) | FiniteCorr | verified; the (1 + o(1)) exponent is asymptotic, not formalised |
+| **Cor 1.6** (§5 item 5) | `sOf_cntDecl_congr` | FiniteCorr | verified |
+| Prop 1.7, Cor 1.8 | — | — | not formalised (CLT, Isserlis, delta method) |
+| **Prop 2.1**: ρ_uv = b_ub_v/(s_us_v) = sgn(b_ub_v)√(ℓ_uℓ_v); all counts equal ⇒ s = 1/2 | `prop21_corr`, `prop21_corr_std`, `sOf_saturated`, `sOf_const` | FinitePartial, FiniteCorr | verified; the Lebesgue-null exception set is not formalised |
+| **Thm 2.2** saturation step and constants | `sOf_saturated`, `abs_sOf_sub_half_le` (\|ŝ − 1/2\| ≤ 1/2), `thm22_const` | FiniteCorr | verified; the probability bound is Thm 1.5 + Lemma 1.3 (probabilistic part not formalised) |
+| Prop 2.3 (a) location n_1/2 = 3 + (z_c/atanh κ)² | `ncrit_iff`, `ncrit_eq_iff` with k₀ = 3 | FinitePartial | deterministic location verified; "probability 1/2 there" is asymptotic, not formalised |
+| **Prop 3.1** raw and standardised forms (§5 item 6) | `prop31`, `prop31_std` | FinitePartial | verified (needs Var Y_u, Var Y_v > 0) |
+| Definition §3: π equals the correlation of OLS residuals | `pcorr_eq_pcov`, `pcorr_eq_corr_resid`, `inner_resid` | FinitePartial | verified |
+| **Cor 3.2** (r = 1 ⇒ π = ρ^Y) | `cor32` | FinitePartial | population part verified; the finite-sample part is sketched in FINITE.md and not formalised |
+| **Prop 3.3** formula, bounds, π = 0 ⇔ r = 1, strict monotonicity, equal shares | `prop33`, `prop33_abs`, `absPi_lower`, `absPi_upper`, `absPi_le_kappa`, `absPi_lt_kappa`, `absPi_eq_zero_iff`, `absPi_strictAntiOn`, `absPi_equal` | FinitePartial | verified, with the extra hypothesis b_ub_v ≠ 0 for the strict statements (erratum F1 in FINITE.md) |
+| **Lemma 3.4** Lipschitz bound (§5 item 8) | `lipL`, `pc_lipschitz` (helpers `pc_lip_a`, `pc_lip_b`) | FiniteLipschitz | verified |
+| Thm 3.5 bracket \|π̂ − π\| ≤ L(q′)max(δ) and decisions (i)/(ii) | `thm35_bracket`; (i)/(ii) are `decide_eq_target` applied to π̂ | FiniteLipschitz, FiniteCorr | verified (deterministic part) |
+| Thm 3.5 n_crit = 4 + (z_c/atanh\|π\|)² and r_crit (§5 item 7) | `ncrit_iff`, `ncrit_eq_iff` (k₀ = 4), `rcrit`, `rcrit_iff`, `rcrit_eq_iff`, `rcrit_example` (ℓ = 0.64, τ′ = 0.082 ⇒ r_crit ∈ (0.949, 0.951)) | FinitePartial | verified (deterministic location; asymptotic reading not formalised) |
+| **Prop 3.6** general form, rank one, AR(1) formula (§5 item 9), nonvanishing | `prop36_pcov`, `prop36_zero_iff`, `prop36_rank_one`, `prop36_ar1_pcov`, `prop36_ar1_pvar`, `prop36_ar1`, `prop36_ar1_ne_zero` | FinitePartial | verified (nonvanishing needs b_ub_v ≠ 0, erratum F3) |
+| **Prop 3.7** numerator and bound | `prop37_pcov`, `prop37_bound` | FinitePartial | verified (r ≤ 1 from Cauchy-Schwarz) |
+| **Prop 3.8** ρ_uZρ_vZ/ρ_uv = r and ℓ_u = ρ_uZ²/r | `prop38_ratio`, `prop38_loading` | FinitePartial | verified; ℓ_u = ρ_uZ²/r needs r > 0 (erratum F2) |
+| Section 4, simulations, Section 7 | — | — | not formal statements |
+
+The errata found while formalising are recorded in FINITE.md, section "Erratum (Lean check)". None
+of them changes a result used later in FINITE.md; they are missing nondegeneracy hypotheses.
 
 ## Findings about THEORY.md
 
@@ -110,4 +178,8 @@ the clarifications below.
 - `RelSort/Examples.lean`: 3-node collider, fork and chain.
 - `RelSort/Extras.lean`: Lemma 1.2, Prop 1.4, Remark 1.12.
 - `RelSort/T2Algebra.lean`: algebraic parts of Prop 2.1 and Prop 2.3.
+- `RelSort/FiniteCorr.lean`: FINITE.md Lemmas 1.1 (algebra), 1.3 (deterministic steps), 1.4, Thm 1.5 core, Cor 1.6, Thm 2.2 saturation.
+- `RelSort/FiniteTrace.lean`: FINITE.md Lemma 1.2 block-matrix and Toeplitz algebra.
+- `RelSort/FinitePartial.lean`: FINITE.md Props 2.1, 3.1-3.3, 3.6-3.8, r_crit and n_crit, in an inner-product model.
+- `RelSort/FiniteLipschitz.lean`: FINITE.md Lemma 3.4 and the bracket of Thm 3.5.
 - `Axioms.lean`: `#print axioms` for each main theorem. Output: `AXIOMS.txt`, `BUILD_LOG.txt`.
