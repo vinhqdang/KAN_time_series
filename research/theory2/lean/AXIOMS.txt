@@ -48,3 +48,8 @@
 'RelSort.rho_unrolled_large_t' depends on axioms: [propext, Classical.choice, Quot.sound]
 'RelSort.edgeLoops_limit' depends on axioms: [propext, Classical.choice, Quot.sound]
 'RelSort.edgeNoLoops_sRho' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.fejer_identity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.fejer_identity'' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.longrun_factor' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.longrun_inv' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.selfloop_sum_lt_one' depends on axioms: [propext, Classical.choice, Quot.sound]

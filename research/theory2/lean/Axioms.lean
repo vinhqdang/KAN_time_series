@@ -52,3 +52,8 @@ import RelSort
 #print axioms RelSort.rho_unrolled_large_t
 #print axioms RelSort.edgeLoops_limit
 #print axioms RelSort.edgeNoLoops_sRho
+#print axioms RelSort.fejer_identity
+#print axioms RelSort.fejer_identity'
+#print axioms RelSort.longrun_factor
+#print axioms RelSort.longrun_inv
+#print axioms RelSort.selfloop_sum_lt_one

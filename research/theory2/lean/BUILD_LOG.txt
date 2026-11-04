@@ -1,17 +1,19 @@
-# lake build log, 2026-11-04T05:39:51Z
+# lake build log, 2026-11-04T05:43:36Z
 # Lean (version 4.35.0, x86_64-unknown-linux-gnu, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)
-# Mathlib rev: v4.35.0 (56a005855ea17e0b0958f73ec801ae140b0a1679)
-# command: LEAN_NUM_THREADS=2 lake build (after rm -rf .lake/build: full rebuild of RelSort; Mathlib oleans from `lake exe cache get`)
-⚠ [9047/9055] Built RelSort.Basic (7.1s)
+# Mathlib rev: v4.35.0 (56a005855ea17e0b0958f73ec801ae140b0a1679), oleans from `lake exe cache get`
+# command: rm -rf .lake/build && LEAN_NUM_THREADS=2 lake build   (full rebuild of RelSort)
+⚠ [9047/9056] Built RelSort.Basic (8.9s)
 warning: RelSort/Basic.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
-✔ [9048/9055] Built RelSort.Walk (6.2s)
-✔ [9049/9055] Built RelSort.Unrolled (6.4s)
-✔ [9050/9055] Built RelSort.Limit (7.5s)
-✔ [9051/9055] Built RelSort.Stationary (7.0s)
-✔ [9052/9055] Built RelSort.Examples (5.8s)
-✔ [9053/9055] Built RelSort.Extras (6.8s)
-✔ [9054/9055] Built RelSort (6.1s)
-Build completed successfully (9055 jobs).
+⚠ [9048/9056] Built RelSort.T2Algebra (9.2s)
+warning: RelSort/T2Algebra.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+✔ [9049/9056] Built RelSort.Walk (5.4s)
+✔ [9050/9056] Built RelSort.Unrolled (6.6s)
+✔ [9051/9056] Built RelSort.Limit (7.9s)
+✔ [9052/9056] Built RelSort.Stationary (7.5s)
+✔ [9053/9056] Built RelSort.Examples (6.9s)
+✔ [9054/9056] Built RelSort.Extras (7.0s)
+✔ [9055/9056] Built RelSort (5.4s)
+Build completed successfully (9056 jobs).
 # exit: 0
 
 # command: LEAN_NUM_THREADS=2 lake env lean Axioms.lean
@@ -65,4 +67,12 @@ Build completed successfully (9055 jobs).
 'RelSort.rho_unrolled_large_t' depends on axioms: [propext, Classical.choice, Quot.sound]
 'RelSort.edgeLoops_limit' depends on axioms: [propext, Classical.choice, Quot.sound]
 'RelSort.edgeNoLoops_sRho' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.fejer_identity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.fejer_identity'' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.longrun_factor' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.longrun_inv' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.selfloop_sum_lt_one' depends on axioms: [propext, Classical.choice, Quot.sound]
 # exit: 0
+
+# command: grep -rnwE 'sorry|admit|axiom' RelSort RelSort.lean
+(no matches)

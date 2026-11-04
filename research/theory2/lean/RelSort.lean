@@ -5,3 +5,4 @@ import RelSort.Limit
 import RelSort.Stationary
 import RelSort.Examples
 import RelSort.Extras
+import RelSort.T2Algebra
