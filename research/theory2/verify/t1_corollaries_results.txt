@@ -1,0 +1,7 @@
+corollary checks, 3000 random graphs per family (seed 7): {'inforest_stat_fail': 0, 'inforest_stat_gt_half_iff_confluence_fail': 0, 'inforest_fin_fail': 0, 'outforest_stat_not_half': 0, 'outforest_fin_fail': 0, 'thm4_converse_fail': 0, 'cond_true': 900, 'stat_half_iff_unique_source_fail': 0, 'graphs': 3000, 'thm4_fail': 0}
+chain 0->1->2: finite s(G_T) T=2,5,20,100: ['9/10', '31/40', '68/95', '116/165']; stationary: 1/2
+collider 0->2<-1: finite s(G_T) T=2,5,20,100: ['4/5', '29/40', '67/95', '347/495']; stationary: 7/10
+fork 0<-2->1: finite s(G_T) T=2,5,20,100: ['9/10', '3/4', '27/38', '139/198']; stationary: 1/2
+Fig4-like 3-cycle: finite s(G_T) T=2,5,20,100: ['1', '3/4', '21/38', '101/198']; stationary: 1/2
+2 nodes 0->1: finite s(G_T) T=2,5,20,100: ['5/6', '17/24', '77/114', '397/594']; stationary: 1/2
+no self-loops, 0->1: finite s(G_T) T=5: 1/2 (with self-loops limit 2/3)

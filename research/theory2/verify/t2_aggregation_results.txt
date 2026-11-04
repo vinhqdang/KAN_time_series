@@ -1,0 +1,16 @@
+A1 Fejer identity max abs err (D<=16): 1.82e-11
+A2 max over models and D of ||D Cov(Ybar)-S_LR|| / ((1/D) sum|h| ||Gamma(h)||): 0.996 (must be <= 1)
+A3 long-run SEM covariance vs S_LR max abs err: 2.18e-11
+A4 Cov(Z)=Gamma(0) for all D by definition; lag-1 covariance of Z is Gamma(D), geometric decay
+A5 outstar: mean R2-sortability, block mean D=[1, 4, 16, 64, 256, 1024]: [0.842, 0.546, 0.101, 0.01, 0.0, 0.0]; long-run SEM: 0.000; subsample (Gamma(0)): 0.842
+    fraction of graphs with long-run R2-sortability exactly 0: 1.000
+A5 instar: mean R2-sortability, block mean D=[1, 4, 16, 64, 256, 1024]: [0.999, 1.0, 1.0, 1.0, 1.0, 1.0]; long-run SEM: 1.000; subsample (Gamma(0)): 0.999
+    fraction of graphs with long-run R2-sortability exactly 1: 1.000
+A6 source self-loop 0.0: block-sum Cov = 3.2000; formula b(D-tau)_+ = 3.2000
+A6 source self-loop 0.6: block-sum Cov = 17.3112; formula b(D-tau)_+ = 3.2000
+A7 intree (d=10, self-loops U(0,0.9), lags<=4, 150 graphs): R2-sort block mean D=[1, 2, 4, 8, 16, 32, 64, 256]: [0.853, 0.843, 0.834, 0.834, 0.842, 0.852, 0.867, 0.88]; subsample (any D): 0.853
+    var-sort block mean: [0.895, 0.885, 0.873, 0.867, 0.866, 0.865, 0.862, 0.863]; subsample (any D): 0.895
+A7 outtree (d=10, self-loops U(0,0.9), lags<=4, 150 graphs): R2-sort block mean D=[1, 2, 4, 8, 16, 32, 64, 256]: [0.614, 0.544, 0.48, 0.404, 0.353, 0.328, 0.313, 0.294]; subsample (any D): 0.614
+    var-sort block mean: [0.727, 0.719, 0.704, 0.7, 0.693, 0.688, 0.687, 0.687]; subsample (any D): 0.727
+A7 chain (d=10, self-loops U(0,0.9), lags<=4, 150 graphs): R2-sort block mean D=[1, 2, 4, 8, 16, 32, 64, 256]: [0.619, 0.615, 0.614, 0.624, 0.633, 0.641, 0.644, 0.649]; subsample (any D): 0.619
+    var-sort block mean: [0.651, 0.641, 0.633, 0.625, 0.621, 0.624, 0.623, 0.624]; subsample (any D): 0.651

@@ -1,0 +1,1 @@
+support(Gamma(0)), support(D Cov(Ybar)) D=8,64, support(S_LR) == summary relatives: 1991/2000 matrices agree (500 random models, seed 99); disagreements by matrix: {'Gamma0': 9} (all are related pairs with |corr| < 1e-9: tiny but nonzero); max |corr| over NON-related pairs: 4.3e-15
