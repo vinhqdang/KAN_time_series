@@ -1,0 +1,551 @@
+
+# E1_citris_Glin_L0 nonrel/det: {'nonrel_pairs_per_unit': 40, 'nonrel_dep_frac': 0.0, 'rel_pairs_per_unit': 51, 'rel_detect_frac': 0.969, 'nonrel_dep_ci': [0.0, 0.0], 'rel_detect_ci': [0.9450980392156862, 0.9921568627450981]}
+
+## E1_citris_Glin_L0: instances 1662, obs counts {'1': 191, '1/2': 1355, '0': 116}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [0.004545454545454545, 0.990909090909091, 110], '0.5': [0.49963369963369964, 0.991941391941392, 1365], '1.0': [0.9946524064171123, 0.9946524064171123, 187]}
+   exact match: {'theory': 0.992, 'sensor_indicator': 0.203, 'n_anc_full': 0.147, 'n_anc_S': 0.12, 'indeg_full': 0.18, 'indeg_S': 0.143, 'depth_full': 0.147, 'depth_S': 0.114, 'all_one': 0.115}
+   sensor_indicator: n=1317 loss T 0.002 C 0.504 delta -0.502 CI [-0.507, -0.496] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.418
+   n_anc_full: n=1423 loss T 0.005 C 0.52 delta -0.515 CI [-0.519, -0.51] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.48
+   n_anc_S: n=1465 loss T 0.004 C 0.513 delta -0.509 CI [-0.513, -0.505] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.442
+   indeg_full: n=1368 loss T 0.005 C 0.52 delta -0.515 CI [-0.52, -0.511] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.439
+   indeg_S: n=1427 loss T 0.004 C 0.514 delta -0.51 CI [-0.514, -0.505] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.426
+   depth_full: n=1423 loss T 0.005 C 0.52 delta -0.515 CI [-0.519, -0.51] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.48
+   depth_S: n=1475 loss T 0.004 C 0.514 delta -0.51 CI [-0.514, -0.505] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.437
+   all_one: n=1475 loss T 0.004 C 0.537 delta -0.533 CI [-0.536, -0.53] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.463
+   E1 pass all: True
+   spearman: {'theory': 0.962, 'sensor_indicator': 0.408, 'n_anc_full': 0.334, 'n_anc_S': 0.121, 'indeg_full': 0.349, 'indeg_S': 0.105, 'depth_full': 0.334, 'depth_S': 0.113, 'all_one': None}
+
+## E1_citris_Glin_L0 / detected_edge_subset: instances 1338, obs counts {'1': 0, '1/2': 1338, '0': 0}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [0.5, 1.0, 1338], '1.0': [None, None, 0]}
+   exact match: {'theory': 1.0, 'sensor_indicator': 0.105, 'n_anc_full': 0.0, 'n_anc_S': 0.0, 'indeg_full': 0.081, 'indeg_S': 0.045, 'depth_full': 0.0, 'depth_S': 0.0, 'all_one': 0.0}
+   sensor_indicator: n=1197 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   n_anc_full: n=1338 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   n_anc_S: n=1338 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   indeg_full: n=1230 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   indeg_S: n=1278 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   depth_full: n=1338 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   depth_S: n=1338 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   all_one: n=1338 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   E1 pass all: True
+
+## E1_citris_Glin_L0 / theory_strict_subset: instances 297, obs counts {'1': 186, '1/2': 1, '0': 110}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [0.004545454545454545, 0.990909090909091, 110], '0.5': [None, None, 0], '1.0': [0.9946524064171123, 0.9946524064171123, 187]}
+   exact match: {'theory': 0.993, 'sensor_indicator': 0.616, 'n_anc_full': 0.808, 'n_anc_S': 0.653, 'indeg_full': 0.623, 'indeg_S': 0.579, 'depth_full': 0.808, 'depth_S': 0.62, 'all_one': 0.626}
+   sensor_indicator: n=114 loss T 0.013 C 0.553 delta -0.539 CI [-0.59, -0.487] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie 0.443
+   n_anc_full: n=58 loss T 0.026 C 0.974 delta -0.948 CI [-1.0, -0.847] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie 0.0
+   n_anc_S: n=103 loss T 0.005 C 0.675 delta -0.67 CI [-0.699, -0.642] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie 0.32
+   indeg_full: n=112 loss T 0.013 C 0.746 delta -0.732 CI [-0.77, -0.689] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie 0.25
+   indeg_S: n=125 loss T 0.004 C 0.652 delta -0.648 CI [-0.683, -0.618] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie 0.344
+   depth_full: n=58 loss T 0.026 C 0.974 delta -0.948 CI [-1.0, -0.847] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie 0.0
+   depth_S: n=113 loss T 0.004 C 0.668 delta -0.664 CI [-0.7, -0.631] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie 0.327
+   all_one: n=110 loss T 0.005 C 0.995 delta -0.991 CI [-1.0, -0.972] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie 0.0
+   E1 pass all: True
+
+# E1_citris_GD_L0 nonrel/det: {'nonrel_pairs_per_unit': 16, 'nonrel_dep_frac': 0.0, 'rel_pairs_per_unit': 75, 'rel_detect_frac': 0.659, 'nonrel_dep_ci': [0.0, 0.0], 'rel_detect_ci': [0.6426666666666667, 0.6746666666666666]}
+
+## E1_citris_GD_L0: instances 1662, obs counts {'1': 191, '1/2': 1355, '0': 116}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [0.5225409836065574, 0.8926229508196721, 1220], '1.0': [0.5226244343891403, 0.22171945701357465, 442]}
+   exact match: {'theory': 0.714, 'sensor_indicator': 0.203, 'n_anc_full': 0.115, 'n_anc_S': 0.115, 'indeg_full': 0.146, 'indeg_S': 0.146, 'depth_full': 0.115, 'depth_S': 0.115, 'all_one': 0.115}
+   sensor_indicator: n=1213 loss T 0.122 C 0.444 delta -0.323 CI [-0.338, -0.307] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.394
+   n_anc_full: n=1220 loss T 0.054 C 0.477 delta -0.424 CI [-0.43, -0.418] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   n_anc_S: n=1220 loss T 0.054 C 0.477 delta -0.424 CI [-0.43, -0.418] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   indeg_full: n=1168 loss T 0.056 C 0.476 delta -0.42 CI [-0.426, -0.414] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   indeg_S: n=1169 loss T 0.058 C 0.475 delta -0.417 CI [-0.425, -0.41] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.497
+   depth_full: n=1220 loss T 0.054 C 0.477 delta -0.424 CI [-0.43, -0.418] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   depth_S: n=1220 loss T 0.054 C 0.477 delta -0.424 CI [-0.43, -0.418] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   all_one: n=1220 loss T 0.054 C 0.477 delta -0.424 CI [-0.43, -0.418] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   E1 pass all: True
+   spearman: {'theory': 0.341, 'sensor_indicator': 0.408, 'n_anc_full': None, 'n_anc_S': None, 'indeg_full': 0.219, 'indeg_S': 0.238, 'depth_full': None, 'depth_S': None, 'all_one': None}
+
+## E1_citris_GD_L0 / detected_edge_subset: instances 1338, obs counts {'1': 0, '1/2': 1338, '0': 0}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [0.5, 1.0, 1086], '1.0': [0.5, 0.0, 252]}
+   exact match: {'theory': 0.812, 'sensor_indicator': 0.105, 'n_anc_full': 0.0, 'n_anc_S': 0.0, 'indeg_full': 0.039, 'indeg_S': 0.038, 'depth_full': 0.0, 'depth_S': 0.0, 'all_one': 0.0}
+   sensor_indicator: n=1019 loss T 0.018 C 0.482 delta -0.464 CI [-0.481, -0.445] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.464
+   n_anc_full: n=1086 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   n_anc_S: n=1086 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   indeg_full: n=1034 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   indeg_S: n=1035 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   depth_full: n=1086 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   depth_S: n=1086 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   all_one: n=1086 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   E1 pass all: True
+
+## E1_citris_GD_L0 / theory_strict_subset: instances 442, obs counts {'1': 98, '1/2': 266, '0': 78}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [None, None, 0], '1.0': [0.5226244343891403, 0.22171945701357465, 442]}
+   exact match: {'theory': 0.222, 'sensor_indicator': 0.319, 'n_anc_full': 0.222, 'n_anc_S': 0.222, 'indeg_full': 0.222, 'indeg_S': 0.222, 'depth_full': 0.222, 'depth_S': 0.222, 'all_one': 0.222}
+   sensor_indicator: n=128 loss T 0.762 C 0.309 delta 0.453 CI [0.41, 0.492] units 0/10 p_holm 1.0 pass False rev_holm 0.002 alltie 0.5
+   n_anc_full: no disagreement
+   n_anc_S: no disagreement
+   indeg_full: no disagreement
+   indeg_S: n=4 loss T 1.0 C 0.5 delta 0.5 CI [0.5, 0.5] units 0/4 p_holm 1.0 pass False rev_holm 0.0625 alltie 0.5
+   depth_full: no disagreement
+   depth_S: no disagreement
+   all_one: no disagreement
+   E1 pass all: False
+
+# E1_citris_Glin_L5 nonrel/det: {'nonrel_pairs_per_unit': 40, 'nonrel_dep_frac': 0.0, 'rel_pairs_per_unit': 51, 'rel_detect_frac': 0.976, 'nonrel_dep_ci': [0.0, 0.0], 'rel_detect_ci': [0.9529411764705882, 0.9921568627450981]}
+
+## E1_citris_Glin_L5: instances 1662, obs counts {'1': 190, '1/2': 1361, '0': 111}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [0.0, 1.0, 110], '0.5': [0.5007326007326007, 0.9970695970695971, 1365], '1.0': [1.0, 1.0, 187]}
+   exact match: {'theory': 0.998, 'sensor_indicator': 0.205, 'n_anc_full': 0.146, 'n_anc_S': 0.12, 'indeg_full': 0.179, 'indeg_S': 0.143, 'depth_full': 0.146, 'depth_S': 0.114, 'all_one': 0.114}
+   sensor_indicator: n=1317 loss T 0.0 C 0.505 delta -0.505 CI [-0.508, -0.502] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.418
+   n_anc_full: n=1423 loss T 0.001 C 0.52 delta -0.518 CI [-0.521, -0.515] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.48
+   n_anc_S: n=1465 loss T 0.001 C 0.512 delta -0.511 CI [-0.514, -0.506] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.442
+   indeg_full: n=1368 loss T 0.001 C 0.52 delta -0.518 CI [-0.521, -0.515] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.439
+   indeg_S: n=1427 loss T 0.001 C 0.513 delta -0.512 CI [-0.516, -0.507] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.426
+   depth_full: n=1423 loss T 0.001 C 0.52 delta -0.518 CI [-0.521, -0.515] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.48
+   depth_S: n=1475 loss T 0.001 C 0.513 delta -0.511 CI [-0.515, -0.507] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.437
+   all_one: n=1475 loss T 0.001 C 0.537 delta -0.535 CI [-0.538, -0.532] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.463
+   E1 pass all: True
+   spearman: {'theory': 0.996, 'sensor_indicator': 0.373, 'n_anc_full': 0.295, 'n_anc_S': 0.15, 'indeg_full': 0.347, 'indeg_S': 0.138, 'depth_full': 0.295, 'depth_S': 0.142, 'all_one': None}
+
+## E1_citris_Glin_L5 / detected_edge_subset: instances 1346, obs counts {'1': 0, '1/2': 1346, '0': 0}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [0.5, 1.0, 1346], '1.0': [None, None, 0]}
+   exact match: {'theory': 1.0, 'sensor_indicator': 0.111, 'n_anc_full': 0.0, 'n_anc_S': 0.0, 'indeg_full': 0.08, 'indeg_S': 0.045, 'depth_full': 0.0, 'depth_S': 0.0, 'all_one': 0.0}
+   sensor_indicator: n=1197 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   n_anc_full: n=1346 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   n_anc_S: n=1346 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   indeg_full: n=1238 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   indeg_S: n=1286 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   depth_full: n=1346 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   depth_S: n=1346 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   all_one: n=1346 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   E1 pass all: True
+
+## E1_citris_Glin_L5 / theory_strict_subset: instances 297, obs counts {'1': 187, '1/2': 0, '0': 110}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [0.0, 1.0, 110], '0.5': [None, None, 0], '1.0': [1.0, 1.0, 187]}
+   exact match: {'theory': 1.0, 'sensor_indicator': 0.616, 'n_anc_full': 0.805, 'n_anc_S': 0.653, 'indeg_full': 0.623, 'indeg_S': 0.579, 'depth_full': 0.805, 'depth_S': 0.62, 'all_one': 0.63}
+   sensor_indicator: n=114 loss T 0.0 C 0.557 delta -0.557 CI [-0.595, -0.524] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie 0.443
+   n_anc_full: n=58 loss T 0.0 C 1.0 delta -1.0 CI [-1.0, -1.0] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie 0.0
+   n_anc_S: n=103 loss T 0.0 C 0.68 delta -0.68 CI [-0.705, -0.657] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie 0.32
+   indeg_full: n=112 loss T 0.0 C 0.75 delta -0.75 CI [-0.773, -0.731] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie 0.25
+   indeg_S: n=125 loss T 0.0 C 0.656 delta -0.656 CI [-0.687, -0.632] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie 0.344
+   depth_full: n=58 loss T 0.0 C 1.0 delta -1.0 CI [-1.0, -1.0] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie 0.0
+   depth_S: n=113 loss T 0.0 C 0.673 delta -0.673 CI [-0.703, -0.648] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie 0.327
+   all_one: n=110 loss T 0.0 C 1.0 delta -1.0 CI [-1.0, -1.0] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie 0.0
+   E1 pass all: True
+
+# E2_citris_detection: {'detect_lag': 0.976, 'detect_lag0': 0.969, 'diff': 0.008, 'diff_ci': [0.0, 0.023529411764705882], 'nonrel_lag': 0.0, 'nonrel_lag0': 0.0, 'nonrel_diff': 0.0, 'nonrel_diff_ci': [0.0, 0.0], 'Q10_pass': False}
+
+# F_citris_L0: {'units_used': 10, 'F1_check_pass': True, 'F2_pred_nonrel_ind': 0.007, 'F2_pred_nonrel_max': 0.007, 'F2_obs_nonrel_half2': 0.0, 'F1_pred_rel_ind': 0.935, 'F1_pred_rel_max': 0.935, 'F1_obs_rel_half2': 0.945, 'pred_acc_pred1': nan, 'obs_acc_pred1_half2': nan}
+
+# F_citris_L5: {'units_used': 10, 'F1_check_pass': True, 'F2_pred_nonrel_ind': 0.045, 'F2_pred_nonrel_max': 0.01, 'F2_obs_nonrel_half2': 0.0, 'F1_pred_rel_ind': 0.988, 'F1_pred_rel_max': 0.94, 'F1_obs_rel_half2': 0.945, 'pred_acc_pred1': nan, 'obs_acc_pred1_half2': nan}
+
+# E1_iid_buchholz_1_obs nonrel/det: {'nonrel_pairs_per_unit': 8, 'nonrel_dep_frac': 0.0, 'rel_pairs_per_unit': 83, 'rel_detect_frac': 0.933, 'nonrel_dep_ci': [0.0, 0.0], 'rel_detect_ci': [0.9180722891566265, 0.9493975903614458]}
+
+## E1_iid_buchholz_1_obs: instances 1712, obs counts {'1': 561, '1/2': 1052, '0': 99}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [0.4465478841870824, 0.8864142538975501, 898], '1.0': [0.8427518427518428, 0.6855036855036855, 814]}
+   exact match: {'theory': 0.791, 'sensor_indicator': 0.375, 'n_anc_full': 0.328, 'n_anc_S': 0.328, 'indeg_full': 0.328, 'indeg_S': 0.361, 'depth_full': 0.328, 'depth_S': 0.328, 'all_one': 0.328}
+   sensor_indicator: n=813 loss T 0.062 C 0.56 delta -0.499 CI [-0.5, -0.496] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.387
+   n_anc_full: n=898 loss T 0.057 C 0.553 delta -0.497 CI [-0.5, -0.491] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   n_anc_S: n=898 loss T 0.057 C 0.553 delta -0.497 CI [-0.5, -0.491] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   indeg_full: n=898 loss T 0.057 C 0.553 delta -0.497 CI [-0.5, -0.491] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   indeg_S: n=830 loss T 0.055 C 0.551 delta -0.496 CI [-0.5, -0.49] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.494
+   depth_full: n=898 loss T 0.057 C 0.553 delta -0.497 CI [-0.5, -0.491] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   depth_S: n=898 loss T 0.057 C 0.553 delta -0.497 CI [-0.5, -0.491] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   all_one: n=898 loss T 0.057 C 0.553 delta -0.497 CI [-0.5, -0.491] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   E1 pass all: True
+   spearman: {'theory': 0.827, 'sensor_indicator': -0.094, 'n_anc_full': None, 'n_anc_S': None, 'indeg_full': 0.239, 'indeg_S': 0.103, 'depth_full': None, 'depth_S': None, 'all_one': None}
+
+## E1_iid_buchholz_1_obs / detected_edge_subset: instances 1648, obs counts {'1': 500, '1/2': 1051, '0': 97}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [0.44754464285714285, 0.8883928571428571, 896], '1.0': [0.8304521276595744, 0.660904255319149, 752]}
+   exact match: {'theory': 0.785, 'sensor_indicator': 0.353, 'n_anc_full': 0.303, 'n_anc_S': 0.303, 'indeg_full': 0.303, 'indeg_S': 0.338, 'depth_full': 0.303, 'depth_S': 0.303, 'all_one': 0.303}
+   sensor_indicator: n=811 loss T 0.06 C 0.559 delta -0.499 CI [-0.5, -0.496] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.387
+   n_anc_full: n=896 loss T 0.056 C 0.552 delta -0.497 CI [-0.5, -0.491] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   n_anc_S: n=896 loss T 0.056 C 0.552 delta -0.497 CI [-0.5, -0.491] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   indeg_full: n=896 loss T 0.056 C 0.552 delta -0.497 CI [-0.5, -0.491] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   indeg_S: n=828 loss T 0.054 C 0.55 delta -0.496 CI [-0.5, -0.49] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.494
+   depth_full: n=896 loss T 0.056 C 0.552 delta -0.497 CI [-0.5, -0.491] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   depth_S: n=896 loss T 0.056 C 0.552 delta -0.497 CI [-0.5, -0.491] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   all_one: n=896 loss T 0.056 C 0.552 delta -0.497 CI [-0.5, -0.491] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   E1 pass all: True
+
+## E1_iid_buchholz_1_obs / theory_strict_subset: instances 814, obs counts {'1': 558, '1/2': 256, '0': 0}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [None, None, 0], '1.0': [0.8427518427518428, 0.6855036855036855, 814]}
+   exact match: {'theory': 0.686, 'sensor_indicator': 0.572, 'n_anc_full': 0.686, 'n_anc_S': 0.686, 'indeg_full': 0.686, 'indeg_S': 0.679, 'depth_full': 0.686, 'depth_S': 0.686, 'all_one': 0.686}
+   sensor_indicator: n=92 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00195 pass True rev_holm 1.0 alltie 0.5
+   n_anc_full: no disagreement
+   n_anc_S: no disagreement
+   indeg_full: no disagreement
+   indeg_S: n=5 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 4/4 p_holm 0.0625 pass False rev_holm 1.0 alltie 0.5
+   depth_full: no disagreement
+   depth_S: no disagreement
+   all_one: no disagreement
+   E1 pass all: False
+
+# E1_iid_scm_1_reference nonrel/det: {'nonrel_pairs_per_unit': 6, 'nonrel_dep_frac': 0.0, 'rel_pairs_per_unit': 85, 'rel_detect_frac': 1.0, 'nonrel_dep_ci': [0.0, 0.0], 'rel_detect_ci': [1.0, 1.0]}
+
+## E1_iid_scm_1_reference: instances 867, obs counts {'1': 272, '1/2': 595, '0': 0}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [0.5, 1.0, 595], '1.0': [1.0, 1.0, 272]}
+   exact match: {'theory': 1.0, 'sensor_indicator': 0.332, 'n_anc_full': 0.314, 'n_anc_S': 0.314, 'indeg_full': 0.377, 'indeg_S': 0.392, 'depth_full': 0.314, 'depth_S': 0.314, 'all_one': 0.314}
+   sensor_indicator: n=579 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 5/5 p_holm 0.25 pass False rev_holm 1.0 alltie -0.4
+   n_anc_full: n=595 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 5/5 p_holm 0.25 pass False rev_holm 1.0 alltie -0.5
+   n_anc_S: n=595 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 5/5 p_holm 0.25 pass False rev_holm 1.0 alltie -0.5
+   indeg_full: n=540 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 5/5 p_holm 0.25 pass False rev_holm 1.0 alltie -0.5
+   indeg_S: n=527 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 5/5 p_holm 0.25 pass False rev_holm 1.0 alltie -0.5
+   depth_full: n=595 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 5/5 p_holm 0.25 pass False rev_holm 1.0 alltie -0.5
+   depth_S: n=595 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 5/5 p_holm 0.25 pass False rev_holm 1.0 alltie -0.5
+   all_one: n=595 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 5/5 p_holm 0.25 pass False rev_holm 1.0 alltie -0.5
+   E1 pass all: False
+   spearman: {'theory': 1.0, 'sensor_indicator': -0.152, 'n_anc_full': None, 'n_anc_S': None, 'indeg_full': 0.086, 'indeg_S': 0.032, 'depth_full': None, 'depth_S': None, 'all_one': None}
+
+## E1_iid_scm_1_reference / detected_edge_subset: instances 867, obs counts {'1': 272, '1/2': 595, '0': 0}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [0.5, 1.0, 595], '1.0': [1.0, 1.0, 272]}
+   exact match: {'theory': 1.0, 'sensor_indicator': 0.332, 'n_anc_full': 0.314, 'n_anc_S': 0.314, 'indeg_full': 0.377, 'indeg_S': 0.392, 'depth_full': 0.314, 'depth_S': 0.314, 'all_one': 0.314}
+   sensor_indicator: n=579 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 5/5 p_holm 0.25 pass False rev_holm 1.0 alltie -0.4
+   n_anc_full: n=595 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 5/5 p_holm 0.25 pass False rev_holm 1.0 alltie -0.5
+   n_anc_S: n=595 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 5/5 p_holm 0.25 pass False rev_holm 1.0 alltie -0.5
+   indeg_full: n=540 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 5/5 p_holm 0.25 pass False rev_holm 1.0 alltie -0.5
+   indeg_S: n=527 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 5/5 p_holm 0.25 pass False rev_holm 1.0 alltie -0.5
+   depth_full: n=595 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 5/5 p_holm 0.25 pass False rev_holm 1.0 alltie -0.5
+   depth_S: n=595 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 5/5 p_holm 0.25 pass False rev_holm 1.0 alltie -0.5
+   all_one: n=595 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 5/5 p_holm 0.25 pass False rev_holm 1.0 alltie -0.5
+   E1 pass all: False
+
+## E1_iid_scm_1_reference / theory_strict_subset: instances 272, obs counts {'1': 272, '1/2': 0, '0': 0}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [None, None, 0], '1.0': [1.0, 1.0, 272]}
+   exact match: {'theory': 1.0, 'sensor_indicator': 0.787, 'n_anc_full': 1.0, 'n_anc_S': 1.0, 'indeg_full': 1.0, 'indeg_S': 1.0, 'depth_full': 1.0, 'depth_S': 1.0, 'all_one': 1.0}
+   sensor_indicator: n=58 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 5/5 p_holm 0.03125 pass True rev_holm 1.0 alltie 0.5
+   n_anc_full: no disagreement
+   n_anc_S: no disagreement
+   indeg_full: no disagreement
+   indeg_S: no disagreement
+   depth_full: no disagreement
+   depth_S: no disagreement
+   all_one: no disagreement
+   E1 pass all: True
+
+# E1_iid_scm_2_reference nonrel/det: {'nonrel_pairs_per_unit': 6, 'nonrel_dep_frac': 0.0, 'rel_pairs_per_unit': 85, 'rel_detect_frac': 0.965, 'nonrel_dep_ci': [0.0, 0.0], 'rel_detect_ci': [0.9647058823529412, 0.9647058823529412]}
+
+## E1_iid_scm_2_reference: instances 1650, obs counts {'1': 534, '1/2': 967, '0': 149}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [0.47026022304832715, 0.8122676579925651, 1076], '1.0': [0.8911149825783972, 0.8101045296167247, 574]}
+   exact match: {'theory': 0.812, 'sensor_indicator': 0.325, 'n_anc_full': 0.324, 'n_anc_S': 0.324, 'indeg_full': 0.389, 'indeg_S': 0.408, 'depth_full': 0.324, 'depth_S': 0.324, 'all_one': 0.324}
+   sensor_indicator: n=1055 loss T 0.091 C 0.535 delta -0.443 CI [-0.463, -0.423] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.396
+   n_anc_full: n=1076 loss T 0.094 C 0.53 delta -0.436 CI [-0.458, -0.414] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   n_anc_S: n=1076 loss T 0.094 C 0.53 delta -0.436 CI [-0.458, -0.414] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   indeg_full: n=968 loss T 0.104 C 0.533 delta -0.429 CI [-0.453, -0.405] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   indeg_S: n=937 loss T 0.108 C 0.534 delta -0.426 CI [-0.451, -0.403] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   depth_full: n=1076 loss T 0.094 C 0.53 delta -0.436 CI [-0.458, -0.414] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   depth_S: n=1076 loss T 0.094 C 0.53 delta -0.436 CI [-0.458, -0.414] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   all_one: n=1076 loss T 0.094 C 0.53 delta -0.436 CI [-0.458, -0.414] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   E1 pass all: True
+   spearman: {'theory': 0.818, 'sensor_indicator': -0.172, 'n_anc_full': None, 'n_anc_S': None, 'indeg_full': 0.338, 'indeg_S': -0.094, 'depth_full': None, 'depth_S': None, 'all_one': None}
+
+## E1_iid_scm_2_reference / detected_edge_subset: instances 1523, obs counts {'1': 510, '1/2': 909, '0': 104}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [0.48315688161693937, 0.8334937439846006, 1039], '1.0': [0.9555785123966942, 0.9111570247933884, 484]}
+   exact match: {'theory': 0.858, 'sensor_indicator': 0.337, 'n_anc_full': 0.335, 'n_anc_S': 0.335, 'indeg_full': 0.406, 'indeg_S': 0.426, 'depth_full': 0.335, 'depth_S': 0.335, 'all_one': 0.335}
+   sensor_indicator: n=1018 loss T 0.081 C 0.522 delta -0.441 CI [-0.462, -0.419] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.392
+   n_anc_full: n=1039 loss T 0.083 C 0.517 delta -0.434 CI [-0.457, -0.41] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   n_anc_S: n=1039 loss T 0.083 C 0.517 delta -0.434 CI [-0.457, -0.41] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   indeg_full: n=931 loss T 0.093 C 0.519 delta -0.426 CI [-0.451, -0.4] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   indeg_S: n=900 loss T 0.096 C 0.519 delta -0.423 CI [-0.449, -0.398] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   depth_full: n=1039 loss T 0.083 C 0.517 delta -0.434 CI [-0.457, -0.41] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   depth_S: n=1039 loss T 0.083 C 0.517 delta -0.434 CI [-0.457, -0.41] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   all_one: n=1039 loss T 0.083 C 0.517 delta -0.434 CI [-0.457, -0.41] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   E1 pass all: True
+
+## E1_iid_scm_2_reference / theory_strict_subset: instances 574, obs counts {'1': 465, '1/2': 93, '0': 16}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [None, None, 0], '1.0': [0.8911149825783972, 0.8101045296167247, 574]}
+   exact match: {'theory': 0.81, 'sensor_indicator': 0.618, 'n_anc_full': 0.81, 'n_anc_S': 0.81, 'indeg_full': 0.81, 'indeg_S': 0.81, 'depth_full': 0.81, 'depth_S': 0.81, 'all_one': 0.81}
+   sensor_indicator: n=110 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00098 pass True rev_holm 1.0 alltie 0.5
+   n_anc_full: no disagreement
+   n_anc_S: no disagreement
+   indeg_full: no disagreement
+   indeg_S: no disagreement
+   depth_full: no disagreement
+   depth_S: no disagreement
+   all_one: no disagreement
+   E1 pass all: True
+
+# E1_iid_scm_4_reference nonrel/det: {'nonrel_pairs_per_unit': 0, 'nonrel_dep_frac': nan, 'rel_pairs_per_unit': 45, 'rel_detect_frac': 1.0, 'nonrel_dep_ci': None, 'rel_detect_ci': [1.0, 1.0]}
+
+## E1_iid_scm_4_reference: instances 2267, obs counts {'1': 0, '1/2': 2267, '0': 0}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [0.5, 1.0, 2267], '1.0': [None, None, 0]}
+   exact match: {'theory': 1.0, 'sensor_indicator': 0.088, 'n_anc_full': 0.0, 'n_anc_S': 0.0, 'indeg_full': 0.043, 'indeg_S': 0.032, 'depth_full': 0.0, 'depth_S': 0.0, 'all_one': 0.0}
+   sensor_indicator: n=2068 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   n_anc_full: n=2267 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   n_anc_S: n=2267 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   indeg_full: n=2169 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   indeg_S: n=2195 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   depth_full: n=2267 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   depth_S: n=2267 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   all_one: n=2267 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   E1 pass all: True
+   spearman: {'theory': None, 'sensor_indicator': nan, 'n_anc_full': None, 'n_anc_S': None, 'indeg_full': nan, 'indeg_S': nan, 'depth_full': None, 'depth_S': None, 'all_one': None}
+
+## E1_iid_scm_4_reference / detected_edge_subset: instances 2267, obs counts {'1': 0, '1/2': 2267, '0': 0}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [0.5, 1.0, 2267], '1.0': [None, None, 0]}
+   exact match: {'theory': 1.0, 'sensor_indicator': 0.088, 'n_anc_full': 0.0, 'n_anc_S': 0.0, 'indeg_full': 0.043, 'indeg_S': 0.032, 'depth_full': 0.0, 'depth_S': 0.0, 'all_one': 0.0}
+   sensor_indicator: n=2068 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   n_anc_full: n=2267 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   n_anc_S: n=2267 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   indeg_full: n=2169 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   indeg_S: n=2195 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   depth_full: n=2267 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   depth_S: n=2267 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   all_one: n=2267 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   E1 pass all: True
+
+## E1_iid_scm_4_reference / theory_strict_subset: no instances
+
+# E1_iid_scm_5_reference nonrel/det: {'nonrel_pairs_per_unit': 1, 'nonrel_dep_frac': 0.0, 'rel_pairs_per_unit': 44, 'rel_detect_frac': 1.0, 'nonrel_dep_ci': [0.0, 0.0], 'rel_detect_ci': [1.0, 1.0]}
+
+## E1_iid_scm_5_reference: instances 2238, obs counts {'1': 1108, '1/2': 1130, '0': 0}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [0.5, 1.0, 1130], '1.0': [1.0, 1.0, 1108]}
+   exact match: {'theory': 1.0, 'sensor_indicator': 0.464, 'n_anc_full': 0.495, 'n_anc_S': 0.495, 'indeg_full': 0.495, 'indeg_S': 0.495, 'depth_full': 0.495, 'depth_S': 0.495, 'all_one': 0.495}
+   sensor_indicator: n=1200 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.392
+   n_anc_full: n=1130 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   n_anc_S: n=1130 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   indeg_full: n=1130 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   indeg_S: n=1130 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   depth_full: n=1130 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   depth_S: n=1130 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   all_one: n=1130 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   E1 pass all: True
+   spearman: {'theory': 1.0, 'sensor_indicator': 0.128, 'n_anc_full': None, 'n_anc_S': None, 'indeg_full': None, 'indeg_S': None, 'depth_full': None, 'depth_S': None, 'all_one': None}
+
+## E1_iid_scm_5_reference / detected_edge_subset: instances 2238, obs counts {'1': 1108, '1/2': 1130, '0': 0}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [0.5, 1.0, 1130], '1.0': [1.0, 1.0, 1108]}
+   exact match: {'theory': 1.0, 'sensor_indicator': 0.464, 'n_anc_full': 0.495, 'n_anc_S': 0.495, 'indeg_full': 0.495, 'indeg_S': 0.495, 'depth_full': 0.495, 'depth_S': 0.495, 'all_one': 0.495}
+   sensor_indicator: n=1200 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.392
+   n_anc_full: n=1130 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   n_anc_S: n=1130 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   indeg_full: n=1130 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   indeg_S: n=1130 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   depth_full: n=1130 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   depth_S: n=1130 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   all_one: n=1130 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00781 pass True rev_holm 1.0 alltie -0.5
+   E1 pass all: True
+
+## E1_iid_scm_5_reference / theory_strict_subset: instances 1108, obs counts {'1': 1108, '1/2': 0, '0': 0}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [None, None, 0], '1.0': [1.0, 1.0, 1108]}
+   exact match: {'theory': 1.0, 'sensor_indicator': 0.883, 'n_anc_full': 1.0, 'n_anc_S': 1.0, 'indeg_full': 1.0, 'indeg_S': 1.0, 'depth_full': 1.0, 'depth_S': 1.0, 'all_one': 1.0}
+   sensor_indicator: n=130 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 10/10 p_holm 0.00098 pass True rev_holm 1.0 alltie 0.5
+   n_anc_full: no disagreement
+   n_anc_S: no disagreement
+   indeg_full: no disagreement
+   indeg_S: no disagreement
+   depth_full: no disagreement
+   depth_S: no disagreement
+   all_one: no disagreement
+   E1 pass all: True
+
+## E1_iid_pooled: instances 8734, obs counts {'1': 2475, '1/2': 6011, '0': 248}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [0.48659068052296345, 0.9490445859872612, 5966], '1.0': [0.9311777456647399, 0.868135838150289, 2768]}
+   exact match: {'theory': 0.923, 'sensor_indicator': 0.31, 'n_anc_full': 0.283, 'n_anc_S': 0.283, 'indeg_full': 0.313, 'indeg_S': 0.322, 'depth_full': 0.283, 'depth_S': 0.283, 'all_one': 0.283}
+   sensor_indicator: n=5715 loss T 0.026 C 0.515 delta -0.489 CI [-0.496, -0.481] units 45/45 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.432
+   n_anc_full: n=5966 loss T 0.025 C 0.513 delta -0.488 CI [-0.495, -0.479] units 45/45 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   n_anc_S: n=5966 loss T 0.025 C 0.513 delta -0.488 CI [-0.495, -0.479] units 45/45 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   indeg_full: n=5705 loss T 0.027 C 0.514 delta -0.487 CI [-0.495, -0.478] units 45/45 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   indeg_S: n=5619 loss T 0.026 C 0.513 delta -0.487 CI [-0.495, -0.478] units 45/45 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.499
+   depth_full: n=5966 loss T 0.025 C 0.513 delta -0.488 CI [-0.495, -0.479] units 45/45 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   depth_S: n=5966 loss T 0.025 C 0.513 delta -0.488 CI [-0.495, -0.479] units 45/45 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   all_one: n=5966 loss T 0.025 C 0.513 delta -0.488 CI [-0.495, -0.479] units 45/45 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   E1 pass all: True
+   spearman: {'theory': 0.913, 'sensor_indicator': -0.138, 'n_anc_full': None, 'n_anc_S': None, 'indeg_full': 0.216, 'indeg_S': 0.017, 'depth_full': None, 'depth_S': None, 'all_one': None}
+
+## E1_iid_pooled / detected_edge_subset: instances 8543, obs counts {'1': 2390, '1/2': 5952, '0': 201}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [0.48911759743546485, 0.9539395984477813, 5927], '1.0': [0.9430428134556575, 0.886085626911315, 2616]}
+   exact match: {'theory': 0.933, 'sensor_indicator': 0.307, 'n_anc_full': 0.28, 'n_anc_S': 0.28, 'indeg_full': 0.31, 'indeg_S': 0.319, 'depth_full': 0.28, 'depth_S': 0.28, 'all_one': 0.28}
+   sensor_indicator: n=5676 loss T 0.023 C 0.512 delta -0.489 CI [-0.496, -0.481] units 45/45 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.431
+   n_anc_full: n=5927 loss T 0.023 C 0.511 delta -0.488 CI [-0.495, -0.479] units 45/45 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   n_anc_S: n=5927 loss T 0.023 C 0.511 delta -0.488 CI [-0.495, -0.479] units 45/45 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   indeg_full: n=5666 loss T 0.024 C 0.511 delta -0.487 CI [-0.495, -0.478] units 45/45 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   indeg_S: n=5580 loss T 0.023 C 0.511 delta -0.487 CI [-0.495, -0.477] units 45/45 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.499
+   depth_full: n=5927 loss T 0.023 C 0.511 delta -0.488 CI [-0.495, -0.479] units 45/45 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   depth_S: n=5927 loss T 0.023 C 0.511 delta -0.488 CI [-0.495, -0.479] units 45/45 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   all_one: n=5927 loss T 0.023 C 0.511 delta -0.488 CI [-0.495, -0.479] units 45/45 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   E1 pass all: True
+
+## E1_iid_pooled / theory_strict_subset: instances 2768, obs counts {'1': 2403, '1/2': 349, '0': 16}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [None, None, 0], '1.0': [0.9311777456647399, 0.868135838150289, 2768]}
+   exact match: {'theory': 0.868, 'sensor_indicator': 0.727, 'n_anc_full': 0.868, 'n_anc_S': 0.868, 'indeg_full': 0.868, 'indeg_S': 0.866, 'depth_full': 0.868, 'depth_S': 0.868, 'all_one': 0.868}
+   sensor_indicator: n=390 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 35/35 p_holm 2e-05 pass True rev_holm 1.0 alltie 0.5
+   n_anc_full: no disagreement
+   n_anc_S: no disagreement
+   indeg_full: no disagreement
+   indeg_S: n=5 loss T 0.0 C 0.5 delta -0.5 CI [-0.5, -0.5] units 4/4 p_holm 0.0625 pass False rev_holm 1.0 alltie 0.5
+   depth_full: no disagreement
+   depth_S: no disagreement
+   all_one: no disagreement
+   E1 pass all: False
+
+## E2_wt_D10_L0: instances 6478, obs counts {'1': 2800, '1/2': 2427, '0': 1251}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [0.5698729582577132, 0.5466424682395644, 2755], '1.0': [0.6563255439161966, 0.532634971796938, 3723]}
+   exact match: {'theory': 0.539, 'sensor_indicator': 0.432, 'n_anc_full': 0.432, 'n_anc_S': 0.432, 'indeg_full': 0.432, 'indeg_S': 0.432, 'depth_full': 0.432, 'depth_S': 0.432, 'all_one': 0.432}
+   sensor_indicator: n=2755 loss T 0.227 C 0.43 delta -0.203 CI [-0.227, -0.179] units 63/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   n_anc_full: n=2755 loss T 0.227 C 0.43 delta -0.203 CI [-0.227, -0.179] units 63/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   n_anc_S: n=2755 loss T 0.227 C 0.43 delta -0.203 CI [-0.227, -0.179] units 63/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   indeg_full: n=2755 loss T 0.227 C 0.43 delta -0.203 CI [-0.227, -0.179] units 63/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   indeg_S: n=2755 loss T 0.227 C 0.43 delta -0.203 CI [-0.227, -0.179] units 63/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   depth_full: n=2755 loss T 0.227 C 0.43 delta -0.203 CI [-0.227, -0.179] units 63/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   depth_S: n=2755 loss T 0.227 C 0.43 delta -0.203 CI [-0.227, -0.179] units 63/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   all_one: n=2755 loss T 0.227 C 0.43 delta -0.203 CI [-0.227, -0.179] units 63/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   E1 pass all: True
+   spearman: {'theory': 0.202, 'sensor_indicator': None, 'n_anc_full': None, 'n_anc_S': None, 'indeg_full': None, 'indeg_S': None, 'depth_full': None, 'depth_S': None, 'all_one': None}
+
+## E2_wt_D10_L0 / detected_edge_subset: instances 4026, obs counts {'1': 2060, '1/2': 1694, '0': 272}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [0.6114355231143552, 0.5600973236009732, 2055], '1.0': [0.8373921867072552, 0.6996448503297819, 1971]}
+   exact match: {'theory': 0.628, 'sensor_indicator': 0.512, 'n_anc_full': 0.512, 'n_anc_S': 0.512, 'indeg_full': 0.512, 'indeg_S': 0.512, 'depth_full': 0.512, 'depth_S': 0.512, 'all_one': 0.512}
+   sensor_indicator: n=2055 loss T 0.22 C 0.389 delta -0.169 CI [-0.199, -0.137] units 57/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   n_anc_full: n=2055 loss T 0.22 C 0.389 delta -0.169 CI [-0.199, -0.137] units 57/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   n_anc_S: n=2055 loss T 0.22 C 0.389 delta -0.169 CI [-0.199, -0.137] units 57/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   indeg_full: n=2055 loss T 0.22 C 0.389 delta -0.169 CI [-0.199, -0.137] units 57/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   indeg_S: n=2055 loss T 0.22 C 0.389 delta -0.169 CI [-0.199, -0.137] units 57/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   depth_full: n=2055 loss T 0.22 C 0.389 delta -0.169 CI [-0.199, -0.137] units 57/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   depth_S: n=2055 loss T 0.22 C 0.389 delta -0.169 CI [-0.199, -0.137] units 57/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   all_one: n=2055 loss T 0.22 C 0.389 delta -0.169 CI [-0.199, -0.137] units 57/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   E1 pass all: True
+
+## E2_wt_D10_L0 / theory_strict_subset: instances 3723, obs counts {'1': 1983, '1/2': 921, '0': 819}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [None, None, 0], '1.0': [0.6563255439161966, 0.532634971796938, 3723]}
+   exact match: {'theory': 0.533, 'sensor_indicator': 0.533, 'n_anc_full': 0.533, 'n_anc_S': 0.533, 'indeg_full': 0.533, 'indeg_S': 0.533, 'depth_full': 0.533, 'depth_S': 0.533, 'all_one': 0.533}
+   sensor_indicator: no disagreement
+   n_anc_full: no disagreement
+   n_anc_S: no disagreement
+   indeg_full: no disagreement
+   indeg_S: no disagreement
+   depth_full: no disagreement
+   depth_S: no disagreement
+   all_one: no disagreement
+   E1 pass all: False
+
+# E2_wt_D10_L0 Q: {'nonrel_pairs_per_unit': 54, 'nonrel_dep_frac': 0.014, 'rel_pairs_per_unit': 51, 'rel_detect_frac': 0.592, 'nonrel_dep_ci': [0.009837962962962963, 0.01765046296296296], 'rel_detect_ci': [0.5839460784313726, 0.5992647058823529], 'acc_pred1': 0.742, 'acc_pred1_ci': [0.7224506578947368, 0.7598684210526315], 'n_pred1_instances': 1216, 'acc_pred_half_edges': 0.344, 'spearman': 0.202, 'spearman_p': 0.0, 'n_subgraphs': 1280, 'spearman_ci': [0.14477092465732558, 0.25935536216584965], 'Q7_pass': True, 'Q8_pass': True, 'Q9_pass': False}
+
+## E2_wt_D10_L3: instances 6478, obs counts {'1': 2663, '1/2': 2537, '0': 1278}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [0.5653357531760436, 0.5673321234119783, 2755], '1.0': [0.6376578028471662, 0.5068493150684932, 3723]}
+   exact match: {'theory': 0.533, 'sensor_indicator': 0.411, 'n_anc_full': 0.411, 'n_anc_S': 0.411, 'indeg_full': 0.411, 'indeg_S': 0.411, 'depth_full': 0.411, 'depth_S': 0.411, 'all_one': 0.411}
+   sensor_indicator: n=2755 loss T 0.216 C 0.435 delta -0.218 CI [-0.24, -0.197] units 64/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   n_anc_full: n=2755 loss T 0.216 C 0.435 delta -0.218 CI [-0.24, -0.197] units 64/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   n_anc_S: n=2755 loss T 0.216 C 0.435 delta -0.218 CI [-0.24, -0.197] units 64/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   indeg_full: n=2755 loss T 0.216 C 0.435 delta -0.218 CI [-0.24, -0.197] units 64/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   indeg_S: n=2755 loss T 0.216 C 0.435 delta -0.218 CI [-0.24, -0.197] units 64/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   depth_full: n=2755 loss T 0.216 C 0.435 delta -0.218 CI [-0.24, -0.197] units 64/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   depth_S: n=2755 loss T 0.216 C 0.435 delta -0.218 CI [-0.24, -0.197] units 64/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   all_one: n=2755 loss T 0.216 C 0.435 delta -0.218 CI [-0.24, -0.197] units 64/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   E1 pass all: True
+   spearman: {'theory': 0.202, 'sensor_indicator': None, 'n_anc_full': None, 'n_anc_S': None, 'indeg_full': None, 'indeg_S': None, 'depth_full': None, 'depth_S': None, 'all_one': None}
+
+## E2_wt_D10_L3 / detected_edge_subset: instances 4003, obs counts {'1': 1955, '1/2': 1808, '0': 240}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [0.6108410306271269, 0.5896937287311619, 2057], '1.0': [0.8234840698869476, 0.670606372045221, 1946]}
+   exact match: {'theory': 0.629, 'sensor_indicator': 0.488, 'n_anc_full': 0.488, 'n_anc_S': 0.488, 'indeg_full': 0.488, 'indeg_S': 0.488, 'depth_full': 0.488, 'depth_S': 0.488, 'all_one': 0.488}
+   sensor_indicator: n=2057 loss T 0.205 C 0.389 delta -0.184 CI [-0.212, -0.158] units 62/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   n_anc_full: n=2057 loss T 0.205 C 0.389 delta -0.184 CI [-0.212, -0.158] units 62/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   n_anc_S: n=2057 loss T 0.205 C 0.389 delta -0.184 CI [-0.212, -0.158] units 62/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   indeg_full: n=2057 loss T 0.205 C 0.389 delta -0.184 CI [-0.212, -0.158] units 62/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   indeg_S: n=2057 loss T 0.205 C 0.389 delta -0.184 CI [-0.212, -0.158] units 62/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   depth_full: n=2057 loss T 0.205 C 0.389 delta -0.184 CI [-0.212, -0.158] units 62/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   depth_S: n=2057 loss T 0.205 C 0.389 delta -0.184 CI [-0.212, -0.158] units 62/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   all_one: n=2057 loss T 0.205 C 0.389 delta -0.184 CI [-0.212, -0.158] units 62/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   E1 pass all: True
+
+## E2_wt_D10_L3 / theory_strict_subset: instances 3723, obs counts {'1': 1887, '1/2': 974, '0': 862}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [None, None, 0], '1.0': [0.6376578028471662, 0.5068493150684932, 3723]}
+   exact match: {'theory': 0.507, 'sensor_indicator': 0.507, 'n_anc_full': 0.507, 'n_anc_S': 0.507, 'indeg_full': 0.507, 'indeg_S': 0.507, 'depth_full': 0.507, 'depth_S': 0.507, 'all_one': 0.507}
+   sensor_indicator: no disagreement
+   n_anc_full: no disagreement
+   n_anc_S: no disagreement
+   indeg_full: no disagreement
+   indeg_S: no disagreement
+   depth_full: no disagreement
+   depth_S: no disagreement
+   all_one: no disagreement
+   E1 pass all: False
+
+# E2_wt_D10_L3 Q: {'nonrel_pairs_per_unit': 54, 'nonrel_dep_frac': 0.011, 'rel_pairs_per_unit': 51, 'rel_detect_frac': 0.585, 'nonrel_dep_ci': [0.008101851851851851, 0.014467592592592593], 'rel_detect_ci': [0.5762867647058824, 0.5919117647058824], 'acc_pred1': 0.711, 'acc_pred1_ci': [0.6916118421052632, 0.7290296052631579], 'n_pred1_instances': 1216, 'acc_pred_half_edges': 0.406, 'spearman': 0.202, 'spearman_p': 0.0, 'n_subgraphs': 1280, 'spearman_ci': [0.15159212032800032, 0.2526272994271131], 'Q7_pass': True, 'Q8_pass': True, 'Q9_pass': False}
+
+# E2_wt_D10_detection: {'detect_lag': 0.585, 'detect_lag0': 0.592, 'diff': -0.007, 'diff_ci': [-0.011642156862745098, -0.00305606617647063], 'nonrel_lag': 0.011, 'nonrel_lag0': 0.014, 'nonrel_diff': -0.002, 'nonrel_diff_ci': [-0.004347511574074074, -0.00028935185185185184], 'Q10_pass': False}
+
+# F_wt_D10_L0: {'units_used': 64, 'F1_check_pass': True, 'F2_pred_nonrel_ind': 0.014, 'F2_pred_nonrel_max': 0.014, 'F2_obs_nonrel_half2': 0.008, 'F1_pred_rel_ind': 0.548, 'F1_pred_rel_max': 0.548, 'F1_obs_rel_half2': 0.533, 'pred_acc_pred1': 0.649, 'obs_acc_pred1_half2': 0.632}
+
+# F_wt_D10_L3: {'units_used': 64, 'F1_check_pass': True, 'F2_pred_nonrel_ind': 0.027, 'F2_pred_nonrel_max': 0.016, 'F2_obs_nonrel_half2': 0.008, 'F1_pred_rel_ind': 0.554, 'F1_pred_rel_max': 0.536, 'F1_obs_rel_half2': 0.524, 'pred_acc_pred1': 0.628, 'obs_acc_pred1_half2': 0.618}
+
+## E2_wt_D1_L0: instances 6478, obs counts {'1': 2112, '1/2': 2670, '0': 1696}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [0.523956442831216, 0.48312159709618874, 2755], '1.0': [0.5381412839108246, 0.35831318828901426, 3723]}
+   exact match: {'theory': 0.411, 'sensor_indicator': 0.326, 'n_anc_full': 0.326, 'n_anc_S': 0.326, 'indeg_full': 0.326, 'indeg_S': 0.326, 'depth_full': 0.326, 'depth_S': 0.326, 'all_one': 0.326}
+   sensor_indicator: n=2755 loss T 0.258 C 0.476 delta -0.218 CI [-0.239, -0.196] units 64/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   n_anc_full: n=2755 loss T 0.258 C 0.476 delta -0.218 CI [-0.239, -0.196] units 64/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   n_anc_S: n=2755 loss T 0.258 C 0.476 delta -0.218 CI [-0.239, -0.196] units 64/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   indeg_full: n=2755 loss T 0.258 C 0.476 delta -0.218 CI [-0.239, -0.196] units 64/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   indeg_S: n=2755 loss T 0.258 C 0.476 delta -0.218 CI [-0.239, -0.196] units 64/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   depth_full: n=2755 loss T 0.258 C 0.476 delta -0.218 CI [-0.239, -0.196] units 64/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   depth_S: n=2755 loss T 0.258 C 0.476 delta -0.218 CI [-0.239, -0.196] units 64/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   all_one: n=2755 loss T 0.258 C 0.476 delta -0.218 CI [-0.239, -0.196] units 64/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   E1 pass all: True
+   spearman: {'theory': 0.12, 'sensor_indicator': None, 'n_anc_full': None, 'n_anc_S': None, 'indeg_full': None, 'indeg_S': None, 'depth_full': None, 'depth_S': None, 'all_one': None}
+
+## E2_wt_D1_L0 / detected_edge_subset: instances 2254, obs counts {'1': 1048, '1/2': 1004, '0': 202}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [0.6379897785349233, 0.5093696763202725, 1174], '1.0': [0.7416666666666667, 0.5537037037037037, 1080]}
+   exact match: {'theory': 0.531, 'sensor_indicator': 0.465, 'n_anc_full': 0.465, 'n_anc_S': 0.465, 'indeg_full': 0.465, 'indeg_S': 0.465, 'depth_full': 0.465, 'depth_S': 0.465, 'all_one': 0.465}
+   sensor_indicator: n=1174 loss T 0.245 C 0.362 delta -0.117 CI [-0.153, -0.079] units 49/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   n_anc_full: n=1174 loss T 0.245 C 0.362 delta -0.117 CI [-0.153, -0.079] units 49/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   n_anc_S: n=1174 loss T 0.245 C 0.362 delta -0.117 CI [-0.153, -0.079] units 49/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   indeg_full: n=1174 loss T 0.245 C 0.362 delta -0.117 CI [-0.153, -0.079] units 49/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   indeg_S: n=1174 loss T 0.245 C 0.362 delta -0.117 CI [-0.153, -0.079] units 49/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   depth_full: n=1174 loss T 0.245 C 0.362 delta -0.117 CI [-0.153, -0.079] units 49/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   depth_S: n=1174 loss T 0.245 C 0.362 delta -0.117 CI [-0.153, -0.079] units 49/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   all_one: n=1174 loss T 0.245 C 0.362 delta -0.117 CI [-0.153, -0.079] units 49/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   E1 pass all: True
+
+## E2_wt_D1_L0 / theory_strict_subset: instances 3723, obs counts {'1': 1334, '1/2': 1339, '0': 1050}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [None, None, 0], '1.0': [0.5381412839108246, 0.35831318828901426, 3723]}
+   exact match: {'theory': 0.358, 'sensor_indicator': 0.358, 'n_anc_full': 0.358, 'n_anc_S': 0.358, 'indeg_full': 0.358, 'indeg_S': 0.358, 'depth_full': 0.358, 'depth_S': 0.358, 'all_one': 0.358}
+   sensor_indicator: no disagreement
+   n_anc_full: no disagreement
+   n_anc_S: no disagreement
+   indeg_full: no disagreement
+   indeg_S: no disagreement
+   depth_full: no disagreement
+   depth_S: no disagreement
+   all_one: no disagreement
+   E1 pass all: False
+
+# E2_wt_D1_L0 Q: {'nonrel_pairs_per_unit': 54, 'nonrel_dep_frac': 0.002, 'rel_pairs_per_unit': 51, 'rel_detect_frac': 0.328, 'nonrel_dep_ci': [0.0005787037037037037, 0.004050925925925926], 'rel_detect_ci': [0.3115808823529412, 0.34467677696078425], 'acc_pred1': 0.552, 'acc_pred1_ci': [0.532483552631579, 0.5699013157894737], 'n_pred1_instances': 1216, 'acc_pred_half_edges': 0.398, 'spearman': 0.12, 'spearman_p': 0.0, 'n_subgraphs': 1280, 'spearman_ci': [0.0658405980981755, 0.17624215564175888], 'Q7_pass': True, 'Q8_pass': True, 'Q9_pass': False}
+
+## E2_wt_D1_L30: instances 6478, obs counts {'1': 2284, '1/2': 2448, '0': 1746}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [0.5194192377495462, 0.4885662431941924, 2755], '1.0': [0.5578834273435401, 0.40988450174590385, 3723]}
+   exact match: {'theory': 0.443, 'sensor_indicator': 0.353, 'n_anc_full': 0.353, 'n_anc_S': 0.353, 'indeg_full': 0.353, 'indeg_S': 0.353, 'depth_full': 0.353, 'depth_S': 0.353, 'all_one': 0.353}
+   sensor_indicator: n=2755 loss T 0.256 C 0.481 delta -0.225 CI [-0.25, -0.197] units 62/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   n_anc_full: n=2755 loss T 0.256 C 0.481 delta -0.225 CI [-0.25, -0.197] units 62/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   n_anc_S: n=2755 loss T 0.256 C 0.481 delta -0.225 CI [-0.25, -0.197] units 62/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   indeg_full: n=2755 loss T 0.256 C 0.481 delta -0.225 CI [-0.25, -0.197] units 62/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   indeg_S: n=2755 loss T 0.256 C 0.481 delta -0.225 CI [-0.25, -0.197] units 62/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   depth_full: n=2755 loss T 0.256 C 0.481 delta -0.225 CI [-0.25, -0.197] units 62/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   depth_S: n=2755 loss T 0.256 C 0.481 delta -0.225 CI [-0.25, -0.197] units 62/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   all_one: n=2755 loss T 0.256 C 0.481 delta -0.225 CI [-0.25, -0.197] units 62/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   E1 pass all: True
+   spearman: {'theory': 0.243, 'sensor_indicator': None, 'n_anc_full': None, 'n_anc_S': None, 'indeg_full': None, 'indeg_S': None, 'depth_full': None, 'depth_S': None, 'all_one': None}
+
+## E2_wt_D1_L30 / detected_edge_subset: instances 2751, obs counts {'1': 1404, '1/2': 1047, '0': 300}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [0.619645494830133, 0.5081240768094535, 1354], '1.0': [0.7791696492483894, 0.6506800286327845, 1397]}
+   exact match: {'theory': 0.581, 'sensor_indicator': 0.51, 'n_anc_full': 0.51, 'n_anc_S': 0.51, 'indeg_full': 0.51, 'indeg_S': 0.51, 'depth_full': 0.51, 'depth_S': 0.51, 'all_one': 0.51}
+   sensor_indicator: n=1354 loss T 0.246 C 0.38 delta -0.134 CI [-0.173, -0.098] units 50/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   n_anc_full: n=1354 loss T 0.246 C 0.38 delta -0.134 CI [-0.173, -0.098] units 50/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   n_anc_S: n=1354 loss T 0.246 C 0.38 delta -0.134 CI [-0.173, -0.098] units 50/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   indeg_full: n=1354 loss T 0.246 C 0.38 delta -0.134 CI [-0.173, -0.098] units 50/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   indeg_S: n=1354 loss T 0.246 C 0.38 delta -0.134 CI [-0.173, -0.098] units 50/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   depth_full: n=1354 loss T 0.246 C 0.38 delta -0.134 CI [-0.173, -0.098] units 50/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   depth_S: n=1354 loss T 0.246 C 0.38 delta -0.134 CI [-0.173, -0.098] units 50/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   all_one: n=1354 loss T 0.246 C 0.38 delta -0.134 CI [-0.173, -0.098] units 50/64 p_holm 8e-05 pass True rev_holm 1.0 alltie -0.5
+   E1 pass all: True
+
+## E2_wt_D1_L30 / theory_strict_subset: instances 3723, obs counts {'1': 1526, '1/2': 1102, '0': 1095}
+   obs | theory value (mean obs, exact-match share, n): {'0.0': [None, None, 0], '0.5': [None, None, 0], '1.0': [0.5578834273435401, 0.40988450174590385, 3723]}
+   exact match: {'theory': 0.41, 'sensor_indicator': 0.41, 'n_anc_full': 0.41, 'n_anc_S': 0.41, 'indeg_full': 0.41, 'indeg_S': 0.41, 'depth_full': 0.41, 'depth_S': 0.41, 'all_one': 0.41}
+   sensor_indicator: no disagreement
+   n_anc_full: no disagreement
+   n_anc_S: no disagreement
+   indeg_full: no disagreement
+   indeg_S: no disagreement
+   depth_full: no disagreement
+   depth_S: no disagreement
+   all_one: no disagreement
+   E1 pass all: False
+
+# E2_wt_D1_L30 Q: {'nonrel_pairs_per_unit': 54, 'nonrel_dep_frac': 0.003, 'rel_pairs_per_unit': 51, 'rel_detect_frac': 0.398, 'nonrel_dep_ci': [0.0008680555555555555, 0.004629629629629629], 'rel_detect_ci': [0.38326439950980395, 0.41237745098039214], 'acc_pred1': 0.553, 'acc_pred1_ci': [0.5271381578947368, 0.5789473684210527], 'n_pred1_instances': 1216, 'acc_pred_half_edges': 0.766, 'spearman': 0.243, 'spearman_p': 0.0, 'n_subgraphs': 1280, 'spearman_ci': [0.1928386011716003, 0.2942969154814785], 'Q7_pass': True, 'Q8_pass': True, 'Q9_pass': False}
+
+# E2_wt_D1_detection: {'detect_lag': 0.398, 'detect_lag0': 0.328, 'diff': 0.069, 'diff_ci': [0.05974264705882353, 0.07904411764705882], 'nonrel_lag': 0.003, 'nonrel_lag0': 0.002, 'nonrel_diff': 0.001, 'nonrel_diff_ci': [-0.0008680555555555555, 0.002025462962962963], 'Q10_pass': True}
+
+# F_wt_D1_L0: {'units_used': 64, 'F1_check_pass': True, 'F2_pred_nonrel_ind': 0.007, 'F2_pred_nonrel_max': 0.007, 'F2_obs_nonrel_half2': 0.003, 'F1_pred_rel_ind': 0.25, 'F1_pred_rel_max': 0.25, 'F1_obs_rel_half2': 0.242, 'pred_acc_pred1': 0.573, 'obs_acc_pred1_half2': 0.59}
+
+# F_wt_D1_L30: {'units_used': 64, 'F1_check_pass': True, 'F2_pred_nonrel_ind': 0.074, 'F2_pred_nonrel_max': 0.021, 'F2_obs_nonrel_half2': 0.003, 'F1_pred_rel_ind': 0.426, 'F1_pred_rel_max': 0.344, 'F1_obs_rel_half2': 0.332, 'pred_acc_pred1': 0.504, 'obs_acc_pred1_half2': 0.506}

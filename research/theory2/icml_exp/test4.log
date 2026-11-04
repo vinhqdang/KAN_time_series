@@ -1,0 +1,19 @@
+E1_citris_Glin_L0 done 1 s
+E1_citris_GD_L0 done 3 s
+/usr/local/lib/python3.13/dist-packages/numpy/core/fromnumeric.py:3504: RuntimeWarning: Mean of empty slice.
+  return _methods._mean(a, axis=axis, dtype=dtype,
+/usr/local/lib/python3.13/dist-packages/numpy/core/_methods.py:129: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+citris lagged done 6 s
+buchholz_1_obs done 7 s
+scm_1_reference done 7 s
+scm_2_reference done 8 s
+/home/user/KAN_time_series/research/theory2/icml_exp/test4.py:236: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  sp[k] = float(spearmanr(pred, acc)[0]) if pred.std() > 0 else None
+scm_4_reference done 9 s
+scm_5_reference done 10 s
+WT D10 L 0 done 23 s
+WT D10 L 3 done 28 s
+WT D1 L 0 done 43 s
+WT D1 L 30 done 65 s
+wrote /home/user/KAN_time_series/research/theory2/icml_exp/results4.json

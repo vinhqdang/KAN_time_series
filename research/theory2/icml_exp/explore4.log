@@ -1,0 +1,5 @@
+E1_citris_Glin_L0: exact match theory 0.992; constant-1/2 predictor 0.815; mean |obs - theory| 0.004; mean |obs - 1/2| 0.092
+E1_citris_GD_L0: exact match theory 0.714; constant-1/2 predictor 0.815; mean |obs - theory| 0.166; mean |obs - 1/2| 0.092
+E1_iid_pooled: exact match theory 0.923; constant-1/2 predictor 0.688; mean |obs - theory| 0.039; mean |obs - 1/2| 0.156
+E2_wt_D10_L0: exact match theory 0.539; constant-1/2 predictor 0.375; mean |obs - theory| 0.294; mean |obs - 1/2| 0.313
+E2_wt_D1_L30: exact match theory 0.443; constant-1/2 predictor 0.378; mean |obs - theory| 0.363; mean |obs - 1/2| 0.311
