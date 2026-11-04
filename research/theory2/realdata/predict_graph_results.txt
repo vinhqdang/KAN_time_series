@@ -1,0 +1,10 @@
+[wt] p=16 edges=26 predicted s_full=0.9808 edges valued 1/2: [('pot_1', 'signal_1')]
+  rho: {'hatch': 7, 'pot_1': 4, 'pot_2': 2, 'load_in': 9, 'load_out': 9, 'current_in': 10, 'current_out': 10, 'rpm_in': 11, 'rpm_out': 11, 'pressure_upwind': 11, 'pressure_downwind': 11, 'pressure_ambient': 1, 'pressure_intake': 11, 'mic': 14, 'signal_1': 4, 'signal_2': 5}
+  pairs 120, non-relative 63
+  d=5: 150 subgraphs, predicted s mean 0.735, sd 0.217, frac >0.5 0.59, frac ==0.5 0.41, distinct 7
+  d=8: 150 subgraphs, predicted s mean 0.822, sd 0.185, frac >0.5 0.85, frac ==0.5 0.15, distinct 18
+[lt] p=20 edges=39 predicted s_full=0.9744 edges valued 1/2: [('pol_1', 'angle_1'), ('pol_2', 'angle_2')]
+  rho: {'red': 8, 'green': 8, 'blue': 8, 'pol_1': 4, 'pol_2': 4, 'l_11': 3, 'l_12': 3, 'l_21': 3, 'l_22': 3, 'l_31': 3, 'l_32': 3, 'ir_1': 12, 'vis_1': 12, 'ir_2': 12, 'vis_2': 12, 'ir_3': 16, 'vis_3': 16, 'current': 10, 'angle_1': 4, 'angle_2': 4}
+  pairs 190, non-relative 126
+  d=5: 100 subgraphs, predicted s mean 0.851, sd 0.198, frac >0.5 0.79, frac ==0.5 0.21, distinct 7
+  d=8: 100 subgraphs, predicted s mean 0.921, sd 0.120, frac >0.5 0.96, frac ==0.5 0.04, distinct 15
