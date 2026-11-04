@@ -10,3 +10,5 @@ import RelSort.FiniteCorr
 import RelSort.FinitePartial
 import RelSort.FiniteLipschitz
 import RelSort.FiniteTrace
+import RelSort.NoLoop
+import RelSort.Predict

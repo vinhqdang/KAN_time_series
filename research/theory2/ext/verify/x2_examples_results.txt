@@ -1,0 +1,15 @@
+edge 0->1, no loops                L = 1/2    (0.5000)   S^Z = 1/2    (0.5000)   period=1 preperiod=2
+edge 0->1, loop at 0               L = 1/2    (0.5000)   S^Z = 1/2    (0.5000)   period=1 preperiod=1
+edge 0->1, loop at 1               L = 1      (1.0000)   S^Z = 1      (1.0000)   period=1 preperiod=1
+edge 0->1, loops at both           L = 2/3    (0.6667)   S^Z = 1/2    (0.5000)   period=1 preperiod=1
+collider a->c<-b, no loops         L = 1      (1.0000)   S^Z = 1      (1.0000)   period=1 preperiod=2
+collider, loops everywhere         L = 7/10   (0.7000)   S^Z = 7/10   (0.7000)   period=1 preperiod=1
+fork c->a, c->b, no loops          L = 1/2    (0.5000)   S^Z = 1/2    (0.5000)   period=1 preperiod=2
+chain 0->1->2, no loops            L = 1/2    (0.5000)   S^Z = 1/2    (0.5000)   period=1 preperiod=3
+directed 3-cycle, no loops         L = 1/2    (0.5000)   S^Z = 1/2    (0.5000)   period=3 preperiod=0
+2-cycle + fresh 2->0, no loops     L = 5/6    (0.8333)   S^Z = 5/6    (0.8333)   period=2 preperiod=1
+2-cycle + 2->0, loop at 2          L = 5/8    (0.6250)   S^Z = 1/2    (0.5000)   period=2 preperiod=2
+2-cycle + 0->2, no loops           L = 1/2    (0.5000)   S^Z = 1/2    (0.5000)   period=2 preperiod=1
+2-cycle + 0->2, loop at 2          L = 5/8    (0.6250)   S^Z = 5/8    (0.6250)   period=2 preperiod=2
+acyclic loop-free random graphs: 362, L != S^Z in 0
+loop-free in-forests: 298 graphs, formula 1/2+(m-n_1)/(2m) failures: 0

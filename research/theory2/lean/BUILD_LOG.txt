@@ -1,142 +1,29 @@
-# lake build log, 2026-11-04T09:37:25Z
+# lake build log (clean rebuild incl. NoLoop.lean, Predict.lean), 2026-11-04T12:32:42Z
 # Lean (version 4.35.0, x86_64-unknown-linux-gnu, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)
-# Mathlib rev: v4.35.0 (56a005855ea17e0b0958f73ec801ae140b0a1679), oleans from `lake exe cache get`
+# Mathlib rev: v4.35.0 (56a005855ea17e0b0958f73ec801ae140b0a1679), oleans from lake exe cache get
 # command: rm -rf .lake/build && LEAN_NUM_THREADS=2 lake build   (full rebuild of RelSort)
-⚠ [9047/9060] Built RelSort.Basic (8.1s)
+⚠ [9047/9062] Built RelSort.Basic (9.0s)
 warning: RelSort/Basic.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
-⚠ [9048/9060] Built RelSort.T2Algebra (8.4s)
+⚠ [9048/9062] Built RelSort.T2Algebra (10s)
 warning: RelSort/T2Algebra.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
-✔ [9049/9060] Built RelSort.Walk (6.7s)
-✔ [9050/9060] Built RelSort.FiniteCorr (8.5s)
-✔ [9051/9060] Built RelSort.FiniteTrace (7.2s)
-✔ [9052/9060] Built RelSort.Unrolled (6.7s)
-✔ [9053/9060] Built RelSort.Limit (8.4s)
-✔ [9054/9060] Built RelSort.FinitePartial (12s)
-✔ [9055/9060] Built RelSort.Stationary (7.2s)
-✔ [9056/9060] Built RelSort.FiniteLipschitz (6.0s)
-✔ [9057/9060] Built RelSort.Examples (4.0s)
-✔ [9058/9060] Built RelSort.Extras (6.6s)
-✔ [9059/9060] Built RelSort (5.6s)
-Build completed successfully (9060 jobs).
+✔ [9049/9062] Built RelSort.Predict (6.3s)
+✔ [9050/9062] Built RelSort.FiniteCorr (9.4s)
+✔ [9051/9062] Built RelSort.Walk (6.2s)
+✔ [9052/9062] Built RelSort.FiniteTrace (6.7s)
+✔ [9053/9062] Built RelSort.Unrolled (6.5s)
+✔ [9054/9062] Built RelSort.FinitePartial (13s)
+✔ [9055/9062] Built RelSort.Limit (7.1s)
+✔ [9056/9062] Built RelSort.FiniteLipschitz (6.8s)
+✔ [9057/9062] Built RelSort.NoLoop (6.4s)
+✔ [9058/9062] Built RelSort.Stationary (7.1s)
+✔ [9059/9062] Built RelSort.Examples (6.5s)
+✔ [9060/9062] Built RelSort.Extras (7.1s)
+✔ [9061/9062] Built RelSort (7.0s)
+Build completed successfully (9062 jobs).
 # exit: 0
 
 # command: LEAN_NUM_THREADS=2 lake env lean Axioms.lean
-'RelSort.unrolled_reach_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.unrolled_reach_iff_dist' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.isRel_unrolled_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.strictCond_iff_dist' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.edge_score' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.edge_score_dist' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.dist_eq_dist_noLoop' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.walkN_card_sub_one' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.sRho_unrolled_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.sRho_unrolled_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.sRho_unrolled_bounds' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.tendsto_sRho_unrolled' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.tendsto_sRho_GT' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.crossEdges_eq_empty_tfae' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.tendsto_half_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.reisach_theorem4' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.sRho_unrolled_ge_of_cross' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.limitValue_dag' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.sOf_window' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.rhoBurn_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.sBurn_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.rhoZ_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.sZ_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.relSet_eq_iff_src' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.mem_upEdges_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.upEdges_eq_empty_tfae' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.sBurn_eq_half_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.sBurn_eq_half_iff_common_anc' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.sZ_eq_half_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.stat_half_of_strong' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.stat_half_of_outForest' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.inForest_isRel_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.inForest_up_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.statValue_inForest' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.statValue_inForest_gt_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.collider_limit' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.fork_limit' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.chain3_limit' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.collider_stat' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.fork_stat' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.chain3_stat' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.isRoot_unrolled_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.roots_unrolled_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.desc_root_unrolled_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.mT_le_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.rho_unrolled_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.mT_large_t' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.rho_unrolled_large_t' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.edgeLoops_limit' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.edgeNoLoops_sRho' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.fejer_identity' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.fejer_identity'' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.longrun_factor' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.longrun_inv' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.selfloop_sum_lt_one' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.corr_perturb' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.centred_cov_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.centred_dev_offdiag' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.centred_dev_diag' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.lemma13_eps' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.lemma13_count' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.phi_le' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.chernoff_logmgf_le' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.chernoff_choice' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.sqrt_two_v_x' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.decide_eq_target' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.decide_eq_support' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.thm15_det' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.explicit_y' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.thm22_const' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.sOf_cntDecl_congr' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.sOf_const' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.sOf_saturated' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.abs_sOf_sub_half_le' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.quad_M' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.trace_MC' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.lemma12_trace' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.lemma12_fejer' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.avg_toeplitz_le_tsum' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.lemma12_le_B' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.lemma12_diag' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.lemma12_diag_le_D' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.pcorr_eq_pcov' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.pcorr_eq_corr_resid' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.prop21_corr' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.prop21_corr_std' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.prop31' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.prop31_std' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.cor32' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.prop33' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.prop33_abs' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.absPi_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.absPi_upper' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.absPi_le_kappa' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.absPi_lt_kappa' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.absPi_eq_zero_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.absPi_strictAntiOn' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.absPi_equal' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.rcrit_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.rcrit_eq_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.rcrit_example' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.ncrit_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.ncrit_eq_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.prop36_pcov' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.prop36_zero_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.prop36_rank_one' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.prop36_ar1_pcov' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.prop36_ar1_pvar' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.prop36_ar1' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.prop36_ar1_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.prop37_pcov' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.prop37_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.prop38_ratio' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.prop38_loading' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.pc_lipschitz' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.thm35_bracket' depends on axioms: [propext, Classical.choice, Quot.sound]
+# (133 'depends on axioms' lines in AXIOMS.txt, 0 outside [propext, Classical.choice, Quot.sound])
 # exit: 0
 
 # command: grep -rnwE 'sorry|admit|axiom' RelSort RelSort.lean

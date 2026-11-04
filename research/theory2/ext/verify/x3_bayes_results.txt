@@ -1,0 +1,4 @@
+p=2 DAGs=3 edges=2 pooled s_rho=0.500000 Bayes(rho pair)=0.500000 equal=True Bayes(rho pair + degrees)=0.500000 coverage(strict)=0.0000 1/2+cov/2=0.500000 edges with rho_x>rho_y=0
+p=3 DAGs=25 edges=48 pooled s_rho=0.562500 Bayes(rho pair)=0.562500 equal=True Bayes(rho pair + degrees)=0.625000 coverage(strict)=0.1250 1/2+cov/2=0.562500 edges with rho_x>rho_y=0
+p=4 DAGs=543 edges=2016 pooled s_rho=0.592262 Bayes(rho pair)=0.592262 equal=True Bayes(rho pair + degrees)=0.660714 coverage(strict)=0.1845 1/2+cov/2=0.592262 edges with rho_x>rho_y=0
+p=5 DAGs=29281 edges=176320 pooled s_rho=0.605547 Bayes(rho pair)=0.605547 equal=True Bayes(rho pair + degrees)=0.669238 coverage(strict)=0.2111 1/2+cov/2=0.605547 edges with rho_x>rho_y=0

@@ -168,6 +168,35 @@ the clarifications below.
    THEORY.md states. The Phase-2 operationalisation (THEORY.md §6, non-self-loop edges only) is not part
    of the Lean statements.
 
+## Extensions X2 and X3 (research/theory2/ext/EXT.md): `RelSort/NoLoop.lean`, `RelSort/Predict.lean`
+
+`Fresh E u` means `u` has no incoming edge at all (self-loop included). `StrictNL E s i j` (paper time `t = s + 1`) is
+`(∃ u, WalkN E (s+1) u j ∧ ¬ WalkN E s u i) ∨ (∃ u, Fresh E u ∧ ∃ m ≤ s, WalkN E (m+1) u j ∧ ¬ WalkN E m u i)`.
+No self-loop hypothesis appears in any theorem of `NoLoop.lean`. `Predict.lean` is stated for an arbitrary relation on
+a `Fintype`; a pairwise count rule is `f : ℕ → ℕ → ℝ` with values in `[0,1]`, and `edgeAcc f a b = f a b / 2 + (1 - f b a) / 2`
+is its accuracy on a true edge shown in a uniformly random order.
+
+| EXT.md | Lean name(s) | file | status |
+|---|---|---|---|
+| Lemma X2.0 (ancestors, no loops) | `unrolled_reach_iff` (already loop-free) | Unrolled | verified |
+| X2.2 relatives in `G_T` without loops | `isRel_unrolled_iff_NL`, `reduce_ancestor`, `relSet_unrolled_eq_iff_NL` | NoLoop | verified |
+| **Thm X2.2** per-edge value, any summary graph | `edge_score_NL` | NoLoop | verified |
+| **Cor X2.3** exact `s_ρ(G_T)`, and `s_ρ ≥ 1/2` | `sRho_unrolled_eq_NL`, `sRho_unrolled_ge_half_NL` | NoLoop | verified |
+| X2.6 (witness `u = j`), fresh parent | `strictNL_of_closed_walk`, `strictNL_of_fresh_parent` | NoLoop | verified |
+| Examples: collider without loops (`s_ρ = 1`), edge with a loop at the head (`s_ρ = 1`) | `sRho_unrolled_eq_one_NL`, `colliderNL_sRho`, `edgeLoopHead_sRho` | NoLoop | verified |
+| Single edge without loops (`s_ρ = 1/2`) | `edgeNoLoops_sRho` (already in Extras) | Extras | verified |
+| X2.4 eventual periodicity and limit, X2.5, X2.7(a), X2.9, X2.10 | — | — | not formalised (pigeonhole on boolean matrix powers, chain argument, difference sets); checked by enumeration only |
+| X1.1-X1.4 (random graphs) | — | — | **not formalised on purpose**: they are probabilistic limits (branching-process / local weak limit). Only the deterministic ingredients, Thm 1.5, Thm 1.9, Cor 1.7 and Cor 1.10, are in Lean (earlier files) |
+| **Prop X3.1** accuracy of the oracle sort is `s_ρ` | `accRule_sortRule`, `accRule_sortRule_rho`, `edgeAcc_sortRule` | Predict | verified (definitional) |
+| **Prop X3.2** no pairwise count rule beats `s_ρ`; strict edges never mis-oriented | `accRule_le_sOf`, `accRule_le_sRho`, `edgeAcc_sortRule_strict`, `rho_not_gt_of_edge` | Predict | verified |
+| Prop X3.3 (degree-aware rules can beat `s_ρ`) | — | — | numerical (exhaustive enumeration of DAGs), not formalised |
+
+The proof of `edge_score_NL` does not use Reisach et al.'s Lemma 1: the first branch of `StrictNL` exhibits the extra
+relative `u(0)`, the second the extra relative `u(s-m)` for a fresh `u`, and `reduce_ancestor` pushes any common ancestor
+of `j(s+1)` and `w(r)` back along parents until slice 0 or a fresh node.
+Full clean rebuild with the two new files: `BUILD_LOG.txt` (9062 jobs, no error); `AXIOMS.txt` has 133 lines, all
+`[propext, Classical.choice, Quot.sound]`.
+
 ## Files
 
 - `RelSort/Basic.lean`: definitions (anc, desc, rel, ρ, s_ρ), Reisach Thm 1.
@@ -182,4 +211,6 @@ the clarifications below.
 - `RelSort/FiniteTrace.lean`: FINITE.md Lemma 1.2 block-matrix and Toeplitz algebra.
 - `RelSort/FinitePartial.lean`: FINITE.md Props 2.1, 3.1-3.3, 3.6-3.8, r_crit and n_crit, in an inner-product model.
 - `RelSort/FiniteLipschitz.lean`: FINITE.md Lemma 3.4 and the bracket of Thm 3.5.
+- `RelSort/NoLoop.lean`: X2 (exact edge value and `s_ρ(G_T)` for arbitrary summary graphs, no self-loop assumption).
+- `RelSort/Predict.lean`: X3 (accuracy of the oracle sort rule, optimality among pairwise count rules).
 - `Axioms.lean`: `#print axioms` for each main theorem. Output: `AXIOMS.txt`, `BUILD_LOG.txt`.

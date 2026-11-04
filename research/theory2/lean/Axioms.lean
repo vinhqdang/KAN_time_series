@@ -120,3 +120,22 @@ import RelSort
 #print axioms RelSort.prop38_loading
 #print axioms RelSort.pc_lipschitz
 #print axioms RelSort.thm35_bracket
+
+/-! Extension files NoLoop.lean (X2) and Predict.lean (X3). -/
+#print axioms RelSort.isRel_unrolled_iff_NL
+#print axioms RelSort.reduce_ancestor
+#print axioms RelSort.relSet_unrolled_eq_iff_NL
+#print axioms RelSort.edge_score_NL
+#print axioms RelSort.sRho_unrolled_eq_NL
+#print axioms RelSort.sRho_unrolled_ge_half_NL
+#print axioms RelSort.strictNL_of_closed_walk
+#print axioms RelSort.strictNL_of_fresh_parent
+#print axioms RelSort.sRho_unrolled_eq_one_NL
+#print axioms RelSort.colliderNL_sRho
+#print axioms RelSort.edgeLoopHead_sRho
+#print axioms RelSort.accRule_sortRule
+#print axioms RelSort.accRule_le_sOf
+#print axioms RelSort.accRule_le_sRho
+#print axioms RelSort.accRule_sortRule_rho
+#print axioms RelSort.edgeAcc_sortRule_strict
+#print axioms RelSort.rho_not_gt_of_edge

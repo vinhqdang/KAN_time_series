@@ -1,0 +1,7 @@
+[limit p=2 exhaustive] graphs=15 failures=0  (L4 applicable: 7;  crossing edge but L=1/2: 4, e.g. [[2, 0], [3, 0], [0, 1]])
+[limit p=3 exhaustive] graphs=511 failures=0  (L4 applicable: 175;  crossing edge but L=1/2: 81, e.g. [[2, 0, 0], [3, 0, 0], [4, 0, 0]])
+[limit p=4 random] graphs=390 failures=0  (L4 applicable: 61;  crossing edge but L=1/2: 101, e.g. [[5, 0, 0, 8], [0, 0, 0, 1], [6, 0, 13, 4]])
+[limit p=5,6 random] graphs=199 failures=0  (L4 applicable: 18;  crossing edge but L=1/2: 44, e.g. [[18, 0, 0, 5, 0], [0, 4, 0, 10, 1, 0], [15, 8, 30, 7, 0]])
+[stationary p=2 exhaustive] graphs=15 edges=32 strict-edges(predicted)=4 failures=0
+[stationary p=3 exhaustive] graphs=511 edges=2304 strict-edges(predicted)=387 failures=0
+[stationary p=4 random] graphs=248 edges=1080 strict-edges(predicted)=265 failures=0
