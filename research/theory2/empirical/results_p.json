@@ -1,0 +1,2635 @@
+{
+ "P1": {
+  "n_conf": 114,
+  "n_conf_pred_gt_half": 112,
+  "exceptions": [
+   [
+    "east_germany",
+    5,
+    7022
+   ],
+   [
+    "bavaria",
+    5,
+    7025
+   ]
+  ],
+  "n_noconf": 6,
+  "noconf_pred_values": [
+   0.5
+  ]
+ },
+ "P2": {
+  "12h": {
+   "conf": {
+    "n_subgraphs": 114,
+    "n_edges": 767,
+    "acc": 0.500651890482399,
+    "ci": [
+     0.491967332416916,
+     0.5093234144514357
+    ],
+    "mean_frac_sig": 0.9842105263157895
+   },
+   "noconf": {
+    "n_subgraphs": 6,
+    "n_edges": 24,
+    "acc": 0.5,
+    "ci": [
+     0.5,
+     0.5
+    ],
+    "mean_frac_sig": 1.0
+   },
+   "pass_conf": false,
+   "pass_noconf": true
+  },
+  "24h": {
+   "conf": {
+    "n_subgraphs": 114,
+    "n_edges": 767,
+    "acc": 0.4980443285528031,
+    "ci": [
+     0.4888191796291856,
+     0.5067684127925344
+    ],
+    "mean_frac_sig": 0.9777777777777777
+   },
+   "noconf": {
+    "n_subgraphs": 6,
+    "n_edges": 24,
+    "acc": 0.5,
+    "ci": [
+     0.5,
+     0.5
+    ],
+    "mean_frac_sig": 1.0
+   },
+   "pass_conf": false,
+   "pass_noconf": true
+  }
+ },
+ "P3": {
+  "12h": {
+   "rho": -0.018471970156825186,
+   "p": 0.841285543860189,
+   "n": 120,
+   "pass": false
+  },
+  "24h": {
+   "rho": 0.018155077680466696,
+   "p": 0.8439735064848579,
+   "n": 120,
+   "pass": false
+  }
+ },
+ "explore": {
+  "12h_prereg_by_cell": {
+   "east_germany_d5": {
+    "acc": 0.5,
+    "n_sg": 26,
+    "frac_sig": 0.9884615384615386
+   },
+   "east_germany_d10": {
+    "acc": 0.5054945054945055,
+    "n_sg": 30,
+    "frac_sig": 0.9888888888888889
+   },
+   "bavaria_d5": {
+    "acc": 0.4911504424778761,
+    "n_sg": 28,
+    "frac_sig": 0.975
+   },
+   "bavaria_d10": {
+    "acc": 0.5,
+    "n_sg": 30,
+    "frac_sig": 0.9844444444444445
+   }
+  },
+  "12h_prereg_per_subgraph": [
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7000,
+    "conf": true,
+    "s_pred": 1.0,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3652
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7001,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2922
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7002,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1248
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7003,
+    "conf": false,
+    "s_pred": 0.5,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1030
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7004,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2582
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7005,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 998
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7006,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3612
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7007,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1036
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7008,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2922
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7009,
+    "conf": true,
+    "s_pred": 0.875,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2922
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7010,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3612
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7011,
+    "conf": true,
+    "s_pred": 0.8,
+    "acc": 0.4,
+    "frac_sig": 0.9,
+    "n": 2108
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7012,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2922
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7013,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2922
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7014,
+    "conf": false,
+    "s_pred": 0.5,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 758
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7015,
+    "conf": true,
+    "s_pred": 1.0,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 760
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7016,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1192
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7017,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2922
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7018,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 786
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7019,
+    "conf": false,
+    "s_pred": 0.5,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2922
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7020,
+    "conf": true,
+    "s_pred": 1.0,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3066
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7021,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2922
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7022,
+    "conf": true,
+    "s_pred": 0.5,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2176
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7023,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1828
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7024,
+    "conf": false,
+    "s_pred": 0.5,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 902
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7025,
+    "conf": true,
+    "s_pred": 1.0,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 832
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7026,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.625,
+    "frac_sig": 0.8,
+    "n": 758
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7027,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3492
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7028,
+    "conf": true,
+    "s_pred": 0.875,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3612
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7029,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3612
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7000,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3122
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7001,
+    "conf": true,
+    "s_pred": 0.7222222222222222,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2392
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7002,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1082
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7003,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 788
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7004,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2922
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7005,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 832
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7006,
+    "conf": true,
+    "s_pred": 0.9444444444444444,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2928
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7007,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.3333333333333333,
+    "frac_sig": 0.9555555555555556,
+    "n": 1018
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7008,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2240
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7009,
+    "conf": true,
+    "s_pred": 0.7222222222222222,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2922
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7010,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2042
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7011,
+    "conf": true,
+    "s_pred": 0.7272727272727273,
+    "acc": 0.45454545454545453,
+    "frac_sig": 0.9333333333333333,
+    "n": 1280
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7012,
+    "conf": true,
+    "s_pred": 0.7777777777777778,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2922
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7013,
+    "conf": true,
+    "s_pred": 0.9444444444444444,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2922
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7014,
+    "conf": true,
+    "s_pred": 0.7222222222222222,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1022
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7015,
+    "conf": true,
+    "s_pred": 0.9444444444444444,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 786
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7016,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 834
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7017,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1330
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7018,
+    "conf": true,
+    "s_pred": 0.7777777777777778,
+    "acc": 0.6111111111111112,
+    "frac_sig": 0.9777777777777777,
+    "n": 786
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7019,
+    "conf": true,
+    "s_pred": 0.6,
+    "acc": 0.6,
+    "frac_sig": 0.8444444444444444,
+    "n": 1224
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7020,
+    "conf": true,
+    "s_pred": 0.9444444444444444,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3066
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7021,
+    "conf": true,
+    "s_pred": 0.7222222222222222,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2922
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7022,
+    "conf": true,
+    "s_pred": 0.7777777777777778,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2384
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7023,
+    "conf": true,
+    "s_pred": 0.7777777777777778,
+    "acc": 0.6666666666666666,
+    "frac_sig": 0.9555555555555556,
+    "n": 1694
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7024,
+    "conf": true,
+    "s_pred": 0.7222222222222222,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 902
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7025,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 832
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7026,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2922
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7027,
+    "conf": true,
+    "s_pred": 0.9444444444444444,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3066
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7028,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3492
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7029,
+    "conf": true,
+    "s_pred": 0.9444444444444444,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3612
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7000,
+    "conf": true,
+    "s_pred": 0.875,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3652
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7001,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2738
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7002,
+    "conf": true,
+    "s_pred": 1.0,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3468
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7003,
+    "conf": true,
+    "s_pred": 0.875,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1804
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7004,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2992
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7005,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3386
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7006,
+    "conf": false,
+    "s_pred": 0.5,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3652
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7007,
+    "conf": true,
+    "s_pred": 0.875,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3652
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7008,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3468
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7009,
+    "conf": true,
+    "s_pred": 0.875,
+    "acc": 0.375,
+    "frac_sig": 0.7,
+    "n": 1456
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7010,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3652
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7011,
+    "conf": false,
+    "s_pred": 0.5,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2670
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7012,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3312
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7013,
+    "conf": true,
+    "s_pred": 0.875,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3386
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7014,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 984
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7015,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3652
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7016,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2738
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7017,
+    "conf": true,
+    "s_pred": 0.875,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2158
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7018,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2512
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7019,
+    "conf": true,
+    "s_pred": 1.0,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2138
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7020,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2118
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7021,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2594
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7022,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3652
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7023,
+    "conf": true,
+    "s_pred": 1.0,
+    "acc": 0.5,
+    "frac_sig": 0.7,
+    "n": 2118
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7024,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 972
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7025,
+    "conf": true,
+    "s_pred": 0.5,
+    "acc": 0.4,
+    "frac_sig": 0.9,
+    "n": 1528
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7026,
+    "conf": true,
+    "s_pred": 1.0,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1692
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7027,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2622
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7028,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3652
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7029,
+    "conf": true,
+    "s_pred": 0.875,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3652
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7000,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2200
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7001,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2356
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7002,
+    "conf": true,
+    "s_pred": 0.9444444444444444,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3468
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7003,
+    "conf": true,
+    "s_pred": 0.9444444444444444,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 818
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7004,
+    "conf": true,
+    "s_pred": 0.9444444444444444,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1552
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7005,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1852
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7006,
+    "conf": true,
+    "s_pred": 0.7777777777777778,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3652
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7007,
+    "conf": true,
+    "s_pred": 1.0,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3652
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7008,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3228
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7009,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3164
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7010,
+    "conf": true,
+    "s_pred": 0.8,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1566
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7011,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1076
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7012,
+    "conf": true,
+    "s_pred": 0.9444444444444444,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2556
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7013,
+    "conf": true,
+    "s_pred": 0.6666666666666666,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1470
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7014,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 984
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7015,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1816
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7016,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2738
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7017,
+    "conf": true,
+    "s_pred": 0.9444444444444444,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 850
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7018,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 754
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7019,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1510
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7020,
+    "conf": true,
+    "s_pred": 0.85,
+    "acc": 0.45,
+    "frac_sig": 0.8444444444444444,
+    "n": 2118
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7021,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.6666666666666666,
+    "frac_sig": 0.9555555555555556,
+    "n": 2246
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7022,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 2800
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7023,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.4444444444444444,
+    "frac_sig": 0.8,
+    "n": 978
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7024,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 972
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7025,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.45,
+    "frac_sig": 0.9333333333333333,
+    "n": 1528
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7026,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1692
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7027,
+    "conf": true,
+    "s_pred": 0.8,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 818
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7028,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3652
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7029,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 3652
+   }
+  ],
+  "12h_neff": {
+   "conf": {
+    "n_subgraphs": 114,
+    "n_edges": 767,
+    "acc": 0.5091264667535854,
+    "ci": [
+     0.49435893179581736,
+     0.5230146841458977
+    ],
+    "mean_frac_sig": 0.9432748538011696
+   },
+   "noconf": {
+    "n_subgraphs": 6,
+    "n_edges": 24,
+    "acc": 0.5,
+    "ci": [
+     0.5,
+     0.5
+    ],
+    "mean_frac_sig": 0.9666666666666667
+   },
+   "spearman": {
+    "rho": -0.0028105666260037853,
+    "p": 0.975695397404777,
+    "n": 120
+   },
+   "by_cell": {
+    "east_germany_d5": {
+     "acc": 0.49528301886792453,
+     "n_sg": 26,
+     "frac_sig": 0.9730769230769231
+    },
+    "east_germany_d10": {
+     "acc": 0.5347985347985348,
+     "n_sg": 30,
+     "frac_sig": 0.9355555555555556
+    },
+    "bavaria_d5": {
+     "acc": 0.5088495575221239,
+     "n_sg": 28,
+     "frac_sig": 0.9321428571428572
+    },
+    "bavaria_d10": {
+     "acc": 0.4890909090909091,
+     "n_sg": 30,
+     "frac_sig": 0.9355555555555557
+    }
+   }
+  },
+  "24h_prereg_by_cell": {
+   "east_germany_d5": {
+    "acc": 0.5,
+    "n_sg": 26,
+    "frac_sig": 0.9846153846153847
+   },
+   "east_germany_d10": {
+    "acc": 0.5,
+    "n_sg": 30,
+    "frac_sig": 0.9807407407407408
+   },
+   "bavaria_d5": {
+    "acc": 0.49557522123893805,
+    "n_sg": 28,
+    "frac_sig": 0.9642857142857143
+   },
+   "bavaria_d10": {
+    "acc": 0.49636363636363634,
+    "n_sg": 30,
+    "frac_sig": 0.9814814814814814
+   }
+  },
+  "24h_prereg_per_subgraph": [
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7000,
+    "conf": true,
+    "s_pred": 1.0,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1826
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7001,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1461
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7002,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 624
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7003,
+    "conf": false,
+    "s_pred": 0.5,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 515
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7004,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1291
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7005,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 499
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7006,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1806
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7007,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 0.9,
+    "n": 518
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7008,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1461
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7009,
+    "conf": true,
+    "s_pred": 0.875,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1461
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7010,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1806
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7011,
+    "conf": true,
+    "s_pred": 0.8,
+    "acc": 0.4,
+    "frac_sig": 0.9,
+    "n": 1054
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7012,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1461
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7013,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1461
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7014,
+    "conf": false,
+    "s_pred": 0.5,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 379
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7015,
+    "conf": true,
+    "s_pred": 1.0,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 380
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7016,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 596
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7017,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1461
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7018,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 393
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7019,
+    "conf": false,
+    "s_pred": 0.5,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1461
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7020,
+    "conf": true,
+    "s_pred": 1.0,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1533
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7021,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1461
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7022,
+    "conf": true,
+    "s_pred": 0.5,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1088
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7023,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 914
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7024,
+    "conf": false,
+    "s_pred": 0.5,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 451
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7025,
+    "conf": true,
+    "s_pred": 1.0,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 416
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7026,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.625,
+    "frac_sig": 0.8,
+    "n": 379
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7027,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1746
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7028,
+    "conf": true,
+    "s_pred": 0.875,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1806
+   },
+   {
+    "region": "east_germany",
+    "d": 5,
+    "seed": 7029,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1806
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7000,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 0.9777777777777777,
+    "n": 1561
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7001,
+    "conf": true,
+    "s_pred": 0.7222222222222222,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1196
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7002,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 541
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7003,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 394
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7004,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1461
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7005,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 416
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7006,
+    "conf": true,
+    "s_pred": 0.9444444444444444,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1464
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7007,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.3333333333333333,
+    "frac_sig": 0.9333333333333333,
+    "n": 509
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7008,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1120
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7009,
+    "conf": true,
+    "s_pred": 0.7222222222222222,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1461
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7010,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1021
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7011,
+    "conf": true,
+    "s_pred": 0.7272727272727273,
+    "acc": 0.36363636363636365,
+    "frac_sig": 0.9111111111111111,
+    "n": 640
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7012,
+    "conf": true,
+    "s_pred": 0.7777777777777778,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1461
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7013,
+    "conf": true,
+    "s_pred": 0.9444444444444444,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1461
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7014,
+    "conf": true,
+    "s_pred": 0.7222222222222222,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 511
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7015,
+    "conf": true,
+    "s_pred": 0.9444444444444444,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 393
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7016,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 417
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7017,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 665
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7018,
+    "conf": true,
+    "s_pred": 0.7777777777777778,
+    "acc": 0.5555555555555556,
+    "frac_sig": 0.9555555555555556,
+    "n": 393
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7019,
+    "conf": true,
+    "s_pred": 0.6,
+    "acc": 0.55,
+    "frac_sig": 0.8,
+    "n": 612
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7020,
+    "conf": true,
+    "s_pred": 0.9444444444444444,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1533
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7021,
+    "conf": true,
+    "s_pred": 0.7222222222222222,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1461
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7022,
+    "conf": true,
+    "s_pred": 0.7777777777777778,
+    "acc": 0.6111111111111112,
+    "frac_sig": 0.9777777777777777,
+    "n": 1192
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7023,
+    "conf": true,
+    "s_pred": 0.7777777777777778,
+    "acc": 0.6111111111111112,
+    "frac_sig": 0.8666666666666667,
+    "n": 847
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7024,
+    "conf": true,
+    "s_pred": 0.7222222222222222,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 451
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7025,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 416
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7026,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1461
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7027,
+    "conf": true,
+    "s_pred": 0.9444444444444444,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1533
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7028,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1746
+   },
+   {
+    "region": "east_germany",
+    "d": 10,
+    "seed": 7029,
+    "conf": true,
+    "s_pred": 0.9444444444444444,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1806
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7000,
+    "conf": true,
+    "s_pred": 0.875,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1826
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7001,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1369
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7002,
+    "conf": true,
+    "s_pred": 1.0,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1734
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7003,
+    "conf": true,
+    "s_pred": 0.875,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 902
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7004,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1496
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7005,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1693
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7006,
+    "conf": false,
+    "s_pred": 0.5,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1826
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7007,
+    "conf": true,
+    "s_pred": 0.875,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1826
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7008,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1734
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7009,
+    "conf": true,
+    "s_pred": 0.875,
+    "acc": 0.5,
+    "frac_sig": 0.6,
+    "n": 728
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7010,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1826
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7011,
+    "conf": false,
+    "s_pred": 0.5,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1335
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7012,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1656
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7013,
+    "conf": true,
+    "s_pred": 0.875,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1693
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7014,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 492
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7015,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1826
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7016,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1369
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7017,
+    "conf": true,
+    "s_pred": 0.875,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1079
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7018,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1256
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7019,
+    "conf": true,
+    "s_pred": 1.0,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1069
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7020,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1059
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7021,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1297
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7022,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1826
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7023,
+    "conf": true,
+    "s_pred": 1.0,
+    "acc": 0.5,
+    "frac_sig": 0.7,
+    "n": 1059
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7024,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 486
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7025,
+    "conf": true,
+    "s_pred": 0.5,
+    "acc": 0.4,
+    "frac_sig": 0.7,
+    "n": 764
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7026,
+    "conf": true,
+    "s_pred": 1.0,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 846
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7027,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1311
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7028,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1826
+   },
+   {
+    "region": "bavaria",
+    "d": 5,
+    "seed": 7029,
+    "conf": true,
+    "s_pred": 0.875,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1826
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7000,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1100
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7001,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1178
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7002,
+    "conf": true,
+    "s_pred": 0.9444444444444444,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1734
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7003,
+    "conf": true,
+    "s_pred": 0.9444444444444444,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 409
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7004,
+    "conf": true,
+    "s_pred": 0.9444444444444444,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 776
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7005,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 926
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7006,
+    "conf": true,
+    "s_pred": 0.7777777777777778,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1826
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7007,
+    "conf": true,
+    "s_pred": 1.0,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1826
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7008,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1614
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7009,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1582
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7010,
+    "conf": true,
+    "s_pred": 0.8,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 783
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7011,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 538
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7012,
+    "conf": true,
+    "s_pred": 0.9444444444444444,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1278
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7013,
+    "conf": true,
+    "s_pred": 0.6666666666666666,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 735
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7014,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 492
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7015,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 908
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7016,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1369
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7017,
+    "conf": true,
+    "s_pred": 0.9444444444444444,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 425
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7018,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 377
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7019,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 755
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7020,
+    "conf": true,
+    "s_pred": 0.85,
+    "acc": 0.45,
+    "frac_sig": 0.8222222222222222,
+    "n": 1059
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7021,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.6111111111111112,
+    "frac_sig": 0.9777777777777777,
+    "n": 1123
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7022,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.6111111111111112,
+    "frac_sig": 0.9777777777777777,
+    "n": 1400
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7023,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.4444444444444444,
+    "frac_sig": 0.8,
+    "n": 489
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7024,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 486
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7025,
+    "conf": true,
+    "s_pred": 0.75,
+    "acc": 0.35,
+    "frac_sig": 0.8888888888888888,
+    "n": 764
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7026,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 846
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7027,
+    "conf": true,
+    "s_pred": 0.8,
+    "acc": 0.45,
+    "frac_sig": 0.9777777777777777,
+    "n": 409
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7028,
+    "conf": true,
+    "s_pred": 0.8333333333333334,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1826
+   },
+   {
+    "region": "bavaria",
+    "d": 10,
+    "seed": 7029,
+    "conf": true,
+    "s_pred": 0.8888888888888888,
+    "acc": 0.5,
+    "frac_sig": 1.0,
+    "n": 1826
+   }
+  ],
+  "24h_neff": {
+   "conf": {
+    "n_subgraphs": 114,
+    "n_edges": 767,
+    "acc": 0.5052151238591917,
+    "ci": [
+     0.49135769591162404,
+     0.5188023413141418
+    ],
+    "mean_frac_sig": 0.9275828460038987
+   },
+   "noconf": {
+    "n_subgraphs": 6,
+    "n_edges": 24,
+    "acc": 0.5,
+    "ci": [
+     0.5,
+     0.5
+    ],
+    "mean_frac_sig": 0.9166666666666666
+   },
+   "spearman": {
+    "rho": 0.017994799836602203,
+    "p": 0.8453337093876552,
+    "n": 120
+   },
+   "by_cell": {
+    "east_germany_d5": {
+     "acc": 0.5,
+     "n_sg": 26,
+     "frac_sig": 0.9500000000000001
+    },
+    "east_germany_d10": {
+     "acc": 0.521978021978022,
+     "n_sg": 30,
+     "frac_sig": 0.9088888888888889
+    },
+    "bavaria_d5": {
+     "acc": 0.5088495575221239,
+     "n_sg": 28,
+     "frac_sig": 0.9285714285714286
+    },
+    "bavaria_d10": {
+     "acc": 0.4890909090909091,
+     "n_sg": 30,
+     "frac_sig": 0.925925925925926
+    }
+   }
+  }
+ },
+ "kill_rule_triggered": true
+}
