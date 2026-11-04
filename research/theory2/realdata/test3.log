@@ -1,0 +1,13 @@
+P: nonrel dep 0.039 [0.031, 0.047] | acc(pred 1) 0.656 [0.637, 0.675] | pred-1/2 edges 0.4 | rel recovery 0.396 | median n_eff 852 | Spearman 0.267 (p=2.8e-06) CI [0.163, 0.368] n=300
+S2_wt_nominal: nonrel dep 0.048 [0.04, 0.055] | acc(pred 1) 0.668 [0.647, 0.688] | pred-1/2 edges 0.43333333333333335 | rel recovery 0.432 | median n_eff 999 | Spearman 0.242 (p=2.3e-05) CI [0.121, 0.362] n=300
+S1_wt_levels: nonrel dep 0.054 [0.042, 0.066] | acc(pred 1) 0.719 [0.695, 0.747] | pred-1/2 edges 0.5 | rel recovery 0.377 | median n_eff 68 | Spearman 0.380 (p=9.5e-12) CI [0.284, 0.478] n=300
+S3_wt_D1: nonrel dep 0.025 [0.015, 0.036] | acc(pred 1) 0.709 [0.655, 0.764] | pred-1/2 edges 0.5 | rel recovery 0.179 | median n_eff 9552 | Spearman 0.100 (p=0.085) CI [0.003, 0.196] n=300
+S3_wt_D30: nonrel dep 0.023 [0.016, 0.032] | acc(pred 1) 0.619 [0.595, 0.643] | pred-1/2 edges 0.4666666666666667 | rel recovery 0.372 | median n_eff 276 | Spearman 0.336 (p=2.3e-09) CI [0.259, 0.407] n=300
+S4_wt_cond_ambient_levels: nonrel dep 0.006 [0.0, 0.014] | acc(pred 1) 0.667 [0.639, 0.699] | pred-1/2 edges 0.5 | rel recovery 0.430 | median n_eff 74
+S4_wt_cond_ambient_primary: nonrel dep 0.001 [0.0, 0.004] | acc(pred 1) 0.648 [0.627, 0.668] | pred-1/2 edges 0.4 | rel recovery 0.404 | median n_eff 888
+R: nonrel dep 0.000 [0.0, 0.0] | acc(pred 1) 1.000 [1.0, 1.0] | pred-1/2 edges 0.5 | rel recovery 0.688 | median n_eff 1998 | Spearman 0.779 (p=4.5e-42) CI [0.696, 0.864] n=200
+S2_lt_nominal: nonrel dep 0.000 [0.0, 0.0] | acc(pred 1) 1.000 [1.0, 1.0] | pred-1/2 edges 0.5 | rel recovery 0.688 | median n_eff 2000 | Spearman 0.779 (p=4.5e-42) CI [0.696, 0.864] n=200
+F_wt {'F2_pred_nonrel_frac': 0.0312, 'F2_obs_nonrel_frac_half2': 0.0275, 'F2_kappa_hat_median': 0.0315, 'F2_n_half': 15566.4374, 'neff_half2_median': 429.9911, 'F1_pred_rel_recovery': 0.3604, 'F1_obs_rel_recovery_half2': 0.3427, 'F1_rho_min_half1_median': 0.002, 'pred_acc_pred1_edges': 0.6299, 'obs_acc_pred1_edges_half2': 0.62}
+F_lt {'F2_pred_nonrel_frac': 0.0057, 'F2_obs_nonrel_frac_half2': 0.0, 'F2_kappa_hat_median': 0.022, 'F2_n_half': 33760.3774, 'neff_half2_median': 998.2985, 'F1_pred_rel_recovery': 0.6791, 'F1_obs_rel_recovery_half2': 0.6813, 'F1_rho_min_half1_median': 0.0018, 'pred_acc_pred1_edges': 0.9985, 'obs_acc_pred1_edges_half2': 1.0}
+triad {'n_pairs': 200, 'r_hat': 0.020339961729562338} {'n_pairs': 8, 'r_hat': 0.0006454598598183195}
+dropped rows {2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0} 0
