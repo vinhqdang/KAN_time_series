@@ -1,0 +1,54 @@
+import RelSort
+
+/-! Axiom check for every main theorem (allowed: propext, Classical.choice, Quot.sound). -/
+
+#print axioms RelSort.unrolled_reach_iff
+#print axioms RelSort.unrolled_reach_iff_dist
+#print axioms RelSort.isRel_unrolled_iff
+#print axioms RelSort.strictCond_iff_dist
+#print axioms RelSort.edge_score
+#print axioms RelSort.edge_score_dist
+#print axioms RelSort.dist_eq_dist_noLoop
+#print axioms RelSort.walkN_card_sub_one
+#print axioms RelSort.sRho_unrolled_eq
+#print axioms RelSort.sRho_unrolled_exact
+#print axioms RelSort.sRho_unrolled_bounds
+#print axioms RelSort.tendsto_sRho_unrolled
+#print axioms RelSort.tendsto_sRho_GT
+#print axioms RelSort.crossEdges_eq_empty_tfae
+#print axioms RelSort.tendsto_half_iff
+#print axioms RelSort.reisach_theorem4
+#print axioms RelSort.sRho_unrolled_ge_of_cross
+#print axioms RelSort.limitValue_dag
+#print axioms RelSort.sOf_window
+#print axioms RelSort.rhoBurn_eq
+#print axioms RelSort.sBurn_eq
+#print axioms RelSort.rhoZ_eq
+#print axioms RelSort.sZ_eq
+#print axioms RelSort.relSet_eq_iff_src
+#print axioms RelSort.mem_upEdges_iff
+#print axioms RelSort.upEdges_eq_empty_tfae
+#print axioms RelSort.sBurn_eq_half_iff
+#print axioms RelSort.sBurn_eq_half_iff_common_anc
+#print axioms RelSort.sZ_eq_half_iff
+#print axioms RelSort.stat_half_of_strong
+#print axioms RelSort.stat_half_of_outForest
+#print axioms RelSort.inForest_isRel_iff
+#print axioms RelSort.inForest_up_iff
+#print axioms RelSort.statValue_inForest
+#print axioms RelSort.statValue_inForest_gt_iff
+#print axioms RelSort.collider_limit
+#print axioms RelSort.fork_limit
+#print axioms RelSort.chain3_limit
+#print axioms RelSort.collider_stat
+#print axioms RelSort.fork_stat
+#print axioms RelSort.chain3_stat
+#print axioms RelSort.isRoot_unrolled_iff
+#print axioms RelSort.roots_unrolled_iff
+#print axioms RelSort.desc_root_unrolled_iff
+#print axioms RelSort.mT_le_iff
+#print axioms RelSort.rho_unrolled_eq
+#print axioms RelSort.mT_large_t
+#print axioms RelSort.rho_unrolled_large_t
+#print axioms RelSort.edgeLoops_limit
+#print axioms RelSort.edgeNoLoops_sRho

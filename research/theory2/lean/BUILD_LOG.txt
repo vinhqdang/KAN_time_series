@@ -1,0 +1,68 @@
+# lake build log, 2026-11-04T05:39:51Z
+# Lean (version 4.35.0, x86_64-unknown-linux-gnu, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)
+# Mathlib rev: v4.35.0 (56a005855ea17e0b0958f73ec801ae140b0a1679)
+# command: LEAN_NUM_THREADS=2 lake build (after rm -rf .lake/build: full rebuild of RelSort; Mathlib oleans from `lake exe cache get`)
+⚠ [9047/9055] Built RelSort.Basic (7.1s)
+warning: RelSort/Basic.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+✔ [9048/9055] Built RelSort.Walk (6.2s)
+✔ [9049/9055] Built RelSort.Unrolled (6.4s)
+✔ [9050/9055] Built RelSort.Limit (7.5s)
+✔ [9051/9055] Built RelSort.Stationary (7.0s)
+✔ [9052/9055] Built RelSort.Examples (5.8s)
+✔ [9053/9055] Built RelSort.Extras (6.8s)
+✔ [9054/9055] Built RelSort (6.1s)
+Build completed successfully (9055 jobs).
+# exit: 0
+
+# command: LEAN_NUM_THREADS=2 lake env lean Axioms.lean
+'RelSort.unrolled_reach_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.unrolled_reach_iff_dist' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.isRel_unrolled_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.strictCond_iff_dist' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.edge_score' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.edge_score_dist' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.dist_eq_dist_noLoop' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.walkN_card_sub_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.sRho_unrolled_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.sRho_unrolled_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.sRho_unrolled_bounds' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.tendsto_sRho_unrolled' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.tendsto_sRho_GT' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.crossEdges_eq_empty_tfae' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.tendsto_half_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.reisach_theorem4' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.sRho_unrolled_ge_of_cross' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.limitValue_dag' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.sOf_window' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.rhoBurn_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.sBurn_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.rhoZ_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.sZ_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.relSet_eq_iff_src' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.mem_upEdges_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.upEdges_eq_empty_tfae' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.sBurn_eq_half_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.sBurn_eq_half_iff_common_anc' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.sZ_eq_half_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.stat_half_of_strong' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.stat_half_of_outForest' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.inForest_isRel_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.inForest_up_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.statValue_inForest' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.statValue_inForest_gt_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.collider_limit' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.fork_limit' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.chain3_limit' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.collider_stat' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.fork_stat' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.chain3_stat' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.isRoot_unrolled_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.roots_unrolled_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.desc_root_unrolled_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.mT_le_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.rho_unrolled_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.mT_large_t' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.rho_unrolled_large_t' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.edgeLoops_limit' depends on axioms: [propext, Classical.choice, Quot.sound]
+'RelSort.edgeNoLoops_sRho' depends on axioms: [propext, Classical.choice, Quot.sound]
+# exit: 0
