@@ -397,9 +397,11 @@ $E(\sqrt n\bar X_a)^2\le\kappa_1$ and $\bar X_b\to0$; Slutsky's lemma applies.
 The delta method with gradient $(-\rho/2,-\rho/2,1)$ gives $\sqrt n(\hat r-\rho)
 \Rightarrow N(0,W)$,
 $W=V(ab,ab)-\rho[V(ab,aa)+V(ab,bb)]+\frac{\rho^2}{4}[V(aa,aa)+2V(aa,bb)+V(bb,bb)]$,
-which equals $B_{ab}$ for an independent pair. Then
-$\sqrt{n}\,\atanh\hat r\Rightarrow N(0,B_{ab})$ under the null and
-$P(|\atanh\hat r|>z_c/\sqrt{n-3})\to2\bar\Phi(z_c/\sqrt{B_{ab}})$.
+which equals $\sum_h\gamma_{aa}(h)\gamma_{bb}(h)$ for an independent pair (this is
+$B_{ab}$ when all products $\gamma_{aa}(h)\gamma_{bb}(h)$ are nonnegative, and at most
+$B_{ab}$ in general). Then $\sqrt{n}\,\atanh\hat r\Rightarrow N(0,W_{ab})$ under the
+null and $P(|\atanh\hat r|>z_c/\sqrt{n-3})\to2\bar\Phi(z_c/\sqrt{W_{ab}})$, which
+exceeds the nominal $\alpha/m$ in the limit whenever $W_{ab}>1$.
 \end{proof}
 
 \begin{proof}[Proof of \cref{prop:f2}]
