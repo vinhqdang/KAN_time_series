@@ -104,3 +104,9 @@ Claim: for every T >= 2, 0 <= s_rho(G_T) - L <= min(Delta, T-1) |E_o| / (2(T-1)|
 
 - `README.md`: verdicts with CIs and tests, deviations (none allowed for thresholds), a main-text paragraph with one table/figure, and appendix details. Per-data-set results are committed compressed (`results/b1_test.csv.gz`); large raw data are not saved.
 - Any change to this plan after this commit is listed as a deviation with its reason.
+
+## 5. Deviations recorded after the validation run and before the test run
+
+- **D1 (burn-in length).** The validation run (seeds 9000-9004) failed sanity rule S3: the mixing error after B = 50 steps reached 2.8e-3 on validation graphs and, checked on parameters only (no data, no scores), 9.0e-3 on test graph chain p = 10 seed 1008 (a non-normal chain with nearly equal self-loop weights has a long transient). B is raised to 100, which gives a maximum mixing error of 1.4e-10 over all test and validation parameter sets. This is the purpose the plan gave the validation seeds ("check mixing"). No threshold or hypothesis changed.
+- **D2 (SID for PC).** PC sometimes returns a graph whose directed part has a cycle (or bidirected edges); SID is undefined there and is recorded as missing. Cells where any PC SID is missing drop PC from the SID swap analysis (the code already does this). SHD is unaffected.
+- Validation results are not used as evidence. With 5 graphs per cell, the per-cell Wilcoxon tests of H3 cannot reach significance (minimum two-sided p = 0.0625), so the validation run says nothing about H3.

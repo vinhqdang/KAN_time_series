@@ -67,7 +67,7 @@ def weights(S, rng, var_regime="het"):
 
 
 # ----------------------------------------------------------------------------- generators
-B_BURN = 50
+B_BURN = 100   # PLAN said 50; raised to 100 before the test run (deviation D1, sanity rule S3)
 
 
 def stationary_cov(A, sd):
