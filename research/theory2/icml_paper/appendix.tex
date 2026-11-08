@@ -955,35 +955,12 @@ $S=0.70859\pm0.00028$); uniform random labelled tree rooted and oriented to the
 root (Poisson(1) parents, $\pi_1\to e^{-1}$, $S\to\tfrac12+(1-e^{-1})/4=0.65803$,
 measured $0.65783\pm0.00020$). In all three $L=0.74999$.
 
-\textbf{Directed ER, finite limit (sketch).} $G(p,c/p)$, $m/p\to c$, so it
-suffices to show that the fraction of non-loop edges inside an SCC tends to
-$x^2$. Around a uniformly chosen non-loop edge $(i,j)$ the local limit is: $i$
-has an independent Galton--Watson Poisson$(c)$ tree of ancestors, $j$ an
-independent one of descendants, with further independent Poisson$(c)$ parents
-and children. A node lies in the giant SCC iff both its ancestor and descendant
-trees are infinite (the product form for a factorising degree law is stated in
-\citealp{dorogovtsev2001giant}; we checked only its abstract). Since $i\to j$,
-both endpoints are in the giant SCC iff the ancestor tree of $i$ and the
-descendant tree of $j$ are infinite: probability $x^2$. Outside the giant the
-graph is subcritical in the dual sense and non-trivial SCCs carry $o(p)$ edges.
-The two analytic inputs are classical; \emph{the concentration step (second-moment
-bound for the edge counts) is not written out.}
-
-\textbf{Directed ER, stationary value (sketch).} Source SCCs are, up to $O(1)$,
-the nodes without non-loop parents, and $(i,j)\in E_\uparrow$ iff some other
-parent $k$ of $j$ has a source ancestor not reaching $i$. In the local limit, a
-source $s$ reaches $i$ iff $s$ has an infinite descendant tree and $i$ an
-infinite ancestor tree (a tree path would use the edge $i\to j$ backwards). If
-the ancestor tree of $i$ is finite (probability $1-x$) any other parent works:
-contribution $(1-x)(1-e^{-c})$. Otherwise a witness needs a source with finite
-descendant tree; let $d$ be the probability that a node has in-degree $0$ or a
-parent all of whose other children have finite descendant trees (each with
-probability $1-x$) and which again satisfies the property. It solves
-$1-d=e^{-c(1-x)d}-e^{-c}$ and is the smallest fixed point because the event is
-an increasing union of depth-truncated events. The number of qualifying other
-parents is Poisson$(c(1-x)d)$, giving $x(1-x)(1-e^{-c(1-x)d})$. \emph{This fixed
-point is derived heuristically and not proved.} Large $c$: $1-x\sim e^{-c}$,
-$L-\tfrac12\sim e^{-c}$, $S-\tfrac12\sim e^{-c}/2$.
+\textbf{Directed ER: summary.} $G(p,c/p)$, $m/p\to c$. The finite limit needs
+the fraction of non-loop edges inside an SCC ($\to x^2$, the two endpoints lie in
+the giant SCC iff the ancestor tree of $i$ and the descendant tree of $j$ are
+infinite); the stationary value needs the fraction of up-edges
+($\to F_\uparrow$). Both are proved in \cref{app:erproof} below. Large $c$:
+$1-x\sim e^{-c}$, $L-\tfrac12\sim e^{-c}$, $S-\tfrac12\sim e^{-c}/2$.
 
 \textbf{Layered DAG (sketch; $L$ proved given edge concentration).} $M$ layers of
 width $w$, each node of layer $l+1$ receiving an edge from each node of layer $l$
@@ -994,7 +971,7 @@ stationary value falls below this (observed $0.7824$ against $0.7878$ at
 $w=50$, $M=400$, $c=2$); this correction is not derived.
 
 \begin{table}[h]
-\caption{Exact computation (means $\pm$ s.d.\ over seeds; SCCs by scipy and source sets by bitsets) against the proved limits of \cref{prop:er}.}
+\caption{Exact computation (means $\pm$ s.d.\ over seeds; SCCs by scipy and source sets by bitsets) against the limits of \cref{prop:er}, proved in \cref{app:erproof}.}
 \label{tab:er}
 \centering\small
 \begin{tabular}{rrcccc}
@@ -1016,10 +993,434 @@ $p=10^6$ against $0.62170$. The giant-SCC fraction matches $x^2$ ($0.6353$ again
 $0.6349$ at $c=2$). The second fixed point matters: with $d=1$ the formula would
 give $S=0.6312$, $0.5766$, $0.5246$ at $c=1.5,2,3$, outside the error bars,
 whereas the fixed points $d=0.485$, $0.221$, $0.061$ give $0.6163$, $0.5632$,
-$0.5214$. No systematic mismatch was found, so the status ``sketch'' is limited
-by the missing concentration proof, not by a numerical discrepancy. The Barak--Erd\H{o}s
-phase-transition paper cited by \citet{reisach2026topological} concerns
-monotone-path reachability at the dense scale $\log n/n$ and is not used here.
+$0.5214$. Further exact rows: $c=1.5$, $p=10^5$, 32 graphs, $L=0.69819\pm0.00024$
+(formula $0.69810$); $c=2$, $p=3.2\cdot10^5$, $L=0.62170\pm0.00012$ ($0.62170$).
+The Barak--Erd\H{o}s phase-transition paper cited by \citet{reisach2026topological}
+concerns monotone-path reachability at the dense scale $\log n/n$ and is not
+used here.
+
+\subsection{Directed Erd\H{o}s--R\'enyi summary graphs: full proof of \cref{prop:er}}
+\label{app:erproof}
+
+\textbf{Status.} Everything in this subsection is proved on paper. The only
+inputs used without proof are textbook facts (F1)--(F3) below, checked against
+the author's online version of \citet{hofstad2016random} (theorem numbers are
+those of that version and may differ in print). Lemma~\ref{lem:er-local} is the
+standard local-coupling argument for sparse random graphs and is written
+concisely. The deterministic witness lemmas are machine-checked; no
+probabilistic step is. No human probabilist has yet checked this subsection
+(see the AI-use statement).
+
+\textbf{Limits and their order.} For a fixed summary graph, \cref{thm:limit}
+gives $\lim_{T\to\infty}\srho(\GT)=L(\GS)=\tfrac12+|\Ex|/(2|\Es|)$, and
+\cref{thm:stat} gives $\srho^W=\tfrac12+|\Eu|/(2|\Es|)$ for every $T$. For
+$\GS\sim D(p,c/p)$ we take the limit $T\to\infty$ at fixed $p$ first (this
+defines $L(\GS)$) and then let $p\to\infty$; for the stationary value no
+$T$-limit is needed. The regime of fixed $T$ with $p\to\infty$ is not covered
+(the bound of \cref{thm:limit} is vacuous for $T\le p$).
+
+\textbf{Model and notation.} $D(p,c/p)$: each ordered pair $(i,j)$, $i\ne j$,
+is a non-loop edge independently with probability $q=c/p$, and every node has
+a self-loop (loops change neither reachability nor $\Src$). $m$ is the number of
+non-loop edges, $|\Es|=p+m$, $N$ the number of non-loop edges inside an SCC, so
+$|\Ex|=m-N$. $\mathrm{out}(v)$, $\mathrm{in}(v)$ are the sets of nodes
+reachable from $v$, resp.\ reaching $v$ ($v$ included), $T^{\mathrm{out}}_v$,
+$T^{\mathrm{in}}_v$ their sizes; $v\leadsto w$ means $w\in\mathrm{out}(v)$.
+$x=x(c)$ is the largest solution of $x=1-e^{-cx}$ (the survival probability of
+a Poisson$(c)$ Galton--Watson tree), $\theta_K=\theta_K(c)$ the probability that
+its total progeny is at least $K$ ($\theta_K\downarrow x$), and $d$ the smallest
+fixed point in $[0,1]$ of $f(d)=1+e^{-c}-e^{-c(1-x)d}$. A node is
+\emph{in-isolated} if it has no non-loop parent. $\mathcal G$ denotes the
+\emph{edge-rooted Poisson tree}: an edge $(i,j)$; $i$ has Poisson$(c)$ parents
+and Poisson$(c)$ further children, $j$ Poisson$(c)$ further parents and
+Poisson$(c)$ children; every other node has Poisson$(c)$ parents and
+Poisson$(c)$ children besides the edge through which it was reached; all
+independent.
+
+\textbf{Textbook facts.} (F1) Poisson coupling \citep[Thm.~2.10]{hofstad2016random}:
+$d_{\mathrm{TV}}(\mathrm{Bin}(n,q),\mathrm{Poi}(c))\le nq^2+|nq-c|$.
+(F2) Chernoff: for a sum $X$ of independent Bernoulli variables with mean
+$\mu$ and $\delta\in(0,1)$, $P(X\le(1-\delta)\mu)\le e^{-\delta^2\mu/2}$. (From
+$Ee^{-tX}\le\exp(\mu(e^{-t}-1))$ with $t=-\log(1-\delta)$, Markov's inequality,
+and $(1-\delta)\log(1-\delta)\ge-\delta+\delta^2/2$; the upper-tail version
+$P(X\ge\mu+s)\le e^{-s}$ for $s\ge e^2\mu$ follows in the same way.)
+(F3) Galton--Watson facts \citep[Thms.~3.1, 3.16]{hofstad2016random}: the
+extinction probability is the smallest root of $\eta=e^{c(\eta-1)}$, so the
+survival probability is $x(c)$, positive iff $c>1$.
+
+\textbf{Deterministic lemmas} (machine-checked, \lname{ErLemmas.lean}; no loop
+hypothesis). A node $z$ is a \emph{source node} if every ancestor of $z$ is
+reachable from $z$. By \cref{thm:stat}, $(i,j)\in\Eu$ iff some source node
+reaches $j$ but not $i$.
+\begin{itemize}
+\item[(W1)] If $(i,j)\in\Eu$, there are $k\notin\{i,j\}$ with $k\to j$ and a
+source node $z$ with $z\leadsto k$, $z\not\leadsto i$ (\lname{upEdge_witness}).
+\item[(W2)] If $i\to j$, $k\to j$, and a source node reaches $k$ but not $i$,
+then $(i,j)\in\Eu$ (\lname{mem_upEdges_of_witness}).
+\item[(W3)] If $i\to j$, $k\to j$ and $\mathrm{in}(k)\cap\mathrm{in}(i)=\emptyset$,
+then $(i,j)\in\Eu$ (\lname{mem_upEdges_of_disjoint_anc}).
+\item[(W5)] A non-loop edge $(i,j)$ lies inside an SCC iff $j\leadsto i$. The
+event $\{j\leadsto i\}$ and the set $\mathrm{out}(j)$ do not change when the
+edge $(i,j)$ is added or removed (a simple path from $j$ to $i$ does not use
+it). (Trivial; not formalised.)
+\end{itemize}
+
+\textbf{Explorations and forced edges.} Forward exploration of $\mathrm{out}(v)$
+keeps explored, active and unseen sets $X_t,A_t,U_t$, $a_t=|A_t|$,
+$\mathrm{disc}_t=t+a_t$, $X_0=\emptyset$, $A_0=\{v\}$. Step $t+1$ takes the
+oldest active node $w$, reveals the pairs $(w,u)$, $u\in U_t$, and makes the
+$\xi_{t+1}$ heads of present pairs active; it stops at $T=T^{\mathrm{out}}_v$.
+Backward exploration of $\mathrm{in}(v)$ reveals the pairs $(u,w)$ instead.
+Let $F$ be a set of at most three ordered pairs and $G^F$ the graph in which the
+pairs of $F$ are present and all other pairs are independent Be$(q)$.
+\emph{Bookkeeping.} In a forward exploration a pair is revealed only when its
+tail is explored, and each node is explored once, so each pair is revealed at
+most once; the pairs revealed at step $t+1$ are disjoint from those revealed
+before and from all pairs whose tail is not in $X_{t+1}$. Hence, conditionally
+on the history $\mathcal H_t$, the non-forced pairs revealed at step $t+1$ are
+independent Be$(q)$, and
+$\xi_{t+1}=\#\{u\in U_t:(w,u)\in F\}+\mathrm{Bin}(|U_t|-f_w,q)$ with
+$f_w\le3$ the number of forced pairs from $w$ into $U_t$. Thus, given
+$\mathcal H_t$, $\xi_{t+1}$ stochastically dominates $\mathrm{Bin}(|U_t|-3,q)$
+and is dominated by $3+\mathrm{Bin}(p,q)$. The same holds for backward
+explorations (with heads in place of tails), and, by the same argument, for a
+backward exploration run after a forward one, conditionally on the forward
+history, as long as it never discovers a node that the forward exploration
+discovered (only pairs with tail outside $X_f$ and head explored backward are
+revealed, and none of them was revealed forward).
+
+Fix $c>1$ and $\varepsilon\in(0,1/5)$ with $\beta=c(1-4\varepsilon)>1$; put
+$n'=\lceil(1-4\varepsilon)p\rceil$, $\kappa=(\beta-1)^2/(8\beta)$,
+$\delta=(\beta-1)\varepsilon/(\beta+1)$, $t_0=C_3\log p$ with $C_3\kappa\ge8$.
+Call an exploration \emph{admissible} if, conditionally on its history, every
+offspring count $\xi_{t+1}$ taken while $\mathrm{disc}_t<\varepsilon p$
+dominates $\mathrm{Bin}(n',q)$ and every offspring count is dominated by
+$3+\mathrm{Bin}(p,q)$. By the bookkeeping, forward and backward explorations in
+$G^F$ are admissible for large $p$ (since $|U_t|-3>(1-\varepsilon)p-3\ge n'$),
+and so is the backward exploration of Lemma~\ref{lem:er-l2} below.
+
+\begin{lemma}[dichotomy]\label{lem:er-l1}
+There is $C$ (depending on $c,\varepsilon$) such that for large $p$ every
+admissible exploration with final size $T$ satisfies
+(a) $P(K\le T<\varepsilon p)\le Ce^{-\kappa K}$ for all $K\ge1$;
+(b) $P\big(T\ge t_0$ and [$\mathrm{disc}_t<\varepsilon p$ for all $t$, or
+$a_\tau<\delta p$ at $\tau=\min\{t:\mathrm{disc}_t\ge\varepsilon p\}$]$\big)\le Cp^{-8}$.
+Consequently, with probability at least $1-Cp^{-7}$, every node $v$ of $G$ has, in
+both directions, $T_v<t_0$ or ($T_v\ge\varepsilon p$ and $a_\tau\ge\delta p$).
+\end{lemma}
+\begin{proof}
+Let $\xi'_t$ be independent $\mathrm{Bin}(n',q)$ variables coupled so that
+$\xi_t\ge\xi'_t$ for $t\le\tau$ (admissibility; after $\tau$ or after the
+exploration stops, $\xi'_t$ uses external randomness), and
+$W_t=1+\sum_{s\le t}(\xi'_s-1)$. By induction $a_t\ge W_t$ for
+$t\le\min(T,\tau)$. Since $tn'q\ge t\beta$ and
+$(\beta+1)/2=(1-\frac{\beta-1}{2\beta})\beta$, (F2) gives
+$P(W_t\le(\beta-1)t/2)\le P(\mathrm{Bin}(tn',q)\le t(\beta+1)/2)\le e^{-\kappa t}$,
+so $\mathrm{Bad}(t_1)=\{\exists t\ge t_1:W_t\le(\beta-1)t/2\}$ has probability at
+most $e^{-\kappa t_1}/(1-e^{-\kappa})$.
+(a) If $T<\varepsilon p$ then $\tau=\infty$, so $0=a_T\ge W_T$, which is
+$\mathrm{Bad}(K)$ when $T\ge K$.
+(b) On $\mathrm{Bad}(t_0)^c$ with $T\ge t_0$: for $t_0\le t\le\min(T,\tau)$,
+$a_t\ge W_t>0$, so the exploration cannot stop before $\tau$, hence
+$\tau<\infty$. At $\tau$, $a_\tau+\tau\ge\varepsilon p$, and if $\tau\ge t_0$
+also $a_\tau>(\beta-1)\tau/2$; minimising $\max((\beta-1)\tau/2,\varepsilon p-\tau)$
+over $\tau$ gives $a_\tau\ge\delta p$; if $\tau<t_0$, $a_\tau\ge\varepsilon p-t_0\ge\delta p$.
+$e^{-\kappa t_0}\le p^{-8}$. The consequence is a union bound over $p$ nodes and
+two directions.
+\end{proof}
+
+\begin{lemma}[large out-sets reach large in-sets]\label{lem:er-l2}
+With probability at least $1-Cp^{-5}$: for all $v,w$, $T^{\mathrm{out}}_v\ge t_0$
+and $T^{\mathrm{in}}_w\ge t_0$ imply $v\leadsto w$.
+\end{lemma}
+\begin{proof}
+Fix $(v,w)$. Explore $\mathrm{out}(v)$ forward up to $\tau_f$ (history $\mathcal H_f$,
+discovered set $R_f=X_f\cup A_f$). Since every $\xi$ is dominated by
+$3+\mathrm{Bin}(p,q)$, $P(\max_t\xi_t\ge\varepsilon p)\le e^{-\varepsilon p}$ for
+large $p$ (F2, upper tail), so $|R_f|\le2\varepsilon p$ except on that event.
+Then explore $\mathrm{in}(w)$ backward, stopping at $\tau_b$ or when a node of
+$R_f\subseteq\mathrm{out}(v)$ is discovered; in the latter case $v\leadsto w$.
+Otherwise the backward exploration is the true exploration of $\mathrm{in}(w)$,
+its unseen set has at least $p-2\varepsilon p-\varepsilon p-3\ge n'$ usable
+nodes while $\mathrm{disc}<\varepsilon p$, and by the bookkeeping it is admissible
+conditionally on $\mathcal H_f$. By Lemma~\ref{lem:er-l1}(b) for both
+explorations, outside probability $2Cp^{-8}$: if $T^{\mathrm{out}}_v,T^{\mathrm{in}}_w\ge t_0$
+and no connection occurred, then $|A_f|,|A_b|\ge\delta p$. $A_f$ and $A_b$ are
+disjoint, and every pair $(a,a')\in A_f\times A_b$ is unrevealed (its tail is not
+in $X_f$, its head not in $X_b$), so given both histories these pairs are
+independent Be$(q)$ (or forced present): $P(\text{no edge }A_f\to A_b)\le(1-q)^{\delta^2p^2-3}\le e^{-c\delta^2p/2}$.
+An edge $a\to a'$ gives $v\leadsto a\to a'\leadsto w$. Union bound over $p^2$
+pairs.
+\end{proof}
+
+Let $\Omega$ be the intersection of the events of Lemma~\ref{lem:er-l1}
+(consequence) and Lemma~\ref{lem:er-l2}, $P(\Omega^c)\le Cp^{-5}$. Put
+$\mathcal S=\{v:T^{\mathrm{out}}_v\ge t_0\}$, $\mathcal T=\{v:T^{\mathrm{in}}_v\ge t_0\}$.
+
+\begin{corollary}[structure]\label{cor:er-struct}
+On $\Omega$: $\mathcal S\times\mathcal T$ is contained in the reachability
+relation; every SCC other than the one containing $\mathcal S\cap\mathcal T$ has
+fewer than $t_0$ nodes; if $|\mathcal S\cap\mathcal T|\ge t_0$, this SCC equals
+$\mathcal S\cap\mathcal T$.
+\end{corollary}
+\begin{proof}
+The first claim is Lemma~\ref{lem:er-l2}. A node $u\notin\mathcal S\cap\mathcal T$
+has $T^{\mathrm{out}}_u<t_0$ or $T^{\mathrm{in}}_u<t_0$, and its SCC lies in
+$\mathrm{out}(u)\cap\mathrm{in}(u)$. If $u$ were in the SCC of
+$\mathcal S\cap\mathcal T$, that SCC (of size $\ge t_0$) would lie in
+$\mathrm{out}(u)\cap\mathrm{in}(u)$, a contradiction.
+\end{proof}
+(This re-proves the part of the Karp--{\L}uczak structure theorem we need; the
+statement is recorded in the introduction of \citealp{dovgal2020birth}.)
+
+\begin{lemma}[local concentration; standard coupling]\label{lem:er-local}
+Fix $R$ and a function $\varphi$ of the isomorphism class of the radius-$R$
+neighbourhood $B_R(e)$ of a non-loop edge $e$ (all edges incident to nodes at
+undirected distance $<R$ from $e$, rooted at the oriented edge $e$), and let
+$\Phi_p=p^{-1}\sum_e\varphi(B_R(e))$, the sum over non-loop edges.
+(a) If $\varphi$ is bounded, $E\Phi_p\to cE_{\mathcal G}\varphi$ and
+$\mathrm{Var}\,\Phi_p\to0$; the same holds for node-rooted functionals with the
+node-rooted Poisson tree.
+(b) If $\varphi\ge0$ and $\varphi(B_R(e))\le\mathrm{indeg}(j)$ for $e=(i,j)$, then
+$\limsup_pE\Phi_p\le cE_{\mathcal G}[\min(\varphi,M)]+C/M$ for every $M$, with $C$
+not depending on $p$ or $M$.
+\end{lemma}
+\begin{proof}
+(a) First moment:
+$E\sum_e\varphi(B_R(e))=\sum_{(i,j)}q\,E[\varphi(B_R((i,j);G\cup\{(i,j)\}))]$.
+Explore the undirected neighbourhood of $(i,j)$ breadth first, revealing for
+each explored node $w$ all pairs $(w,u)$ and $(u,w)$. On $\{|B_R|\le M\}$, each
+explored node has $\mathrm{Bin}(|U|,q)$ new children and $\mathrm{Bin}(|U|,q)$
+new parents among the unseen nodes, $|U|\ge p-M$, which (F1) couples with
+Poisson$(c)$ up to an error $\le Mq^2p+cM/p$ per count, and the pairs between
+already seen nodes are present with total probability $\le M^2q$. So the
+truncated ball is within $C(M,R)/p$ in total variation of the truncated
+$\mathcal G$. Tightness: each exploration step is dominated by
+$\mathrm{Bin}(2p,q)$ (resp.\ Poisson$(2c)$), so $E|B_R|\le(1+2c+o(1))^R$ and
+$P(|B_R|>M)\le C^R/M$ uniformly in $p$; let $p\to\infty$, then $M\to\infty$.
+Second moment: $E\Phi_p^2=p^{-2}\big[\sum_e+\sum_{e,f\text{ sharing a node}}+\sum_{e,f\text{ node-disjoint}}\big]$.
+The first two sums are $O(p)$ since $E\sum_vd(v)^2=O(p)$. For node-disjoint
+$e,f$, explore both balls jointly in $G\cup\{e,f\}$: on $\{$both sizes $\le M\}$
+they are disjoint and non-adjacent except with probability $\le C(M,R)/p$, and
+then the two explorations are coupled with independent copies of $\mathcal G$.
+Hence $p^{-2}\sum_{\text{disjoint}}\to(cE_{\mathcal G}\varphi)^2$ and
+$\mathrm{Var}\,\Phi_p\to0$.
+(b) Apply (a) to $\min(\varphi,M)$ and bound the rest by
+$E\sum_{(i,j)}\mathrm{indeg}(j)\mathbf 1[\mathrm{indeg}(j)>M]=E\sum_j\mathrm{indeg}(j)^2\mathbf 1[\mathrm{indeg}(j)>M]\le p\,E[D^3]/M$,
+$D\sim\mathrm{Bin}(p-1,q)$, and $E[D^3]\le c^3+3c^2+c$ for all $p$ (uniform
+integrability).
+\end{proof}
+
+\textbf{Local functionals.} All of the following are functions of $B_{2K+1}(e)$
+(a breadth-first search of the first $K$ nodes of a set stays within distance
+$K-1$), are invariant under isomorphism, and count all qualifying nodes, so no
+labelling enters.
+$A^K_e=\mathbf 1[T^{\mathrm{out}}_j\ge K,\ T^{\mathrm{in}}_i\ge K]$, with
+$E_{\mathcal G}A^K=\theta_K^2$ (the descendant tree of $j$ and the ancestor tree
+of $i$ are independent Poisson Galton--Watson trees).
+$\Psi_K(e)=\mathrm{cl}_1\vee\mathrm{cl}_2$, with
+$\mathrm{cl}_1=[T^{\mathrm{in}}_i<K$ and $j$ has a parent $k\notin\{i,j\}]$ and
+$\mathrm{cl}_2=[$some in-isolated $s$ has $T^{\mathrm{out}}_s<K$, $j\in\mathrm{out}(s)$, $i\notin\mathrm{out}(s)]$.
+$\varphi^{\beta}_K(e)=\#\{k\notin\{i,j\}:k\to j,\ T^{\mathrm{in}}_k<K,\ T^{\mathrm{in}}_i<K,\ \mathrm{in}(k)\cap\mathrm{in}(i)\ne\emptyset\}\le\mathrm{indeg}(j)$,
+with $E_{\mathcal G}\min(\varphi^\beta_K,M)=0$ (in $\mathcal G$ the ancestor trees
+of $i$ and of another parent of $j$ are disjoint).
+
+\begin{proposition}[$L$, $c>1$]\label{prop:er-N}
+For $c>1$, $N/p\to cx^2$ in $L^1$ and in probability.
+\end{proposition}
+\begin{proof}
+By (W5), $N=\sum_eZ_e$ with $Z_e=\mathbf 1[j\leadsto i]$; compare with
+$\tilde N_K=\sum_eA^K_e$.
+(i) $Z=1,A=0$: $j\leadsto i$ and ($T^{\mathrm{out}}_j<K$ or $T^{\mathrm{in}}_i<K$).
+By (W5) these events do not depend on the presence of $e$, so the expected
+number of such edges is $p(p-1)q\,P(i\in\mathrm{out}(j),T^{\mathrm{out}}_j<K)$ plus
+the same with $\mathrm{in}(i)$, and by exchangeability of the $p-1$ nodes other
+than $j$, $P(i\in\mathrm{out}(j),T^{\mathrm{out}}_j<K)=E[(T^{\mathrm{out}}_j-1)\mathbf 1(T^{\mathrm{out}}_j<K)]/(p-1)\le K/(p-1)$.
+Total $\le2cK$.
+(ii) $Z=0,A=1$: on $\Omega$, $T^{\mathrm{out}}_j\ge t_0$ and $T^{\mathrm{in}}_i\ge t_0$
+would give $j\leadsto i$, so $T^{\mathrm{out}}_j$ or $T^{\mathrm{in}}_i$ lies in
+$[K,t_0)\subseteq[K,\varepsilon p)$. The expected number of such edges is at
+most $\sum_{(i,j)}q\,P_{G^{\{e\}}}(\cdot)\le cp\cdot2Ce^{-\kappa K}$ by
+Lemma~\ref{lem:er-l1}(a) in $G^{\{e\}}$; on $\Omega^c$ the count is at most $m$
+and $E[m\mathbf 1_{\Omega^c}]\le(Em^2)^{1/2}P(\Omega^c)^{1/2}=O(p\cdot p^{-5/2})$.
+So $E|N-\tilde N_K|\le2cK+2cCpe^{-\kappa K}+o(1)$. By
+Lemma~\ref{lem:er-local}(a), $\tilde N_K/p\to c\theta_K^2$ in $L^2$; hence
+$\limsup_pE|N/p-cx^2|\le2cCe^{-\kappa K}+c|\theta_K^2-x^2|\to0$ as $K\to\infty$.
+\end{proof}
+The same argument for the node functional $\mathbf 1[T^{\mathrm{out}}_v\ge K,T^{\mathrm{in}}_v\ge K]$
+gives $|\mathcal S\cap\mathcal T|/p\to x^2$, so by \cref{cor:er-struct} the giant
+SCC has $(x^2+o_P(1))p$ nodes and all other SCCs fewer than $C_3\log p$, w.h.p.
+
+\begin{proposition}[the tree computation]\label{prop:er-tree}
+In $\mathcal G$, with $\Psi_\infty$ defined by $T^{\mathrm{in}}_i<\infty$ and
+$T^{\mathrm{out}}_s<\infty$, $E_{\mathcal G}\Psi_K\uparrow P_{\mathcal G}(\Psi_\infty)=F_\uparrow$
+as $K\to\infty$.
+\end{proposition}
+\begin{proof}
+Both clauses increase in $K$ to their $K=\infty$ versions (monotone convergence).
+Let $A(i)$ be the event that the ancestor tree of $i$ is infinite and $D(j)$ that
+the descendant tree of $j$ is infinite (probability $x$ each, independent). The
+other parents of $j$ are Poisson$(c)$ many.
+(1) Not $A(i)$: $\Psi_\infty$ holds iff $j$ has another parent. Clause 1 needs
+exactly that; clause 2 needs it too, since a path from $s$ to $j$ ends with an
+edge $k\to j$ and $k=i$ would put $i$ into $\mathrm{out}(s)$. Probability
+$(1-x)(1-e^{-c})$.
+(2) $A(i)$: clause 1 fails. Clause 2 needs (a) not $D(j)$, since
+$\mathrm{out}(s)$ contains the descendant tree of $j$ (probability $1-x$), and
+(b) another parent $k$ of $j$ and a chain $k=u_0\leftarrow u_1\leftarrow\dots\leftarrow u_r=s$
+ending at an in-isolated $s$, in which every $u_t$ has only finite descendant
+trees below its children other than $u_{t-1}$ ($u_{-1}=j$); such an $s$ does not
+reach $i$, because paths into $i$ stay in the ancestor tree of $i$. The
+probability that all other children of a node have finite descendant trees is
+$E[(1-x)^{\mathrm{Poi}(c)}]=e^{-cx}=1-x$. Let $Q(v)$ be the event that $v$ is
+in-isolated or some parent $u$ of $v$ has all other children finite and $Q(u)$
+holds, and $d^*=P(Q)$. Parents are Poisson$(c)$ many and each is \emph{good}
+(other children finite and $Q$) independently with probability $(1-x)d^*$, so by
+Poisson thinning $d^*=e^{-c}+1-e^{-c(1-x)d^*}=f(d^*)$. $Q$ is the increasing
+union of its depth-$n$ truncations $Q_n$, with $P(Q_0)=e^{-c}=f(0)$ and
+$P(Q_{n+1})=f(P(Q_n))$; as $f$ is increasing and continuous, $P(Q_n)=f^{n+1}(0)$
+increases to the smallest fixed point $d$ of $f$ (if $d'$ is a fixed point,
+$f^n(0)\le f^n(d')=d'$). So $d^*=d$. The number of good other parents of $j$ is
+Poisson$(c(1-x)d)$, so (b) has probability $1-e^{-c(1-x)d}$, independently of
+$A(i)$ and $D(j)$. Adding (1) and (2) gives $F_\uparrow$.
+\end{proof}
+(An independent Monte Carlo of the event itself, not of the closed form, gives
+$0.38756\pm0.00077$ against $0.38773$ at $c=1.5$ and $0.19049\pm0.00062$ against
+$0.18962$ at $c=2$.)
+
+\begin{proposition}[reduction of $\Eu$ to $\Psi_K$, $c>1$]\label{prop:er-red}
+$E\sum_e|\mathbf 1[e\in\Eu]-\Psi_K(e)|\le(\delta_1(K)+o(1))p$ with
+$\delta_1(K)=C(c^2+K^2)e^{-\kappa K}+o_K(1)$, where $o_K(1)\to0$ as $K\to\infty$
+and $C$ does not depend on $K$ or $p$.
+\end{proposition}
+\begin{proof}
+Let $e=(i,j)$ be a non-loop edge. \emph{Clause 2 never errs}: an in-isolated $s$
+is a source node, so $j\in\mathrm{out}(s)$, $i\notin\mathrm{out}(s)$ give
+$e\in\Eu$. \emph{Case I: $T^{\mathrm{in}}_i<K$.} (I-a) If $e\in\Eu$, (W1) gives
+another parent of $j$, so clause 1 holds: no error. (I-b) Clause 1 holds and
+$e\notin\Eu$. Then
+$\mathbf 1[\text{I-b}]\le\sum_{k\notin\{i,j\}}\mathbf 1[e,(k,j)\text{ present},\ T^{\mathrm{in}}_i<K,\ e\notin\Eu]$
+(a union over \emph{all} other parents; no parent is singled out). Fix the
+triple $(i,j,k)$ and force $F=\{(i,j),(k,j)\}$. By (W3), $e\notin\Eu$ forces
+$\mathrm{in}(k)\cap\mathrm{in}(i)\ne\emptyset$, and by (W2) every source node
+reaching $k$ reaches $i$. Split on $T^{\mathrm{in}}_k$:
+($\alpha_1$) $K\le T^{\mathrm{in}}_k<\varepsilon p$: probability $\le Ce^{-\kappa K}$
+(Lemma~\ref{lem:er-l1}(a), backward, in $G^F$).
+($\alpha_2$) $T^{\mathrm{in}}_k\ge\varepsilon p$: the backward exploration of
+$\mathrm{in}(k)$ explores at least $\varepsilon p/2$ nodes. When a node $y\ne j$ is
+explored, the pairs $(u,y)$ with $u$ unseen are revealed (all absent with
+conditional probability $\ge(1-q)^p$), and the pairs $(u,y)$ with $u$ already
+seen are never revealed by this exploration and are independent of it and of
+each other (distinct heads); so, given the history, $y$ is in-isolated with
+probability $\ge(1-q)^p\ge e^{-c}/2$, and the number of in-isolated nodes among
+the first $\varepsilon p/2$ explored nodes dominates
+$\mathrm{Bin}(\varepsilon p/2-1,e^{-c}/2)$. By (F2) at least $K$ of them are
+in-isolated except with probability $e^{-\Omega(p)}$. Each in-isolated node of
+$\mathrm{in}(k)$ is a source node reaching $k$, hence reaches $i$, so lies in
+$\mathrm{in}(i)$; but $|\mathrm{in}(i)|<K$. So ($\alpha_2$) has probability
+$e^{-\Omega(p)}$.
+($\beta$) $T^{\mathrm{in}}_k<K$ and $\mathrm{in}(k)\cap\mathrm{in}(i)\ne\emptyset$.
+Summed over $k$ this is $\varphi^\beta_K(e)$.
+The number of triples is $p^3$ and each has both pairs present with probability
+$q^2$, so cases ($\alpha_1$), ($\alpha_2$) contribute at most
+$c^2p(Ce^{-\kappa K}+e^{-\Omega(p)})$; case ($\beta$) contributes
+$E\sum_e\varphi^\beta_K(e)\le(C/M+o(1))p$ for every $M$ by
+Lemma~\ref{lem:er-local}(b), i.e.\ $o(p)$.
+\emph{Case II: $T^{\mathrm{in}}_i\ge K$.} Clause 1 fails.
+(II-0) $K\le T^{\mathrm{in}}_i<\varepsilon p$: at most $cpCe^{-\kappa K}$ such
+edges in expectation (Lemma~\ref{lem:er-l1}(a) in $G^{\{e\}}$).
+(II-1) $T^{\mathrm{in}}_i\ge\varepsilon p$, so $i\in\mathcal T$. Work on
+$\Omega'=\Omega\cap\{\max_v\mathrm{indeg}(v)\le C\log p\}$; $P(\Omega'^c)\le Cp^{-2}$,
+and the edges counted on $\Omega'^c$ contribute at most
+$E[m\mathbf 1_{\Omega'^c}]\le(Em^2)^{1/2}P(\Omega'^c)^{1/2}=O(1)$. An error here is
+an edge $e\in\Eu$ with $\Psi_K(e)=0$. Take a witness source node $z$ of (W1),
+in a source SCC $\sigma$. On $\Omega$, $z\in\mathcal S$ would give $z\leadsto i$
+(Lemma~\ref{lem:er-l2}), so $T^{\mathrm{out}}_z<t_0$.
+(A) $\sigma=\{z\}$ (i.e.\ $z$ in-isolated) and $T^{\mathrm{out}}_z<K$: clause 2
+holds with $s=z$; no error.
+(B1) $z$ in-isolated and $K\le T^{\mathrm{out}}_z<t_0$. The number of such edges
+is at most $\sum_z\mathbf 1[K\le T^{\mathrm{out}}_z<t_0]\sum_{j\in\mathrm{out}(z)}\mathrm{indeg}(j)$.
+Given $\mathrm{out}(z)=O$ with $|O|=r$ (a completed forward exploration), the
+pairs with tail outside $O$ and head in $O$ are unrevealed, so the expected
+number of edges into $O$ is at most $r^2+rpq=r^2+cr$. With
+$P(T^{\mathrm{out}}_z=r)\le Ce^{-\kappa r}$ (Lemma~\ref{lem:er-l1}(a)), the
+expectation is at most $p\sum_{r\ge K}Ce^{-\kappa r}(r^2+cr)\le C'pK^2e^{-\kappa K}$.
+(B2) $|\sigma|\ge2$. Then $|\sigma|<t_0$ (as $\sigma\subseteq\mathrm{out}(z)$),
+every node of $\sigma$ has out-set $\mathrm{out}(z)$ of size $<t_0$, and the
+number of edges with head in $\mathrm{out}(z)$ is at most $t_0\cdot C\log p$ on
+$\Omega'$. Let $N_\sigma$ be the number of source SCCs with $2\le|\sigma|<t_0$.
+For a set $R$ of size $r$, ``$R$ strongly connected'' and ``no edge enters $R$''
+depend on disjoint sets of pairs; the first requires every node of $R$ to have
+a parent in $R$ (probability $\le(rq)^r$, distinct heads), the second has
+probability $(1-q)^{r(p-r)}$. Hence
+$EN_\sigma\le\sum_{r=2}^{t_0}\binom pr(rq)^r(1-q)^{r(p-r)}\le\sum_{r\ge2}\big(ce^{1-c}e^{cr/p}\big)^r=O(1)$,
+using $\binom pr\le p^r/r!$, $r^r/r!\le e^r$, $r\le t_0=O(\log p)$ and
+$ce^{1-c}<1$ for $c\ne1$. So the (B2) errors have expectation
+$O(1)\cdot t_0C\log p=O(\log^2p)=o(p)$: an expectation on the event $\Omega'$ plus
+the Cauchy--Schwarz bound for $\Omega'^c$ above.
+Adding all cases gives the claim.
+\end{proof}
+
+\begin{theorem}[$S$, $c>1$]\label{thm:er-S}
+For $c>1$, $|\Eu|/p\to cF_\uparrow$, and therefore
+$S=\tfrac12+|\Eu|/(2(p+m))\to\tfrac12+cF_\uparrow/(2(1+c))$, in $L^1$ and in
+probability.
+\end{theorem}
+\begin{proof}
+$E\big||\Eu|/p-cF_\uparrow\big|\le E\sum_e|\mathbf 1[e\in\Eu]-\Psi_K(e)|/p+E|\Phi^{\Psi_K}_p-cE_{\mathcal G}\Psi_K|+c|E_{\mathcal G}\Psi_K-F_\uparrow|$;
+the terms are bounded by Prop.~\ref{prop:er-red}, Lemma~\ref{lem:er-local}(a) and
+Prop.~\ref{prop:er-tree}; let $p\to\infty$, then $K\to\infty$. $m/p\to c$ in
+$L^2$ ($m\sim\mathrm{Bin}(p(p-1),q)$), and $S$ and $L$ are bounded continuous
+functions of $(|\Eu|/p,m/p)$ and $(N/p,m/p)$ on $[0,\infty)^2$.
+\end{proof}
+
+\begin{proposition}[$c\le1$]\label{prop:er-sub}
+(a) For $c<1$, $EN\le c^2/(1-c)$. (b) For $c\le1$, $N/p\to0$ in $L^1$, so
+$L\to\tfrac12+\frac{c}{2(1+c)}$ ($L(1)=3/4$). (c) For $c\le1$,
+$|\Eu|/p\to c(1-e^{-c})$ in $L^1$, so $S\to\tfrac12+\frac{c(1-e^{-c})}{2(1+c)}$
+($S(1)=0.65803$); this is $F_\uparrow$ at $x=0$.
+\end{proposition}
+\begin{proof}
+(a) A non-loop edge inside an SCC lies on a simple directed cycle, and the
+expected number of pairs (simple cycle of length $k$, edge on it) is
+$k\cdot\frac{(p)_k}{k}q^k\le c^k$; sum over $k\ge2$.
+(b) $c<1$ from (a). $c=1$: $D(p,1/p)$ is a subgraph of $D(p,c'/p)$ for every
+$c'>1$ under the monotone coupling, and an edge inside an SCC of the subgraph is
+inside an SCC of the larger graph, so $\limsup_pEN/p\le c'x(c')^2\to0$ as
+$c'\downarrow1$ (Prop.~\ref{prop:er-N}).
+(c) Let $\Psi^1_K=\mathrm{cl}_1$. Case I ($T^{\mathrm{in}}_i<K$): (I-a) as before,
+no error; (I-b) with the same union over other parents $k$ and forced
+$F=\{(i,j),(k,j)\}$, (W3) forces $\mathrm{in}(k)\cap\mathrm{in}(i)\ne\emptyset$,
+so either $T^{\mathrm{in}}_k\ge K$ or the event of $\varphi^\beta_K$ holds. The
+expected number of triples with $T^{\mathrm{in}}_k\ge K$ is
+$E\sum_e\#\{k\notin\{i,j\}:k\to j,\ T^{\mathrm{in}}_k\ge K\}$, a local functional
+dominated by $\mathrm{indeg}(j)$, so by Lemma~\ref{lem:er-local}(b) it is at most
+$(c\cdot c\,\theta_K+C/M+o(1))p$; the $\varphi^\beta_K$ part is $o(p)$ as before.
+Case II ($T^{\mathrm{in}}_i\ge K$): at most $E\sum_e\mathbf 1[T^{\mathrm{in}}_i\ge K]=(c\theta_K+o(1))p$
+(Lemma~\ref{lem:er-local}(a)). Hence
+$\limsup_pE\sum_e|\mathbf 1[e\in\Eu]-\Psi^1_K(e)|/p\le c^2\theta_K+c\theta_K+C/M$, which
+tends to $0$ as $K,M\to\infty$ because $\theta_K\to x(c)=0$ for $c\le1$ (F3).
+Finally $E_{\mathcal G}\Psi^1_K=(1-\theta_K)(1-e^{-c})\to1-e^{-c}$.
+\end{proof}
+
+\textbf{What is not proved.} Rates of convergence; the critical window
+$c=1+\lambda p^{-1/3}$ (\L{}uczak and Seierstad, recorded in
+\citealp{dovgal2020birth}; not used); almost sure convergence; the regime of
+fixed $T$ with $p\to\infty$. The proof does not use the structure theorems of
+Karp and of \L{}uczak (not opened by us); it re-proves the part it needs.
+
+\textbf{Numerical checks of the intermediate claims} (fixed seeds, exact
+computation; supplement \texttt{x1proof/verify}). (W4) $\Eu\subseteq$ edges into
+confluences: 0 violations in 48 graphs. Dichotomy (Lemma~\ref{lem:er-l1}): at
+$c=2$, $p=10^5$, the mass of $K\le T<0.02p$ is $0.0097$, $0.0008$, $0$ for
+$K=5,10,20$; at $c=1$ it is $0.37$, $0.25$, $0.17$ (critical, no dichotomy, as
+expected). Structure (\cref{cor:er-struct}): for $c\ge1.5$ the second-largest
+SCC never had more than 2 nodes; giant fraction $0.63439$ ($p=10^6$, $c=2$)
+against $x^2=0.63491$. Prop.~\ref{prop:er-red} edge by edge: at $c=2$,
+$p=2\cdot10^5$, $|\Eu|=76{,}220$ and $\sum_e\Psi_{40}(e)=76{,}220$ with no edge
+in either difference; clause 2 never erred in any run. Concentration: the
+standard deviation of $N/p$ times $\sqrt p$ is $2.88$--$3.07$ for
+$p=5\cdot10^3$ to $3.2\cdot10^5$ ($c=2$), as Lemma~\ref{lem:er-local} requires.
 
 %=============================================================================
 \section{Accuracy Interpretation of $\srho$}

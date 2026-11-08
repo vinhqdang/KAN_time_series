@@ -194,8 +194,8 @@ is its accuracy on a true edge shown in a uniformly random order.
 The proof of `edge_score_NL` does not use Reisach et al.'s Lemma 1: the first branch of `StrictNL` exhibits the extra
 relative `u(0)`, the second the extra relative `u(s-m)` for a fresh `u`, and `reduce_ancestor` pushes any common ancestor
 of `j(s+1)` and `w(r)` back along parents until slice 0 or a fresh node.
-Full clean rebuild with the two new files: `BUILD_LOG.txt` (9062 jobs, no error); `AXIOMS.txt` has 133 lines, all
-`[propext, Classical.choice, Quot.sound]`.
+Full clean rebuild with the two new files: `BUILD_LOG.txt` (9062 jobs, no error); at that point `AXIOMS.txt` had 133 lines
+(138 after ErLemmas.lean, 148 after Observed.lean; see the sections below), all `[propext, Classical.choice, Quot.sound]`.
 
 ## Files
 
@@ -213,7 +213,9 @@ Full clean rebuild with the two new files: `BUILD_LOG.txt` (9062 jobs, no error)
 - `RelSort/FiniteLipschitz.lean`: FINITE.md Lemma 3.4 and the bracket of Thm 3.5.
 - `RelSort/NoLoop.lean`: X2 (exact edge value and `s_ρ(G_T)` for arbitrary summary graphs, no self-loop assumption).
 - `RelSort/Predict.lean`: X3 (accuracy of the oracle sort rule, optimality among pairwise count rules).
-- `Axioms.lean`: `#print axioms` for each main theorem. Output: `AXIOMS.txt`, `BUILD_LOG.txt`.
+- `RelSort/ErLemmas.lean`: deterministic witness lemmas for E_up (x1proof/X1PROOF.md).
+- `RelSort/Observed.lean`: the real-data estimand s-tilde (observed subset, latent unobserved nodes, induced non-loop edges).
+- `Axioms.lean`, `AxiomsEr.lean`, `AxiomsObs.lean`: `#print axioms` for each main theorem. Output: `AXIOMS.txt` (148 lines), `BUILD_LOG.txt`.
 
 ## ErLemmas.lean (x1proof/X1PROOF.md): witness lemma for E_up, no loop hypothesis
 
@@ -225,3 +227,31 @@ Full clean rebuild with the two new files: `BUILD_LOG.txt` (9062 jobs, no error)
 | W4: E_up contained in confluence edges (non-loop parents) | `upEdges_subset_confluenceNL`, `card_upEdges_le_confluenceNL` | verified |
 
 Axiom check: `AxiomsEr.lean` (lines appended to `AXIOMS.txt`). All probabilistic statements of X1PROOF.md (T1-T3) are not formalised.
+
+## Observed.lean (ICML draft, appendix on the real-data estimand): s-tilde, no loop hypothesis
+
+`relObs E O v = rel_S(v) ∩ O`, `obsEdges E O` = induced non-self-loop edges, `sTilde E O` = edge average of
+`score(|rel_S(i) ∩ O|, |rel_S(j) ∩ O|)`, `upObs E O` = scored edges whose observed relative sets differ.
+
+| statement | Lean name | status |
+|---|---|---|
+| monotonicity survives restriction to O | `relObs_subset_of_edge` | verified |
+| every scored edge scores 1/2 or 1 | `score_obsEdge` | verified |
+| s-tilde = 1/2 + \|E_O^up\|/(2\|E_O\|); s-tilde >= 1/2 | `sTilde_eq`, `sTilde_ge_half` | verified |
+| E_O^up is contained in E_up (stationary up-edges) | `upObs_subset_upEdges` | verified |
+| s-tilde > 1/2 iff E_O^up nonempty; then an induced edge is an up-edge; no induced up-edge gives 1/2 | `sTilde_gt_half_iff`, `exists_upEdge_of_sTilde_gt_half`, `sTilde_eq_half_of_no_up` | verified |
+| sufficient witness: observed w with w in rel(j), w not in rel(i) | `mem_upObs_of_witness` | verified |
+| O = all nodes: E_O^up = E_up without self-loops | `upObs_univ` | verified |
+
+Not formalised: that the population lag-0 relatives of a stationary SVAR are rel_S (paper Prop. on per-node filters,
+genericity) and the counterexample to the converse (paper only). Incremental rebuild (9064 jobs, exit 0) and axiom check
+appended to `BUILD_LOG.txt`; `AXIOMS.txt` now has 148 lines.
+
+## Breakdown of the 148 declarations in AXIOMS.txt (2026-11-08)
+
+29 headline theorems (Lean counterparts of numbered paper statements: Section 3 exact, limit, necessity, boundary,
+stationary and graph-class results; loop-free exact edge value; accuracy reading; the s-tilde sign relation),
+43 supporting graph lemmas (including the 5 ER witness lemmas and 6 s-tilde lemmas), 65 algebraic identities and
+inequalities from the aggregation and finite-sample files (T2Algebra, FiniteCorr, FiniteTrace, FinitePartial,
+FiniteLipschitz), 11 examples (10 concrete graphs, 1 numerical r_crit instance). No probability bound, limit
+theorem or random-graph limit is formalised.

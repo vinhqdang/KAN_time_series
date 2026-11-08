@@ -13,3 +13,4 @@ import RelSort.FiniteTrace
 import RelSort.NoLoop
 import RelSort.Predict
 import RelSort.ErLemmas
+import RelSort.Observed
