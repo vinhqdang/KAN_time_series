@@ -86,3 +86,10 @@ The split holds if (a), (b) and (c) hold. (b) is close to automatic, since stand
 ## 3. Reporting
 
 `README.md` with verdicts, CIs and tests, deviations (no threshold changes), a main-text paragraph and a compact table, and an honest reading even if the effect vanishes or reverses. `results/b1nl_test.csv.gz` (merged shards) is committed; shard files are ignored by `.gitignore`. Any change to this plan after this commit is a deviation, logged with its timing (before or after the test run).
+
+## 5. Notes and deviations recorded after the validation run and before the test run
+
+- **Validation run** (seeds 9100–9102, all three configs, 756 data sets): pipeline debugged, no tuning. Timing 403–451 s per 3 seeds per config, i.e. a projected 2.3 h single-core for the test run (< 3.0 h), so the **full size of §1.4 is kept** (25 / 25 / 10 seeds). Validation scores are not evidence; with 3 seeds no H1/H3 test can reach Holm significance.
+- **N1 (implementation, no effect on results).** `window_relatives` (diagnostic `rel_recall`/`rel_fpr`) was rewritten from an integer-matmul loop to a float-matmul transitive closure by repeated squaring (1.6 s → 0.02 s per call). Verified identical output on all 252 validation (graph, T, generator) cases (0 mismatches). Done between the NL and the SGN/SGNU validation runs.
+- **N2 (power of S1, no rule change).** S1 compares two *independent* data sets (G2 vs G2L), so it carries sampling noise: on validation the per-pair s.d. of OA_M1(G2) − OA_M1(G2L) is 0.09 (NL), 0.07 (SGN, SGNU). At test size the standard error per family is about 0.007 (NL, SGN; 150 pairs) and 0.009 (SGNU; 60 pairs), so the 0.02 threshold is 2.2–2.7 SE and a chance failure in one of 7 families is plausible (especially SGNU) even with perfect mixing. The rule is kept unchanged; the per-family 95% CI is reported alongside, and mixing itself is checked directly by S3 (coupling).
+- The analysis script `analyse_b1nl.py` implements §2 as written and is committed with this note.

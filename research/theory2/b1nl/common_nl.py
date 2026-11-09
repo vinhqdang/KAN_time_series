@@ -115,10 +115,9 @@ def window_relatives(S, T, gen):
     p = S.shape[0]
     B = 0 if gen == "G1" else 2 * p + T
     Tt = B + T; N = p * Tt
-    G = true_dag(S, Tt).astype(np.int64)
-    R = np.eye(N, dtype=np.int64)                 # R[a, b] = a is an ancestor of b (reflexive)
-    for _ in range(Tt):
-        R = ((R + R @ G) > 0).astype(np.int64)
-    rel = (R.T @ R) > 0
+    R = (np.eye(N) + true_dag(S, Tt)) > 0          # R[a, b] = a is an ancestor of b (reflexive); closure by squaring
+    for _ in range(int(np.ceil(np.log2(Tt))) + 1):
+        R = (R.astype(np.float64) @ R.astype(np.float64)) > 0
+    rel = (R.T.astype(np.float64) @ R.astype(np.float64)) > 0
     w = slice(p * B, N)
     return rel[w, w]
