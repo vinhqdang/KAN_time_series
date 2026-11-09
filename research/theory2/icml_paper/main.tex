@@ -104,7 +104,10 @@ finite-sample analysis says when a relatives count can be estimated from one
 autocorrelated record and when a latent common driver saturates it. In
 real-data studies with internally time-stamped analysis plans, a river
 benchmark failed (a post hoc analysis is consistent with saturation) and a
-physical testbed gave partial support.
+physical testbed gave partial support. In a benchmark experiment with time
+labels hidden, the fixed start raised the accuracy of a relatives-sorting
+baseline by amounts that track the exact values and reversed several method
+rankings.
 \end{abstract}
 
 %=============================================================================
@@ -159,6 +162,9 @@ driver at $n\approx z_c^2/\ell^2$, and conditions for a proxy to repair it.
 \textbf{(4)} A Lean~4 formalisation of the exact and stationary results
 (\cref{sec:lean}), and real-data studies with time-stamped analysis plans
 (\cref{sec:real}), reported with every failed test.
+\textbf{(5)} A benchmark experiment (\cref{sec:b1}): with time labels hidden,
+the fixed start shifts sort-based baselines by amounts the exact values
+predict and reverses significant pairwise rankings.
 
 The graph results of (1) are short consequences of a walk-length lemma and of
 \citet[Lemma~1]{reisach2026topological}. Their value is that they determine
@@ -236,10 +242,11 @@ is strict iff $j(t{+}1)$ has a root that $i(t)$ lacks
 does not use their Lemma~1.)
 
 \begin{theorem}[exact limit and rate]\label{thm:limit}
-For every $T\ge2$, with $L(\GS)=\tfrac12+\frac{|\Ex|}{2|\Es|}$,
+For every $T\ge2$, with $L(\GS)=\tfrac12+\frac{|\Ex|}{2|\Es|}$ and
+$\Delta\le p-1$ the largest finite shortest-path distance in $\GS$,
 \[
 \begin{aligned}
-0\le \srho(\GT)-L(\GS)&\le\frac{\min(p{-}1,T{-}1)\,|\Eo|}{2(T-1)|\Es|}\\
+0\le \srho(\GT)-L(\GS)&\le\frac{\min(\Delta,T{-}1)\,|\Eo|}{2(T-1)|\Es|}\\
 &\le\frac{p-1}{2(T-1)},
 \end{aligned}
 \]
@@ -248,8 +255,10 @@ so $\lim_{T\to\infty}\srho(\GT)=L(\GS)$.
 \end{theorem}
 \emph{Sketch.} For a crossing edge, $j$ does not reach $i$; take $u=j$ in
 \cref{thm:edge}: all $T-1$ copies score $1$. For an edge inside an SCC, $i$ and
-$j$ are reached by the same nodes, which forces $t\le d(u,i)\le p-1$, so at
-most $p-1$ copies score $1$.
+$j$ are reached by the same nodes, which forces $t\le d(u,i)\le\Delta$, so at
+most $\Delta$ copies score $1$. (Lean checks the bound with $p-1$; the
+$\Delta$ form is this one-line paper argument, checked by enumeration on
+21{,}000 graph--horizon cases with no violation, \cref{app:b1}.)
 
 \begin{corollary}[necessary and sufficient condition]\label{cor:iff}
 $\lim_T\srho(\GT)=1/2$ iff every weakly connected component of $\GS$ is
@@ -273,7 +282,7 @@ a difference, which motivates the stationary version.
 
 \begin{theorem}[stationary start]\label{thm:stat}
 Observe the window of the last $T\ge2$ slices of $G_{B+T}$ with a latent
-burn-in $B\ge p-1$ (or of the infinite-past graph on $V\times\mathbb Z$), with
+burn-in $B\ge\Delta$ (or of the infinite-past graph on $V\times\mathbb Z$), with
 relatives computed in the full graph. Then every window node has
 $\rho_W(v(t))=T|\rel_S(v)|$, and for every $T$
 \[
@@ -282,7 +291,7 @@ $\rho_W(v(t))=T|\rel_S(v)|$, and for every $T$
 \]
 \lean{\lname{rhoBurn_eq}, \lname{sBurn_eq}, \lname{rhoZ_eq}, \lname{sZ_eq}, \lname{relSet_eq_iff_src}.}
 \end{theorem}
-\emph{Sketch.} After $p-1$ slices every finite distance is absorbed, so
+\emph{Sketch.} After $\Delta$ slices every finite distance is absorbed, so
 $w(s)\in\rel(v(t))$ iff $\anc_S(v)\cap\anc_S(w)\ne\emptyset$. For an edge
 $(i,j)$, $\rel_S(i)\subseteq\rel_S(j)$ with equality iff $\Src(i)=\Src(j)$.
 
@@ -292,7 +301,7 @@ instead acts at a lag $\tau_{ij}\in\{1,\dots,\tau_{\max}\}$ (self-loops at lag
 one), the same proofs go through with $d$ replaced by the lag-weighted
 distance $d_\tau$: the copy $(i(t),j(t{+}\tau_{ij}))$ is strict iff some $u$ has
 $d_\tau(u,j)-\tau_{ij}+1\le t\le d_\tau(u,i)$, the limit is unchanged, and the
-stationary result needs a burn-in $B\ge(p-1)\tau_{\max}$ (paper proof,
+stationary result needs a burn-in $B\ge\Delta\tau_{\max}$ (paper proof,
 \cref{app:lags}; not machine-checked). Contemporaneous (lag-0) edges are not
 covered.
 
@@ -311,7 +320,7 @@ confluences}\}/(2|\Es|)$, which exceeds $1/2$ iff there is a confluence.
   hl/.style={nd,draw={rgb,255:red,235;green,104;blue,52},line width=1.2pt,fill={rgb,255:red,253;green,226;blue,214}},
   ar/.style={-latex,black!60,line width=0.6pt}]
 \fill[black!6,rounded corners=3pt] (0.55,-1.45) rectangle (1.45,0.45);
-\node[font=\tiny,black!70] at (1,-1.75) {latent if $B\ge p-1$};
+\node[font=\tiny,black!70] at (1,-1.75) {latent if $B\ge\Delta$};
 \foreach \t in {1,...,5} {
   \node[nd] (a\t) at (\t,0) {$a_{\t}$};
   \ifnum\t=1 \node[hl] (b\t) at (\t,-1) {$b_{\t}$}; \else \node[nd] (b\t) at (\t,-1) {$b_{\t}$}; \fi
@@ -422,14 +431,56 @@ Theorem~1, \cref{app:x3}). So $\srho=0.7$ caps such a method at $70\%$
 orientation accuracy. Rules that also see node degrees can exceed it.
 \lean{\lname{accRule_sortRule}, \lname{accRule_le_sRho}, \lname{edgeAcc_sortRule_strict}.}
 
-% ---- PLACEHOLDER for the B1 experiment (research/theory2/b1, run by a separate agent). ----
-% Replace the \PH{} below with the B1 table and summary; do not invent numbers.
-\subsection{Benchmark impact (B1)}\label{sec:b1}
-Whether the finite-start
-artefact changes how causal-discovery algorithms rank on time-unrolled
-benchmarks is tested in a separate experiment (finite against stationary
-generators; sortability measures and algorithms with time labels hidden).
-\PH{B1 results (research/theory2/b1): table and one-paragraph summary to be inserted when the experiment is complete; no numbers are reported here}
+\subsection{Does the start artefact change benchmark results?}\label{sec:b1}
+We unrolled 420 summary graphs (30 per family and $p\in\{5,10\}$; families in
+\cref{tab:b1}) over $T\in\{3,5,10\}$ and drew $n=1000$ linear-Gaussian
+trajectories (positive weights, heterogeneous noise) either with the fixed
+start of \citet{reisach2026topological} (G1) or after a latent burn-in of 100
+steps (G2; an exact stationary start reproduced G2 to within $0.013$). Methods
+saw the $pT$ columns shuffled, with time labels hidden: rel-, $R^2$- and
+Var-SortnRegress \citep{reisach2026topological,reisach2023scale}, FLOP, PC and
+a random order. The analysis plan was committed before any algorithm was run
+(\cref{app:b1}). The fixed start raised rel-SortnRegress order accuracy in all
+five non-strongly-connected families (pooled $+0.125$, 95\% CI
+$[0.116,0.134]$; Holm $p\le1.1\cdot10^{-10}$ per family), and the gain tracked
+the exact population gap of \cref{thm:limit,thm:stat} across the 42 (family,
+$p$, $T$) cells (Spearman $0.80$; slope $0.53$, so the estimated counts see
+about half the population gap). Strong connectivity did not protect short
+horizons: on rings and symmetrised ER graphs the gain was $+0.13$ to $+0.31$
+at $T<p$ and still $+0.08$ to $+0.22$ in most cells with $T\ge p$, as the
+exact values $\srho(\GT)$ predicted (rings: $\srho(\GT)=1$ for all $T\le p$).
+The shifts reversed rankings: 11 method pairs swapped significantly on SHD
+between G1 and G2 (Holm over 1{,}190 tests; 9 remain when first-slice pairs
+are excluded), e.g.\ on chains rel-SortnRegress beat $R^2$-SortnRegress under
+G1 and lost under G2. The best method changed in 10 of 42 cells, but FLOP was
+best on average under both generators. The fixed start also creates
+var-sortability (Var-SortnRegress $+0.20$ on raw data, $+0.002$ after
+standardisation), which drives the largest swaps (Var-SortnRegress against
+FLOP and PC on in-trees); this second artefact is outside our theory.
+
+\begin{table}[t]
+\caption{B1, heterogeneous noise, raw data; means over 180 data sets per family
+(30 graphs $\times$ 2 $p$ $\times$ 3 $T$). OA: order accuracy of
+rel-SortnRegress (rel) and Var-SortnRegress (var), G1 / G2. $\Delta$OA: G1$-$G2
+for rel, with bootstrap 95\% CI. SC: strongly connected.}
+\label{tab:b1}
+\vskip 0.05in
+\centering\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lcccc}
+\toprule
+family & exact $\srho$ & rel OA & $\Delta$OA rel & var OA\\
+\midrule
+symER (SC) & .78/.50 & .63/.50 & $+.126$ [.110,.142] & .64/.50\\
+ring (SC)  & .95/.50 & .69/.51 & $+.180$ [.162,.198] & .73/.50\\
+chain      & .89/.50 & .75/.53 & $+.217$ [.199,.235] & .93/.70\\
+out-tree   & .84/.50 & .69/.55 & $+.144$ [.125,.162] & .94/.71\\
+in-tree    & .79/.66 & .74/.67 & $+.069$ [.057,.082] & .95/.72\\
+ER($c{=}1$)& .77/.56 & .67/.59 & $+.085$ [.068,.102] & .86/.65\\
+ER($c{=}2$)& .83/.52 & .70/.59 & $+.109$ [.093,.127] & .74/.59\\
+\bottomrule
+\end{tabular}
+\vskip -0.1in
+\end{table}
 
 %=============================================================================
 \section{Aggregation versus Subsampling}
@@ -794,9 +845,11 @@ these regimes, so P9's verdict stands.
 rel-sortable above $1/2$ for every summary graph that is not a union of
 strongly connected components (\cref{cor:iff}), and part of the excess comes
 only from the start at $t=1$. Benchmarks should use strongly connected summary
-graphs or a burn-in of at least $p-1$ slices ($(p-1)\tau_{\max}$ with lags up to
-$\tau_{\max}$), after which the value is the graph property of
-\cref{thm:stat}. A latent burn-in makes its nodes latent common causes, so a
+graphs or a burn-in of at least $\Delta$ slices ($\Delta\tau_{\max}$ with lags up to
+$\tau_{\max}$; $\Delta$ cannot be lowered in general), after which the value is the graph property of
+\cref{thm:stat}; strong connectivity alone does not suffice at the short
+horizons proposed for benchmarks (\cref{sec:b1}). Columns should also be
+standardised, since the fixed start inflates var-sortability as well. A latent burn-in makes its nodes latent common causes, so a
 ground truth that assumes causal sufficiency must be stated for the window
 graph with this in mind; an algorithm that sees time stamps orients every
 cross-time edge for free, so the artefact matters for methods that do not use
@@ -822,7 +875,10 @@ plans are internally time-stamped, agent-executed on one day, and the
 CausalRivers plan was not blind to an earlier analysis of the same data. The
 positive real-data evidence comes from one device per chamber; E1 coincides
 with a weak-component-size rule on its primary graph and is carried mainly by
-ties. The graded criteria P2, P3, P4, P6, P9 and Q9 failed.
+ties. The graded criteria P2, P3, P4, P6, P9 and Q9 failed. B1 uses one
+linear-Gaussian parametrisation with positive weights and $n=1000$; its
+ranking reversals involve sort-based baselines, not the best method, and the
+largest ones come from var-sortability rather than rel-sortability.
 
 \section*{Impact Statement}
 This paper presents work whose goal is to advance the field of Machine

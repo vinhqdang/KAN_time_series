@@ -155,3 +155,11 @@ Main text now ends on page 7 (right column); Impact, AI-use and Artefact stateme
 | Reisach s_rho quote | `scratchpad/dl/r.txt` lines 167-183 (pdftotext of arXiv 2605.06288v1) |
 | n_1/2 approx 22 for l = 0.64 (was "approx 25") | 3 + (3.29/atanh 0.64)^2 = 21.8; the old 25 was z_c^2/l^2 |
 | Lean counts and breakdown | `../lean/AXIOMS.txt`, `../lean/BUILD_LOG.txt` (incremental rebuild 9064 jobs, exit 0), `../lean/README.md` last section |
+
+## B1 integration (2026-11-09)
+
+- Placeholder `\PH{}` in Sec. 3 replaced by "Does the start artefact change benchmark results?" (Sec. 3.x, Table `tab:b1`); all numbers copied from `../b1/README.md` and `../b1/results/analysis.txt` (commit c2d804e).
+- Thm 2 (limit) and Thm 3 (stationary) now state the Delta form (largest finite distance) of the bound and burn-in; Lean still checks the p-1 form, the Delta form is a one-line paper argument checked by enumeration (21,000 cases, 0 violations; B = Delta tight in 445/726). Said so in the text.
+- New Appendix "Benchmark Experiment B1" (design, verdicts H1-H3, deviations D1-D3, two artefacts, burn-in cost, Delta check, figures in `figs/`).
+- Abstract, contribution (5), Discussion (burn-in >= Delta, standardise) and Limitations (single parametrisation; swaps on baselines; largest swaps from var-sortability) updated.
+- Main text still ends on page 8 (33 pages total).

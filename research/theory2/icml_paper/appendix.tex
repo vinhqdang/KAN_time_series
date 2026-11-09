@@ -1752,3 +1752,93 @@ while the chain and the fork have all counts equal to $3$; among the tied graphs
 centre $c$ is the tail with probability $2/3$ under a uniform prior, so a
 degree-aware rule beats the coin. So $\srho$ is the Bayes accuracy of pairwise
 count rules only. This section is interpretive, not a new theorem.
+
+\section{Benchmark Experiment B1: Design, Results and Deviations}
+\label{app:b1}
+
+\textbf{Process.} The analysis plan (\texttt{b1/PLAN.md}) was committed before
+any simulation that produced an algorithm score; only graph-only exact values
+were computed before it. Two deviations were recorded in the plan after the
+validation run (seeds 9000--9004, used only for debugging and timing) and
+before the test run: D1, the burn-in was raised from 50 to 100 steps because
+the validation mixing check failed (error $2.8\cdot10^{-3}$, threshold
+$10^{-3}$; $1.4\cdot10^{-10}$ after the change); D2, SID is undefined when PC
+returns a cyclic directed part, so PC is dropped from the SID comparison in
+those cells (930 instead of 1{,}190 tests). D3: a container restart killed the
+first test run after about half of one shard; no results file had been
+written and no partial score was inspected. The test run was redone from
+scratch with the same deterministic seeds. No threshold or hypothesis was
+changed. As with the other studies, the plan is internally time-stamped and
+agent-executed (\cref{app:prereg}).
+
+\textbf{Design.} Summary graphs with a self-loop at every node, $p\in\{5,10\}$,
+30 test graphs (seeds 1000--1029) per family: symmetrised ER (expected degree
+2) and the directed ring (strongly connected), the chain, random recursive
+out- and in-trees, and directed ER $G(p,c/p)$ with $c\in\{1,2\}$. Linear
+Gaussian VAR(1) with every weight $\sim\mathrm{Unif}(0.5,1)$, rescaled to
+spectral radius $0.8$ if larger, so relatives in the population equal graph
+relatives; noise s.d.\ $\sim\mathrm{Unif}(0.5,1)$ per node (R-het, primary),
+equal noise (R-eq), and R-het standardised (R-std). G1: $x_1$ is noise, then
+$T-1$ steps, truth $\GT$. G2: 100 latent burn-in steps, then the window of
+$T$ slices, truth the window copy of $\GT$; the burn-in makes slice-$B$ nodes
+latent common parents of the first window slice, so we also report SHD
+excluding pairs inside the first slice. G2s: exact stationary start via the
+discrete Lyapunov equation (replication of G2). Methods with columns shuffled:
+rel-SortnRegress (Reisach et al.\ Algorithms 1--2, $\alpha=0.05$),
+$R^2$-SortnRegress, Var-SortnRegress, a random order followed by the same
+regression step, FLOP (\texttt{flopsearch} 0.3.0, BIC penalty 2, 10 restarts),
+PC (causal-learn, Fisher $z$, $\alpha=0.01$; not run at $p=10$, $T=10$ for
+time), and a labels-visible reference that sorts by time. DAGMA/NOTEARS were
+not run. SID by \texttt{gadjid}.
+
+\textbf{Pre-specified hypotheses and verdicts.}
+H1 (start helps rel-SortnRegress on non-strongly-connected families; at least
+4/5 Holm-significant and pooled mean $\ge0.02$): supported, 5/5, pooled
+$+0.125$ $[0.116,0.134]$; tracking (Spearman of cell means against the exact
+gap $\ge0.5$): $0.80$, $p=1.2\cdot10^{-10}$; OLS $d=0.53\,\text{gap}-0.027$.
+H2a (gain below $0.03$ in every strongly connected cell with $T\ge p$, the
+review's expectation): fails, as the exact gaps predicted before the run
+(e.g.\ ring $p=5$, $T=5$: $+0.217$; only symER $p=5$, $T=10$ is small,
+$+0.019$). H2b (non-negligible gain at $T<p$): holds, $+0.13$ to $+0.31$ in all
+six cells. H2c (symER gain decreases with $T$): holds, $+0.195$,
+$p=1.2\cdot10^{-11}$. H3 (some Holm-significant SHD rank swap): supported, 11
+swaps: rel- vs $R^2$-SortnRegress on chains ($p=10$, $T=3,5$), Var-SortnRegress
+vs FLOP (3 cells) and vs PC (5 cells) on in-trees, and $R^2$-SortnRegress vs the
+random order on one ring cell. SID: 9 swaps; orientation score: 9; SHD without
+first-slice pairs: 9. Median Kendall $\tau$ between the G1 and G2 rankings:
+$0.73$. FLOP is best on average under both generators (normalised SHD $0.27$
+vs $0.46$).
+
+\textbf{Two artefacts.} Pooled G1$-$G2 order accuracy: rel-SortnRegress
+$+0.133$ (unchanged by standardisation, since it is scale invariant);
+Var-SortnRegress $+0.202$ raw, $+0.244$ with equal noise, $+0.002$
+standardised. Variance accumulates from the noise-only first slice, so the
+fixed start is var-sortable; standardising removes this but not the relatives
+artefact. Only the rel- vs $R^2$-SortnRegress swaps follow the mechanism of
+\cref{thm:limit,thm:stat}.
+
+\textbf{Cost of the burn-in.} The labels-visible reference has normalised SHD
+$0.044$ (G1) and $0.273$ (G2), but $0.041$ vs $0.048$ without first-slice pairs
+(G2s identical): stationary-start benchmarks should score the window without
+first-slice pairs or as an ADMG.
+
+\textbf{Exact curves and the $\Delta$ bound.} \Cref{fig:srhoT} shows exact
+$\srho(\GT)$ for $T=2,\dots,20$. At $T=3$ it lies between $0.81$ and $1.00$; at
+$T=20$ symER is still at $0.55$--$0.57$ and the ring with $p=10$ at $0.74$. The
+$\Delta$ form of \cref{thm:limit} was checked against brute-force relatives
+enumeration on 3{,}000 random summary graphs $\times$ 7 horizons: no violation
+of either bound, equality in 3{,}164 cases, strictly sharper than the $p-1$
+bound in 10{,}186. For \cref{thm:stat}, $B=\Delta$ gave the stationary value in
+726 of 726 graphs and $B=\Delta-1$ did not in 445, so $\Delta$ cannot be
+lowered in general.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.48\linewidth]{figs/fig_b1.pdf}\hfill
+\includegraphics[width=0.48\linewidth]{figs/fig_srho_vs_T.pdf}
+\caption{Left: per-cell G1$-$G2 gain in rel-SortnRegress order accuracy
+against the exact population gap (all 42 cells below the diagonal and above
+0), and normalised SID per method under G1 and G2. Right: exact
+$\srho(\GT)$ against $T$, mean over the 30 test graphs per family and $p$.}
+\label{fig:srhoT}
+\end{figure}
