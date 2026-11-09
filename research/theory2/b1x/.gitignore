@@ -2,3 +2,4 @@ results/shards/
 val_timing/*.csv.gz
 val_timing/*.rows.csv
 __pycache__/
+results/b2_run.log

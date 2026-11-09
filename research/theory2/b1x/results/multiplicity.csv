@@ -1,0 +1,19 @@
+exp,claim,p_claim,p_holm_all,survives_FWER_0.05
+B1,H1 start helps rel-SnR (>= 4/5 non-SC families),1.0738628158587797e-10,1.5034079422022917e-09,True
+B1,H1 tracking (graph-cluster permutation),9.999000099990002e-05,0.0006999300069993001,True
+B1,H2b SC gain at T < p (some cell),5.1477860251760716e-06,5.6625646276936786e-05,True
+B1,H2c symER gain decreases with T,1.1596945627165833e-11,1.7395418440748749e-10,True
+B1,H3 >= 1 significant SHD swap (Holm over 1190),0.0019673167746298913,0.005901950323889673,True
+B1-NL,H1-NL (>= 4/5 families),7.555220876380673e-10,9.821787139294876e-09,True
+B1-NL,H1-NL tracking (graph-cluster permutation),9.999000099990002e-05,0.0006999300069993001,True
+B1-NL,H1-SGN (>= 4/5 families),7.555220876380673e-10,9.821787139294876e-09,True
+B1-NL,H1-SGN tracking (graph-cluster permutation),9.999000099990002e-05,0.0006999300069993001,True
+B1-NL,H1-SGNU (>= 4/5 families),9.5367431640625e-06,9.5367431640625e-05,True
+B1-NL,H1-SGNU tracking (graph-cluster permutation),9.999000099990002e-05,0.0006999300069993001,True
+B1-NL,H3-NL >= 1 significant SHD swap (Holm over 840),0.011142085868937952,0.022284171737875905,True
+B1-NL,H3-SGN >= 1 significant SHD swap (Holm over 840),0.10778030649982778,0.10778030649982778,False
+B1-NL,"H4-NL var/rel split (parts a, c)",1.725011138019146e-58,2.9325189346325485e-57,True
+B1-NL,"H4-SGN var/rel split (parts a, c)",1.0238212520786951e-58,1.8428782537416512e-57,True
+B1-NL,"H4-SGNU var/rel split (parts a, c)",1.623187544042614e-24,2.5971000704681824e-23,True
+B3,H1 theorem beats tie rules on D* (ar_1),1e-05,9.5367431640625e-05,True
+B3,H2 collider vs const-1/2 and sensor indicator,2e-05,0.00016,True

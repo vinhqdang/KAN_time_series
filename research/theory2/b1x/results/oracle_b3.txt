@@ -1,0 +1,58 @@
+done symER
+done ring
+done chain
+done outtree
+done intree
+done ER1
+done ER2
+B'3 detectability oracle (post hoc, population computation). eps = 0.0620 (n = 1000, alpha = 0.05).
+check: population relatives (|rho| > 1e-20) reproduce the exact graph s_rho: max |diff| = 1.11e-16
+
+== Levels: predicted vs observed rel-SnR OA, mean over p, T, graphs ==
+  family  | exact s G1/G2 | oracle-thr G1/G2 | oracle-prob G1/G2 | observed OA G1/G2 | exp. recall G1/G2
+  symER   | 0.782/0.500 | 0.626/0.504 | 0.627/0.502 | 0.627/0.501 | 0.71/0.82
+  ring    | 0.954/0.500 | 0.779/0.509 | 0.702/0.503 | 0.687/0.507 | 0.65/0.64
+  chain   | 0.887/0.500 | 0.787/0.525 | 0.756/0.528 | 0.749/0.532 | 0.84/0.82
+  outtree | 0.844/0.500 | 0.710/0.546 | 0.690/0.543 | 0.694/0.550 | 0.90/0.94
+  intree  | 0.792/0.664 | 0.738/0.661 | 0.746/0.677 | 0.743/0.673 | 0.88/0.85
+  ER1     | 0.765/0.560 | 0.687/0.594 | 0.677/0.587 | 0.670/0.585 | 0.86/0.85
+  ER2     | 0.830/0.520 | 0.698/0.591 | 0.698/0.584 | 0.698/0.588 | 0.74/0.78
+
+== Which predictor explains the observed G1 - G2 gain? ==
+  cell (42)              gap  : Spearman 0.798  Pearson 0.780 (R^2 0.609)  OLS obs = 0.55*pred -0.033  MAE(obs - pred) 0.168  R^2 about identity -3.169
+  cell (42)              thr  : Spearman 0.973  Pearson 0.946 (R^2 0.895)  OLS obs = 0.70*pred +0.023  MAE(obs - pred) 0.029  R^2 about identity 0.672
+  cell (42)              prob : Spearman 0.986  Pearson 0.987 (R^2 0.974)  OLS obs = 1.03*pred -0.010  MAE(obs - pred) 0.012  R^2 about identity 0.969
+  cell (42)              joint OLS obs ~ gap + prob: coef gap -0.063, prob +1.105; R^2 full 0.977, gap only 0.609, prob only 0.974
+  unit (1260 graph x T)  gap  : Spearman 0.617  Pearson 0.587 (R^2 0.344)  OLS obs = 0.53*pred -0.027  MAE(obs - pred) 0.177  R^2 about identity -1.745
+  unit (1260 graph x T)  thr  : Spearman 0.757  Pearson 0.733 (R^2 0.537)  OLS obs = 0.69*pred +0.026  MAE(obs - pred) 0.072  R^2 about identity 0.389
+  unit (1260 graph x T)  prob : Spearman 0.788  Pearson 0.781 (R^2 0.611)  OLS obs = 1.03*pred -0.010  MAE(obs - pred) 0.058  R^2 about identity 0.608
+  unit (1260 graph x T)  joint OLS obs ~ gap + prob: coef gap -0.039, prob +1.072; R^2 full 0.611, gap only 0.344, prob only 0.611
+  unit-level R^2(prob) - R^2(gap): graph-cluster bootstrap 95% CI [+0.230, +0.300]
+
+== Per cell (SC families and selected), observed gain vs predictions ==
+  chain   p= 5 T=10: observed +0.088 | exact gap +0.284 | oracle-thr +0.108 | oracle-prob +0.114 | exp. recall G1/G2 0.81/0.85
+  chain   p=10 T=10: observed +0.127 | exact gap +0.368 | oracle-thr +0.178 | oracle-prob +0.169 | exp. recall G1/G2 0.70/0.76
+  intree  p= 5 T=10: observed +0.024 | exact gap +0.077 | oracle-thr +0.024 | oracle-prob +0.024 | exp. recall G1/G2 0.82/0.83
+  intree  p=10 T=10: observed +0.021 | exact gap +0.108 | oracle-thr +0.038 | oracle-prob +0.031 | exp. recall G1/G2 0.77/0.77
+  ring    p= 5 T= 3: observed +0.313 | exact gap +0.500 | oracle-thr +0.437 | oracle-prob +0.323 | exp. recall G1/G2 0.79/0.88
+  ring    p= 5 T= 5: observed +0.217 | exact gap +0.500 | oracle-thr +0.285 | oracle-prob +0.222 | exp. recall G1/G2 0.68/0.88
+  ring    p= 5 T=10: observed +0.087 | exact gap +0.222 | oracle-thr +0.091 | oracle-prob +0.106 | exp. recall G1/G2 0.66/0.82
+  ring    p=10 T= 3: observed +0.217 | exact gap +0.500 | oracle-thr +0.431 | oracle-prob +0.261 | exp. recall G1/G2 0.79/0.43
+  ring    p=10 T= 5: observed +0.168 | exact gap +0.500 | oracle-thr +0.298 | oracle-prob +0.183 | exp. recall G1/G2 0.58/0.44
+  ring    p=10 T=10: observed +0.079 | exact gap +0.500 | oracle-thr +0.080 | oracle-prob +0.094 | exp. recall G1/G2 0.39/0.41
+  symER   p= 5 T= 3: observed +0.226 | exact gap +0.429 | oracle-thr +0.253 | oracle-prob +0.238 | exp. recall G1/G2 0.84/0.95
+  symER   p= 5 T= 5: observed +0.116 | exact gap +0.251 | oracle-thr +0.116 | oracle-prob +0.112 | exp. recall G1/G2 0.82/0.94
+  symER   p= 5 T=10: observed +0.019 | exact gap +0.111 | oracle-thr -0.018 | oracle-prob +0.025 | exp. recall G1/G2 0.75/0.86
+  symER   p=10 T= 3: observed +0.224 | exact gap +0.439 | oracle-thr +0.226 | oracle-prob +0.204 | exp. recall G1/G2 0.67/0.77
+  symER   p=10 T= 5: observed +0.127 | exact gap +0.317 | oracle-thr +0.121 | oracle-prob +0.116 | exp. recall G1/G2 0.61/0.75
+  symER   p=10 T=10: observed +0.042 | exact gap +0.145 | oracle-thr +0.032 | oracle-prob +0.053 | exp. recall G1/G2 0.54/0.64
+
+== Exact gap and oracle prediction on all edges vs edges not leaving slice 1 (mean over p, T, graphs) ==
+  symER   exact gap all +0.282 / excl. slice-1 edges +0.229 | oracle-prob all +0.125 / excl. +0.062
+  ring    exact gap all +0.454 / excl. slice-1 edges +0.448 | oracle-prob all +0.198 / excl. +0.161
+  chain   exact gap all +0.387 / excl. slice-1 edges +0.368 | oracle-prob all +0.228 / excl. +0.194
+  outtree exact gap all +0.344 / excl. slice-1 edges +0.307 | oracle-prob all +0.147 / excl. +0.110
+  intree  exact gap all +0.128 / excl. slice-1 edges +0.106 | oracle-prob all +0.069 / excl. +0.046
+  ER1     exact gap all +0.205 / excl. slice-1 edges +0.168 | oracle-prob all +0.090 / excl. +0.054
+  ER2     exact gap all +0.310 / excl. slice-1 edges +0.274 | oracle-prob all +0.115 / excl. +0.074
+  non-SC  exact gap all +0.275 / excl. +0.245 | oracle-prob all +0.130 / excl. +0.096

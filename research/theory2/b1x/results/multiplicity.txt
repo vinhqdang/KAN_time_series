@@ -1,0 +1,19 @@
+Multiplicity across 18 confirmatory claims (Holm, family-wise alpha 0.05). Floors: permutation p >= 1e-4 (10,000 perms); B3 sign-flip p >= 1e-5 (Monte Carlo).
+  B1     H1 start helps rel-SnR (>= 4/5 non-SC families)                p_claim 1.07e-10  Holm 1.50e-09  SURVIVES
+  B1     H1 tracking (graph-cluster permutation)                        p_claim 1.00e-04  Holm 7.00e-04  SURVIVES
+  B1     H2b SC gain at T < p (some cell)                               p_claim 5.15e-06  Holm 5.66e-05  SURVIVES
+  B1     H2c symER gain decreases with T                                p_claim 1.16e-11  Holm 1.74e-10  SURVIVES
+  B1     H3 >= 1 significant SHD swap (Holm over 1190)                  p_claim 1.97e-03  Holm 5.90e-03  SURVIVES
+  B1-NL  H1-NL (>= 4/5 families)                                        p_claim 7.56e-10  Holm 9.82e-09  SURVIVES
+  B1-NL  H1-NL tracking (graph-cluster permutation)                     p_claim 1.00e-04  Holm 7.00e-04  SURVIVES
+  B1-NL  H1-SGN (>= 4/5 families)                                       p_claim 7.56e-10  Holm 9.82e-09  SURVIVES
+  B1-NL  H1-SGN tracking (graph-cluster permutation)                    p_claim 1.00e-04  Holm 7.00e-04  SURVIVES
+  B1-NL  H1-SGNU (>= 4/5 families)                                      p_claim 9.54e-06  Holm 9.54e-05  SURVIVES
+  B1-NL  H1-SGNU tracking (graph-cluster permutation)                   p_claim 1.00e-04  Holm 7.00e-04  SURVIVES
+  B1-NL  H3-NL >= 1 significant SHD swap (Holm over 840)                p_claim 1.11e-02  Holm 2.23e-02  SURVIVES
+  B1-NL  H3-SGN >= 1 significant SHD swap (Holm over 840)               p_claim 1.08e-01  Holm 1.08e-01  does not survive
+  B1-NL  H4-NL var/rel split (parts a, c)                               p_claim 1.73e-58  Holm 2.93e-57  SURVIVES
+  B1-NL  H4-SGN var/rel split (parts a, c)                              p_claim 1.02e-58  Holm 1.84e-57  SURVIVES
+  B1-NL  H4-SGNU var/rel split (parts a, c)                             p_claim 1.62e-24  Holm 2.60e-23  SURVIVES
+  B3     H1 theorem beats tie rules on D* (ar_1)                        p_claim 1.00e-05  Holm 9.54e-05  SURVIVES
+  B3     H2 collider vs const-1/2 and sensor indicator                  p_claim 2.00e-05  Holm 1.60e-04  SURVIVES
