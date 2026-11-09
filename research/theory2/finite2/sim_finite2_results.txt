@@ -1,0 +1,68 @@
+== E. B_ab vs W_ab for independent AR(1) pairs
+  lam=(0.8,0.8): W = sum rho_a rho_b = 4.5556, B = sum |rho_a rho_b| = 4.5556
+  lam=(0.8,-0.8): W = sum rho_a rho_b = 0.2195, B = sum |rho_a rho_b| = 4.5556
+  lam=(0.9,-0.5): W = sum rho_a rho_b = 0.3793, B = sum |rho_a rho_b| = 2.6364
+  lam=(0.5,0.3): W = sum rho_a rho_b = 1.3529, B = sum |rho_a rho_b| = 1.3529
+== A. plug-in Bartlett factor: mean (sd) of B_hat (no floor) vs W; M_n = ceil(n^0.5) and fixed K = 50
+lam=(0.9,0.9) W=9.526 B_K50=9.526 n=  1000 M=  32: Bhat_M 8.989 (1.241)  Bhat_50 8.997 (1.288)
+lam=(0.9,0.9) W=9.526 B_K50=9.526 n=  4000 M=  64: Bhat_M 9.390 (0.598)  Bhat_50 9.386 (0.593)
+lam=(0.9,0.9) W=9.526 B_K50=9.526 n= 16000 M= 127: Bhat_M 9.462 (0.362)  Bhat_50 9.460 (0.358)
+lam=(0.9,0.9) W=9.526 B_K50=9.526 n= 64000 M= 253: Bhat_M 9.504 (0.160)  Bhat_50 9.505 (0.160)
+lam=(0.8,-0.8) W=0.220 B_K50=0.220 n=  1000 M=  32: Bhat_M 0.222 (0.022)  Bhat_50 0.221 (0.023)
+lam=(0.8,-0.8) W=0.220 B_K50=0.220 n=  4000 M=  64: Bhat_M 0.222 (0.010)  Bhat_50 0.222 (0.010)
+lam=(0.8,-0.8) W=0.220 B_K50=0.220 n= 16000 M= 127: Bhat_M 0.219 (0.005)  Bhat_50 0.220 (0.005)
+lam=(0.8,-0.8) W=0.220 B_K50=0.220 n= 64000 M= 253: Bhat_M 0.219 (0.003)  Bhat_50 0.219 (0.003)
+lam=(0.97,0.97) W=32.841 B_K50=31.327 n=  1000 M=  32: Bhat_M 25.062 (3.549)  Bhat_50 26.709 (4.945)
+lam=(0.97,0.97) W=32.841 B_K50=31.327 n=  4000 M=  64: Bhat_M 30.945 (3.677)  Bhat_50 30.237 (3.206)
+lam=(0.97,0.97) W=32.841 B_K50=31.327 n= 16000 M= 127: Bhat_M 32.615 (2.071)  Bhat_50 31.161 (1.508)
+lam=(0.97,0.97) W=32.841 B_K50=31.327 n= 64000 M= 253: Bhat_M 32.748 (1.009)  Bhat_50 31.254 (0.759)
+lam=(0.99,0.99) W=99.503 B_K50=63.447 n=  1000 M=  32: Bhat_M 40.560 (5.287)  Bhat_50 50.032 (9.411)
+lam=(0.99,0.99) W=99.503 B_K50=63.447 n=  4000 M=  64: Bhat_M 66.311 (5.995)  Bhat_50 59.125 (4.387)
+lam=(0.99,0.99) W=99.503 B_K50=63.447 n= 16000 M= 127: Bhat_M 89.348 (7.439)  Bhat_50 62.607 (2.525)
+lam=(0.99,0.99) W=99.503 B_K50=63.447 n= 64000 M= 253: Bhat_M 98.895 (4.807)  Bhat_50 63.398 (0.957)
+== D. non-Gaussian innovations: n Var(r_hat) vs Gaussian W and W_ng = W + sum_i kappa_i g_i^2
+  iid rho=0.6 gauss  : n Var(r) = 0.4088  Gaussian W = 0.4096  W_ng = 0.4096
+  iid rho=0.6 laplace: n Var(r) = 0.6252  Gaussian W = 0.4096  W_ng = 0.6308
+  iid rho=0.6 exp    : n Var(r) = 0.8538  Gaussian W = 0.4096  W_ng = 0.8520
+  independent AR(1) 0.9 exp: n Var(r) = 9.137 (W = 9.526); plug-in size at z=1.96: 0.0483 (target 0.05, mc-se 0.004); nominal 0.510 (pred 0.525)
+  independent AR(1) 0.9 t5: n Var(r) = 9.486 (W = 9.526); plug-in size at z=1.96: 0.0543 (target 0.05, mc-se 0.004); nominal 0.531 (pred 0.525)
+  VAR(1) relatives rho=0.4401 gauss: n Var(r) = 1.7603  Gaussian W = 1.7193  W_ng = 1.7193
+  VAR(1) relatives rho=0.4401 exp  : n Var(r) = 1.7692  Gaussian W = 1.7193  W_ng = 1.8176
+== B. size of the test for an independent AR(1) pair (per-pair level 2*Phibar(z)); reps 4000 (2000 at n=64000)
+z=1.96 (level 0.0500) lam=(0.9,0.9) n=4000 W=9.53 M=64: nominal 0.5308[pred 0.5254, mc-se 0.0079]  plugin_M 0.0550[pred 0.0500, mc-se 0.0034]  plugin_K50 0.0555[pred 0.0500, mc-se 0.0034]  oracle 0.0517[pred 0.0500, mc-se 0.0034]
+z=1.96 (level 0.0500) lam=(0.9,0.9) n=16000 W=9.53 M=127: nominal 0.5300[pred 0.5254, mc-se 0.0079]  plugin_M 0.0498[pred 0.0500, mc-se 0.0034]  plugin_K50 0.0498[pred 0.0500, mc-se 0.0034]  oracle 0.0495[pred 0.0500, mc-se 0.0034]
+z=1.96 (level 0.0500) lam=(0.97,0.97) n=16000 W=32.84 M=127: nominal 0.7275[pred 0.7323, mc-se 0.0070]  plugin_M 0.0517[pred 0.0500, mc-se 0.0034]  plugin_K50 0.0563[pred 0.0556, mc-se 0.0036]  oracle 0.0500[pred 0.0500, mc-se 0.0034]
+z=1.96 (level 0.0500) lam=(0.99,0.99) n=64000 W=99.50 M=766: nominal 0.8530[pred 0.8442, mc-se 0.0081]  plugin_M 0.0495[pred 0.0500, mc-se 0.0049]  plugin_K50 0.1130[pred 0.1176, mc-se 0.0072]  oracle 0.0475[pred 0.0500, mc-se 0.0049]
+z=1.96 (level 0.0500) lam=(0.8,-0.8) n=4000 W=0.22 M=64: nominal 0.0000[pred 0.0000, mc-se 0.0001]  plugin_M 0.0000[pred 0.0000, mc-se 0.0001]  plugin_K50 0.0000[pred 0.0000, mc-se 0.0001]  oracle 0.0000[pred 0.0000, mc-se 0.0001]
+z=3.29 (level 0.0010) lam=(0.9,0.9) n=4000 W=9.53 M=64: nominal 0.2878[pred 0.2864, mc-se 0.0071]  plugin_M 0.0022[pred 0.0010, mc-se 0.0005]  plugin_K50 0.0022[pred 0.0010, mc-se 0.0005]  oracle 0.0025[pred 0.0010, mc-se 0.0005]
+z=3.29 (level 0.0010) lam=(0.9,0.9) n=16000 W=9.53 M=127: nominal 0.2883[pred 0.2864, mc-se 0.0071]  plugin_M 0.0015[pred 0.0010, mc-se 0.0005]  plugin_K50 0.0015[pred 0.0010, mc-se 0.0005]  oracle 0.0013[pred 0.0010, mc-se 0.0005]
+z=3.29 (level 0.0010) lam=(0.97,0.97) n=16000 W=32.84 M=127: nominal 0.5763[pred 0.5658, mc-se 0.0078]  plugin_M 0.0018[pred 0.0010, mc-se 0.0005]  plugin_K50 0.0027[pred 0.0013, mc-se 0.0006]  oracle 0.0020[pred 0.0010, mc-se 0.0005]
+z=3.29 (level 0.0010) lam=(0.99,0.99) n=64000 W=99.50 M=766: nominal 0.7320[pred 0.7415, mc-se 0.0098]  plugin_M 0.0005[pred 0.0010, mc-se 0.0007]  plugin_K50 0.0090[pred 0.0086, mc-se 0.0021]  oracle 0.0005[pred 0.0010, mc-se 0.0007]
+z=3.29 (level 0.0010) lam=(0.8,-0.8) n=4000 W=0.22 M=64: nominal 0.0000[pred 0.0000, mc-se 0.0000]  plugin_M 0.0000[pred 0.0000, mc-se 0.0000]  plugin_K50 0.0000[pred 0.0000, mc-se 0.0000]  oracle 0.0000[pred 0.0000, mc-se 0.0000]
+== C. recovery P(R_hat = R), d = 5 in-forest (0->2<-1, 2->3, 4 isolated), Bonferroni Fisher z
+lam=0.5 w=0.5: rho_min=0.0722, null pairs 5/10, W_null range [1.67,2.07], B_null max 2.07
+  alpha=0.05 n=  2000: P(R_hat=R) nominal 0.357 plugin_M 0.077 plugin_K50 0.080 oracle 0.075 | P(any FP) nominal 0.140 plugin_M 0.025 plugin_K50 0.025 oracle 0.025 | best F1 bound (oracle thr) 0.000
+  alpha=0.05 n=  8000: P(R_hat=R) nominal 0.838 plugin_M 0.882 plugin_K50 0.882 oracle 0.873 | P(any FP) nominal 0.158 plugin_M 0.033 plugin_K50 0.033 oracle 0.033 | best F1 bound (oracle thr) 0.000
+  alpha=0.05 n= 32000: P(R_hat=R) nominal 0.835 plugin_M 0.988 plugin_K50 0.988 oracle 0.988 | P(any FP) nominal 0.165 plugin_M 0.013 plugin_K50 0.013 oracle 0.013 | best F1 bound (oracle thr) 0.000
+  alpha=0.05: z_c=2.807; limit of best F1 guarantee = 0.611; asymptotic guarantee of Prop 3 = 0.975; independent-pairs approx 0.975
+  alpha=0.05 n=1e+06: best F1 bound (oracle thr) 0.4616
+  alpha=0.05 n=1e+08: best F1 bound (oracle thr) 0.5950
+  alpha=0.2 n=  2000: P(R_hat=R) nominal 0.367 plugin_M 0.190 plugin_K50 0.190 oracle 0.195 | P(any FP) nominal 0.325 plugin_M 0.102 plugin_K50 0.102 oracle 0.087 | best F1 bound (oracle thr) 0.000
+  alpha=0.2 n=  8000: P(R_hat=R) nominal 0.690 plugin_M 0.902 plugin_K50 0.902 oracle 0.900 | P(any FP) nominal 0.310 plugin_M 0.087 plugin_K50 0.087 oracle 0.090 | best F1 bound (oracle thr) 0.000
+  alpha=0.2 n= 32000: P(R_hat=R) nominal 0.655 plugin_M 0.897 plugin_K50 0.897 oracle 0.895 | P(any FP) nominal 0.345 plugin_M 0.102 plugin_K50 0.102 oracle 0.105 | best F1 bound (oracle thr) 0.000
+  alpha=0.2: z_c=2.326; limit of best F1 guarantee = -0.336; asymptotic guarantee of Prop 3 = 0.900; independent-pairs approx 0.904
+  alpha=0.2 n=1e+06: best F1 bound (oracle thr) 0.0000
+  alpha=0.2 n=1e+08: best F1 bound (oracle thr) 0.0000
+lam=0.9 w=0.3: rho_min=0.2479, null pairs 5/10, W_null range [9.53,15.63], B_null max 15.63
+  alpha=0.05 n=  2000: P(R_hat=R) nominal 0.133 plugin_M 0.190 plugin_K50 0.188 oracle 0.185 | P(any FP) nominal 0.868 plugin_M 0.013 plugin_K50 0.013 oracle 0.018 | best F1 bound (oracle thr) 0.000
+  alpha=0.05 n=  8000: P(R_hat=R) nominal 0.152 plugin_M 0.975 plugin_K50 0.975 oracle 0.975 | P(any FP) nominal 0.848 plugin_M 0.022 plugin_K50 0.022 oracle 0.022 | best F1 bound (oracle thr) 0.000
+  alpha=0.05 n= 32000: P(R_hat=R) nominal 0.152 plugin_M 0.990 plugin_K50 0.990 oracle 0.990 | P(any FP) nominal 0.848 plugin_M 0.010 plugin_K50 0.010 oracle 0.010 | best F1 bound (oracle thr) 0.000
+  alpha=0.05: z_c=2.807; limit of best F1 guarantee = 0.611; asymptotic guarantee of Prop 3 = 0.975; independent-pairs approx 0.975
+  alpha=0.05 n=1e+06: best F1 bound (oracle thr) 0.0000
+  alpha=0.05 n=1e+08: best F1 bound (oracle thr) 0.5517
+  alpha=0.2 n=  2000: P(R_hat=R) nominal 0.080 plugin_M 0.425 plugin_K50 0.430 oracle 0.400 | P(any FP) nominal 0.920 plugin_M 0.087 plugin_K50 0.085 oracle 0.075 | best F1 bound (oracle thr) 0.000
+  alpha=0.2 n=  8000: P(R_hat=R) nominal 0.080 plugin_M 0.930 plugin_K50 0.930 oracle 0.927 | P(any FP) nominal 0.920 plugin_M 0.070 plugin_K50 0.070 oracle 0.072 | best F1 bound (oracle thr) 0.000
+  alpha=0.2 n= 32000: P(R_hat=R) nominal 0.105 plugin_M 0.895 plugin_K50 0.895 oracle 0.892 | P(any FP) nominal 0.895 plugin_M 0.105 plugin_K50 0.105 oracle 0.107 | best F1 bound (oracle thr) 0.000
+  alpha=0.2: z_c=2.326; limit of best F1 guarantee = -0.336; asymptotic guarantee of Prop 3 = 0.900; independent-pairs approx 0.904
+  alpha=0.2 n=1e+06: best F1 bound (oracle thr) 0.0000
+  alpha=0.2 n=1e+08: best F1 bound (oracle thr) 0.0000

@@ -1,0 +1,17 @@
+p=20000 c=1.0 seed=100000 L=0.74804 S=0.65457 src/p=0.366 levels=78 t=0.3s
+p=20000 c=1.0 seed=100001 L=0.74961 S=0.65749 src/p=0.369 levels=103 t=0.2s
+p=20000 c=1.0 seed=100002 L=0.74928 S=0.65682 src/p=0.365 levels=85 t=0.2s
+p=20000 c=1.0 seed=100003 L=0.74820 S=0.65420 src/p=0.369 levels=115 t=0.2s
+p=20000 c=1.0 seed=100004 L=0.74865 S=0.65578 src/p=0.371 levels=63 t=0.2s
+p=20000 c=1.0 seed=100005 L=0.74763 S=0.65557 src/p=0.369 levels=71 t=0.2s
+SUMMARY p=20000 c=1.0 nseed=6 L=0.74857+-0.00076 (pred 0.75000) S=0.65574+-0.00126 (pred 0.65803) se(S)=0.00052
+p=200000 c=1.0 seed=100000 L=0.74967 S=0.65766 src/p=0.368 levels=162 t=25.7s
+p=200000 c=1.0 seed=100001 L=0.74956 S=0.65809 src/p=0.369 levels=186 t=19.3s
+p=200000 c=1.0 seed=100002 L=0.75024 S=0.65854 src/p=0.368 levels=146 t=19.4s
+p=200000 c=1.0 seed=100003 L=0.74955 S=0.65735 src/p=0.369 levels=197 t=22.0s
+p=200000 c=1.0 seed=100004 L=0.74939 S=0.65751 src/p=0.369 levels=134 t=33.0s
+p=200000 c=1.0 seed=100005 L=0.74988 S=0.65791 src/p=0.368 levels=163 t=20.3s
+SUMMARY p=200000 c=1.0 nseed=6 L=0.74972+-0.00031 (pred 0.75000) S=0.65784+-0.00043 (pred 0.65803) se(S)=0.00018
+p=1000000 c=1.0 seed=100000 L=0.74989 S=0.65796 src/p=0.369 levels=282 t=952.0s
+Terminated
+# stopped by hand after the first p=10^6 seed (952 s per seed; the remaining 2 seeds would have exceeded the ~30 min CPU budget). Planned: 3 seeds; run: 1.

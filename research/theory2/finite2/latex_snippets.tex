@@ -1,0 +1,125 @@
+% ===================== Ready-to-paste material for icml_paper (from research/theory2/finite2/FINITE2.md) =====
+% Needs: \atanh, \neff, \srho macros already defined in main.tex.  Labels new: lem:acvl2, lem:plugin, prop:plugin,
+% prop:f1scope, rem:nongauss.
+
+% ---------------------------------------------------------------- MAIN TEXT, one-sentence changes
+% (M1) l.528-529, replace "(for an independent pair, the Bartlett sum $\sum_h\rho_a(h)\rho_b(h)$)" by:
+(for an independent pair $B_{ab}=\sum_h|\rho_a(h)\rho_b(h)|$, which is at least the Bartlett sum
+$W_{ab}=\sum_h\rho_a(h)\rho_b(h)\ge0$ and equals it iff all products $\rho_a(h)\rho_b(h)$ are nonnegative; e.g.\
+$B_{ab}=4.56$, $W_{ab}=0.22$ for AR(1) coefficients $0.8$ and $-0.8$)
+
+% (M2) after the F1 sentence ending "so $n/B$ acts as an effective sample size." add:
+This exponential bound is for a fixed threshold $\tau$; for the Bonferroni Fisher-$z$ threshold
+$\tau_n\asymp z_c/\sqrt{n'}$ that we use, the best failure probability it certifies tends to
+$d(d{-}1)e^{-z_c^2/(2B)}>0$ (\cref{prop:f1scope}), and recovery is instead guaranteed asymptotically by
+\cref{prop:plugin}.
+
+% (M3) in Prop. nominal, replace "($=B_{ab}$ when all products are nonnegative)" by
+($\le B_{ab}$, with equality iff all products are nonnegative)
+
+% (M4) after Prop. nominal and the Breuer--Major paragraph, add:
+On real data $\neff$ is estimated by $n/\hat B_{ab}$,
+$\hat B_{ab}=\max(1,1+2\sum_{h=1}^{K}\hat\rho_a(h)\hat\rho_b(h))$; if $K=K_n\to\infty$ with $K_n=o(n)$, $\hat B_{ab}$
+is consistent and the plug-in test keeps asymptotic size $\le\alpha/m$ per pair and recovers the relatives set with
+probability $\ge1-\alpha$ in the limit (\cref{prop:plugin}); with the fixed $K$ of our studies this requires the
+truncated sum to capture the Bartlett sum.
+
+% (M5) one sentence on non-Gaussianity (Discussion or end of Sec. finite):
+For linear processes with non-Gaussian i.i.d.\ innovations, the null variance $W_{ab}$, and hence the size results,
+are unchanged, because independent series share no fourth cumulant; for relatives the variance gains
+$\sum_i\kappa_i g_i^2$ (\cref{rem:nongauss}), which changes power and transition widths but not the limits, while the
+non-asymptotic bounds would need a sub-Gaussian (Hanson--Wright) replacement with unspecified constants.
+
+% ---------------------------------------------------------------- APPENDIX app:finite, after the proof of Prop. nominal
+\begin{lemma}[sample autocovariances]\label{lem:acvl2}
+Let $X_a$ be a standardised stationary Gaussian series with $\sum_h|\gamma_{aa}(h)|\le\kappa_1$ and
+$\hat\gamma_a(h)=\frac1n\sum_{t\le n-h}(X_a(t{+}h)-\bar X_a)(X_a(t)-\bar X_a)$. For $0\le h<n$,
+$E(\hat\gamma_a(h)-\gamma_{aa}(h))^2\le(8\kappa_1+108\kappa_1^2)/n+2(h/n)^2\gamma_{aa}(h)^2$.
+\end{lemma}
+\begin{proof}
+For $\tilde\gamma(h)=\frac1n\sum_{t\le n-h}X(t{+}h)X(t)$, $E\tilde\gamma(h)=(1-h/n)\gamma(h)$ and, by Isserlis,
+$\mathrm{Var}\,\tilde\gamma(h)=n^{-2}\sum_{s,t\le n-h}[\gamma(s{-}t)^2+\gamma(s{-}t{+}h)\gamma(s{-}t{-}h)]\le2\kappa_1/n$,
+since $|\gamma|\le1$ gives $\sum_k\gamma(k)^2\le\kappa_1$ and $\sum_k|\gamma(k{+}h)\gamma(k{-}h)|\le\kappa_1$. The
+centring term is $-\bar X(S_1+S_2)/n+\frac{n-h}{n}\bar X^2$ with $S_1,S_2$ partial sums; $\bar X$, $S_1/n$, $S_2/n$ are
+centred Gaussians with variance $\le\kappa_1/n$ and $E(UV)^2\le3\sigma^4$ for such pairs, so its second moment is
+$\le27\kappa_1^2/n^2$. Combine with $(u+v+w)^2\le4u^2+4v^2+2w^2$ for $u+v$ and the bias $w=h\gamma(h)/n$.
+\end{proof}
+
+\begin{lemma}[plug-in Bartlett factor]\label{lem:plugin}
+Let $X_a,X_b$ satisfy the assumptions of \cref{sec:finite} (no condition on their cross-dependence),
+$\hat\rho_a(h)=\hat\gamma_a(h)/\hat\gamma_a(0)$, $\hat W_n=1+2\sum_{h=1}^{K_n}\hat\rho_a(h)\hat\rho_b(h)$ and
+$W^\circ_{ab}=\sum_{h\in\mathbb Z}\rho_a(h)\rho_b(h)$. If $K_n\to\infty$ and $K_n/n\to0$, then
+$|\hat W_n-W^\circ_{ab}|=O_P(n^{-1/2}+K_n/n)+2\sum_{h>K_n}|\rho_a(h)\rho_b(h)|\to0$; for fixed $K$,
+$\hat W\to1+2\sum_{h\le K}\rho_a(h)\rho_b(h)$ in probability.
+\end{lemma}
+\begin{proof}
+With $\Delta_a=\hat\rho_a-\rho_a$, on $\{\hat\gamma_a(0),\hat\gamma_b(0)\ge\frac12\}$ (probability $\to1$),
+$|\Delta_a(h)|\le2|\hat\gamma_a(h)-\gamma_{aa}(h)|+2|\gamma_{aa}(h)||\hat\gamma_a(0)-1|$. Write
+$\hat\rho_a\hat\rho_b-\rho_a\rho_b=\Delta_a\rho_b+\rho_a\Delta_b+\Delta_a\Delta_b$. By \cref{lem:acvl2},
+$E\sum_{h\le K}|\hat\gamma_a(h)-\gamma_{aa}(h)||\rho_b(h)|\le\kappa_1\sqrt{c_0/n}+\sqrt2\kappa_1K/n$, so the linear terms
+are $O_P(n^{-1/2}+K/n)$; by Cauchy--Schwarz and $E\sum_{h\le K}(\hat\gamma_a-\gamma_{aa})^2\le Kc_0/n+2\kappa_1(K/n)^2$,
+$\sum_{h\le K}|\Delta_a\Delta_b|=O_P(K/n)$; the tail is at most $\sum_{h>K}|\rho_a(h)|\to0$.
+\end{proof}
+Only $K_n=o(n)$ is needed, because the target is a sum of products of two summable sequences; we do not rely on
+general HAC bandwidth conditions.
+
+\begin{proposition}[plug-in effective sample size]\label{prop:plugin}
+Under the assumptions of \cref{prop:nominal}, use the plug-in threshold $\tanh(z_c/\sqrt{n/\hat B_{ab}-3})$ with
+$\hat B_{ab}=\max(1,\hat W_n)$, where $1\le K_n=o(n)$.
+(i) For an independent pair with $W_{ab}>0$ and $K_n\to\infty$, the false-positive probability tends to
+$2\bar\Phi(z_c\sqrt{\max(1,W_{ab})/W_{ab}})$, which is $\alpha/m$ if $W_{ab}\ge1$ and smaller otherwise. For fixed $K$ it
+tends to $2\bar\Phi(z_c\sqrt{\max(1,W^\circ_{K,ab})/W_{ab}})$, $W^\circ_{K,ab}=1+2\sum_{h\le K}\rho_a(h)\rho_b(h)$.
+(ii) Every pair with $\rho_{ab}\ne0$ is declared with probability $\to1$.
+(iii) If the non-relatives are independent pairs (summary non-relatives of a Gaussian VAR) and every relative has
+$\rho_{ab}\ne0$, then $\liminf_nP(\hat R=R)\ge1-|N|\alpha/m\ge1-\alpha$, and the same holds for
+$P(\hat s=\srho^{\mathrm{pop}})$, provided $K_n\to\infty$.
+\nolean{uses the multivariate Breuer--Major theorem through \cref{prop:nominal}}
+\end{proposition}
+\begin{proof}
+(i) $T=|\sqrt n\,\atanh\hat r|\,(1/\hat B-3/n)^{1/2}$. By \cref{prop:nominal}, $\sqrt n\,\atanh\hat r\Rightarrow N(0,W)$,
+and $\hat B\to b=\max(1,W)$ (or $\max(1,W^\circ_K)$) in probability by \cref{lem:plugin}. By Slutsky,
+$T\Rightarrow|N(0,W/b)|$, whose law has no atom at $z_c$. (ii) By \cref{lem:var}, $\hat r_{ab}\to\rho_{ab}$ in
+probability. By Cauchy--Schwarz $|\hat\rho_a(h)|\le1$, so $\hat B\le1+2K_n=o(n)$ and $n/\hat B\to\infty$.
+(iii) Union bound over $N$ with (i), and (ii) on $R$; equal declared sets give equal $\hat s$.
+\end{proof}
+
+\begin{proposition}[scope of \cref{thm:f1}]\label{prop:f1scope}
+Let the non-relatives $N\neq\emptyset$ have deterministic thresholds with $n\tau_{n,ab}^2\to t_{ab}^2\in(0,\infty)$:
+$t^2=z_c^2$ for the nominal Fisher-$z$ test, and $t^2=z_c^2b_{ab}$ for the effective one with $n'=n/b_{ab}$. Then the
+smallest failure probability certified by \cref{thm:f1} tends to $d(d{-}1)\exp(-\min_Nt_{ab}^2/(2B_{ab}))>0$ when the
+relatives have $|\rho|\ge\rho_{\min}>0$ (and is at least this in general). For i.i.d.\ data and the nominal test this
+is $d(d{-}1)e^{-z_c^2/2}\ge\sqrt{2\pi}\,z_c\alpha$ (Mills), e.g.\ $0.089$ for $d=5$, $\alpha=0.01$. If instead
+$\alpha_n\to0$ with $\log(1/\alpha_n)=o(n)$, \cref{thm:f1} gives
+$P(\hat R\ne R)\le d(d{-}1)\exp(-(1-\eta)z_{c,n}^2r/2)+4d/n\to0$ for any $\eta>0$ and large $n$, with
+$r=\min_N(n/n'_{ab})/B_{ab}$.
+\end{proposition}
+\begin{proof}
+For $\rho_{ab}=0$ the separation condition $\delta_{ab}\le\tau_{n,ab}$ and $\varepsilon_{ab}\ge\sqrt{2B_{ab}x/n}$ force
+$x\le n\tau_{n,ab}^2/(2B_{ab})$, which gives the lower bound. For attainment, take
+$x_n=(1-\eta)\min_Nn\tau_{n,ab}^2/(2B_{ab})$ and $y_n=\log n$. Then all lower-order terms are $o(n^{-1/2})$ and
+$\varepsilon_d\to0$, so the conditions hold for large $n$ on $N$, and on the relatives because $\tau_n\to0$. The
+vanishing-level statement is the same computation with $z_{c,n}\to\infty$.
+\end{proof}
+
+\begin{remark}[non-Gaussian innovations]\label{rem:nongauss}
+Let $X(t)=\sum_j\Psi_j\varepsilon(t-j)$ with $\sum_j\|\Psi_j\|<\infty$ and i.i.d.\ innovations with independent
+unit-variance coordinates and fourth cumulants $\kappa_i=E\varepsilon_i^4-3$. Put
+$G_i(a,b)=\sum_j\Psi_j[a,i]\Psi_j[b,i]$. Then $n\,\mathrm{Cov}(\tilde\gamma_{ab},\tilde\gamma_{cd})\to
+V(ab,cd)+\sum_i\kappa_iG_i(a,b)G_i(c,d)$ (moment--cumulant formula and dominated convergence), so
+$W_{ab}^{\mathrm{ng}}=W_{ab}+\sum_i\kappa_ig_i^2$ with $g_i=G_i(a,b)-\frac{\rho_{ab}}2(G_i(a,a)+G_i(b,b))$. Independent
+series share no innovation, so $g_i=0$: the null variance $\sum_h\rho_a(h)\rho_b(h)$, and hence
+\cref{prop:nominal,prop:plugin}, are unchanged, given the CLT for linear processes, which we do not re-prove. For
+relatives, $W$ changes by $\sum_i\kappa_ig_i^2$ (of either sign, since $\kappa_i\ge-2$). This affects power and
+transition widths, not the population statements or the location of $\nhalf$. The non-asymptotic bounds use the
+Gaussian chaos tail. For sub-Gaussian innovations the Hanson--Wright inequality
+\citep[Thm.~1.1]{rudelson2013hanson} has the same form with unspecified constants.
+\end{remark}
+
+% bib entry
+% @article{rudelson2013hanson, author={Rudelson, Mark and Vershynin, Roman}, title={Hanson--Wright inequality and
+%   sub-gaussian concentration}, journal={arXiv:1306.2872}, year={2013}}   % journal version (ECP 18, no. 82) not verified
+
+% ---------------------------------------------------------------- APPENDIX tab:er, sentence after the table (R-N11 / N7)
+At the critical point $c=1$, $S$ converges slowly in $p$: $0.65574\pm0.00126$ ($p=2\cdot10^4$, 6 seeds),
+$0.65784\pm0.00043$ ($2\cdot10^5$, 6 seeds) and $0.65796$ ($10^6$, 1 seed) against $0.65803$, like $L$
+($0.74857$, $0.74972$, $0.74989$ against $0.75$).
