@@ -1,0 +1,44 @@
+-- ar_1 ref: pairs declared in >= 1 unit although non-relatives, and relatives never/rarely detected
+-- ar_1 pol_1_90: pairs declared in >= 1 unit although non-relatives, and relatives never/rarely detected
+   REL  red      vis_3    declared 0.00  median r +0.049
+   NON  pol_1    ir_3     declared 1.00  median r +0.279
+   NON  pol_1    vis_3    declared 1.00  median r +0.274
+   NON  pol_2    ir_3     declared 0.90  median r -0.215
+   NON  pol_2    vis_3    declared 0.90  median r -0.205
+   NON  ir_3     angle_1  declared 1.00  median r +0.279
+   NON  ir_3     angle_2  declared 0.90  median r -0.215
+   NON  vis_3    angle_1  declared 1.00  median r +0.275
+   NON  vis_3    angle_2  declared 0.90  median r -0.206
+-- ar_1 pol_12_30: pairs declared in >= 1 unit although non-relatives, and relatives never/rarely detected
+   mismatches theory vs observed (101 of 4238): {'red->ir_3 theory 0.5 obs 1.0': 18, 'green->vis_3 theory 0.5 obs 1.0': 14, 'blue->vis_3 theory 0.5 obs 1.0': 12, 'blue->ir_3 theory 0.5 obs 1.0': 11, 'green->ir_3 theory 0.5 obs 1.0': 8, 'red->vis_3 theory 0.5 obs 1.0': 7, 'red->vis_2 theory 0.5 obs 1.0': 6, 'red->current theory 0.5 obs 1.0': 6, 'red->vis_1 theory 0.5 obs 1.0': 4, 'red->ir_2 theory 0.5 obs 1.0': 4, 'green->vis_3 theory 1.0 obs 0.5': 4, 'red->ir_1 theory 0.5 obs 1.0': 3}
+-- scm_5_red all: pairs declared in >= 1 unit although non-relatives, and relatives never/rarely detected
+   mismatches theory vs observed (0 of 2174): {}
+-- scm_5_blue all: pairs declared in >= 1 unit although non-relatives, and relatives never/rarely detected
+   mismatches theory vs observed (0 of 2248): {}
+-- scm_5_green all: pairs declared in >= 1 unit although non-relatives, and relatives never/rarely detected
+   REL  green    ir_2     declared 0.50  median r +0.133
+   REL  green    vis_2    declared 0.70  median r +0.139
+   REL  green    current  declared 0.60  median r +0.132
+   mismatches theory vs observed (58 of 2036): {'blue->current theory 1.0 obs 0.5': 6, 'red->ir_2 theory 1.0 obs 0.5': 5, 'blue->vis_2 theory 1.0 obs 0.5': 5, 'blue->ir_2 theory 1.0 obs 0.5': 4, 'green->ir_1 theory 0.5 obs 1.0': 4, 'red->current theory 1.0 obs 0.5': 4, 'blue->vis_1 theory 1.0 obs 0.5': 4, 'green->vis_1 theory 0.5 obs 1.0': 3, 'green->vis_2 theory 0.5 obs 1.0': 3, 'red->vis_2 theory 1.0 obs 0.5': 3, 'blue->ir_1 theory 1.0 obs 0.5': 3, 'green->vis_3 theory 0.5 obs 1.0': 2}
+-- scm_4_green all: pairs declared in >= 1 unit although non-relatives, and relatives never/rarely detected
+   mismatches theory vs observed (0 of 2125): {}
+-- scm_4_blue all: pairs declared in >= 1 unit although non-relatives, and relatives never/rarely detected
+   REL  blue     ir_1     declared 0.00  median r +0.007
+   REL  blue     vis_1    declared 0.00  median r +0.029
+   REL  blue     ir_2     declared 0.00  median r -0.009
+   REL  blue     vis_2    declared 0.00  median r +0.028
+   REL  blue     ir_3     declared 0.00  median r -0.009
+   REL  blue     vis_3    declared 0.00  median r +0.024
+   REL  blue     current  declared 0.00  median r -0.009
+   mismatches theory vs observed (1031 of 2167): {'red->ir_3 theory 1.0 obs 0.5': 82, 'red->current theory 1.0 obs 0.5': 78, 'green->ir_3 theory 1.0 obs 0.5': 75, 'red->ir_1 theory 1.0 obs 0.5': 71, 'red->vis_2 theory 1.0 obs 0.5': 71, 'red->vis_3 theory 1.0 obs 0.5': 71, 'red->vis_1 theory 1.0 obs 0.5': 69, 'green->current theory 1.0 obs 0.5': 68, 'green->ir_1 theory 1.0 obs 0.5': 67, 'red->ir_2 theory 1.0 obs 0.5': 67, 'green->vis_3 theory 1.0 obs 0.5': 63, 'green->vis_2 theory 1.0 obs 0.5': 61}
+-- scm_4_red all: pairs declared in >= 1 unit although non-relatives, and relatives never/rarely detected
+   mismatches theory vs observed (0 of 2194): {}
+scm_5_red {'red': (7, 243, 34.3, 223), 'green': (28, 181, 19.3, 129), 'blue': (0, 235, 37.3, 224)}
+scm_5_blue {'red': (0, 229, 34.1, 211), 'green': (36, 184, 19.4, 135), 'blue': (3, 251, 37.7, 233)}
+scm_5_green {'red': (0, 223, 33.8, 205), 'green': (1, 71, 9.1, 64), 'blue': (0, 240, 37.6, 223)}
+scm_4_green {'red': (10, 182, 23.2, 154), 'green': (26, 103, 9.9, 73), 'blue': (29, 103, 9.4, 68)}
+scm_4_blue {'red': (13, 181, 23.0, 153), 'green': (39, 142, 14.6, 99), 'blue': (1, 13, 1.6, 13)}
+scm_4_red {'red': (39, 213, 23.1, 154), 'green': (46, 158, 14.7, 103), 'blue': (48, 157, 13.9, 98)}
+S5 ref: n=73 exact theory(G_lin) 1.000  theory(G_D) 0.000
+S5 pol_1_90: n=74 exact theory(G_lin) 0.041  theory(G_D) 0.959
+S5 pol_12_30: n=89 exact theory(G_lin) 1.000  theory(G_D) 0.000

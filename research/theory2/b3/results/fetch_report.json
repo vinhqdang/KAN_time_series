@@ -1,0 +1,86 @@
+{
+ "ar_1_uniform_ref": {
+  "dataset": "lt_camera_walks_v1",
+  "crc32": "b153930d",
+  "sha256": "c3f7ec56240db77b7281b836ec48c5bd89f420d98b4dfb8d7270b5cc84dcb53f",
+  "rows": 30000,
+  "columns": 52,
+  "design_check_max_abs_diff": {
+   "red": 0.0,
+   "green": 0.0,
+   "blue": 0.0,
+   "pol_1": 1.1444091789769573e-06,
+   "pol_2": 1.1444091789769573e-06
+  }
+ },
+ "ar_1_uniform_pol_1_90": {
+  "dataset": "lt_camera_walks_v1",
+  "crc32": "894684f7",
+  "sha256": "b6e9ca487670f88f550a6bbf8cbfaa0b2ebd037963bc0d5a2e8f6afbaef77477",
+  "rows": 30000,
+  "columns": 52,
+  "design_check_max_abs_diff": {
+   "red": 216.0,
+   "green": 204.0,
+   "blue": 212.0,
+   "pol_1": 48.80000038146973,
+   "pol_2": 48.0
+  }
+ },
+ "ar_1_uniform_pol_12_30": {
+  "dataset": "lt_camera_walks_v1",
+  "crc32": "dcab420f",
+  "sha256": "259d615b8f3cd4319246bcff1692ac092845eacfee024d357ea056d93ee135c7",
+  "rows": 30000,
+  "columns": 52,
+  "design_check_max_abs_diff": {
+   "red": 205.0,
+   "green": 214.0,
+   "blue": 205.0,
+   "pol_1": 49.29999992847443,
+   "pol_2": 52.9
+  }
+ },
+ "scm_5_red": {
+  "dataset": "lt_camera_v1",
+  "crc32": "a3d5a406",
+  "sha256": "3c912d8a6676dc746a461814e2b29894ad0c30864b295a5d1938c8efe264ffb5",
+  "rows": 10000,
+  "columns": 52
+ },
+ "scm_5_blue": {
+  "dataset": "lt_camera_v1",
+  "crc32": "08eb6c50",
+  "sha256": "c8e71cfb8c3d460da672c9cbec03cfeb372b93bcbcdd95c34bd48e61c53edd4f",
+  "rows": 10000,
+  "columns": 52
+ },
+ "scm_5_green": {
+  "dataset": "lt_camera_v1",
+  "crc32": "158bdeb3",
+  "sha256": "4a00091387f9863c6ce8b018e27c72e7cc0fb89429cf365de14cb242c681bdff",
+  "rows": 10000,
+  "columns": 52
+ },
+ "scm_4_green": {
+  "dataset": "lt_camera_v1",
+  "crc32": "de1c4f3d",
+  "sha256": "79d6250bbdc466b65702e658d551767ead7e613440beefd592ea3c654a1506af",
+  "rows": 10000,
+  "columns": 52
+ },
+ "scm_4_blue": {
+  "dataset": "lt_camera_v1",
+  "crc32": "efc3eb05",
+  "sha256": "4508d5e6620c162dfb7361695bb7e3c97bdc627f3c95abe0a069e8f2110e2310",
+  "rows": 10000,
+  "columns": 52
+ },
+ "scm_4_red": {
+  "dataset": "lt_camera_v1",
+  "crc32": "9fdbe1ed",
+  "sha256": "a6e4c479c02c246f5e99dc7d6df20e78f88956226b43ee0bc8d7a8826eef5623",
+  "rows": 10000,
+  "columns": 52
+ }
+}
