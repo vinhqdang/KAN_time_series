@@ -12,6 +12,7 @@ Checks (all exact, small p):
 import sys, random, math
 from fractions import Fraction
 from math import gcd
+import os as _os, sys as _sys; _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))   # sibling modules also under python -I
 from x2_enum import powers, graph_from_bits
 
 def seq_info(adj, p, N=200):

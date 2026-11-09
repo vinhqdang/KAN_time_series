@@ -1,8 +1,11 @@
 """Exploratory (not pre-registered): marginal correlation of block-mean series for pairs that are summary relatives
 in the river graph versus pairs that are not.  Run: OMP_NUM_THREADS=1 /usr/bin/python3 explore_corr.py"""
 import numpy as np, json, pickle, networkx as nx
-_tp = __file__.replace("explore_corr.py", "test_p.py"); exec(open(_tp).read().split("res = {")[0].replace("__file__", repr(_tp)))
-G = {r: pickle.load(open(f"/tmp/claude-0/dl/pz/product/rivers_{r}.p", "rb")) for r in ["east_germany", "bavaria"]}
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from test_p import S, RES, series   # subgraphs and loader of test_p.py (its main analysis runs only as a script)
+from datapaths import CR_PRODUCT    # importable once test_p has put .. on sys.path; see ../DATA.md
+G = {r: pickle.load(open(f"{CR_PRODUCT}/rivers_{r}.p", "rb")) for r in ["east_germany", "bavaria"]}
 out = {}
 for rn in RES:
     rel, non = [], []

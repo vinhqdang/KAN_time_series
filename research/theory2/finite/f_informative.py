@@ -3,6 +3,7 @@ Synthetic constants: every series AR(1)-like with persistence lam (B_null = (1+l
 kappa1 = (1+lam)/(1-lam), kappa2 = 2 kappa1; B_ab := 2 B_null is a synthetic stand-in, not a bound).  d = 5 and 10, one pair class.
 Run: /usr/bin/python3 f_informative.py > f_informative_results.txt"""
 import numpy as np
+import os as _os, sys as _sys; _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))   # sibling modules also under python -I
 from common import f1_bound, fisher_tau
 
 def consts(lam, d):

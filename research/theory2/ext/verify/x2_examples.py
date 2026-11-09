@@ -1,6 +1,7 @@
 """X2: named examples (limit L from the density formula, stationary S^Z), and check L = S^Z for acyclic loop-free graphs."""
 import random
 from fractions import Fraction
+import os as _os, sys as _sys; _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))   # sibling modules also under python -I
 from x2_limit import analyse, pred_up_Z, edges_of
 from x2_enum import graph_from_bits
 

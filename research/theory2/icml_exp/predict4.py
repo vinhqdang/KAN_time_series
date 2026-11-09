@@ -2,6 +2,7 @@
 the full node set and on the pre-registered subgraph samples; counts of edge instances where theory and a
 competitor disagree.  Output: predict4_results.txt"""
 import sys, numpy as np
+import os as _os, sys as _sys; _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))   # sibling modules also under python -I
 from graphs4 import *
 
 def summarise(name, nodes, edges, score_edges, inputs, subsets):

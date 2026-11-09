@@ -5,7 +5,8 @@ to lags |h| <= L with Bonferroni over pairs and lags (L = 0 is exactly the PLAN3
 Usage:  OMP_NUM_THREADS=1 python3 -I test4.py <this_dir> <mode> <out.json>
   mode = dev   : development run on the PLAN3 data (WT actuators_random_walk_2..16, LT actuators_white) only
   mode = main  : the pre-registered PLAN4 analyses on held-out data
-Data locations (raw data are not in the repository): see DATA below."""
+Data locations (raw data are not in the repository): ../datapaths.py and ../DATA.md
+(set THEORY2_DATA_ROOT or the THEORY2_CC_* variables)."""
 import sys, os, json, itertools, time
 import numpy as np
 import pandas as pd
@@ -15,8 +16,10 @@ HERE, MODE, OUT = sys.argv[1:4]
 sys.path.insert(0, HERE)
 import graphs4 as G
 
-DATA = {"crl": "/tmp/claude-0/dl4/crl", "cam": "/tmp/claude-0/dl4/cam",
-        "wt": "/tmp/claude-0/dl3/cc/wt_walks_v1/wt_walks_v1", "lt": "/tmp/claude-0/dl3/cc/lt_walks_v1/lt_walks_v1"}
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "realdata"))
+import datapaths   # raw-data locations: env THEORY2_DATA_ROOT or per-dataset variables, see ../DATA.md
+DATA = {"crl": datapaths.CC_CRL, "cam": datapaths.CC_CAM, "wt": datapaths.CC_WT_WALKS, "lt": datapaths.CC_LT_WALKS}
 ALPHA = 0.01; NBOOT = 2000; FAMILY_ALPHA = 0.05
 
 # ----------------------------------------------------------------------------------------------- preprocessing
@@ -348,9 +351,7 @@ def lt_dataset(exp, seglen, K, L, seedbase, linear):
 def main_dev():
     """Development only (PLAN4 states this): run the E1/E2 code on PLAN3's data to test it."""
     out = {}
-    import importlib.util
-    spec = importlib.util.spec_from_file_location("cc_graph", os.path.join(HERE, "..", "realdata", "cc_graph.py"))
-    cc = importlib.util.module_from_spec(spec); spec.loader.exec_module(cc)
+    import cc_graph as cc   # ../realdata/cc_graph.py (on sys.path above)
     nodes, edges = cc.system("wt"); inputs = set(range(5))
     units = []
     for k in range(2, 17):

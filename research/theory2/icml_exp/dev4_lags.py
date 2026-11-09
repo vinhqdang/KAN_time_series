@@ -1,13 +1,12 @@
 """Development only (PLAN4 section 2): lag windows L and block sizes D on PLAN3's WT data
 (actuators_random_walk_2..16), using the test4.py estimator.  Not evidence for any verdict.
 Usage: OMP_NUM_THREADS=1 python3 -I dev4_lags.py <this dir>"""
-import sys, os, importlib.util
+import sys, os
 HERE = sys.argv[1]; sys.path.insert(0, HERE)
-src = open(os.path.join(HERE, "test4.py")).read().split('if __name__ == "__main__":')[0]
-sys.argv = ["test4", HERE, "dev", "/dev/null"]; t4 = {}
-exec(compile(src, "test4", "exec"), t4)
-spec = importlib.util.spec_from_file_location("cc_graph", os.path.join(HERE, "..", "realdata", "cc_graph.py"))
-cc = importlib.util.module_from_spec(spec); spec.loader.exec_module(cc)
+sys.argv = ["test4", HERE, "dev", "/dev/null"]   # test4 reads its arguments at import time
+import test4                                     # module-level definitions only; its main block does not run
+t4 = vars(test4)
+import cc_graph as cc                            # ../realdata/cc_graph.py, put on sys.path by test4
 import pandas as pd
 nodes, edges = cc.system("wt")
 raw = [pd.read_csv(os.path.join(t4["DATA"]["wt"], f"actuators_random_walk_{k}.csv"))[nodes].to_numpy(float) for k in range(2, 17)]

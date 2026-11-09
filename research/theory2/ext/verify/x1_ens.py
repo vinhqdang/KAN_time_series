@@ -4,6 +4,7 @@ In-tree: node v>0 flows into a random earlier node (uniform recursive: parent un
 random labelled tree with random root, oriented to the root via Prufer decoding)."""
 import sys, math
 import numpy as np
+import os as _os, sys as _sys; _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))   # sibling modules also under python -I
 from x1_er import LS_from_edges
 
 def recursive_in_tree(p, rng, pref=False):

@@ -2,6 +2,7 @@
 Run: OMP_NUM_THREADS=1 /usr/bin/python3 f2_sim.py > f2_results.txt"""
 import numpy as np
 from scipy.stats import norm
+import os as _os, sys as _sys; _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))   # sibling modules also under python -I
 from common import *
 
 H = 400; d = 5; par = {2: [0, 1], 3: [2]}; edges = [(p, c) for c, ps in par.items() for p in ps]

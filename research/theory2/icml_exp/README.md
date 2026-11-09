@@ -20,7 +20,7 @@ Outputs:
 - `dev4.json`, `dev4.log`, `dev4_lags.log` (development, PLAN3 data);
 - `explore4.log` (post hoc).
 
-Raw data are not committed. SHA-256 values are listed in PLAN4 §0.
+Raw data are not committed. SHA-256 values are listed in PLAN4 §0 (prefixes) and in full in `../DATA.md`; `test4.py` finds the data through `../datapaths.py` (`THEORY2_DATA_ROOT` or `THEORY2_CC_*`).
 
 Reproduce with `OMP_NUM_THREADS=1 python3 -I test4.py <this dir> main results4.json`. It takes about 2 minutes on one core.
 

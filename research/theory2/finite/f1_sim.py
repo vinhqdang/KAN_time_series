@@ -1,6 +1,7 @@
 """F1 checks (FINITE.md Section 1).  Fixed seeds.  Run: OMP_NUM_THREADS=1 /usr/bin/python3 f1_sim.py > f1_results.txt"""
 import numpy as np
 from scipy.stats import norm
+import os as _os, sys as _sys; _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))   # sibling modules also under python -I
 from common import *
 
 H = 400

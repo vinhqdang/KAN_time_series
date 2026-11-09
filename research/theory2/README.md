@@ -1,6 +1,6 @@
 # Theory 2: rel-sortability of time-unrolled DAGs and temporal aggregation
 
-Pre-registered plan: `PLAN.md` (commit e24e4bf). Theory, proofs, novelty check and the Phase 2 operationalisation: `THEORY.md` (Phase 1, commit e92696e, pushed before any Phase 2 data were sampled). Verification code: `verify/`. Empirical code and outputs: `empirical/`. Raw CausalRivers data and the stage0 block-mean caches stay outside the repository (`/tmp/claude-0/dl/`); the repository holds only node ids, windows and derived statistics.
+Pre-registered plan: `PLAN.md` (commit e24e4bf). Theory, proofs, novelty check and the Phase 2 operationalisation: `THEORY.md` (Phase 1, commit e92696e, pushed before any Phase 2 data were sampled). Verification code: `verify/`. Empirical code and outputs: `empirical/`. Raw CausalRivers data and the stage0 block-mean caches stay outside the repository (sources, checksums and locations: `DATA.md`; full reproduction: `REPRODUCE.md`); the repository holds only node ids, windows and derived statistics.
 
 ## Results that survived (full statements and proofs in THEORY.md)
 
@@ -47,4 +47,4 @@ Why (exploratory, not pre-registered; `empirical/explore_corr.py`): station pair
 - `THEORY.md`: all statements, proofs, the novelty check (what was opened and what was seen only in snippets) and the Phase 2 operationalisation.
 - `verify/t1_enum.py`, `verify/t1_corollaries.py`, `verify/t2_aggregation.py`, `verify/t2_support.py`, each with a matching `*_results.txt`.
 - `empirical/sample.py` produces `subgraphs_7000.json` and `sample.log`. `empirical/test_p.py` produces `results_p.json` and `test_p.log`. `empirical/explore_corr.py` produces `explore_corr.json`.
-- Reproduce: `OMP_NUM_THREADS=1 /usr/bin/python3 <script>` from the script's folder (needs the stage0 caches in `/tmp/claude-0/dl/`). One core was used.
+- Reproduce: `OMP_NUM_THREADS=1 /usr/bin/python3 <script>` from the script's folder (needs the stage0 caches; set `THEORY2_DATA_ROOT` or `THEORY2_CR_CACHE` / `THEORY2_CR_PRODUCT` as in `DATA.md`; `empirical/build_cr_cache.py` rebuilds them). One core was used.

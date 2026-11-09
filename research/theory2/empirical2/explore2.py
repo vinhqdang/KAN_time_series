@@ -4,8 +4,9 @@ stations instead of their mean, k = 1, 3, 5, 10; same primary test (Fisher z wit
 conditioning variables).  Writes explore2.json.  Run: OMP_NUM_THREADS=1 /usr/bin/python3 explore2.py > explore2.log"""
 import numpy as np, json, pickle, networkx as nx
 from scipy.stats import norm, spearmanr
-import importlib.util
-CACHE = "/tmp/claude-0/dl/cache"; PRODUCT = "/tmp/claude-0/dl/pz/product"
+import os as _os, sys as _sys
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), ".."))
+from datapaths import CR_CACHE as CACHE, CR_PRODUCT as PRODUCT   # see ../DATA.md
 RES = {"12h": 48, "24h": 96}; KLAG = {"12h": 100, "24h": 50}; ALPHA = 0.01
 HERE = __file__.rsplit("/", 1)[0] if "/" in __file__ else "."
 SG = json.load(open(f"{HERE}/subgraphs_8000.json")); KS = [1, 3, 5, 10]

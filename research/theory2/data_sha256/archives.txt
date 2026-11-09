@@ -1,0 +1,4 @@
+# name  md5  sha256  bytes  url
+causalrivers_product.zip 62278bf7816c77389db6bc7130ff507d 4f779fa9222653af092046eacba39a955cc65638bfb70fb7e31a32d9d8373b55 133228548 https://github.com/CausalRivers/benchmark/releases/download/First_release/product.zip
+cc_wt_walks_v1.zip 19bb4e92cbe0b8dff49299b9b509ac36 1ef92d39fff7645a9e6e8cd41311e708362606491590a1534c6a5135d207736e 46471335 https://causalchamber.s3.eu-central-1.amazonaws.com/downloadables/wt_walks_v1.zip
+cc_lt_walks_v1.zip dcad019186661a56de7a2d1db97fc2f0 21fb3d0b2fad7d8ba544289ee7880785d1c35ae0b5d7f9302c794ca34d205a19 2003074 https://causalchamber.s3.eu-central-1.amazonaws.com/downloadables/lt_walks_v1.zip

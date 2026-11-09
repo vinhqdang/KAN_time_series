@@ -1,0 +1,3 @@
+# raw external data (see DATA.md) and reproduce.sh scratch output are never committed
+data/
+_repro_out/

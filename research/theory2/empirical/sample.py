@@ -3,7 +3,9 @@ common.py, unchanged logic), new seeds 7000..7029 per region and size; compute t
 full regional river graph.  Output: subgraphs_7000.json (node ids, windows, induced edges, predictions; no raw data).
 Run: OMP_NUM_THREADS=1 /usr/bin/python3 sample.py"""
 import numpy as np, json, pickle, networkx as nx
-CACHE = "/tmp/claude-0/dl/cache"; PRODUCT = "/tmp/claude-0/dl/pz/product"
+import os as _os, sys as _sys
+_sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), ".."))
+from datapaths import CR_CACHE as CACHE, CR_PRODUCT as PRODUCT   # see ../DATA.md
 REGIONS = ["east_germany", "bavaria"]; RES = {"6h": 24, "12h": 48, "24h": 96}; MIN_FRAC = 0.5
 SEEDS = list(range(7000, 7030)); SIZES = [5, 10]; MIN_WINDOW_DAYS = 365
 
