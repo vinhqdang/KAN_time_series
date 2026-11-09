@@ -1,0 +1,180 @@
+% lit3/refs_add.bib -- entries to ADD to icml_paper/refs.bib (finding R-N9, task A'6).
+% Every entry was checked on 2026-11-09 against the source listed in lit3/REFS_VERIFY.md.
+% Already in refs.bib and NOT repeated here: zheng2018notears (NOTEARS), runge2019detecting
+% (PCMCI, Sci. Adv.), herman2025unitless, reisach2026topological, stein2025causalrivers,
+% lohse2025sortability, gong2017aggregated.
+% A "% CHECK" comment above an entry names the only fields no opened page displayed.
+
+% ---------------- methods and tools used in B1 / B1-NL ----------------
+
+@inproceedings{wienobst2026flop,
+  title     = {Embracing Discrete Search: A Reasonable Approach to Causal Structure Learning},
+  author    = {Wien{\"o}bst, Marcel and Henckel, Leonard and Weichwald, Sebastian},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2026},
+  note      = {arXiv:2510.04970}
+}
+
+@misc{flopsearch2026,
+  title        = {flopsearch: {P}ython package providing an implementation of the {FLOP} causal discovery algorithm for linear additive noise models},
+  author       = {Wien{\"o}bst, Marcel and Weichwald, Sebastian and Henckel, Leonard},
+  year         = {2026},
+  howpublished = {Python package version 0.3.0, \url{https://github.com/CausalDisco/flopsearch}},
+  note         = {Released 2026-02-27 on PyPI}
+}
+
+@book{spirtes2000causation,
+  title     = {Causation, Prediction, and Search},
+  author    = {Spirtes, Peter and Glymour, Clark and Scheines, Richard},
+  edition   = {2},
+  publisher = {MIT Press},
+  address   = {Cambridge, MA},
+  year      = {2000},
+  doi       = {10.7551/mitpress/1754.001.0001}
+}
+
+@article{spirtes1991algorithm,
+  title   = {An Algorithm for Fast Recovery of Sparse Causal Graphs},
+  author  = {Spirtes, Peter and Glymour, Clark},
+  journal = {Social Science Computer Review},
+  volume  = {9},
+  number  = {1},
+  pages   = {62--72},
+  year    = {1991},
+  doi     = {10.1177/089443939100900106}
+}
+
+@article{zheng2024causallearn,
+  title   = {Causal-learn: Causal Discovery in {P}ython},
+  author  = {Zheng, Yujia and Huang, Biwei and Chen, Wei and Ramsey, Joseph and Gong, Mingming and Cai, Ruichu and Shimizu, Shohei and Spirtes, Peter and Zhang, Kun},
+  journal = {Journal of Machine Learning Research},
+  volume  = {25},
+  number  = {60},
+  pages   = {1--8},
+  year    = {2024}
+}
+
+@inproceedings{henckel2024gadjid,
+  title     = {Adjustment Identification Distance: A gadjid for Causal Structure Learning},
+  author    = {Henckel, Leonard and W{\"u}rtzen, Theo and Weichwald, Sebastian},
+  booktitle = {Proceedings of the Fortieth Conference on Uncertainty in Artificial Intelligence},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {244},
+  pages     = {1569--1598},
+  year      = {2024}
+}
+
+@misc{tigramite,
+  title        = {Tigramite: causal inference for time series},
+  author       = {Runge, Jakob},
+  year         = {2026},
+  howpublished = {Python package version 5.2.10.1, \url{https://github.com/jakobrunge/tigramite}},
+  note         = {Released 2026-01-14 on PyPI}
+}
+
+% ---------------- continuous-optimisation baselines (B'1) ----------------
+
+@inproceedings{bello2022dagma,
+  title     = {{DAGMA}: Learning {DAG}s via {M}-matrices and a Log-Determinant Acyclicity Characterization},
+  author    = {Bello, Kevin and Aragam, Bryon and Ravikumar, Pradeep},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {35},
+  year      = {2022}
+}
+
+@inproceedings{ng2020golem,
+  title     = {On the Role of Sparsity and {DAG} Constraints for Learning Linear {DAG}s},
+  author    = {Ng, Ignavier and Ghassami, AmirEmad and Zhang, Kun},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {33},
+  year      = {2020}
+}
+
+% ---------------- time-series causal discovery and benchmarks ----------------
+
+@inproceedings{weichwald2020causal,
+  title     = {Causal Structure Learning from Time Series: Large Regression Coefficients May Predict Causal Links Better in Practice than Small p-Values},
+  author    = {Weichwald, Sebastian and Jakobsen, Martin E. and Mogensen, Phillip B. and Petersen, Lasse and Thams, Nikolaj and Varando, Gherardo},
+  booktitle = {Proceedings of the NeurIPS 2019 Competition and Demonstration Track},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {123},
+  pages     = {27--36},
+  year      = {2020}
+}
+
+@article{runge2019inferring,
+  title   = {Inferring Causation from Time Series in {E}arth System Sciences},
+  author  = {Runge, Jakob and Bathiany, Sebastian and Bollt, Erik and Camps-Valls, Gustau and Coumou, Dim and Deyle, Ethan and Glymour, Clark and Kretschmer, Marlene and Mahecha, Miguel D. and Mu{\~n}oz-Mar{\'i}, Jordi and van Nes, Egbert H. and Peters, Jonas and Quax, Rick and Reichstein, Markus and Scheffer, Marten and Sch{\"o}lkopf, Bernhard and Spirtes, Peter and Sugihara, George and Sun, Jie and Zhang, Kun and Zscheischler, Jakob},
+  journal = {Nature Communications},
+  volume  = {10},
+  number  = {1},
+  pages   = {2553},
+  year    = {2019},
+  doi     = {10.1038/s41467-019-10105-3}
+}
+
+@inproceedings{pamfil2020dynotears,
+  title     = {{DYNOTEARS}: Structure Learning from Time-Series Data},
+  author    = {Pamfil, Roxana and Sriwattanaworachai, Nisara and Desai, Shaan and Pilgerstorfer, Philip and Georgatzis, Konstantinos and Beaumont, Paul and Aragam, Bryon},
+  booktitle = {Proceedings of the Twenty Third International Conference on Artificial Intelligence and Statistics},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {108},
+  pages     = {1595--1605},
+  year      = {2020}
+}
+
+@inproceedings{runge2020pcmciplus,
+  title     = {Discovering Contemporaneous and Lagged Causal Relations in Autocorrelated Nonlinear Time Series Datasets},
+  author    = {Runge, Jakob},
+  booktitle = {Proceedings of the 36th Conference on Uncertainty in Artificial Intelligence},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {124},
+  pages     = {1388--1397},
+  year      = {2020}
+}
+
+@inproceedings{cheng2024causaltime,
+  title     = {{CausalTime}: Realistically Generated Time-series for Benchmarking of Causal Discovery},
+  author    = {Cheng, Yuxiao and Wang, Ziqian and Xiao, Tingxiong and Zhong, Qin and Suo, Jinli and He, Kunlun},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2024}
+}
+
+@inproceedings{montagna2023assumption,
+  title     = {Assumption Violations in Causal Discovery and the Robustness of Score Matching},
+  author    = {Montagna, Francesco and Mastakouri, Atalanti A. and Eulig, Elias and Noceti, Nicoletta and Rosasco, Lorenzo and Janzing, Dominik and Aragam, Bryon and Locatello, Francesco},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {36},
+  year      = {2023}
+}
+
+@article{hyvarinen2010varlingam,
+  title   = {Estimation of a Structural Vector Autoregression Model Using Non-{G}aussianity},
+  author  = {Hyv{\"a}rinen, Aapo and Zhang, Kun and Shimizu, Shohei and Hoyer, Patrik O.},
+  journal = {Journal of Machine Learning Research},
+  volume  = {11},
+  number  = {56},
+  pages   = {1709--1731},
+  year    = {2010}
+}
+
+@misc{lawrence2021dgp,
+  title         = {Data Generating Process to Evaluate Causal Discovery Techniques for Time Series Data},
+  author        = {Lawrence, Andrew R. and Kaiser, Marcus and Sampaio, Rui and Sipos, Maksim},
+  year          = {2021},
+  eprint        = {2104.08043},
+  archivePrefix = {arXiv},
+  howpublished  = {arXiv:2104.08043; Causal Discovery \& Causality-Inspired Machine Learning Workshop at NeurIPS 2020}
+}
+
+% CHECK (tank2021neural): the final issue (commonly cited as vol. 44, no. 8, pp. 4267--4279, 2022)
+% was NOT displayed by any opened source; Crossref still lists the early-access record (2021,
+% pp. 1-1). The early-access form is kept until the IEEE Xplore page is checked.
+@article{tank2021neural,
+  title   = {Neural {G}ranger Causality},
+  author  = {Tank, Alex and Covert, Ian and Foti, Nicholas and Shojaie, Ali and Fox, Emily B.},
+  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  year    = {2021},
+  doi     = {10.1109/TPAMI.2021.3065601},
+  note    = {Early access; arXiv:1802.05842}
+}
