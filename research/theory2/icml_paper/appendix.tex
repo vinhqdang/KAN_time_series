@@ -1,16 +1,22 @@
 % Appendix (unlimited length). Included from main.tex after \appendix\onecolumn.
 
 \section*{Appendix overview}
-\Cref{app:exact} gives full proofs of \cref{sec:exact}, \cref{app:enum} the
-exhaustive enumeration check, \cref{app:agg} the proofs of \cref{sec:agg},
-\cref{app:finite} the proofs of \cref{sec:finite}, \cref{app:sims} the
-simulation checks of F1--F3, \cref{app:lean} the map from statements to Lean
-names, \cref{app:real} details of the real-data studies, \cref{app:estimand}
-the real-data estimand $\tilde s$, \cref{app:prereg}
-the analysis-plan timeline, prior exposure and deviations, \cref{app:e1,app:e2} the
-experiments E1 and E2 in full, \cref{app:noloop,app:lags,app:er,app:x3} the
-loop-free graphs, lagged unrollings, the random summary graphs (with the full
-proof of \cref{prop:er} in \cref{app:erproof}) and the accuracy interpretation.
+\Cref{app:exact} gives full proofs of \cref{sec:exact} (including
+\cref{rem:sharp}), \cref{app:enum} the exhaustive enumeration check,
+\cref{app:agg} the aggregation-versus-subsampling results and their proofs,
+\cref{app:finite} the proofs of \cref{sec:finite} (including the plug-in
+effective sample size and the scope of the recovery bound), \cref{app:sims}
+the simulation checks of F1--F3, \cref{app:lean} the map from statements to
+Lean names, \cref{app:real} details of the real-data studies,
+\cref{app:estimand} the real-data estimand $\tilde s$, \cref{app:prereg} the
+analysis-plan timeline for all studies and experiments, prior exposure and
+deviations, \cref{app:e1,app:e2} the experiments E1 and E2 in full,
+\cref{app:noloop,app:lags,app:er,app:x3} the loop-free graphs, lagged
+unrollings, the random summary graphs (with the full proof of \cref{prop:er}
+in \cref{app:erproof}) and the accuracy interpretation, and
+\cref{app:b1,app:b1nl,app:b1x,app:b3} the benchmark experiment B1, its
+replication B1-NL, the extension to competitive learners with the post hoc
+re-analysis, oracle and generator survey, and the discriminating test B3.
 
 Status labels. \emph{Machine-checked}: a Lean theorem with no \texttt{sorry}
 and only the standard axioms. \emph{Proved}: a complete paper proof given
@@ -25,6 +31,29 @@ of the lagged recovery bound).
 %=============================================================================
 \section{Proofs for Section~\ref{sec:exact}}
 \label{app:exact}
+
+\begin{table}[h]
+\caption{Rel-sortability of 3-node summary graphs (with self-loops, $|\Es|=5$).
+Finite: $\lim_T\srho(\GT)$ (\cref{thm:limit}); stationary: $\srho^W$
+(\cref{thm:stat}). Lean: \lname{chain3_limit}, \lname{chain3_stat},
+\lname{fork_limit}, \lname{fork_stat}, \lname{collider_limit},
+\lname{collider_stat}; 3-cycle by \lname{reisach_theorem4}.}
+\label{tab:examples}
+\vskip -0.05in
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lcc}
+\toprule
+summary graph & finite $\GT$ (limit) & stationary \\
+\midrule
+chain $a\!\to\! b\!\to\! c$ & $0.7$ & $0.5$ \\
+fork $a\!\leftarrow\! b\!\to\! c$ & $0.7$ & $0.5$ \\
+collider $a\!\to\! c\!\leftarrow\! b$ & $0.7$ & $0.7$ \\
+3-cycle (6 edges) & $0.5$ & $0.5$ \\
+\bottomrule
+\end{tabular}
+\vskip -0.1in
+\end{table}
 
 \textbf{Definition of $\srho$, verbatim.} \citet[Sec.~2.2]{reisach2026topological}
 (arXiv v1) write: ``For a graph $G=(V,E)$ with $|E|\ge1$ we define sortability
@@ -97,12 +126,13 @@ $u=j$ gives $d(j,j)=0\le t\le\infty$ for every $t$: all $T-1$ copies score
 $1$. Edge in $\Eo$: $i$ and $j$ reach each other (or $i=j$), so for every $u$,
 $d(u,i)<\infty$ iff $d(u,j)<\infty$. If the condition of \cref{thm:edge} held
 with $d(u,i)=\infty$ then $d(u,j)=\infty>t$, a contradiction; hence it forces
-$t\le d(u,i)\le p-1$, and at most $N_T(i,j)\le\min(p-1,T-1)$ copies score
-$1$. Summing over the $(T-1)|\Es|$ edges,
+$t\le d(u,i)\le\Delta$, and at most $N_T(i,j)\le\min(\Delta,T-1)$ copies score
+$1$ ($\Delta\le p-1$, \lname{maxFinDist_le_card_sub_one}). Summing over the $(T-1)|\Es|$ edges,
 \[
 \srho(\GT)=\tfrac12+\frac{1}{2(T-1)|\Es|}\Big[(T-1)|\Ex|+\sum_{(i,j)\in\Eo}N_T(i,j)\Big],
 \]
-which gives both bounds; let $T\to\infty$.
+which gives both bounds; let $T\to\infty$. Lean: \lname{sRho_unrolled_bounds_maxFinDist}
+(the $\Delta$ form), with the $p-1$ form \lname{sRho_unrolled_bounds} as a corollary.
 \end{proof}
 
 \begin{proof}[Proof of \cref{cor:iff}]
@@ -117,7 +147,7 @@ $|\Es|=m+p$.
 \begin{proof}[Proof of \cref{thm:stat}]
 In $G_{B+T}$, by \cref{lem:roots} shifted by $B$, $w(s)\in\rel(v(t))$ iff some
 $u$ has $d(u,v)\le t-1$ and $d(u,w)\le s-1$. For window nodes $t-1,s-1\ge
-B\ge p-1$, and every finite distance is at most $p-1$, so the condition is
+B\ge\Delta$, and every finite distance is at most $\Delta$, so the condition is
 $u\in\anc_S(v)\cap\anc_S(w)$, independent of $s,t$. Hence
 $\rel_W(v(t))=\{w(s)\in W: w\in\rel_S(v)\}$, of size $T|\rel_S(v)|$. On
 $V\times\mathbb Z$, \cref{lem:anc} holds verbatim and the common ancestor can
@@ -132,8 +162,18 @@ $\sigma\in\Src(j)$, and $\desc_S(\sigma)\subseteq\rel_S(i)$ whenever
 $\sigma\subseteq\rel_S(i)$. A source SCC meets $\rel_S(i)$ iff it reaches $i$
 (its only ancestors are its own nodes), and then it is contained in
 $\rel_S(i)$. So the condition is $\Src(j)\not\subseteq\Src(i)$, which, as
-$\Src(i)\subseteq\Src(j)$, is $\Src(i)\ne\Src(j)$.
+$\Src(i)\subseteq\Src(j)$, is $\Src(i)\ne\Src(j)$. Lean:
+\lname{rhoBurn_eq_maxFinDist}, \lname{sBurn_eq_maxFinDist} (with $B\ge\Delta$), and the
+$B\ge p-1$ forms \lname{rhoBurn_eq}, \lname{sBurn_eq} as corollaries.
 \end{proof}
+
+\begin{remark}[$B\ge\Delta$ cannot be lowered]\label{rem:sharp}
+For the single edge $0\to1$ with self-loops, $\Delta=1$; with $B=1$ the window
+value is the stationary value $1/2$, and with $B=\Delta-1=0$ it is at least
+$2/3$ for every $T\ge2$ (\lname{edgeLoops_burn_sharp}). Enumeration agrees: on 726
+random summary graphs $B=\Delta$ always gave the stationary value and $B=\Delta-1$
+did not in 445 (\cref{app:b1}).
+\end{remark}
 
 \begin{proof}[Proof of \cref{cor:statiff}]
 If each weak component $C$ has a unique source SCC $\sigma_C$, then
@@ -178,8 +218,26 @@ $\GT$ limit in 9{,}603 random graphs and never with the stationary value; the
 conjecture is \cref{thm:stat}, not the limit of $\GT$.
 
 %=============================================================================
-\section{Proofs for Section~\ref{sec:agg}}
-\label{app:agg}
+\section{Aggregation versus Subsampling}
+\label{app:agg}\label{sec:agg}
+
+For a stable linear SVAR with independent innovations, nodes with disjoint
+summary ancestor sets are independent at all lags, and so are any per-node,
+time-invariant transforms, including block means and subsamples; otherwise
+the lag-0 covariance is nonzero for almost every parameter
+(\cref{prop:zero}). So the population relatives of
+contemporaneous values are $\rel_S$ for every observation scheme, and the
+population relatives sort is the stationary value of \cref{thm:stat} (on
+non-self-loop edges), not the finite-$\GT$ value. Var- and $R^2$-sortability
+behave differently (\cref{thm:agg}): block means converge, at the textbook
+Fej\'er rate for averages of a stationary series
+\citep[Ch.~7]{brockwell1991time}, to the long-run structural model of
+\citet{gong2017aggregated}, whereas subsamples keep the snapshot covariance. As a
+consequence, for large block size, block-mean $R^2$-sortability is $0$ on
+out-stars and $1$ on in-stars with at least two arms for all weights; on
+out-stars subsampled data are $R^2$-sorted correctly on average ($0.84$) while
+block means drift to $0$. We claim only these sortability consequences.
+
 
 Assumptions: $X(t)=\sum_{\tau=1}^{L}A_\tau X(t-\tau)+\varepsilon(t)$, $t\in\mathbb Z$,
 i.i.d.\ innovations with diagonal positive-definite covariance $\Sigma$, stable
@@ -404,6 +462,102 @@ null and $P(|\atanh\hat r|>z_c/\sqrt{n-3})\to2\bar\Phi(z_c/\sqrt{W_{ab}})$, whic
 exceeds the nominal $\alpha/m$ in the limit whenever $W_{ab}>1$.
 \end{proof}
 
+\begin{lemma}[sample autocovariances]\label{lem:acvl2}
+Let $X_a$ be a standardised stationary Gaussian series with $\sum_h|\gamma_{aa}(h)|\le\kappa_1$ and
+$\hat\gamma_a(h)=\frac1n\sum_{t\le n-h}(X_a(t{+}h)-\bar X_a)(X_a(t)-\bar X_a)$. For $0\le h<n$,
+$E(\hat\gamma_a(h)-\gamma_{aa}(h))^2\le(8\kappa_1+108\kappa_1^2)/n+2(h/n)^2\gamma_{aa}(h)^2$.
+\end{lemma}
+\begin{proof}
+For $\tilde\gamma(h)=\frac1n\sum_{t\le n-h}X(t{+}h)X(t)$, $E\tilde\gamma(h)=(1-h/n)\gamma(h)$ and, by Isserlis,
+$\mathrm{Var}\,\tilde\gamma(h)=n^{-2}\sum_{s,t\le n-h}[\gamma(s{-}t)^2+\gamma(s{-}t{+}h)\gamma(s{-}t{-}h)]\le2\kappa_1/n$,
+since $|\gamma|\le1$ gives $\sum_k\gamma(k)^2\le\kappa_1$ and $\sum_k|\gamma(k{+}h)\gamma(k{-}h)|\le\kappa_1$. The
+centring term is $-\bar X(S_1+S_2)/n+\frac{n-h}{n}\bar X^2$ with $S_1,S_2$ partial sums; $\bar X$, $S_1/n$, $S_2/n$ are
+centred Gaussians with variance $\le\kappa_1/n$ and $E(UV)^2\le3\sigma^4$ for such pairs, so its second moment is
+$\le27\kappa_1^2/n^2$. Combine with $(u+v+w)^2\le4u^2+4v^2+2w^2$ for $u+v$ and the bias $w=h\gamma(h)/n$.
+\end{proof}
+
+\begin{lemma}[plug-in Bartlett factor]\label{lem:plugin}
+Let $X_a,X_b$ satisfy the assumptions of \cref{sec:finite} (no condition on their cross-dependence),
+$\hat\rho_a(h)=\hat\gamma_a(h)/\hat\gamma_a(0)$, $\hat W_n=1+2\sum_{h=1}^{K_n}\hat\rho_a(h)\hat\rho_b(h)$ and
+$W^\circ_{ab}=\sum_{h\in\mathbb Z}\rho_a(h)\rho_b(h)$. If $K_n\to\infty$ and $K_n/n\to0$, then
+$|\hat W_n-W^\circ_{ab}|=O_P(n^{-1/2}+K_n/n)+2\sum_{h>K_n}|\rho_a(h)\rho_b(h)|\to0$; for fixed $K$,
+$\hat W\to1+2\sum_{h\le K}\rho_a(h)\rho_b(h)$ in probability.
+\end{lemma}
+\begin{proof}
+With $\Delta_a=\hat\rho_a-\rho_a$, on $\{\hat\gamma_a(0),\hat\gamma_b(0)\ge\frac12\}$ (probability $\to1$),
+$|\Delta_a(h)|\le2|\hat\gamma_a(h)-\gamma_{aa}(h)|+2|\gamma_{aa}(h)||\hat\gamma_a(0)-1|$. Write
+$\hat\rho_a\hat\rho_b-\rho_a\rho_b=\Delta_a\rho_b+\rho_a\Delta_b+\Delta_a\Delta_b$. By \cref{lem:acvl2},
+$E\sum_{h\le K}|\hat\gamma_a(h)-\gamma_{aa}(h)||\rho_b(h)|\le\kappa_1\sqrt{c_0/n}+\sqrt2\kappa_1K/n$, so the linear terms
+are $O_P(n^{-1/2}+K/n)$; by Cauchy--Schwarz and $E\sum_{h\le K}(\hat\gamma_a-\gamma_{aa})^2\le Kc_0/n+2\kappa_1(K/n)^2$,
+$\sum_{h\le K}|\Delta_a\Delta_b|=O_P(K/n)$; the tail is at most $\sum_{h>K}|\rho_a(h)|\to0$.
+\end{proof}
+Only $K_n=o(n)$ is needed, because the target is a sum of products of two summable sequences; we do not rely on
+general HAC bandwidth conditions.
+
+\begin{proposition}[plug-in effective sample size]\label{prop:plugin}
+Under the assumptions of \cref{prop:nominal}, use the plug-in threshold $\tanh(z_c/\sqrt{n/\hat B_{ab}-3})$ with
+$\hat B_{ab}=\max(1,\hat W_n)$, where $1\le K_n=o(n)$.
+(i) For an independent pair with $W_{ab}>0$ and $K_n\to\infty$, the false-positive probability tends to
+$2\bar\Phi(z_c\sqrt{\max(1,W_{ab})/W_{ab}})$, which is $\alpha/m$ if $W_{ab}\ge1$ and smaller otherwise. For fixed $K$ it
+tends to $2\bar\Phi(z_c\sqrt{\max(1,W^\circ_{K,ab})/W_{ab}})$, $W^\circ_{K,ab}=1+2\sum_{h\le K}\rho_a(h)\rho_b(h)$.
+(ii) Every pair with $\rho_{ab}\ne0$ is declared with probability $\to1$.
+(iii) If the non-relatives are independent pairs (summary non-relatives of a Gaussian VAR) and every relative has
+$\rho_{ab}\ne0$, then $\liminf_nP(\hat R=R)\ge1-|N|\alpha/m\ge1-\alpha$, and the same holds for
+$P(\hat s=\srho^{\mathrm{pop}})$, provided $K_n\to\infty$.
+\nolean{uses the multivariate Breuer--Major theorem through \cref{prop:nominal}}
+\end{proposition}
+\begin{proof}
+(i) $T=|\sqrt n\,\atanh\hat r|\,(1/\hat B-3/n)^{1/2}$. By \cref{prop:nominal}, $\sqrt n\,\atanh\hat r\Rightarrow N(0,W)$,
+and $\hat B\to b=\max(1,W)$ (or $\max(1,W^\circ_K)$) in probability by \cref{lem:plugin}. By Slutsky,
+$T\Rightarrow|N(0,W/b)|$, whose law has no atom at $z_c$. (ii) By \cref{lem:var}, $\hat r_{ab}\to\rho_{ab}$ in
+probability. By Cauchy--Schwarz $|\hat\rho_a(h)|\le1$, so $\hat B\le1+2K_n=o(n)$ and $n/\hat B\to\infty$.
+(iii) Union bound over $N$ with (i), and (ii) on $R$; equal declared sets give equal $\hat s$.
+\end{proof}
+
+\begin{proposition}[scope of \cref{thm:f1}]\label{prop:f1scope}
+Let the non-relatives $N\neq\emptyset$ have deterministic thresholds with $n\tau_{n,ab}^2\to t_{ab}^2\in(0,\infty)$:
+$t^2=z_c^2$ for the nominal Fisher-$z$ test, and $t^2=z_c^2b_{ab}$ for the effective one with $n'=n/b_{ab}$. Then the
+smallest failure probability certified by \cref{thm:f1} tends to $d(d{-}1)\exp(-\min_Nt_{ab}^2/(2B_{ab}))>0$ when the
+relatives have $|\rho|\ge\rho_{\min}>0$ (and is at least this in general). For i.i.d.\ data and the nominal test this
+is $d(d{-}1)e^{-z_c^2/2}\ge\sqrt{2\pi}\,z_c\alpha$ (Mills), e.g.\ $0.089$ for $d=5$, $\alpha=0.01$. If instead
+$\alpha_n\to0$ with $\log(1/\alpha_n)=o(n)$, \cref{thm:f1} gives
+$P(\hat R\ne R)\le d(d{-}1)\exp(-(1-\eta)z_{c,n}^2r/2)+4d/n\to0$ for any $\eta>0$ and large $n$, with
+$r=\min_N(n/n'_{ab})/B_{ab}$.
+\end{proposition}
+\begin{proof}
+For $\rho_{ab}=0$ the separation condition $\delta_{ab}\le\tau_{n,ab}$ and $\varepsilon_{ab}\ge\sqrt{2B_{ab}x/n}$ force
+$x\le n\tau_{n,ab}^2/(2B_{ab})$, which gives the lower bound. For attainment, take
+$x_n=(1-\eta)\min_Nn\tau_{n,ab}^2/(2B_{ab})$ and $y_n=\log n$. Then all lower-order terms are $o(n^{-1/2})$ and
+$\varepsilon_d\to0$, so the conditions hold for large $n$ on $N$, and on the relatives because $\tau_n\to0$. The
+vanishing-level statement is the same computation with $z_{c,n}\to\infty$.
+\end{proof}
+
+\begin{remark}[non-Gaussian innovations]\label{rem:nongauss}
+Let $X(t)=\sum_j\Psi_j\varepsilon(t-j)$ with $\sum_j\|\Psi_j\|<\infty$ and i.i.d.\ innovations with independent
+unit-variance coordinates and fourth cumulants $\kappa_i=E\varepsilon_i^4-3$. Put
+$G_i(a,b)=\sum_j\Psi_j[a,i]\Psi_j[b,i]$. Then $n\,\mathrm{Cov}(\tilde\gamma_{ab},\tilde\gamma_{cd})\to
+V(ab,cd)+\sum_i\kappa_iG_i(a,b)G_i(c,d)$ (moment--cumulant formula and dominated convergence), so
+$W_{ab}^{\mathrm{ng}}=W_{ab}+\sum_i\kappa_ig_i^2$ with $g_i=G_i(a,b)-\frac{\rho_{ab}}2(G_i(a,a)+G_i(b,b))$. Independent
+series share no innovation, so $g_i=0$: the null variance $\sum_h\rho_a(h)\rho_b(h)$, and hence
+\cref{prop:nominal,prop:plugin}, are unchanged, given the CLT for linear processes, which we do not re-prove. For
+relatives, $W$ changes by $\sum_i\kappa_ig_i^2$ (of either sign, since $\kappa_i\ge-2$). This affects power and
+transition widths, not the population statements or the location of $\nhalf$. The non-asymptotic bounds use the
+Gaussian chaos tail. For sub-Gaussian innovations the Hanson--Wright inequality
+\citep[Thm.~1.1]{rudelson2013hanson} has the same form with unspecified constants.
+\end{remark}
+
+\textbf{Fixed $K$ in practice (simulation and data check).} Independent AR(1)
+pairs, 4{,}000 replications (2{,}000 at $n=64{,}000$): at AR coefficient
+$0.9$ and $0.97$ the plug-in test with $K=50$ has size $0.050$ and $0.056$
+(level $0.05$; limits $0.05$ and $0.0556$), but at $0.99$ it has $0.113$
+(limit $0.118$), while $K_n=n^{0.6}$ gives $0.0495$ and the nominal test
+$0.853$; for the opposite-sign pair the floor makes the test conservative
+(size $0$). On the B3 primary data (30 segments of 3{,}000 rows, 2{,}730
+unit-pairs) the declared status of no pair changes when $K=50$ is replaced
+by $55$, $122$ or $300$ (post hoc). This was not checked for study 3, E1 or
+the river data. Scripts: \texttt{finite2/}.
+
+
 \begin{proof}[Proof of \cref{prop:f2}]
 $\mathrm{Cov}(X_u,X_v)=\gamma^Y_{uv}(0)+b_ub_v$ and $\gamma^Y_{uv}=0$ for
 non-relatives (\cref{prop:zero}); divide by the standard deviations
@@ -499,9 +653,10 @@ multi-filter part of \cref{prop:f3} predicts.
 \section{Lean Formalisation: Map and Findings}
 \label{app:lean}
 
-Lean 4.35.0 and Mathlib v4.35.0; 3{,}963 lines in 16 files. The build log
-(clean rebuild plus the incremental rebuild that added \lname{Observed.lean}),
-the \texttt{\#print axioms} output for each of the 148 declarations in the axiom
+Lean 4.35.0 and Mathlib v4.35.0; 4{,}159 lines in 16 files. The build log
+(a clean rebuild of the final state, 9{,}064 jobs, including \lname{Observed.lean}
+and the $\Delta$ refinements),
+the \texttt{\#print axioms} output for each of the 163 declarations in the axiom
 report (all \texttt{[propext, Classical.choice, Quot.sound]}) and a grep showing
 no \texttt{sorry}/\texttt{admit}/\texttt{axiom} are in the supplementary
 material.
@@ -514,16 +669,21 @@ the ER limits (only the deterministic witness lemmas), the loop-free limit,
 periodicity and stationary value, the lag-weighted extension, and every
 probability bound, limit theorem and genericity statement.
 
-\textbf{Breakdown of the 148 declarations} (counted from the Lean files):
-29 headline theorems, i.e.\ Lean counterparts of numbered paper statements
-(25 for \cref{sec:exact}, the loop-free edge value and the accuracy reading; 4
-for \cref{prop:estimand}); 43 supporting graph lemmas (ancestry, roots, distance,
-source SCCs, 5 ER witness lemmas, 6 estimand lemmas); 65 algebraic identities
+\textbf{Breakdown of the 163 declarations} (counted from the Lean files):
+33 headline theorems, i.e.\ Lean counterparts of numbered paper statements
+(29 for \cref{sec:exact}, the loop-free edge value and the accuracy reading,
+including the four $\Delta$ forms of \cref{thm:limit,thm:stat,cor:statiff}; 4
+for \cref{prop:estimand}); 53 supporting graph lemmas (ancestry, roots, distance,
+the largest finite distance $\Delta$ (\lname{maxFinDist}, 10 lemmas), source SCCs,
+5 ER witness lemmas, 6 estimand lemmas); 65 algebraic identities
 and inequalities of the aggregation and finite-sample files (correlation
 perturbation, Chernoff algebra, trace and Toeplitz identities, partial
 correlation formulas, threshold locations; several are elementary, e.g.\
-$|\hat s-\tfrac12|\le\tfrac12$); 11 examples (10 concrete graphs, 1 numerical
-$r_{\mathrm{crit}}$ instance).
+$|\hat s-\tfrac12|\le\tfrac12$); 12 examples (10 concrete graphs, the sharpness
+example \lname{edgeLoops_burn_sharp}, 1 numerical $r_{\mathrm{crit}}$ instance).
+No human has checked, line by line, that each Lean statement says what the
+corresponding paper statement says; the map below is the authors' (AI-generated)
+reading.
 
 \begin{center}\small
 \begin{tabular}{p{0.26\textwidth}p{0.52\textwidth}p{0.12\textwidth}}
@@ -533,10 +693,11 @@ statement & Lean names & status \\
 \cref{lem:anc,lem:roots} & \lname{unrolled_reach_iff}, \lname{unrolled_reach_iff_dist}, \lname{roots_unrolled_iff}, \lname{desc_root_unrolled_iff}, \lname{isRel_unrolled_iff} & checked \\
 \cref{thm:edge} & \lname{edge_score}, \lname{edge_score_dist}, \lname{strictCond_iff_dist} & checked \\
 \cref{prop:boundary} & \lname{rho_unrolled_eq}, \lname{mT_le_iff}, \lname{rho_unrolled_large_t} & checked \\
-\cref{thm:limit} & \lname{sRho_unrolled_exact}, \lname{sRho_unrolled_bounds}, \lname{tendsto_sRho_unrolled}, \lname{tendsto_sRho_GT} & checked \\
+\cref{thm:limit} & \lname{sRho_unrolled_exact}, \lname{sRho_unrolled_bounds_maxFinDist} ($\Delta$ form), \lname{sRho_unrolled_bounds} ($p-1$ form), \lname{tendsto_sRho_unrolled}, \lname{tendsto_sRho_GT}; $\Delta$: \lname{maxFinDist}, \lname{dist_le_maxFinDist}, \lname{exists_dist_eq_maxFinDist}, \lname{maxFinDist_le_card_sub_one} & checked \\
 \cref{cor:iff} & \lname{tendsto_half_iff}, \lname{crossEdges_eq_empty_tfae}, \lname{sRho_unrolled_ge_of_cross}, \lname{reisach_theorem4}, \lname{limitValue_dag} & checked \\
-\cref{thm:stat} & \lname{rhoBurn_eq}, \lname{sBurn_eq}, \lname{rhoZ_eq}, \lname{sZ_eq}, \lname{sOf_window}, \lname{relSet_eq_iff_src}, \lname{mem_upEdges_iff} & checked \\
-\cref{cor:statiff} & \lname{sBurn_eq_half_iff}, \lname{sBurn_eq_half_iff_common_anc}, \lname{sZ_eq_half_iff}, \lname{upEdges_eq_empty_tfae}, \lname{stat_half_of_strong}, \lname{stat_half_of_outForest}, \lname{inForest_isRel_iff}, \lname{inForest_up_iff}, \lname{statValue_inForest}, \lname{statValue_inForest_gt_iff} & checked \\
+\cref{thm:stat} & \lname{rhoBurn_eq_maxFinDist}, \lname{sBurn_eq_maxFinDist}, \lname{relBurn_iff_maxFinDist}, \lname{walkN_of_reach_maxFinDist} ($B\ge\Delta$); \lname{rhoBurn_eq}, \lname{sBurn_eq} ($B\ge p-1$); \lname{rhoZ_eq}, \lname{sZ_eq}, \lname{sOf_window}, \lname{relSet_eq_iff_src}, \lname{mem_upEdges_iff} & checked \\
+\cref{rem:sharp} ($B\ge\Delta$ cannot be lowered) & \lname{edgeLoops_burn_sharp}, \lname{sBurn_zero}, \lname{relBurn_zero_iff}, \lname{maxFinDist_edgeLoops} & checked \\
+\cref{cor:statiff} & \lname{sBurn_eq_half_iff_maxFinDist}, \lname{sBurn_eq_half_iff}, \lname{sBurn_eq_half_iff_common_anc}, \lname{sZ_eq_half_iff}, \lname{upEdges_eq_empty_tfae}, \lname{stat_half_of_strong}, \lname{stat_half_of_outForest}, \lname{inForest_isRel_iff}, \lname{inForest_up_iff}, \lname{statValue_inForest}, \lname{statValue_inForest_gt_iff} & checked \\
 \cref{tab:examples} & \lname{collider_limit}, \lname{fork_limit}, \lname{chain3_limit}, \lname{collider_stat}, \lname{fork_stat}, \lname{chain3_stat} & checked \\
 self-loop remark & \lname{edgeLoops_limit}, \lname{edgeNoLoops_sRho} & checked \\
 \cref{thm:noloop} (ancestors, relatives, edge value) & \lname{isRel_unrolled_iff_NL}, \lname{reduce_ancestor}, \lname{relSet_unrolled_eq_iff_NL}, \lname{edge_score_NL} & checked \\
@@ -595,6 +756,71 @@ in-forest statement needs acyclicity, not only out-degree at most one.
 %=============================================================================
 \section{Real-Data Details}
 \label{app:real}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.6\textwidth, height=0.42\textwidth,
+  xmode=log, ymode=log, xmin=0.01, xmax=0.9, ymin=8, ymax=1e5,
+  xlabel={non-relative correlation $\kappa$ (median)},
+  ylabel={effective sample size},
+  tick label style={font=\scriptsize}, label style={font=\footnotesize},
+  axis line style={gray}, tick style={gray},
+  legend style={font=\scriptsize, draw=none, fill=none, at={(0.98,0.98)}, anchor=north east},
+  every axis plot/.append style={line width=1pt},
+]
+\addplot[name path=lo, domain=0.01:0.9, samples=120, black!70]
+  {3 + (3.291/(0.5*ln((1+x)/(1-x))))^2};
+\addplot[name path=hi, domain=0.01:0.9, samples=120, black!70, dashed]
+  {3 + (4.044/(0.5*ln((1+x)/(1-x))))^2};
+\addplot[black!8] fill between[of=hi and lo];
+\addplot[only marks, mark=square*, mark size=2.6pt, color={rgb,255:red,235;green,104;blue,52},
+  error bars/.cd, x dir=both, x explicit, y dir=both, y explicit]
+  coordinates {(0.72,126) +- (0.02,13)};
+\addplot[only marks, mark=diamond*, mark size=3pt, color={rgb,255:red,235;green,104;blue,52}]
+  coordinates {(0.51,221)};
+\addplot[only marks, mark=*, mark size=2.4pt, color={rgb,255:red,42;green,120;blue,214}]
+  coordinates {(0.03,852) (0.02,1998)};
+\node[font=\scriptsize, anchor=north east, fill=white, inner sep=1pt] at (axis cs:0.66,100) {CausalRivers};
+\node[font=\scriptsize, anchor=south east, fill=white, inner sep=1pt] at (axis cs:0.48,260) {CausalRivers $\mid$ proxy};
+\node[font=\scriptsize, anchor=west] at (axis cs:0.032,700) {wind};
+\node[font=\scriptsize, anchor=west] at (axis cs:0.021,2500) {light};
+\node[font=\scriptsize, black!60] at (axis cs:0.3,5e3) {saturated};
+\node[font=\scriptsize, black!60, anchor=south west] at (axis cs:0.011,10) {not saturated};
+\end{axis}
+\end{tikzpicture}
+\vskip -0.1in
+\caption{Saturation regime of \cref{prop:f2}. Curves: onset $\nhalf$ for
+$z_c=3.29$ ($d=5$, solid) and $4.04$ ($d=20$, dashed); above them a
+non-relative pair is detected with probability $>1/2$. Points: medians from
+the real-data studies (CausalRivers unconditioned and given the regional
+proxy, $\kappa$ replaced by $|\pi|$; Causal Chambers wind and light tunnel).
+Values are in \cref{sec:real} and \cref{app:real}.}
+\label{fig:sat}
+\vskip -0.15in
+\end{figure}
+
+\begin{table}[h]
+\caption{Out-of-sample F-theory check on the Causal Chambers: predictions
+from the first half of each unit, observed rates on the second half.
+Accuracy is predicted by Monte Carlo of independent pair decisions.}
+\label{tab:ftheory}
+\vskip -0.05in
+\centering\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lcccc}
+\toprule
+ & \multicolumn{2}{c}{wind tunnel} & \multicolumn{2}{c}{light tunnel} \\
+ & pred. & obs. & pred. & obs. \\
+\midrule
+non-relatives declared (F2) & 0.031 & 0.028 & 0.006 & 0.000 \\
+relatives detected (F1) & 0.360 & 0.343 & 0.679 & 0.681 \\
+orientation accuracy & 0.630 & 0.620 & 0.999 & 1.000 \\
+\bottomrule
+\end{tabular}
+\vskip -0.1in
+\end{table}
 
 \textbf{CausalRivers} \citep{stein2025causalrivers}. Study 1 (P1--P3): the
 benchmark's connected-subgraph sampler, seeds 7000--7029, East Germany and
@@ -682,7 +908,7 @@ $\tilde s(\GS,V)-\tfrac12$ and $\srho^W-\tfrac12$ have the same sign.
 (e) The converse of (b) fails: for the collider $a\to c\leftarrow b$ with loops
 and $O=\{a,c\}$, the only induced edge $(a,c)$ is an up-edge, but
 $\rel_S(a)\cap O=\rel_S(c)\cap O=\{a,c\}$, so $\tilde s=1/2$.
-\lean{(a)--(d): \lname{relObs_subset_of_edge}, \lname{score_obsEdge}, \lname{sTilde_eq}, \lname{sTilde_ge_half}, \lname{upObs_subset_upEdges}, \lname{sTilde_gt_half_iff}, \lname{exists_upEdge_of_sTilde_gt_half}, \lname{sTilde_eq_half_of_no_up}, \lname{mem_upObs_of_witness}, \lname{upObs_univ} (file \lname{Observed.lean}); (e) by hand.}
+\lean{(a)--(d): \lname{relObs_subset_of_edge}, \lname{score_obsEdge}, \lname{sTilde_eq}, \lname{sTilde_ge_half}, \lname{upObs_subset_upEdges}, \lname{sTilde_gt_half_iff}, \lname{exists_upEdge_of_sTilde_gt_half}, \lname{sTilde_eq_half_of_no_up}, \lname{mem_upObs_of_witness}, \lname{upObs_univ} (file \lname{Observed.lean}); (e) paper proof only (not machine-checked; written by the AI agents and not yet read by a human).}
 \end{proposition}
 \begin{proof}
 (a) $i\in\anc_S(j)$ gives $\rel_S(i)\subseteq\rel_S(j)$
@@ -712,17 +938,17 @@ or of lag-0 faithfulness, not evidence against \cref{thm:edge,thm:limit}.
 \section{Time-Stamped Analysis Plans: Process, Prior Exposure, Timeline, Deviations}
 \label{app:prereg}
 
-\textbf{Process.} The four analysis plans, all analyses and the results were
-produced by AI coding agents (\cref{sec:real}, AI-use statement) within about
-six hours of one day. Each plan was committed to version control before its
+\textbf{Process.} The four real-data analysis plans, all analyses and the
+results were produced by AI coding agents (\cref{sec:real}, AI-use statement)
+within about six hours of one day; the later plans for B1, B1-NL, B3 and the
+learner extension are listed at the end of this section. Each plan was committed to version control before its
 study's data were loaded for any dependence statistic in this project. Commit
 timestamps are set by the committing client; no third-party registry (e.g.\
 OSF) was used, and the hosting service's push records, the stronger evidence,
 can be supplied to the area chair on request. The gap between plan and results
 was short: about 3 min 41 s for plan 3 and 3 min 36 s for plan 4 (each
 including a run of about two minutes). We therefore call these
-\emph{internally time-stamped analysis plans}; earlier drafts called them
-pre-registrations. Commit hashes are withheld for anonymity and will be
+\emph{internally time-stamped analysis plans}. Commit hashes are withheld for anonymity and will be
 provided with the de-anonymised version.
 
 \textbf{Prior exposure to CausalRivers (disclosure).} One day before plan 1, a
@@ -790,6 +1016,32 @@ commit (no content change). The F-check tolerance of $\pm0.03$ is the one fixed 
 constant-$1/2$ comparison and the weak-component-size comparison are post hoc. The choice of $G_{\mathrm{lin}}$ as the primary graph was
 fixed in plan 4, together with the secondary analysis on the published graph $G_D$, which is the one on which
 the theorem fails against the sensor indicator on strictly ordered edges.
+
+\textbf{Later plans (benchmark experiments and B3).} Times are commit times
+(UTC, set by the committing client). The B3 and learner-extension plans were
+pushed to the hosting service before data access or any score; the service's
+push records for all plans can be supplied on request. No plan was posted to
+an external registry.
+
+\begin{center}\small
+\begin{tabular}{p{0.20\textwidth}p{0.67\textwidth}}
+\toprule
+time (2026) & event \\
+\midrule
+08 Nov 22:31 & B1 plan committed (generators, methods, hypotheses H1--H3, decision rules) \\
+08 Nov 22:57 & B1 code; deviations D1 (burn-in 50$\to$100 after the validation mixing check) and D2 recorded before the test run \\
+09 Nov 01:26 & B1 results (test run redone once after a container restart, D3) \\
+09 Nov 04:10 & B1-NL plan committed \\
+09 Nov 04:20 & B3 plan committed and pushed before any held-out byte was read \\
+09 Nov 04:24 & B3 results \\
+09 Nov 04:34 & B1-NL analysis code; validation notes N1, N2 \\
+09 Nov 06:49 & B1-NL results \\
+09 Nov 08:20 & learner-extension plan (\cref{app:b1x}) committed and pushed before any score \\
+09 Nov 08:34 & post hoc re-analysis of B1/B1-NL and detectability oracle (no new data) \\
+09 Nov 12:44 & learner-extension results (one run, 08:28--12:41) \\
+\bottomrule
+\end{tabular}
+\end{center}
 
 
 
@@ -1189,7 +1441,7 @@ edge $e=(i,j)$ carries a lag $\tau_e\in\{1,\dots,\tau_{\max}\}$ (a pair may carr
 several lags, each a separate edge), self-loops act at lag one, and $\GT$ has
 the edges $(i(t),j(t{+}\tau_e))$, $1\le t\le T-\tau_e$. Let $d_\tau(u,v)$ be the
 smallest total lag of a path from $u$ to $v$ ($0$ if $u=v$, $\infty$ if none);
-$d_\tau(u,v)\le(p-1)\tau_{\max}$ when finite. Status: paper proof, not
+$d_\tau(u,v)\le d(u,v)\,\tau_{\max}\le\Delta\tau_{\max}$ when finite. Status: paper proof, not
 machine-checked and not enumerated. Contemporaneous (lag-0) edges are excluded:
 they break the time-monotonicity used below.
 
@@ -1198,9 +1450,9 @@ they break the time-monotonicity used below.
 $(i(t),j(t{+}\tau_e))$ scores $1$ iff some $u$ has
 $d_\tau(u,j)-\tau_e+1\le t\le d_\tau(u,i)$, and $1/2$ otherwise. (c) Crossing
 edges score $1$ in every copy; an edge inside an SCC has at most
-$(p-1)\tau_{\max}$ strict copies, so
-$\lim_{T\to\infty}\srho(\GT)=\tfrac12+|\Ex|/(2|\Es|)$ with $|\srho(\GT)-L|=O(p\tau_{\max}/T)$.
-(d) With a latent burn-in $B\ge(p-1)\tau_{\max}$ (or an infinite past),
+$\Delta\tau_{\max}$ strict copies, so
+$\lim_{T\to\infty}\srho(\GT)=\tfrac12+|\Ex|/(2|\Es|)$ with $|\srho(\GT)-L|=O(\Delta\tau_{\max}/T)$.
+(d) With a latent burn-in $B\ge\Delta\tau_{\max}$ (or an infinite past),
 \cref{thm:stat} holds verbatim.
 \end{proposition}
 \begin{proof}
@@ -1213,15 +1465,39 @@ $j(t{+}\tau_e)$ has a root $u(1)$ with $d_\tau(u,j)\le t+\tau_e-1$ that $i(t)$
 lacks, $d_\tau(u,i)>t-1$. (c) For a crossing edge take $u=j$:
 $d_\tau(j,j)=0\le t+\tau_e-1$ and $d_\tau(j,i)=\infty$. Inside an SCC,
 $d_\tau(u,i)<\infty$ iff $d_\tau(u,j)<\infty$, so a strict copy needs
-$t\le d_\tau(u,i)\le(p-1)\tau_{\max}$. Each edge has $T-\tau_e$ copies; average.
+$t\le d_\tau(u,i)\le\Delta\tau_{\max}$. Each edge has $T-\tau_e$ copies; average.
 (d) By (a), $w(s)\in\rel(v(t))$ iff some $u$ has $d_\tau(u,v)\le t-1$ and
-$d_\tau(u,w)\le s-1$; for window nodes $t-1,s-1\ge B\ge(p-1)\tau_{\max}$ this is
+$d_\tau(u,w)\le s-1$; for window nodes $t-1,s-1\ge B\ge\Delta\tau_{\max}$ this is
 $\anc_S(v)\cap\anc_S(w)\ne\emptyset$, and the proof of \cref{thm:stat} applies.
 \end{proof}
 
 %=============================================================================
 \section{Random Summary Graphs: Derivations and Checks}
 \label{app:er}
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.6\textwidth, height=0.3\textwidth, xmin=0, xmax=6, ymin=0.49, ymax=0.78,
+  xlabel={mean degree $c$}, ylabel={rel-sortability},
+  tick label style={font=\scriptsize}, label style={font=\footnotesize},
+  legend style={font=\scriptsize, draw=none, fill=none, at={(0.98,0.97)}, anchor=north east},
+  axis line style={gray}, tick style={gray}]
+\input{er_curves}
+\addplot[only marks, mark=square*, mark size=1.8pt, color={rgb,255:red,235;green,104;blue,52}]
+  coordinates {(0.5,0.6666) (1,0.7486) (1.5,0.6975) (2,0.6214) (3,0.5434) (5,0.5059)};
+\addplot[only marks, mark=*, mark size=1.8pt, color={rgb,255:red,42;green,120;blue,214}]
+  coordinates {(0.5,0.5658) (1,0.6557) (1.5,0.6159) (2,0.5629) (3,0.5215) (5,0.5028)};
+\legend{$L(c)$,$S(c)$,exact $L$,exact $S$}
+\end{axis}
+\end{tikzpicture}
+\vskip -0.1in
+\caption{\cref{prop:er} (lines) against exact computation on seeded graphs
+($p=2\cdot10^4$ to $10^5$; points, means over seeds). The standard deviations
+over seeds are at most $0.0022$ (\cref{app:er}).}
+\label{fig:er}
+\vskip -0.15in
+\end{figure}
 
 All graphs here are a non-loop random graph plus a self-loop at every node, so
 $|\Es|=p+m$ with $m$ the number of non-loop edges, and for acyclic graphs
@@ -1273,6 +1549,10 @@ $c$ & $p$ & $L$ exact & $L$ formula & $S$ exact & $S$ formula \\
 \bottomrule
 \end{tabular}
 \end{table}
+At the critical point $c=1$, $S$ converges slowly in $p$: $0.65574\pm0.00126$ ($p=2\cdot10^4$, 6 seeds),
+$0.65784\pm0.00043$ ($2\cdot10^5$, 6 seeds) and $0.65796$ ($10^6$, 1 seed) against $0.65803$, like $L$
+($0.74857$, $0.74972$, $0.74989$ against $0.75$).
+
 $L$ at $c=1$ converges as $p$ grows: $0.7466$ ($p=2000$), $0.7486$ ($2\cdot10^4$),
 $0.74976$ ($2\cdot10^5$), $0.74992$ ($10^6$); at $c=2$, $0.62162\pm0.00023$ at
 $p=10^6$ against $0.62170$. The giant-SCC fraction matches $x^2$ ($0.6353$ against
@@ -1756,6 +2036,29 @@ count rules only. This section is interpretive, not a new theorem.
 \section{Benchmark Experiment B1: Design, Results and Deviations}
 \label{app:b1}
 
+\begin{table}[h]
+\caption{B1, heterogeneous noise, raw data; means over 180 data sets per
+family. OA: order accuracy of rel- and Var-SortnRegress, G1 / G2. $\Delta$OA:
+G1$-$G2 for rel, with 95\% graph-cluster bootstrap CI. SC: strongly connected.}
+\label{tab:b1}
+\vskip 0.05in
+\centering\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lcccc}
+\toprule
+family & exact $\srho$ & rel OA & $\Delta$OA rel & var OA\\
+\midrule
+symER (SC) & .78/.50 & .63/.50 & $+.126$ [.115,.137] & .64/.50\\
+ring (SC)  & .95/.50 & .69/.51 & $+.180$ [.167,.193] & .73/.50\\
+chain      & .89/.50 & .75/.53 & $+.217$ [.209,.226] & .93/.70\\
+out-tree   & .84/.50 & .69/.55 & $+.144$ [.127,.161] & .94/.71\\
+in-tree    & .79/.66 & .74/.67 & $+.069$ [.057,.081] & .95/.72\\
+ER($c{=}1$)& .77/.56 & .67/.59 & $+.085$ [.068,.103] & .86/.65\\
+ER($c{=}2$)& .83/.52 & .70/.59 & $+.109$ [.092,.127] & .74/.59\\
+\bottomrule
+\end{tabular}
+\vskip -0.1in
+\end{table}
+
 \textbf{Process.} The analysis plan (\texttt{b1/PLAN.md}) was committed before
 any simulation that produced an algorithm score; only graph-only exact values
 were computed before it. Two deviations were recorded in the plan after the
@@ -1788,14 +2091,17 @@ rel-SortnRegress (Reisach et al.\ Algorithms 1--2, $\alpha=0.05$),
 $R^2$-SortnRegress, Var-SortnRegress, a random order followed by the same
 regression step, FLOP (\texttt{flopsearch} 0.3.0, BIC penalty 2, 10 restarts),
 PC (causal-learn, Fisher $z$, $\alpha=0.01$; not run at $p=10$, $T=10$ for
-time), and a labels-visible reference that sorts by time. DAGMA/NOTEARS were
-not run. SID by \texttt{gadjid}.
+time), and a labels-visible reference that sorts by time. DAGMA, NOTEARS and
+GOLEM were run in the separately planned extension of \cref{app:b1x}. SID by
+\texttt{gadjid}.
 
 \textbf{Pre-specified hypotheses and verdicts.}
 H1 (start helps rel-SortnRegress on non-strongly-connected families; at least
 4/5 Holm-significant and pooled mean $\ge0.02$): supported, 5/5, pooled
 $+0.125$ $[0.116,0.134]$; tracking (Spearman of cell means against the exact
-gap $\ge0.5$): $0.80$, $p=1.2\cdot10^{-10}$; OLS $d=0.53\,\text{gap}-0.027$.
+gap $\ge0.5$): $0.80$; the plan's $p=1.2\cdot10^{-10}$ treated the 42 cells as
+independent, and a graph-cluster permutation gives $p\le10^{-4}$ (post hoc,
+\cref{app:b1x}); OLS $d=0.53\,\text{gap}-0.027$.
 H2a (gain below $0.03$ in every strongly connected cell with $T\ge p$, the
 review's expectation): fails, as the exact gaps predicted before the run
 (e.g.\ ring $p=5$, $T=5$: $+0.217$; only symER $p=5$, $T=10$ is small,
@@ -1805,12 +2111,15 @@ $p=1.2\cdot10^{-11}$. H3 (some Holm-significant SHD rank swap): supported, 11
 swaps: rel- vs $R^2$-SortnRegress on chains ($p=10$, $T=3,5$), Var-SortnRegress
 vs FLOP (3 cells) and vs PC (5 cells) on in-trees, and $R^2$-SortnRegress vs the
 random order on one ring cell. SID: 9 swaps; orientation score: 9; SHD without
-first-slice pairs: 9. Median Kendall $\tau$ between the G1 and G2 rankings:
+first-slice pairs: 9. Swap counting is a crude summary: the post hoc
+interaction analysis of \cref{app:b1x} finds Holm-significant G1$\times$G2
+interactions in 294 of 595 pair$\times$cell SHD tests. Median Kendall $\tau$ between the G1 and G2 rankings:
 $0.73$. FLOP is best on average under both generators (normalised SHD $0.27$
 vs $0.46$).
 
-\textbf{Two artefacts.} Pooled G1$-$G2 order accuracy: rel-SortnRegress
-$+0.133$ (unchanged by standardisation, since it is scale invariant);
+\textbf{Two artefacts.} Pooled G1$-$G2 order accuracy over all seven
+families: rel-SortnRegress $+0.133$ (the H1 value $+0.125$ is over the five
+non-strongly-connected families; unchanged by standardisation, since it is scale invariant);
 Var-SortnRegress $+0.202$ raw, $+0.244$ with equal noise, $+0.002$
 standardised. Variance accumulates from the noise-only first slice, so the
 fixed start is var-sortable; standardising removes this but not the relatives
@@ -1873,9 +2182,12 @@ can deviate from graph relatives (out-trees under G2: estimated
 rel-sortability $0.455$), yet the gain is as large as in B1. H3: one
 Holm-significant SHD swap under NL ($R^2$-SortnRegress against the random order,
 chains, $p=10$, $T=10$), none under SGN, not testable for SGNU (10 seeds, stated
-in the plan); B1's rel- against $R^2$-SortnRegress chain swap did not
-replicate on SHD. Without PC, 5 of B1's 11 swap types cannot occur. FLOP is the
-best label-free method under both generators in every configuration. The
+in the plan). By the plan's rule H3 is therefore supported under NL, but on a
+substantively minor swap, and we do not count it as a replication of B1's
+swaps; B1's rel- against $R^2$-SortnRegress chain swap was not detected on SHD
+at this replication's power, although the interaction replicates
+(\cref{app:b1x}). Without PC, 5 of B1's 11 swap types cannot occur. FLOP is the
+best label-free method run there under both generators in every configuration. The
 var/rel split holds: Var-SortnRegress gains $+0.19$, $+0.24$, $+0.24$ raw and
 about $0$ standardised; rel-SortnRegress $+0.11$, $+0.15$, $+0.14$. Sanity rules
 pass (S1 at most $0.015$; mixing error at most $5.6\cdot10^{-5}$).
@@ -1888,6 +2200,121 @@ against the exact population gap, for NL, SGN and SGNU.}
 \label{fig:b1nl}
 \end{figure}
 
+\section{Competitive Learners, Re-Analysis, Detectability Oracle and Generator Survey}
+\label{app:b1x}
+
+Material in \texttt{b1x/} and \texttt{lit3/} of the supplement. The learner
+extension is a planned experiment; the re-analysis and the oracle are post hoc
+and use no new data.
+
+\textbf{Learner extension: process and design.} The plan (\texttt{b1x/PLAN.md}),
+code and a validation timing were committed and pushed before any score
+(\cref{app:prereg}); the test run took 4.21\,h on one core and was analysed
+once, with no deviation (the size rule kept 12 seeds after a projected 4.35\,h).
+B1's generators and SEM, new seeds: families ring, chain, in-tree and
+ER($c{=}2$), $p\in\{5,10\}$, $T\in\{3,5\}$, 12 graphs per (family, $p$), i.e.\ 96
+summary graphs and 384 data sets (G1 and G2), each analysed raw and
+standardised with time labels hidden. DAGMA linear (\texttt{dagma} 1.1.1,
+$\lambda=0.03$), NOTEARS linear (the authors' reference code, $\lambda=0.1$),
+GOLEM-EV/NV (a numpy port of the authors' code with the same score, optimiser,
+defaults and post-processing, gradient-checked; $p=5$ only, as planned), all
+thresholded at $0.3$; FLOP, the SortnRegress baselines and the empty graph as
+comparators; PCMCI+ (tigramite, ParCorr, $\tau_{\max}=1$) on the time-indexed
+data as a labels-using reference. Metrics: SHD$/|E|$ (empty graph $=1$),
+normalised SID, ancestral order accuracy; unit of inference the summary graph.
+T$=10$ and the families symER, out-tree and ER($c{=}1$) were excluded for run time.
+
+\textbf{Verdicts.} HX1 (some raw continuous method Holm-significantly favoured
+by the fixed start): supported; all four raw variants improve on all three
+metrics (DAGMA SHD$/|E|$ $-0.548$ $[-0.663,-0.438]$, SID $-0.147$, order
+accuracy $+0.197$; NOTEARS $-0.419$, $-0.127$, $+0.156$; GOLEM-EV $-0.491$,
+$-0.182$, $+0.225$; GOLEM-NV $-0.409$, $-0.193$, $+0.232$; Holm $\le4\cdot10^{-8}$).
+HX2 (opposite-sign, both Holm-significant rank change against FLOP on
+SHD$/|E|$, 64 tests): supported, two changes, both on in-trees: DAGMA$-$FLOP
+$-0.218$ under G1 (Holm $0.012$) and $+0.306$ under G2 ($1.4\cdot10^{-5}$);
+NOTEARS$-$FLOP $-0.176$ ($0.0011$) and $+0.193$ ($0.020$); the same two appear on
+SID and order accuracy, and DAGMA's persists without first-slice pairs ($0.08$ /
+$0.73$ against FLOP's $0.30$ / $0.37$). HX3 (standardisation removes the gain):
+DAGMA's SHD gain removed ($-0.005$ $[-0.027,0.016]$), all other pairs reduced
+but not removed by the plan's rule; on order accuracy the standardised effect is
+significantly negative for DAGMA ($-0.064$), GOLEM-EV ($-0.093$) and GOLEM-NV
+($-0.097$), and NOTEARS keeps $+0.036$. rel-SortnRegress replicates ($+0.187$
+$[0.169,0.205]$), and B1's chain swap of rel- against $R^2$-SortnRegress recurs
+on the new seeds. No fit failed; NOTEARS on standardised data returned a cyclic
+graph in $15.6\%$ of data sets (SID missing for 60 of 384). Best label-free
+method by mean SHD$/|E|$ per (family, $p$): FLOP in 8/8 cells under G2; under G1
+DAGMA on chains with $p=5$ ($0.09$ vs $0.10$) and on in-trees with $p=10$ ($0.06$ vs
+$0.33$), NOTEARS on in-trees with $p=5$ ($0.09$ vs $0.27$). Raw continuous methods
+beat the empty graph on average under both generators but are worse than it
+on chains under G2 ($1.14$--$1.25$). Standardised DAGMA and GOLEM orient most
+tree edges backwards under G1 (order accuracy $0.26$--$0.27$). The gains and
+the reversals are largest on chains and in-trees, where G1 makes the window
+almost perfectly var-sortable (Var-SortnRegress $0.95$--$0.96$), and absent or
+reversed on rings and ER($c{=}2$); we read them as var-sortability effects.
+
+\textbf{Re-analysis of B1 and B1-NL (post hoc).} Graph-cluster bootstrap CIs
+(10{,}000 resamples, the three horizons of a graph kept together) are narrower
+than data-set bootstrap CIs, because $T$ is a fixed design
+factor; they are used in \cref{tab:b1}. Tracking: cell-level Spearman $0.80$
+$[0.76,0.82]$, unit-level $0.62$ $[0.59,0.64]$, slope $0.53$ $[0.50,0.56]$ in B1;
+$0.68$/$0.44$/$0.34$ (NL), $0.82$/$0.64$/$0.56$ (SGN), $0.78$/$0.62$/$0.56$ (SGNU);
+graph-cluster permutation $p\le10^{-4}$ in all four (the floor). Interactions
+$I=[m_1-m_2](\mathrm{G1})-[m_1-m_2](\mathrm{G2})$ per graph: Holm-significant in
+294/595 (B1), 113/420 (NL), 232/420 (SGN) pair$\times$cell SHD tests and 0 for
+SGNU (10 graphs cannot pass Holm). In-tree Var-SortnRegress$-$FLOP on SHD:
+$-68.4$ $[-77.0,-60.4]$ (B1), $-49.9$ (NL), $-75.5$ (SGN), $-75.5$ (SGNU); SID
+$-0.12$ in all four. Chain rel-$-R^2$-SortnRegress: SID and orientation
+interactions replicate at $60$--$80\%$ of B1's size; the family-pooled SHD
+interaction is about $0$ in B1-NL, but in B1's swap cell ($p=10$, $T=3$) it keeps
+its sign ($-52$, $-16$, $-32$). Empty-graph reference (B1, all families, G1 / G2,
+SHD$/|E|$): rel- $1.05$/$1.70$, $R^2$- $1.33$/$1.96$, Var- $0.61$/$1.39$,
+random $1.72$/$2.04$, FLOP $0.27$/$0.46$, PC $0.40$/$0.64$; the empty graph has
+normalised SID $0.50$. Order accuracy without edges leaving the first window
+slice (non-SC families): rel-SortnRegress $+0.089$ $[0.079,0.100]$ (B1), $+0.067$
+(NL), $+0.087$ (SGN), $+0.095$ (SGNU). Multiplicity: each confirmatory claim of
+B1, B1-NL, B3 and the extension gets one claim-level $p$ (the $k$-th smallest
+Holm $p$ for ``$k$ of $m$ families'' rules, the best swap for swap rules, the
+cluster permutation for tracking, the plan's Holm $p$ for B3); Holm over the 21
+claims at family-wise $0.05$ keeps all but B1-NL H3-SGN ($p=0.108$); the closest
+survivors are B1 H3 (Holm $0.0079$), B1-NL H3-NL and HX2 (both $0.033$). Several
+claim $p$ are at resolution floors ($10^{-4}$ for permutations, $10^{-5}$ for
+B3's sign flips).
+
+\textbf{Detectability oracle (post hoc).} For every B1 test graph, parameter set
+and horizon we propagated the exact window covariance (G1:
+$\Sigma_{t+1}=A^\top\Sigma_tA+D$ from $\Sigma_1=D$; G2: after the same 100
+burn-in steps). Population relatives ($|\rho|>10^{-20}$) reproduce the exact
+$\srho$ of \cref{thm:limit,thm:stat} in all 2{,}520 cases. The oracle replaces
+each sample correlation in rel-SortnRegress's count by the probability that
+the Fisher-$z$ statistic at $n=1000$ exceeds the algorithm's threshold
+($\varepsilon=0.062$) and predicts each edge's order accuracy as
+$P(c_i<c_j)+\tfrac12P(c_i=c_j)$, treating the indicators as independent. It uses
+no simulated data. Against the observed G1$-$G2 gain: cell level Spearman
+$0.99$, $R^2=0.97$, slope $1.03$, intercept $-0.010$; unit level $R^2=0.61$
+against $0.34$ for the exact gap (difference $+0.27$ $[0.23,0.30]$); in a joint
+regression the gap's coefficient is $-0.05$. Predicted G1 / G2 levels: chain
+$0.756$/$0.528$ (observed $0.749$/$0.532$), ring $0.702$/$0.503$ ($0.687$/$0.507$),
+in-tree $0.746$/$0.677$ ($0.743$/$0.673$). Without slice-1 edges the non-SC gain
+is predicted to fall from $+0.130$ to $+0.096$ (observed $+0.125$ to $+0.089$).
+
+\textbf{Generator survey.} We read the source code of tigramite 5.2.10.1
+(\texttt{structural\_causal\_process}: zeros plus noise, burn-in
+$\lfloor0.2T\rfloor$; \texttt{var\_process}: i.i.d.\ $N(0,1)$ start, no burn-in),
+the CDML generator \citep{lawrence2021dgp} (zeros, $2\tau_{\max}$ steps dropped),
+CausalTime \citep{cheng2024causaltime} (rollouts of 20 steps from a real-data
+window, no burn-in, in the demo), UUMCdata \citep{herman2025unitless} (exact
+stationary start), causalnex 0.12.1 (zeros, burn-in 100 or more; data with lag
+labels), the Neural-GC VAR and Lorenz-96 simulators \citep{tank2021neural}
+(burn-in 100 and 1000) and gCastle 1.0.4 (no continuous time-series
+simulator; its Hawkes simulator starts with an empty history). cdt, causaldag,
+causal-learn and lingam ship no time-series benchmark generator.
+\citet{lohse2025sortability} state a burn-in without its length. The
+time-unrolled construction of \citet{reisach2026topological} starts at $t=1$
+and gives every slice to an i.i.d.\ method as a separate variable; its code is
+not public, so only the graph-level start is verified. CauseMe's documentation
+could not be opened with TLS verification, so we make no claim about it. File
+and line references are in \texttt{lit3/GENERATOR\_SURVEY.md}.
+
 \section{B3: Discriminating Test of the Source-SCC Rule on Held-Out Data}
 \label{app:b3}
 
@@ -1895,7 +2322,7 @@ against the exact population gap, for NL, SGN and SGNU.}
 pushed before any byte of the held-out data was read; zip CRC-32 values were
 taken from the remote archive directory before the plan and SHA-256 hashes at
 download. The plan is internally time-stamped only: it was not posted to an
-external registry before data access, and results were committed minutes
+external registry before data access, and results were committed 3--4 minutes
 after the plan. A disclosed development check on study-3 data from the same
 device had shown every colour edge to be detectable, so the primary outcome
 was expected.
