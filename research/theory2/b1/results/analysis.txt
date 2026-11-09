@@ -1,0 +1,122 @@
+rows 6300; data sets per generator/regime: {('G1', 'eq'): 1260, ('G1', 'het'): 1260, ('G2', 'eq'): 1260, ('G2', 'het'): 1260, ('G2s', 'het'): 1260}
+
+== H1: rel-SnR order accuracy G1 - G2 (R-het), unit = summary graph, mean over T ==
+  chain    n=60 mean d = +0.2173 [+0.2089, +0.2259]  exact gap 0.387  Wilcoxon one-sided p = 8.15e-12, Holm 4.07e-11 SIG; opposite-direction two-sided Holm 8.15e-11
+  outtree  n=60 mean d = +0.1435 [+0.1268, +0.1607]  exact gap 0.344  Wilcoxon one-sided p = 8.57e-12, Holm 4.07e-11 SIG; opposite-direction two-sided Holm 8.15e-11
+  intree   n=60 mean d = +0.0691 [+0.0568, +0.0813]  exact gap 0.128  Wilcoxon one-sided p = 5.37e-11, Holm 1.07e-10 SIG; opposite-direction two-sided Holm 2.15e-10
+  ER1      n=60 mean d = +0.0851 [+0.0686, +0.1030]  exact gap 0.205  Wilcoxon one-sided p = 6.84e-11, Holm 1.07e-10 SIG; opposite-direction two-sided Holm 2.15e-10
+  ER2      n=60 mean d = +0.1095 [+0.0928, +0.1270]  exact gap 0.310  Wilcoxon one-sided p = 1.91e-11, Holm 5.74e-11 SIG; opposite-direction two-sided Holm 1.15e-10
+  pooled non-SC mean d = +0.1249 [+0.1161, +0.1338] over 300 graphs; Holm-significant families: 5/5
+  tracking: Spearman(cell mean d, cell mean exact gap) over 42 cells = 0.798 (one-sided p = 1.20e-10); unit-level Spearman = 0.616; OLS d = 0.530 * gap + -0.027
+  VERDICT H1: SUPPORTED; tracking SUPPORTED
+
+== H2: strongly connected families, per cell d = OA_M1(G1) - OA_M1(G2) ==
+  symER  p= 5 T= 3 (T<p ) mean d = +0.2261 [+0.1826, +0.2705]  exact gap 0.429
+  symER  p= 5 T= 5 (T>=p) mean d = +0.1162 [+0.0829, +0.1439]  exact gap 0.251
+  symER  p= 5 T=10 (T>=p) mean d = +0.0191 [+0.0057, +0.0320]  exact gap 0.111
+  symER  p=10 T= 3 (T<p ) mean d = +0.2243 [+0.1997, +0.2495]  exact gap 0.439
+  symER  p=10 T= 5 (T<p ) mean d = +0.1266 [+0.1077, +0.1448]  exact gap 0.317
+  symER  p=10 T=10 (T>=p) mean d = +0.0423 [+0.0304, +0.0543]  exact gap 0.145
+  ring   p= 5 T= 3 (T<p ) mean d = +0.3133 [+0.2650, +0.3617]  exact gap 0.500
+  ring   p= 5 T= 5 (T>=p) mean d = +0.2167 [+0.1842, +0.2483]  exact gap 0.500
+  ring   p= 5 T=10 (T>=p) mean d = +0.0867 [+0.0674, +0.1056]  exact gap 0.222
+  ring   p=10 T= 3 (T<p ) mean d = +0.2167 [+0.1800, +0.2542]  exact gap 0.500
+  ring   p=10 T= 5 (T<p ) mean d = +0.1679 [+0.1454, +0.1892]  exact gap 0.500
+  ring   p=10 T=10 (T>=p) mean d = +0.0794 [+0.0643, +0.0950]  exact gap 0.500
+  H2a (|mean d| < 0.03 in all SC cells with T >= p): FAILS (predicted to fail)
+  H2b (some SC cell with T < p has mean d >= 0.03, CI > 0): HOLDS
+  H2c (symER d(T=3) > d(T=10)): mean +0.1945, one-sided Wilcoxon p = 1.16e-11 HOLDS
+
+== H3 / rank swaps on shd (R-het, G1 vs G2) ==
+  tests 1190; swaps by mean 82; significant swaps (Holm < 0.05 under both) 11
+    chain   p=10 T= 3 rel-SnR    vs R2-SnR    : G1 diff -37.200 (Holm 2.0e-03, better rel-SnR), G2 diff +14.933 (Holm 3.5e-02, better R2-SnR)
+    chain   p=10 T= 5 rel-SnR    vs R2-SnR    : G1 diff -26.467 (Holm 2.0e-03, better rel-SnR), G2 diff +24.833 (Holm 3.3e-02, better R2-SnR)
+    intree  p= 5 T= 3 Var-SnR    vs FLOP      : G1 diff -4.833 (Holm 2.0e-03, better Var-SnR), G2 diff +5.467 (Holm 8.9e-03, better FLOP)
+    intree  p= 5 T= 3 Var-SnR    vs PC        : G1 diff -5.733 (Holm 2.0e-03, better Var-SnR), G2 diff +5.300 (Holm 7.5e-03, better PC)
+    intree  p= 5 T= 5 Var-SnR    vs FLOP      : G1 diff -7.600 (Holm 2.0e-03, better Var-SnR), G2 diff +27.633 (Holm 2.0e-03, better FLOP)
+    intree  p= 5 T= 5 Var-SnR    vs PC        : G1 diff -11.733 (Holm 1.9e-03, better Var-SnR), G2 diff +18.533 (Holm 2.0e-03, better PC)
+    intree  p= 5 T=10 Var-SnR    vs PC        : G1 diff -19.300 (Holm 3.0e-03, better Var-SnR), G2 diff +54.267 (Holm 2.0e-03, better PC)
+    intree  p=10 T= 3 Var-SnR    vs FLOP      : G1 diff -6.567 (Holm 2.4e-03, better Var-SnR), G2 diff +14.933 (Holm 2.0e-03, better FLOP)
+    intree  p=10 T= 3 Var-SnR    vs PC        : G1 diff -9.500 (Holm 2.0e-03, better Var-SnR), G2 diff +15.200 (Holm 2.0e-03, better PC)
+    intree  p=10 T= 5 Var-SnR    vs PC        : G1 diff -19.267 (Holm 2.0e-03, better Var-SnR), G2 diff +48.267 (Holm 2.0e-03, better PC)
+    ring    p= 5 T=10 R2-SnR     vs Random-SnR: G1 diff -12.500 (Holm 1.7e-02, better R2-SnR), G2 diff +13.533 (Holm 1.4e-02, better Random-SnR)
+  cells where the best method changes: 10/42; Kendall tau(G1 ranking, G2 ranking): median 0.73, min 0.20
+  VERDICT H3 (SHD): SUPPORTED
+
+== H3 / rank swaps on sidn (R-het, G1 vs G2) ==
+  tests 930; swaps by mean 74; significant swaps (Holm < 0.05 under both) 9
+    chain   p= 5 T= 3 rel-SnR    vs R2-SnR    : G1 diff -0.109 (Holm 1.0e-03, better rel-SnR), G2 diff +0.089 (Holm 4.9e-03, better R2-SnR)
+    chain   p= 5 T= 3 rel-SnR    vs PC        : G1 diff -0.083 (Holm 2.6e-03, better rel-SnR), G2 diff +0.074 (Holm 4.6e-02, better PC)
+    chain   p= 5 T= 5 Var-SnR    vs FLOP      : G1 diff -0.074 (Holm 9.8e-03, better Var-SnR), G2 diff +0.103 (Holm 1.6e-03, better FLOP)
+    chain   p= 5 T=10 Var-SnR    vs FLOP      : G1 diff -0.105 (Holm 1.3e-05, better Var-SnR), G2 diff +0.136 (Holm 5.4e-03, better FLOP)
+    chain   p=10 T= 3 rel-SnR    vs R2-SnR    : G1 diff -0.066 (Holm 1.0e-03, better rel-SnR), G2 diff +0.047 (Holm 1.9e-03, better R2-SnR)
+    chain   p=10 T= 5 rel-SnR    vs R2-SnR    : G1 diff -0.056 (Holm 4.4e-04, better rel-SnR), G2 diff +0.090 (Holm 1.0e-03, better R2-SnR)
+    intree  p=10 T= 5 Var-SnR    vs FLOP      : G1 diff -0.071 (Holm 1.0e-03, better Var-SnR), G2 diff +0.034 (Holm 7.8e-03, better FLOP)
+    intree  p=10 T=10 Var-SnR    vs FLOP      : G1 diff -0.089 (Holm 1.0e-03, better Var-SnR), G2 diff +0.045 (Holm 1.1e-02, better FLOP)
+    outtree p= 5 T=10 Var-SnR    vs FLOP      : G1 diff -0.104 (Holm 1.0e-03, better Var-SnR), G2 diff +0.126 (Holm 1.0e-03, better FLOP)
+  cells where the best method changes: 18/42; Kendall tau(G1 ranking, G2 ranking): median 0.67, min 0.20
+
+== H3 / rank swaps on orient (R-het, G1 vs G2) ==
+  tests 1190; swaps by mean 138; significant swaps (Holm < 0.05 under both) 9
+    chain   p= 5 T= 3 rel-SnR    vs R2-SnR    : G1 diff +0.193 (Holm 1.8e-03, better rel-SnR), G2 diff -0.169 (Holm 1.9e-03, better R2-SnR)
+    chain   p=10 T= 3 rel-SnR    vs R2-SnR    : G1 diff +0.204 (Holm 1.8e-03, better rel-SnR), G2 diff -0.119 (Holm 3.9e-03, better R2-SnR)
+    chain   p=10 T= 3 R2-SnR     vs PC        : G1 diff -0.221 (Holm 1.8e-03, better PC), G2 diff +0.141 (Holm 2.0e-03, better R2-SnR)
+    chain   p=10 T= 5 Random-SnR vs PC        : G1 diff -0.214 (Holm 1.8e-03, better PC), G2 diff +0.136 (Holm 1.8e-03, better Random-SnR)
+    intree  p= 5 T= 5 Var-SnR    vs FLOP      : G1 diff +0.128 (Holm 1.8e-03, better Var-SnR), G2 diff -0.114 (Holm 1.8e-03, better FLOP)
+    intree  p=10 T= 3 R2-SnR     vs PC        : G1 diff -0.068 (Holm 1.6e-02, better PC), G2 diff +0.105 (Holm 1.8e-02, better R2-SnR)
+    intree  p=10 T= 3 Var-SnR    vs FLOP      : G1 diff +0.110 (Holm 1.8e-03, better Var-SnR), G2 diff -0.071 (Holm 4.9e-02, better FLOP)
+    intree  p=10 T= 5 Var-SnR    vs FLOP      : G1 diff +0.091 (Holm 2.0e-03, better Var-SnR), G2 diff -0.112 (Holm 1.9e-03, better FLOP)
+    intree  p=10 T=10 Var-SnR    vs FLOP      : G1 diff +0.079 (Holm 3.5e-03, better Var-SnR), G2 diff -0.089 (Holm 4.9e-02, better FLOP)
+  cells where the best method changes: 25/42; Kendall tau(G1 ranking, G2 ranking): median 0.60, min -0.40
+
+== H3 / rank swaps on oa (R-het, G1 vs G2) ==
+  tests 504; swaps by mean 62; significant swaps (Holm < 0.05 under both) 2
+    chain   p= 5 T= 3 rel-SnR    vs R2-SnR    : G1 diff +0.193 (Holm 7.9e-04, better rel-SnR), G2 diff -0.169 (Holm 8.2e-04, better R2-SnR)
+    chain   p=10 T= 3 rel-SnR    vs R2-SnR    : G1 diff +0.204 (Holm 7.9e-04, better rel-SnR), G2 diff -0.128 (Holm 9.5e-04, better R2-SnR)
+  cells where the best method changes: 14/42; Kendall tau(G1 ranking, G2 ranking): median 0.67, min -1.00
+
+== H3 / rank swaps on shdx1 (R-het, G1 vs G2) ==
+  tests 1190; swaps by mean 78; significant swaps (Holm < 0.05 under both) 9
+    chain   p=10 T= 3 rel-SnR    vs R2-SnR    : G1 diff -38.233 (Holm 2.0e-03, better rel-SnR), G2 diff +16.767 (Holm 7.6e-03, better R2-SnR)
+    chain   p=10 T= 5 rel-SnR    vs R2-SnR    : G1 diff -29.400 (Holm 2.0e-03, better rel-SnR), G2 diff +28.467 (Holm 7.0e-03, better R2-SnR)
+    intree  p= 5 T= 3 Var-SnR    vs FLOP      : G1 diff -4.867 (Holm 2.0e-03, better Var-SnR), G2 diff +5.533 (Holm 9.6e-03, better FLOP)
+    intree  p= 5 T= 5 Var-SnR    vs FLOP      : G1 diff -7.600 (Holm 2.0e-03, better Var-SnR), G2 diff +27.733 (Holm 2.0e-03, better FLOP)
+    intree  p= 5 T= 5 Var-SnR    vs PC        : G1 diff -11.833 (Holm 1.9e-03, better Var-SnR), G2 diff +14.800 (Holm 9.1e-03, better PC)
+    intree  p= 5 T=10 Var-SnR    vs PC        : G1 diff -19.400 (Holm 3.1e-03, better Var-SnR), G2 diff +50.567 (Holm 2.0e-03, better PC)
+    intree  p=10 T= 3 Var-SnR    vs FLOP      : G1 diff -7.033 (Holm 2.0e-03, better Var-SnR), G2 diff +14.333 (Holm 2.0e-03, better FLOP)
+    intree  p=10 T= 5 Var-SnR    vs PC        : G1 diff -19.867 (Holm 2.0e-03, better Var-SnR), G2 diff +38.900 (Holm 2.0e-03, better PC)
+    outtree p= 5 T= 5 Var-SnR    vs PC        : G1 diff -8.167 (Holm 4.2e-02, better Var-SnR), G2 diff +21.167 (Holm 3.6e-03, better PC)
+  cells where the best method changes: 10/42; Kendall tau(G1 ranking, G2 ranking): median 0.73, min 0.33
+
+== var- vs rel-sortability: G1 - G2 differences by regime (mean over all graphs and T, 95% CI) ==
+  OA rel-SnR het | OA rel-SnR eq | OA Var-SnR het | OA Var-SnR eq | OA Var-SnR std | OA R2-SnR het | est rel-sort het | est var-sort het | est var-sort std | est R2-sort het
+  symER   +0.126 | +0.126 | +0.142 | +0.248 | +0.003 | +0.082 | +0.126 | +0.142 | +0.000 | +0.082
+  ring    +0.180 | +0.177 | +0.224 | +0.295 | -0.005 | +0.100 | +0.180 | +0.224 | +0.000 | +0.100
+  chain   +0.217 | +0.217 | +0.231 | +0.255 | +0.022 | +0.081 | +0.214 | +0.231 | +0.000 | +0.081
+  outtree +0.144 | +0.156 | +0.237 | +0.244 | -0.003 | +0.059 | +0.146 | +0.237 | +0.000 | +0.059
+  intree  +0.069 | +0.061 | +0.223 | +0.217 | +0.009 | +0.090 | +0.063 | +0.223 | +0.000 | +0.090
+  ER1     +0.085 | +0.090 | +0.209 | +0.234 | -0.014 | +0.082 | +0.083 | +0.209 | +0.000 | +0.082
+  ER2     +0.109 | +0.112 | +0.150 | +0.218 | +0.004 | +0.064 | +0.111 | +0.150 | +0.000 | +0.064
+  ALL     +0.133 | +0.134 | +0.202 | +0.244 | +0.002 | +0.080 | +0.132 | +0.202 | +0.000 | +0.080
+
+== Levels (R-het): mean over p, T and graphs ==
+  family  | exact s G1 / G2 | est rel-sort G1 / G2 | OA rel-SnR G1 / G2 | SHD/|E| rel-SnR G1/G2 R2-SnR G1/G2 Var-SnR G1/G2 FLOP G1/G2
+  symER   | 0.782 / 0.500 | 0.627 / 0.501 | 0.627 / 0.501 | 0.90/1.21 1.14/1.52 0.99/1.25 0.36/0.47
+  ring    | 0.954 / 0.500 | 0.688 / 0.509 | 0.687 / 0.507 | 1.05/1.49 1.55/2.01 1.04/1.41 0.36/0.53
+  chain   | 0.887 / 0.500 | 0.748 / 0.534 | 0.749 / 0.532 | 1.12/2.59 1.32/2.23 0.32/1.48 0.15/0.48
+  outtree | 0.844 / 0.500 | 0.694 / 0.548 | 0.694 / 0.550 | 1.45/2.62 1.77/2.40 0.26/1.62 0.11/0.42
+  intree  | 0.792 / 0.664 | 0.742 / 0.679 | 0.743 / 0.673 | 0.84/1.17 0.99/1.89 0.19/1.26 0.32/0.52
+  ER1     | 0.765 / 0.560 | 0.674 / 0.590 | 0.670 / 0.585 | 1.05/1.42 1.24/1.85 0.53/1.28 0.35/0.51
+  ER2     | 0.830 / 0.520 | 0.698 / 0.587 | 0.698 / 0.588 | 0.92/1.38 1.31/1.82 0.92/1.40 0.21/0.33
+  method ranking by mean normalised SHD (all cells pooled, R-het):
+    G1: Time-SnR (labels) 0.044, FLOP 0.265, Var-SnR 0.605, rel-SnR 1.048, R2-SnR 1.331, Random-SnR 1.721
+    G1 (SID norm.): Time-SnR (labels) 0.002, FLOP 0.179, Var-SnR 0.239, rel-SnR 0.324, R2-SnR 0.359, Random-SnR 0.505
+    G2: Time-SnR (labels) 0.273, FLOP 0.462, Var-SnR 1.386, rel-SnR 1.698, R2-SnR 1.961, Random-SnR 2.041
+    G2 (SID norm.): Time-SnR (labels) 0.002, FLOP 0.226, Var-SnR 0.384, R2-SnR 0.433, rel-SnR 0.448, Random-SnR 0.519
+
+== Sanity rules ==
+  S1 G2 - G2s rel-SnR OA: symER +0.0025, ring +0.0088, chain +0.0029, outtree +0.0022, intree -0.0133, ER1 -0.0076, ER2 +0.0066 -> PASS
+  S2 est rel-sort G1 - G2: chain +0.2137, outtree +0.1455, intree +0.0632, ER1 +0.0831, ER2 +0.1111 -> PASS
+  S3 max mixing error 1.42e-10 -> PASS
+
+mean seconds per data set 2.07

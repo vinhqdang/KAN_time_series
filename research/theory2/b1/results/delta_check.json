@@ -1,0 +1,12 @@
+{
+ "graphs": 3000,
+ "cases": 21000,
+ "lower_violations": 0,
+ "delta_violations": 0,
+ "delta_bound_attained": 3164,
+ "cases_delta_strictly_sharper_than_p_minus_1": 10186,
+ "burn_cases": 726,
+ "burn_B_eq_Delta_gives_stationary": 726,
+ "burn_B_eq_Delta_minus_1_differs": 445,
+ "first_violation": null
+}

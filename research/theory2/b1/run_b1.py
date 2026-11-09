@@ -1,6 +1,7 @@
 """B1 simulation: generators G1 / G2 / G2s, methods with time labels hidden, metrics (PLAN.md Sections 1.3-1.6).
 
-Run: OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 /usr/bin/python3 run_b1.py {val|test} OUT.csv.gz [n_proc]
+Run: OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 /usr/bin/python3 run_b1.py {val|test} OUT.csv.gz [n_proc] [families]
+(the test run was done in shards by family and concatenated: see README)
 One row per data set (family, p, seed, T, gen, regime). The 'het' rows also carry the R-std outputs (columns with
 prefix std_), since R-std only changes Var-SortnRegress and the estimated var-sortability.
 """
@@ -113,6 +114,9 @@ def main():
     split, out = sys.argv[1], sys.argv[2]
     nproc = int(sys.argv[3]) if len(sys.argv) > 3 else 2
     tl = tasks(split)
+    if len(sys.argv) > 4:                     # optional shard: comma-separated families (to keep each job < 2 h)
+        fams = sys.argv[4].split(",")
+        tl = [t for t in tl if t[0] in fams]
     # largest first for load balance
     tl.sort(key=lambda t: -(t[1] * t[3]))
     from multiprocessing import Pool
