@@ -1,0 +1,160 @@
+== ar_1_uniform_* (3 experiments x 10 units), G_lin: 14 nodes, 27 scored edges, 23 relatives-graph edges
+   source nodes per weak component (relatives graph): {('red', 'green', 'blue', '...'): ['red', 'green', 'blue'], ('pol_1', 'angle_1', '...'): ['pol_1'], ('pol_2', 'angle_2', '...'): ['pol_2']}
+   source nodes per weak component (G_D): [['red', 'green', 'blue', 'pol_1', 'pol_2']]
+   instances: 4238 (810 full-set); D* (theory != wc_rule): 2361 = 0.557; units with D* instances: 30/30
+   theory predicted 1/0/half: 2975/0/1263
+   D* theory values: {0: 0, 0.5: 0, 1: 2361}  wc values: {0: 0, 0.5: 2361, 1: 0}
+   competitor disagreement with theory: all instances | within D*
+     sensor_indicator     1263 (0.298) |      0 (units 0)
+     n_anc_full           1263 (0.298) |      0 (units 0)
+     n_anc_S              1326 (0.313) |      0 (units 0)
+     indeg_full           1263 (0.298) |      0 (units 0)
+     indeg_S              1326 (0.313) |      0 (units 0)
+     depth_full           1263 (0.298) |      0 (units 0)
+     depth_S              1326 (0.313) |      0 (units 0)
+     all_one              1263 (0.298) |      0 (units 0)
+     const_half           2975 (0.702) |   2361 (units 30)
+     wc_rule              2361 (0.557) |   2361 (units 30)
+     theory_GD             236 (0.056) |      0 (units 0)
+   colour edges predicted 1/2 by the theory (no second source in S): 920; predicted 1 (second source present): 2361
+   theory-1/2 instances where sensor_indicator predicts 1: 1263
+== ar_1_uniform_* as if G_D were the relatives graph: 14 nodes, 27 scored edges, 27 relatives-graph edges
+   source nodes per weak component (relatives graph): {('red', 'green', 'blue', '...'): ['red', 'green', 'blue', 'pol_1', 'pol_2']}
+   source nodes per weak component (G_D): [['red', 'green', 'blue', 'pol_1', 'pol_2']]
+   instances: 4238 (810 full-set); D* (theory != wc_rule): 3211 = 0.758; units with D* instances: 30/30
+   theory predicted 1/0/half: 3211/0/1027
+   D* theory values: {0: 0, 0.5: 0, 1: 3211}  wc values: {0: 0, 0.5: 3211, 1: 0}
+   competitor disagreement with theory: all instances | within D*
+     sensor_indicator     1027 (0.242) |      0 (units 0)
+     n_anc_full           1027 (0.242) |      0 (units 0)
+     n_anc_S              1027 (0.242) |      0 (units 0)
+     indeg_full           1027 (0.242) |      0 (units 0)
+     indeg_S              1027 (0.242) |      0 (units 0)
+     depth_full           1027 (0.242) |      0 (units 0)
+     depth_S              1027 (0.242) |      0 (units 0)
+     all_one              1027 (0.242) |      0 (units 0)
+     const_half           3211 (0.758) |   3211 (units 30)
+     wc_rule              3211 (0.758) |   3211 (units 30)
+     theory_GD               0 (0.000) |      0 (units 0)
+   colour edges predicted 1/2 by the theory (no second source in S): 691; predicted 1 (second source present): 2590
+   theory-1/2 instances where sensor_indicator predicts 1: 1027
+== scm_5_red (10 units): 10 nodes, 23 scored edges, 23 relatives-graph edges
+   source nodes per weak component (relatives graph): {('red', 'green', 'blue', '...'): ['red', 'blue']}
+   source nodes per weak component (G_D): [['red', 'blue']]
+   instances: 2174 (230 full-set); D* (theory != wc_rule): 970 = 0.446; units with D* instances: 10/10
+   theory predicted 1/0/half: 970/0/1204
+   D* theory values: {0: 0, 0.5: 0, 1: 970}  wc values: {0: 0, 0.5: 970, 1: 0}
+   competitor disagreement with theory: all instances | within D*
+     sensor_indicator     1259 (0.579) |    120 (units 10)
+     n_anc_full           1204 (0.554) |      0 (units 0)
+     n_anc_S              1204 (0.554) |      0 (units 0)
+     indeg_full           1204 (0.554) |      0 (units 0)
+     indeg_S              1204 (0.554) |      0 (units 0)
+     depth_full           1204 (0.554) |      0 (units 0)
+     depth_S              1204 (0.554) |      0 (units 0)
+     all_one              1204 (0.554) |      0 (units 0)
+     const_half            970 (0.446) |    970 (units 10)
+     wc_rule               970 (0.446) |    970 (units 10)
+     theory_GD               0 (0.000) |      0 (units 0)
+   colour edges predicted 1/2 by the theory (no second source in S): 1139; predicted 1 (second source present): 970
+   theory-1/2 instances where sensor_indicator predicts 1: 1139
+== scm_5_blue (10 units): 10 nodes, 23 scored edges, 23 relatives-graph edges
+   source nodes per weak component (relatives graph): {('red', 'green', 'blue', '...'): ['red', 'blue']}
+   source nodes per weak component (G_D): [['red', 'blue']]
+   instances: 2248 (230 full-set); D* (theory != wc_rule): 1108 = 0.493; units with D* instances: 10/10
+   theory predicted 1/0/half: 1108/0/1140
+   D* theory values: {0: 0, 0.5: 0, 1: 1108}  wc values: {0: 0, 0.5: 1108, 1: 0}
+   competitor disagreement with theory: all instances | within D*
+     sensor_indicator     1226 (0.545) |    144 (units 10)
+     n_anc_full           1140 (0.507) |      0 (units 0)
+     n_anc_S              1140 (0.507) |      0 (units 0)
+     indeg_full           1140 (0.507) |      0 (units 0)
+     indeg_S              1140 (0.507) |      0 (units 0)
+     depth_full           1140 (0.507) |      0 (units 0)
+     depth_S              1140 (0.507) |      0 (units 0)
+     all_one              1140 (0.507) |      0 (units 0)
+     const_half           1108 (0.493) |   1108 (units 10)
+     wc_rule              1108 (0.493) |   1108 (units 10)
+     theory_GD               0 (0.000) |      0 (units 0)
+   colour edges predicted 1/2 by the theory (no second source in S): 1082; predicted 1 (second source present): 1108
+   theory-1/2 instances where sensor_indicator predicts 1: 1082
+== scm_5_green (10 units): 10 nodes, 21 scored edges, 21 relatives-graph edges
+   source nodes per weak component (relatives graph): {('red', 'green', 'blue', '...'): ['red', 'green', 'blue']}
+   source nodes per weak component (G_D): [['red', 'green', 'blue']]
+   instances: 2036 (210 full-set); D* (theory != wc_rule): 1815 = 0.891; units with D* instances: 10/10
+   theory predicted 1/0/half: 1815/0/221
+   D* theory values: {0: 0, 0.5: 0, 1: 1815}  wc values: {0: 0, 0.5: 1815, 1: 0}
+   competitor disagreement with theory: all instances | within D*
+     sensor_indicator      221 (0.109) |      0 (units 0)
+     n_anc_full            221 (0.109) |      0 (units 0)
+     n_anc_S               221 (0.109) |      0 (units 0)
+     indeg_full            221 (0.109) |      0 (units 0)
+     indeg_S               221 (0.109) |      0 (units 0)
+     depth_full            221 (0.109) |      0 (units 0)
+     depth_S               221 (0.109) |      0 (units 0)
+     all_one               221 (0.109) |      0 (units 0)
+     const_half           1815 (0.891) |   1815 (units 10)
+     wc_rule              1815 (0.891) |   1815 (units 10)
+     theory_GD               0 (0.000) |      0 (units 0)
+   colour edges predicted 1/2 by the theory (no second source in S): 221; predicted 1 (second source present): 1815
+   theory-1/2 instances where sensor_indicator predicts 1: 221
+== scm_4_green (10 units): 10 nodes, 22 scored edges, 22 relatives-graph edges
+   source nodes per weak component (relatives graph): {('red', 'green', 'blue', '...'): ['red', 'green']}
+   source nodes per weak component (G_D): [['red', 'green']]
+   instances: 2125 (220 full-set); D* (theory != wc_rule): 1512 = 0.712; units with D* instances: 10/10
+   theory predicted 1/0/half: 1512/0/613
+   D* theory values: {0: 0, 0.5: 0, 1: 1512}  wc values: {0: 0, 0.5: 1512, 1: 0}
+   competitor disagreement with theory: all instances | within D*
+     sensor_indicator      516 (0.243) |      0 (units 0)
+     n_anc_full            613 (0.288) |      0 (units 0)
+     n_anc_S               613 (0.288) |      0 (units 0)
+     indeg_full            613 (0.288) |      0 (units 0)
+     indeg_S               613 (0.288) |      0 (units 0)
+     depth_full            613 (0.288) |      0 (units 0)
+     depth_S               613 (0.288) |      0 (units 0)
+     all_one               613 (0.288) |      0 (units 0)
+     const_half           1512 (0.712) |   1512 (units 10)
+     wc_rule              1512 (0.712) |   1512 (units 10)
+     theory_GD               0 (0.000) |      0 (units 0)
+   colour edges predicted 1/2 by the theory (no second source in S): 516; predicted 1 (second source present): 1512
+   theory-1/2 instances where sensor_indicator predicts 1: 516
+== scm_4_blue (10 units): 10 nodes, 22 scored edges, 22 relatives-graph edges
+   source nodes per weak component (relatives graph): {('red', 'green', 'blue', '...'): ['red', 'blue']}
+   source nodes per weak component (G_D): [['red', 'blue']]
+   instances: 2167 (220 full-set); D* (theory != wc_rule): 1563 = 0.721; units with D* instances: 10/10
+   theory predicted 1/0/half: 1563/0/604
+   D* theory values: {0: 0, 0.5: 0, 1: 1563}  wc values: {0: 0, 0.5: 1563, 1: 0}
+   competitor disagreement with theory: all instances | within D*
+     sensor_indicator      494 (0.228) |      0 (units 0)
+     n_anc_full            604 (0.279) |      0 (units 0)
+     n_anc_S               604 (0.279) |      0 (units 0)
+     indeg_full            604 (0.279) |      0 (units 0)
+     indeg_S               604 (0.279) |      0 (units 0)
+     depth_full            604 (0.279) |      0 (units 0)
+     depth_S               604 (0.279) |      0 (units 0)
+     all_one               604 (0.279) |      0 (units 0)
+     const_half           1563 (0.721) |   1563 (units 10)
+     wc_rule              1563 (0.721) |   1563 (units 10)
+     theory_GD               0 (0.000) |      0 (units 0)
+   colour edges predicted 1/2 by the theory (no second source in S): 494; predicted 1 (second source present): 1563
+   theory-1/2 instances where sensor_indicator predicts 1: 494
+== scm_4_red (10 units): 10 nodes, 23 scored edges, 23 relatives-graph edges
+   source nodes per weak component (relatives graph): {('red', 'green', 'blue', '...'): ['red']}
+   source nodes per weak component (G_D): [['red']]
+   instances: 2194 (230 full-set); D* (theory != wc_rule): 0 = 0.000; units with D* instances: 0/10
+   theory predicted 1/0/half: 0/0/2194
+   D* theory values: {0: 0, 0.5: 0, 1: 0}  wc values: {0: 0, 0.5: 0, 1: 0}
+   competitor disagreement with theory: all instances | within D*
+     sensor_indicator     2011 (0.917) |      0 (units 0)
+     n_anc_full           2194 (1.000) |      0 (units 0)
+     n_anc_S              2194 (1.000) |      0 (units 0)
+     indeg_full           2103 (0.959) |      0 (units 0)
+     indeg_S              2131 (0.971) |      0 (units 0)
+     depth_full           2194 (1.000) |      0 (units 0)
+     depth_S              2194 (1.000) |      0 (units 0)
+     all_one              2194 (1.000) |      0 (units 0)
+     const_half              0 (0.000) |      0 (units 0)
+     wc_rule                 0 (0.000) |      0 (units 0)
+     theory_GD               0 (0.000) |      0 (units 0)
+   colour edges predicted 1/2 by the theory (no second source in S): 2011; predicted 1 (second source present): 0
+   theory-1/2 instances where sensor_indicator predicts 1: 2011
