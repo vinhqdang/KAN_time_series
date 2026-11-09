@@ -1842,3 +1842,101 @@ against the exact population gap (all 42 cells below the diagonal and above
 $\srho(\GT)$ against $T$, mean over the 30 test graphs per family and $p$.}
 \label{fig:srhoT}
 \end{figure}
+
+\section{B1-NL: Replication under Nonlinear Dynamics, Signed Weights and Uniform Noise}
+\label{app:b1nl}
+
+\textbf{Process.} A separate plan (\texttt{b1nl/PLAN.md}) was committed before
+any algorithm score; two notes (a faster but output-identical diagnostic, and
+the limited power of sanity rule S1) were added after the validation run and
+before the test run. No threshold, hypothesis or seed changed. The test run
+(5{,}040 data sets) was run once.
+
+\textbf{Design.} As B1 (\cref{app:b1}) with the B1 code imported unchanged:
+seven families, $p\in\{5,10\}$, $T\in\{3,5,10\}$, $n=1000$, G1 against G2
+(burn-in 100), R-het and R-std. Three parametrisations. NL: additive VAR with a
+linear self-loop and cross terms $w\,g(x)$, $g$ drawn from $\tanh$, $\sin$ and
+$(x+x^2/2)/(1+x^2/4)$, positive $w$, stability by scaling the Lipschitz-bound
+matrix to spectral radius at most $0.8$. SGN: linear, all weights
+$\pm\mathrm{Unif}(0.5,1)$. SGNU: SGN with uniform noise. New seeds (25 graphs per
+family and $p$ for NL and SGN, 10 for SGNU); PC and R-eq dropped and G2s
+replaced by a 500-step burn-in, to fit one core (stated in the plan).
+
+\textbf{Results.} H1 (same rule as B1) supported in all three: 5/5 families
+Holm-significant ($p\le1.4\cdot10^{-9}$); pooled gain $+0.108$ $[0.100,0.116]$
+(NL), $+0.137$ $[0.128,0.146]$ (SGN), $+0.137$ $[0.123,0.152]$ (SGNU); positive in
+all 126 cells. Tracking: Spearman $0.68$, $0.82$, $0.78$ (slopes $0.34$, $0.56$,
+$0.56$). Under NL the correlation-count estimator recovers about $65\%$ of the
+graph relatives (recall $0.67$ under G1, $0.62$ under G2), which explains the
+smaller slope, as stated before the run. Under signed weights sample relatives
+can deviate from graph relatives (out-trees under G2: estimated
+rel-sortability $0.455$), yet the gain is as large as in B1. H3: one
+Holm-significant SHD swap under NL ($R^2$-SortnRegress against the random order,
+chains, $p=10$, $T=10$), none under SGN, not testable for SGNU (10 seeds, stated
+in the plan); B1's rel- against $R^2$-SortnRegress chain swap did not
+replicate on SHD. Without PC, 5 of B1's 11 swap types cannot occur. FLOP is the
+best label-free method under both generators in every configuration. The
+var/rel split holds: Var-SortnRegress gains $+0.19$, $+0.24$, $+0.24$ raw and
+about $0$ standardised; rel-SortnRegress $+0.11$, $+0.15$, $+0.14$. Sanity rules
+pass (S1 at most $0.015$; mixing error at most $5.6\cdot10^{-5}$).
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\linewidth]{figs/fig_b1nl.pdf}
+\caption{B1-NL: per-cell G1$-$G2 gain in rel-SortnRegress order accuracy
+against the exact population gap, for NL, SGN and SGNU.}
+\label{fig:b1nl}
+\end{figure}
+
+\section{B3: Discriminating Test of the Source-SCC Rule on Held-Out Data}
+\label{app:b3}
+
+\textbf{Process.} The plan (\texttt{b3/PLAN.md}, with an OSF-formatted copy) was
+pushed before any byte of the held-out data was read; zip CRC-32 values were
+taken from the remote archive directory before the plan and SHA-256 hashes at
+download. The plan is internally time-stamped only: it was not posted to an
+external registry before data access, and results were committed minutes
+after the plan. A disclosed development check on study-3 data from the same
+device had shown every colour edge to be detectable, so the primary outcome
+was expected.
+
+\textbf{Data.} Causal Chambers experiments not previously downloaded by the
+project. H1 (primary): \texttt{lt\_camera\_walks\_v1}, experiments
+\texttt{ar\_1\_uniform\_\{ref, pol\_1\_90, pol\_12\_30\}}: five independent
+stationary AR(1) actuators drive the light sensors, so the colour block is
+one weak component with three source SCCs; $3\times30{,}000$ steps, 30 units of
+3{,}000. H2 (co-primary): \texttt{lt\_camera\_v1/scm\_5\_red} and
+\texttt{scm\_5\_blue}, i.i.d.\ data from the collider R$\to$G$\leftarrow$B, 20
+units. Secondary: \texttt{scm\_5\_green}, \texttt{scm\_4\_green},
+\texttt{scm\_4\_blue}, and \texttt{scm\_4\_red} as a single-source control.
+
+\textbf{Test.} E1's estimator unchanged. Competitors: constant $1/2$, the
+weak-component-size rule, the theorem on the design graph $G_D$, and E1's
+eight naive rules. Primary set $D^*$: instances where the theorem and the
+weak-component rule disagree ($56\%$ of instances for H1, $47\%$ for H2, from
+graph-only computation before the plan); on $D^*$ the prediction is the same
+on $G_{\mathrm{lin}}$ and $G_D$. Failure of the estimator pushes observed values
+towards the tie rules, so a pass on $D^*$ cannot come from ties. Sign-flip
+tests over units, Holm, family $\alpha=0.025$; pass requires $\Delta\le-0.10$
+against every competitor that disagrees on $D^*$.
+
+\textbf{Results.} H1: on 2{,}361 instances, counts sorted as predicted in
+2{,}356; $\Delta=-0.498$ against both tie rules, 30/30 units, $p\approx10^{-5}$;
+non-relatives declared dependent $0.054$, relatives detected $0.990$. H2:
+$\Delta=-0.50$ against the tie rules and the sensor indicator, 20/20 units;
+R$\to$G sorted 264/264 when B is observed and tied 123/123 when not. S1
+(predicted tie, detected edge; 1{,}251 instances): theorem beats the eight
+naive rules ($\Delta=-0.43$, 30/30 units) and the theorem on $G_D$ narrowly
+($\Delta=-0.21$, 21/30 units, Holm $p=0.021$). No kill rule triggered.
+
+\textbf{Failures.} \texttt{scm\_4\_blue}: the tie rule is significantly better
+($\Delta=+0.115$, 0/10 units, reverse $p=0.001$); post hoc, the intervened blue
+channel ranges over 1--13 of 255 levels, so none of its edges is detected, and
+the pooled detection prerequisite ($0.837$) did not catch this. The pooled
+secondary analysis still passes, in 20/30 units. In
+\texttt{ar\_1\_uniform\_pol\_1\_90} the polariser linear-zero refinement of
+\cref{app:e1} fails (polarisers correlate with ir$_3$, vis$_3$ at
+$|r|\approx0.2$--$0.28$; $G_D$ matches $0.959$ against $0.041$ for
+$G_{\mathrm{lin}}$); H1 does not depend on it. Deviations: the inputs of two
+experiments do not reproduce from the published generator seeds (ranges
+match; not gating).

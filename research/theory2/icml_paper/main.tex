@@ -106,8 +106,9 @@ real-data studies with internally time-stamped analysis plans, a river
 benchmark failed (a post hoc analysis is consistent with saturation) and a
 physical testbed gave partial support. In a benchmark experiment with time
 labels hidden, the fixed start raised the accuracy of a relatives-sorting
-baseline by amounts that track the exact values and reversed several method
-rankings.
+baseline by amounts that track the exact values, also under nonlinear
+dynamics and signed weights; ranking reversals among baselines occurred in
+the linear-Gaussian setting but did not replicate.
 \end{abstract}
 
 %=============================================================================
@@ -164,7 +165,8 @@ driver at $n\approx z_c^2/\ell^2$, and conditions for a proxy to repair it.
 (\cref{sec:real}), reported with every failed test.
 \textbf{(5)} A benchmark experiment (\cref{sec:b1}): with time labels hidden,
 the fixed start shifts sort-based baselines by amounts the exact values
-predict and reverses significant pairwise rankings.
+predict, robustly across parametrisations; and a discriminating held-out test
+of the source-SCC rule against tie rules (\cref{app:b3}).
 
 The graph results of (1) are short consequences of a walk-length lemma and of
 \citet[Lemma~1]{reisach2026topological}. Their value is that they determine
@@ -457,6 +459,14 @@ best on average under both generators. The fixed start also creates
 var-sortability (Var-SortnRegress $+0.20$ on raw data, $+0.002$ after
 standardisation), which drives the largest swaps (Var-SortnRegress against
 FLOP and PC on in-trees); this second artefact is outside our theory.
+A separately planned replication (B1-NL, \cref{app:b1nl}; new seeds, PC
+dropped) with nonlinear additive dynamics, signed weights, and signed weights
+with uniform noise reproduced the accuracy gain in all 126 cells (pooled
+$+0.108$, $+0.137$, $+0.137$; 5/5 families significant in each; tracking
+Spearman $0.68$--$0.82$) and the var/rel split, but not the ranking
+reversals (one SHD swap between two weak baselines under NL, none under
+signed weights). The robust finding is the shift in sortability and in
+sort-based baselines, not a change of the best method.
 
 \begin{table}[t]
 \caption{B1, heterogeneous noise, raw data; means over 180 data sets per family
@@ -828,6 +838,17 @@ beats all eight, but a constant-$1/2$ rule has lower absolute error ($0.311$
 against $0.363$). E1 thus shows that the component structure of
 $G_{\mathrm{lin}}$ predicts the observed ties and orderings; it does not
 discriminate the theory from that simpler rule.
+\textbf{B3} (\cref{app:b3}) therefore used held-out light-tunnel data whose
+components have several independent sources (three AR(1)-driven series, 30
+units; an actuator collider, 20 units), with constant $1/2$, the
+weak-component rule and the theorem on $G_D$ added as competitors. On the
+2{,}361 instances where the theorem and the weak-component rule disagree, the
+counts were sorted as predicted in $99.8\%$ ($\Delta=-0.50$ against both tie
+rules, 30/30 units); in the collider, R$\to$G was sorted whenever B was
+observed (264/264) and tied otherwise (123/123). The test was low-risk
+(same device; colour edges known to be detectable), and where the graph is
+unfaithful it failed: in one interventional set with an almost constant source
+the tie rule won ($\Delta=+0.12$, 0/10 units).
 
 \textbf{E2: lagged relatives} (\cref{app:e2}). A Bonferroni max-over-lags
 variant of classical cross-correlation independence tests
@@ -875,10 +896,11 @@ plans are internally time-stamped, agent-executed on one day, and the
 CausalRivers plan was not blind to an earlier analysis of the same data. The
 positive real-data evidence comes from one device per chamber; E1 coincides
 with a weak-component-size rule on its primary graph and is carried mainly by
-ties. The graded criteria P2, P3, P4, P6, P9 and Q9 failed. B1 uses one
-linear-Gaussian parametrisation with positive weights and $n=1000$; its
-ranking reversals involve sort-based baselines, not the best method, and the
-largest ones come from var-sortability rather than rel-sortability.
+ties; B3 separates the theorem from that rule but on the same light tunnel,
+with no external registration. The graded criteria P2, P3, P4, P6, P9, Q9 and
+one B3 secondary set failed. B1 and B1-NL are simulations at $n=1000$; the
+ranking reversals of B1 involve sort-based baselines only, the largest come
+from var-sortability, and they did not replicate in B1-NL.
 
 \section*{Impact Statement}
 This paper presents work whose goal is to advance the field of Machine

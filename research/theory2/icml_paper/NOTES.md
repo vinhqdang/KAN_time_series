@@ -163,3 +163,9 @@ Main text now ends on page 7 (right column); Impact, AI-use and Artefact stateme
 - New Appendix "Benchmark Experiment B1" (design, verdicts H1-H3, deviations D1-D3, two artefacts, burn-in cost, Delta check, figures in `figs/`).
 - Abstract, contribution (5), Discussion (burn-in >= Delta, standardise) and Limitations (single parametrisation; swaps on baselines; largest swaps from var-sortability) updated.
 - Main text still ends on page 8 (33 pages total).
+
+## B3 and B1-NL integration (2026-11-09)
+
+- B1-NL (`../b1nl`, plan 2d19c9b, results c96f018): accuracy gain replicates under NL/SGN/SGNU; ranking reversals do not. Abstract, contribution (5), Sec. 3 B1 paragraph and Limitations toned down accordingly ("robust finding is the sortability shift, not a change of the best method"). New App. `app:b1nl`.
+- B3 (`../b3`, plan 827179d, results 7071855, 3.5 min apart; no OSF registration before data access): H1/H2 pass against constant-1/2 and weak-component rules on held-out light-tunnel data; scm_4_blue secondary fails; Malus refinement fails in pol_1_90. Paragraph after E1 in Sec. real data; New App. `app:b3`. `b3/OSF_PREREG.md` is ready but posting it is the user's decision (would only be an archival copy now).
+- Main text still ends on page 8 (34 pages total).
