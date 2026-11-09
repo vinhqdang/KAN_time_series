@@ -1,0 +1,4 @@
+results/shards/
+val_timing/*.csv.gz
+val_timing/*.rows.csv
+__pycache__/
