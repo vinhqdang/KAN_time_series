@@ -1,0 +1,4 @@
+results/shards/
+results/val/
+__pycache__/
+*.part
