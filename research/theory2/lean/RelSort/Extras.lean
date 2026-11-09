@@ -252,4 +252,70 @@ theorem edgeNoLoops_sRho {n : ℕ} (hn : 1 ≤ n) : sRho (unrolled edgeNoLoops n
   simp [hE]
   field_simp
 
+/-! ### `Δ` cannot be lowered in Theorem 1.9 (burn-in) -/
+
+/-- With burn-in `B = 0`, window relatives are the relatives of `G_T` itself. -/
+lemma relBurn_zero_iff (hl : ∀ v, E v v) {m : ℕ} (a b : V × Fin (m + 1)) :
+    relBurn E 0 m a b ↔ IsRel (unrolled E m) a b := by
+  obtain ⟨v, t⟩ := a
+  obtain ⟨w, r⟩ := b
+  unfold relBurn burnEmb
+  rw [isRel_unrolled_iff hl, isRel_unrolled_iff hl]
+  simp
+
+/-- With burn-in `B = 0`, the windowed score is the finite-`G_T` score. -/
+lemma sBurn_zero (hl : ∀ v, E v v) (m : ℕ) : sBurn E 0 m = sRho (unrolled E m) := by
+  have h : rhoBurn E 0 m = rho (unrolled E m) := by
+    funext a
+    unfold rhoBurn rho cntOf setOf'
+    congr 1
+    ext b
+    simp only [mem_filter, mem_univ, true_and]
+    exact relBurn_zero_iff hl a b
+  unfold sBurn sRho
+  rw [edgeBurn_eq, h]
+
+lemma edgeLoops_loops : ∀ v, edgeLoops v v := fun _ => Or.inl rfl
+
+/-- The single edge `0 → 1` with self-loops has `Δ = 1`. -/
+lemma maxFinDist_edgeLoops : maxFinDist edgeLoops = 1 := by
+  have h1 := maxFinDist_le_card_sub_one edgeLoops_loops
+  simp only [Fintype.card_fin] at h1
+  have h0 : maxFinDist edgeLoops ≠ 0 := by
+    intro h0
+    have hd := dist_le_maxFinDist (E := edgeLoops) (u := 0) (v := 1)
+      (Relation.ReflTransGen.single (Or.inr ⟨rfl, rfl⟩))
+    rw [h0, dist_le_iff edgeLoops_loops, walkN_zero] at hd
+    exact absurd hd (by decide)
+  omega
+
+/-- **Sharpness of `B ≥ Δ` in Theorem 1.9**: for the single edge `0 → 1` with self-loops,
+`Δ = 1`; with burn-in `B = Δ = 1` the windowed score equals the stationary value `1/2`, but with
+`B = Δ - 1 = 0` it is strictly larger (at least `1/2 + 1/(2|E_S|) = 2/3`) for every `T ≥ 2`. So
+the hypothesis `Δ ≤ B` of `sBurn_eq_maxFinDist` cannot be weakened to `Δ - 1 ≤ B` in general. -/
+theorem edgeLoops_burn_sharp {m : ℕ} (hm : 1 ≤ m) :
+    maxFinDist edgeLoops = 1 ∧ statValue edgeLoops = 1 / 2 ∧
+    sBurn edgeLoops 1 m = statValue edgeLoops ∧
+    statValue edgeLoops < sBurn edgeLoops (maxFinDist edgeLoops - 1) m := by
+  classical
+  have hst : statValue edgeLoops = 1 / 2 :=
+    stat_half_of_outForest (E := edgeLoops) edgeLoops_loops (by unfold OutForest; decide)
+  refine ⟨maxFinDist_edgeLoops, hst,
+    sBurn_eq_maxFinDist edgeLoops_loops maxFinDist_edgeLoops.le hm, ?_⟩
+  rw [maxFinDist_edgeLoops, Nat.sub_self, sBurn_zero edgeLoops_loops, hst]
+  have hac := acyclic_of_rank (E := edgeLoops) (fun a => (a : ℕ)) (by decide)
+  have hcross : crossEdges edgeLoops ≠ ∅ := by
+    intro h
+    have hmem : ((0 : Fin 2), (1 : Fin 2)) ∈ crossEdges edgeLoops := by
+      unfold crossEdges
+      rw [mem_filter, mem_edges]
+      refine ⟨Or.inr ⟨rfl, rfl⟩, fun hs => ?_⟩
+      exact absurd (hac 0 1 hs.1 hs.2) (by decide)
+    rw [h] at hmem
+    exact Finset.notMem_empty _ hmem
+  have hge := sRho_unrolled_ge_of_cross edgeLoops_loops hcross hm
+  have hE : (0 : ℝ) < (edges edgeLoops).card := by exact_mod_cast edges_card_pos edgeLoops_loops
+  have : (0 : ℝ) < 1 / (2 * ((edges edgeLoops).card : ℝ)) := by positivity
+  linarith
+
 end RelSort

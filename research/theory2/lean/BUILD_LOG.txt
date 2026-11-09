@@ -1,74 +1,38 @@
-# lake build log (clean rebuild incl. NoLoop.lean, Predict.lean), 2026-11-04T12:32:42Z
+# lake build log (CLEAN rebuild of the final state, incl. the Δ = maxFinDist refinements), 2026-11-09T08:06:26Z
 # Lean (version 4.35.0, x86_64-unknown-linux-gnu, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)
-# Mathlib rev: v4.35.0 (56a005855ea17e0b0958f73ec801ae140b0a1679), oleans from lake exe cache get
-# command: rm -rf .lake/build && LEAN_NUM_THREADS=2 lake build   (full rebuild of RelSort)
-⚠ [9047/9062] Built RelSort.Basic (9.0s)
-warning: RelSort/Basic.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
-⚠ [9048/9062] Built RelSort.T2Algebra (10s)
+# Mathlib rev: v4.35.0 (56a005855ea17e0b0958f73ec801ae140b0a1679), oleans from lake exe cache get (kept in .lake/packages)
+# command: rm -rf .lake/build && LEAN_NUM_THREADS=1 lake build   (full rebuild of RelSort)
+⚠ [9047/9064] Built RelSort.T2Algebra (18s)
 warning: RelSort/T2Algebra.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
-✔ [9049/9062] Built RelSort.Predict (6.3s)
-✔ [9050/9062] Built RelSort.FiniteCorr (9.4s)
-✔ [9051/9062] Built RelSort.Walk (6.2s)
-✔ [9052/9062] Built RelSort.FiniteTrace (6.7s)
-✔ [9053/9062] Built RelSort.Unrolled (6.5s)
-✔ [9054/9062] Built RelSort.FinitePartial (13s)
-✔ [9055/9062] Built RelSort.Limit (7.1s)
-✔ [9056/9062] Built RelSort.FiniteLipschitz (6.8s)
-✔ [9057/9062] Built RelSort.NoLoop (6.4s)
-✔ [9058/9062] Built RelSort.Stationary (7.1s)
-✔ [9059/9062] Built RelSort.Examples (6.5s)
-✔ [9060/9062] Built RelSort.Extras (7.1s)
-✔ [9061/9062] Built RelSort (7.0s)
-Build completed successfully (9062 jobs).
-# exit: 0
-
-# command: LEAN_NUM_THREADS=2 lake env lean Axioms.lean
-# (133 'depends on axioms' lines in AXIOMS.txt, 0 outside [propext, Classical.choice, Quot.sound])
-# exit: 0
-
-# command: grep -rnwE 'sorry|admit|axiom' RelSort RelSort.lean
-(no matches)
-
-# ---- x1proof update 2026-11-04T21:54:11Z: clean rebuild incl. ErLemmas.lean (rm -rf .lake/build && LEAN_NUM_THREADS=2 lake build), exit 0, 9063 jobs, no warning from ErLemmas
-⚠ [9047/9063] Built RelSort.Basic (9.2s)
-⚠ [9048/9063] Built RelSort.T2Algebra (10s)
-✔ [9049/9063] Built RelSort.Predict (7.5s)
-✔ [9050/9063] Built RelSort.FiniteCorr (11s)
-✔ [9051/9063] Built RelSort.Walk (7.5s)
-✔ [9052/9063] Built RelSort.FiniteTrace (8.3s)
-✔ [9053/9063] Built RelSort.Unrolled (9.2s)
-✔ [9054/9063] Built RelSort.FinitePartial (16s)
-✔ [9055/9063] Built RelSort.Limit (8.8s)
-✔ [9056/9063] Built RelSort.FiniteLipschitz (10s)
-✔ [9057/9063] Built RelSort.NoLoop (8.4s)
-✔ [9058/9063] Built RelSort.Stationary (9.7s)
-✔ [9059/9063] Built RelSort.ErLemmas (7.8s)
-✔ [9060/9063] Built RelSort.Examples (8.1s)
-✔ [9061/9063] Built RelSort.Extras (7.2s)
-✔ [9062/9063] Built RelSort (6.9s)
-Build completed successfully (9063 jobs).
-# command: LEAN_NUM_THREADS=2 lake env lean AxiomsEr.lean  (5 lines appended to AXIOMS.txt, all within propext/Classical.choice/Quot.sound)
-'RelSort.upEdge_witness' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.mem_upEdges_of_witness' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.mem_upEdges_of_disjoint_anc' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.upEdges_subset_confluenceNL' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.card_upEdges_le_confluenceNL' depends on axioms: [propext, Classical.choice, Quot.sound]
-# command: grep -rnwE 'sorry|admit|axiom' RelSort RelSort.lean
-(no matches)
-
-# 2026-11-08: Observed.lean added (real-data estimand s-tilde); incremental rebuild
-✔ [9062/9064] Built RelSort.Observed (5.1s)
+⚠ [9048/9064] Built RelSort.Basic (10s)
+warning: RelSort/Basic.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+✔ [9049/9064] Built RelSort.FiniteTrace (12s)
+✔ [9050/9064] Built RelSort.Predict (13s)
+✔ [9051/9064] Built RelSort.FiniteCorr (13s)
+✔ [9052/9064] Built RelSort.Walk (18s)
+✔ [9053/9064] Built RelSort.FinitePartial (17s)
+✔ [9054/9064] Built RelSort.Unrolled (14s)
+✔ [9055/9064] Built RelSort.FiniteLipschitz (19s)
+✔ [9056/9064] Built RelSort.Limit (21s)
+✔ [9057/9064] Built RelSort.NoLoop (20s)
+✔ [9058/9064] Built RelSort.Stationary (10s)
+✔ [9059/9064] Built RelSort.Observed (12s)
+✔ [9060/9064] Built RelSort.ErLemmas (8.7s)
+✔ [9061/9064] Built RelSort.Examples (13s)
+✔ [9062/9064] Built RelSort.Extras (11s)
+✔ [9063/9064] Built RelSort (13s)
 Build completed successfully (9064 jobs).
-# command: lake env lean AxiomsObs.lean
-'RelSort.relObs_subset_of_edge' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.score_obsEdge' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.sTilde_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.upObs_subset_upEdges' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.sTilde_gt_half_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.sTilde_ge_half' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.exists_upEdge_of_sTilde_gt_half' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.sTilde_eq_half_of_no_up' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.mem_upObs_of_witness' depends on axioms: [propext, Classical.choice, Quot.sound]
-'RelSort.upObs_univ' depends on axioms: [propext, Classical.choice, Quot.sound]
+# exit: 0
+
+# command: LEAN_NUM_THREADS=1 lake env lean Axioms.lean   (133 'depends on axioms' lines, all [propext, Classical.choice, Quot.sound])
+# exit: 0
+# command: LEAN_NUM_THREADS=1 lake env lean AxiomsEr.lean   (5 'depends on axioms' lines, all [propext, Classical.choice, Quot.sound])
+# exit: 0
+# command: LEAN_NUM_THREADS=1 lake env lean AxiomsObs.lean   (10 'depends on axioms' lines, all [propext, Classical.choice, Quot.sound])
+# exit: 0
+# command: LEAN_NUM_THREADS=1 lake env lean AxiomsDelta.lean   (15 'depends on axioms' lines, all [propext, Classical.choice, Quot.sound])
+# exit: 0
+# AXIOMS.txt = concatenation of the four outputs: 163 lines, 0 outside [propext, Classical.choice, Quot.sound]
+
 # command: grep -rnwE 'sorry|admit|axiom' RelSort RelSort.lean
 (no matches)

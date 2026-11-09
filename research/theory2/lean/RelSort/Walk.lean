@@ -235,6 +235,54 @@ lemma dist_le_card_sub_one (hl : ∀ v, E v v) {u v : V} (h : Relation.ReflTrans
     dist E u v ≤ (Fintype.card V - 1 : ℕ) :=
   (dist_le_iff hl).mpr (walkN_card_sub_one hl h)
 
+/-! ### `Δ`: the largest finite distance -/
+
+/-- `Δ = maxFinDist E`: the largest *finite* shortest-path distance `d(u,v)` over ordered pairs
+with `v` reachable from `u` (unreachable pairs, `d = ⊤`, contribute `0` through `ENat.toNat`). -/
+noncomputable def maxFinDist (E : V → V → Prop) : ℕ :=
+  univ.sup (fun q : V × V => (dist E q.1 q.2).toNat)
+
+/-- Every finite distance is at most `Δ`. -/
+lemma dist_le_maxFinDist {u v : V} (h : Relation.ReflTransGen E u v) :
+    dist E u v ≤ (maxFinDist E : ℕ∞) := by
+  have hne : dist E u v ≠ ⊤ := dist_ne_top_iff.mpr h
+  have hle : (dist E u v).toNat ≤ maxFinDist E :=
+    Finset.le_sup (f := fun q : V × V => (dist E q.1 q.2).toNat) (mem_univ (u, v))
+  rw [← ENat.natCast_toNat hne]
+  exact_mod_cast hle
+
+/-- `Δ` is attained: some reachable pair has `d(u,v) = Δ`. -/
+lemma exists_dist_eq_maxFinDist [Nonempty V] :
+    ∃ u v, Relation.ReflTransGen E u v ∧ dist E u v = (maxFinDist E : ℕ∞) := by
+  obtain ⟨q, -, hq⟩ := Finset.exists_mem_eq_sup (univ : Finset (V × V)) univ_nonempty
+    (fun q : V × V => (dist E q.1 q.2).toNat)
+  by_cases htop : dist E q.1 q.2 = ⊤
+  · obtain ⟨x⟩ := ‹Nonempty V›
+    refine ⟨x, x, Relation.ReflTransGen.refl, ?_⟩
+    have h0 : dist E x x = 0 := by
+      have : dist E x x ≤ (0 : ℕ) := dist_le_iff_exists.mpr ⟨0, le_rfl, rfl⟩
+      simpa using this
+    rw [h0, maxFinDist, hq, htop]
+    simp
+  · refine ⟨q.1, q.2, dist_ne_top_iff.mp htop, ?_⟩
+    rw [maxFinDist, hq, ENat.natCast_toNat htop]
+
+/-- `Δ ≤ p - 1` (with self-loops at every node). -/
+lemma maxFinDist_le_card_sub_one (hl : ∀ v, E v v) : maxFinDist E ≤ Fintype.card V - 1 := by
+  unfold maxFinDist
+  apply Finset.sup_le
+  intro q _
+  by_cases htop : dist E q.1 q.2 = ⊤
+  · simp [htop]
+  · have h := dist_le_card_sub_one hl (dist_ne_top_iff.mp htop)
+    rw [← ENat.natCast_toNat htop] at h
+    exact_mod_cast h
+
+/-- Reachable ⇒ a walk of every length `n ≥ Δ` (sharpening of `walkN_of_reach`). -/
+lemma walkN_of_reach_maxFinDist (hl : ∀ v, E v v) {u v : V} (h : Relation.ReflTransGen E u v)
+    {n : ℕ} (hn : maxFinDist E ≤ n) : WalkN E n u v :=
+  (dist_le_iff hl).mp ((dist_le_maxFinDist h).trans (by exact_mod_cast hn))
+
 end Bound
 
 end RelSort

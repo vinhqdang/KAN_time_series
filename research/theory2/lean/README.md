@@ -1,6 +1,6 @@
 # Lean 4 verification of THEORY.md (part L of PLAN2.md) and of the deterministic parts of finite/FINITE.md
 
-Lean 4.35.0, Mathlib `v4.35.0` (commit 56a0058). Build: `lake exe cache get && LEAN_NUM_THREADS=2 lake build`.
+Lean 4.35.0, Mathlib `v4.35.0` (commit 56a0058). Build: `lake exe cache get && LEAN_NUM_THREADS=1 lake build`.
 Axiom check: `lake env lean Axioms.lean`. The full log of a clean rebuild plus the axiom check is in
 `BUILD_LOG.txt`, and the `#print axioms` lines are in `AXIOMS.txt`. Every listed theorem depends only on
 `propext`, `Classical.choice` and `Quot.sound`. The sources contain no `sorry`, no `admit` and no `axiom`
@@ -26,6 +26,9 @@ notice.
   the paper's edge `(i(t), j(t+1))` is Lean's `(i, s.castSucc) → (j, s.succ)` with `s = t − 1 : Fin n`.
   `tendsto_sRho_GT` states the limit with the slice count T itself.
 - **Distance.** `d(u,v)` is `dist E u v : ℕ∞`, the shortest walk length (⊤ if v is unreachable).
+  `Δ = maxFinDist E : ℕ` is the largest finite distance, `sup` over ordered pairs of `(dist E u v).toNat`
+  (unreachable pairs give 0); `dist_le_maxFinDist`, `exists_dist_eq_maxFinDist` (attained),
+  `maxFinDist_le_card_sub_one` (Δ ≤ p − 1), `walkN_of_reach_maxFinDist` (reachable ⇒ walk of every length ≥ Δ).
   `dist_eq_dist_noLoop` proves that it equals the same quantity with self-loops deleted, which is
   THEORY.md's "ignoring self-loops". The fact that "shortest walk = shortest path" is not stated
   separately: a shortest walk never repeats a vertex.
@@ -53,7 +56,7 @@ notice.
 | **Thm 1.3** (per-edge value, every T) | `edge_score` (walk form `StrictCond`), `edge_score_dist` (the paper's `∃u, d(u,j) ≤ t ≤ d(u,i)`), `strictCond_iff_dist` | Unrolled | verified |
 | Prop 1.4 (relative counts) | `rho_unrolled_eq` (ρ = Σ_w max(T − m_t, 0)), `mT_le_iff` (m_t is the stated minimum), `mT_large_t`, `rho_unrolled_large_t` (t ≥ p form: ρ + Σ_{rel_S} d(anc_S(v), w) = T·\|rel_S(v)\|) | Extras | verified |
 | **Thm 1.5** exact finite-T value | `sRho_unrolled_exact` (and raw form `sRho_unrolled_eq`) | Limit | verified |
-| **Thm 1.5** bounds | `sRho_unrolled_bounds`: 0 ≤ s − L ≤ min(p−1,T−1)\|E_∘\|/(2(T−1)\|E_S\|) ≤ (p−1)/(2(T−1)) | Limit | verified |
+| **Thm 1.5** bounds | sharp form `sRho_unrolled_bounds_maxFinDist`: 0 ≤ s − L ≤ min(Δ,T−1)\|E_∘\|/(2(T−1)\|E_S\|) ≤ Δ/(2(T−1)), Δ = `maxFinDist E`; corollary `sRho_unrolled_bounds`: the same with p−1 in place of Δ | Limit | verified |
 | **Thm 1.5** limit | `tendsto_sRho_unrolled` (in n = T−1), `tendsto_sRho_GT` (in T); `limitValue E = 1/2 + \|E_×\|/(2\|E_S\|)` | Limit | verified |
 | **Cor 1.6** iff (both directions) | `tendsto_half_iff`; equivalent conditions `crossEdges_eq_empty_tfae` (E_× = ∅; i→j ⇒ j⇝i; i⇝j ⇒ j⇝i; weak components strongly connected) | Limit | verified |
 | Cor 1.6 uniform bound | `sRho_unrolled_ge_of_cross` | Limit | verified |
@@ -62,10 +65,11 @@ notice.
 | Cor 1.7 examples (3-node collider/fork/chain: 0.7) | `collider_limit`, `fork_limit`, `chain3_limit` | Examples | verified |
 | Cor 1.7 forest count m = p − k, general chain formula | — | — | not formalised (graph counting only; it follows from `limitValue_dag` once m is known) |
 | Remark 1.8 | uses Prop 1.4 (verified). The qualitative "O(1) out of O(T)" reading is not a formal statement | — | partially |
-| **Thm 1.9 (a)** ρ_W = T·\|rel_S(v)\| | `rhoBurn_eq` (B ≥ p−1), `rhoZ_eq` (infinite past) | Stationary | verified |
-| **Thm 1.9 (b)** s = 1/2 + \|E_↑\|/(2\|E_S\|), every T ≥ 2 | `sBurn_eq`, `sZ_eq` (generic core `sOf_window`) | Stationary | verified |
+| **Thm 1.9 (a)** ρ_W = T·\|rel_S(v)\| | `rhoBurn_eq_maxFinDist` (B ≥ Δ), corollary `rhoBurn_eq` (B ≥ p−1), `rhoZ_eq` (infinite past) | Stationary | verified |
+| **Thm 1.9 (b)** s = 1/2 + \|E_↑\|/(2\|E_S\|), every T ≥ 2 | `sBurn_eq_maxFinDist` (B ≥ Δ; window relatives `relBurn_iff_maxFinDist`), corollary `sBurn_eq` (B ≥ p−1), `sZ_eq` (generic core `sOf_window`) | Stationary | verified |
+| Thm 1.9: B ≥ Δ cannot be lowered | `edgeLoops_burn_sharp` (edge 0→1 with loops: Δ = 1, B = 1 gives 1/2 = statValue, B = Δ−1 = 0 gives a strictly larger value, ≥ 2/3, for every T ≥ 2), via `sBurn_zero`, `relBurn_zero_iff`, `maxFinDist_edgeLoops` | Extras | verified |
 | Thm 1.9 (b) E_↑ via source SCCs | `relSet_eq_iff_src` (for i ⇝ j: rel_S(i) = rel_S(j) ⇔ Src(i) = Src(j)), `mem_upEdges_iff`, `exists_source` | Stationary | verified |
-| **Cor 1.10 (i)** iff | `sBurn_eq_half_iff` (unique source SCC per weak component), `sBurn_eq_half_iff_common_anc` (common ancestor form), `sZ_eq_half_iff`; equivalences `upEdges_eq_empty_tfae` | Stationary | verified |
+| **Cor 1.10 (i)** iff | `sBurn_eq_half_iff_maxFinDist` (B ≥ Δ), `sBurn_eq_half_iff` (B ≥ p−1; unique source SCC per weak component), `sBurn_eq_half_iff_common_anc` (common ancestor form), `sZ_eq_half_iff`; equivalences `upEdges_eq_empty_tfae` | Stationary | verified |
 | Cor 1.10 (ii) | `stat_half_of_strong` (Reisach's condition), `stat_half_of_outForest` (out-trees, out-forests, chains, forks; acyclicity not needed) | Stationary | verified |
 | Cor 1.10 (iii) in-forests | `inForest_isRel_iff` (rel = anc ∪ desc), `inForest_up_iff` (E_↑ edge ⇔ head is a confluence), `statValue_inForest` (formula), `statValue_inForest_gt_iff` (> 1/2 ⇔ a confluence exists) | Stationary | verified |
 | Cor 1.10 (iv) | `collider_stat` (0.7), `fork_stat` (1/2), `chain3_stat` (1/2) | Examples | verified |
@@ -215,7 +219,7 @@ Full clean rebuild with the two new files: `BUILD_LOG.txt` (9062 jobs, no error)
 - `RelSort/Predict.lean`: X3 (accuracy of the oracle sort rule, optimality among pairwise count rules).
 - `RelSort/ErLemmas.lean`: deterministic witness lemmas for E_up (x1proof/X1PROOF.md).
 - `RelSort/Observed.lean`: the real-data estimand s-tilde (observed subset, latent unobserved nodes, induced non-loop edges).
-- `Axioms.lean`, `AxiomsEr.lean`, `AxiomsObs.lean`: `#print axioms` for each main theorem. Output: `AXIOMS.txt` (148 lines), `BUILD_LOG.txt`.
+- `Axioms.lean`, `AxiomsEr.lean`, `AxiomsObs.lean`, `AxiomsDelta.lean`: `#print axioms` for each main theorem. Output: `AXIOMS.txt` (163 lines), `BUILD_LOG.txt`.
 
 ## ErLemmas.lean (x1proof/X1PROOF.md): witness lemma for E_up, no loop hypothesis
 
@@ -247,7 +251,23 @@ Not formalised: that the population lag-0 relatives of a stationary SVAR are rel
 genericity) and the counterexample to the converse (paper only). Incremental rebuild (9064 jobs, exit 0) and axiom check
 appended to `BUILD_LOG.txt`; `AXIOMS.txt` now has 148 lines.
 
-## Breakdown of the 148 declarations in AXIOMS.txt (2026-11-08)
+## Δ refinements (2026-11-09; review finding R-N1)
+
+Δ = `maxFinDist E` (Walk.lean), the largest finite shortest-path distance in G_S, Δ ≤ p − 1. The p − 1 forms of
+Theorem 1.5's bound and of Theorem 1.9 (burn-in) are now corollaries of Δ forms; no existing statement was changed.
+
+| statement | Lean name | file |
+|---|---|---|
+| Δ: definition, every finite d ≤ Δ, attained, Δ ≤ p−1, walks of every length ≥ Δ | `maxFinDist`, `dist_le_maxFinDist`, `exists_dist_eq_maxFinDist`, `maxFinDist_le_card_sub_one`, `walkN_of_reach_maxFinDist` | Walk |
+| inner edges score 1 only on layers s < Δ; N_T ≤ min(Δ, T−1) | `lt_of_strictCond_inner_maxFinDist`, `numStrict_inner_le_maxFinDist` | Limit |
+| **Thm 1.5 bound**: 0 ≤ s_ρ(G_T) − L ≤ min(Δ,T−1)\|E_∘\|/(2(T−1)\|E_S\|) ≤ Δ/(2(T−1)) | `sRho_unrolled_bounds_maxFinDist` | Limit |
+| **Thm 1.9 (burn-in)** with B ≥ Δ | `relBurn_iff_maxFinDist`, `rhoBurn_eq_maxFinDist`, `sBurn_eq_maxFinDist`, `sBurn_eq_half_iff_maxFinDist` | Stationary |
+| B ≥ Δ is sharp (B = Δ − 1 fails on the edge 0→1 with loops) | `edgeLoops_burn_sharp`, with `relBurn_zero_iff`, `sBurn_zero`, `maxFinDist_edgeLoops` | Extras |
+
+Axiom check: `AxiomsDelta.lean` (15 lines appended to `AXIOMS.txt`, now 163). Clean rebuild of the final state
+(`rm -rf .lake/build`, Mathlib oleans kept) and all four axiom files: `BUILD_LOG.txt`.
+
+## Breakdown of the 148 declarations in AXIOMS.txt (2026-11-08; 163 after the Δ refinements: +4 Δ-form theorems, +1 sharpness example, +10 supporting lemmas)
 
 29 headline theorems (Lean counterparts of numbered paper statements: Section 3 exact, limit, necessity, boundary,
 stationary and graph-class results; loop-free exact edge value; accuracy reading; the s-tilde sign relation),

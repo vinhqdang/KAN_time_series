@@ -114,8 +114,9 @@ lemma edgeBurn_eq : edgeBurn E B m = unrolled E m := by
   · rintro ⟨h1, h2⟩; exact ⟨h1, by omega⟩
   · rintro ⟨h1, h2⟩; exact ⟨h1, by omega⟩
 
-/-- With burn-in `B ≥ p - 1`, window relatives are the summary relatives. -/
-lemma relBurn_iff (hl : ∀ v, E v v) (hB : Fintype.card V - 1 ≤ B) (v : V)
+/-- With burn-in `B ≥ Δ` (`Δ = maxFinDist E`, the largest finite distance), window relatives
+are the summary relatives. -/
+lemma relBurn_iff_maxFinDist (hl : ∀ v, E v v) (hB : maxFinDist E ≤ B) (v : V)
     (t : Fin (m + 1)) (w : V) (r : Fin (m + 1)) : relBurn E B m (v, t) (w, r) ↔ IsRel E v w := by
   unfold relBurn burnEmb
   rw [isRel_unrolled_iff hl]
@@ -123,20 +124,38 @@ lemma relBurn_iff (hl : ∀ v, E v v) (hB : Fintype.card V - 1 ≤ B) (v : V)
   constructor
   · rintro ⟨u, h1, h2⟩; exact ⟨u, walkN_reach h1, walkN_reach h2⟩
   · rintro ⟨u, h1, h2⟩
-    exact ⟨u, walkN_of_reach hl h1 (by omega), walkN_of_reach hl h2 (by omega)⟩
+    exact ⟨u, walkN_of_reach_maxFinDist hl h1 (by omega),
+      walkN_of_reach_maxFinDist hl h2 (by omega)⟩
 
-/-- **Theorem 1.9 (a)**, burn-in: `ρ_W(v(t)) = T · |rel_S(v)|`. -/
+/-- With burn-in `B ≥ p - 1`, window relatives are the summary relatives
+(corollary of `relBurn_iff_maxFinDist`). -/
+lemma relBurn_iff (hl : ∀ v, E v v) (hB : Fintype.card V - 1 ≤ B) (v : V)
+    (t : Fin (m + 1)) (w : V) (r : Fin (m + 1)) : relBurn E B m (v, t) (w, r) ↔ IsRel E v w :=
+  relBurn_iff_maxFinDist hl ((maxFinDist_le_card_sub_one hl).trans hB) v t w r
+
+/-- **Theorem 1.9 (a)**, burn-in, sharp form: if `B ≥ Δ`, `ρ_W(v(t)) = T · |rel_S(v)|`. -/
+theorem rhoBurn_eq_maxFinDist (hl : ∀ v, E v v) (hB : maxFinDist E ≤ B) (v : V)
+    (t : Fin (m + 1)) : rhoBurn E B m (v, t) = (m + 1) * rho E v :=
+  cntOf_window (relBurn_iff_maxFinDist hl hB) v t
+
+/-- **Theorem 1.9 (a)**, burn-in: `ρ_W(v(t)) = T · |rel_S(v)|` (`B ≥ p - 1` form). -/
 theorem rhoBurn_eq (hl : ∀ v, E v v) (hB : Fintype.card V - 1 ≤ B) (v : V)
     (t : Fin (m + 1)) : rhoBurn E B m (v, t) = (m + 1) * rho E v :=
-  cntOf_window (relBurn_iff hl hB) v t
+  rhoBurn_eq_maxFinDist hl ((maxFinDist_le_card_sub_one hl).trans hB) v t
 
-/-- **Theorem 1.9 (b)**, burn-in: if `B ≥ p - 1`, then for every `T ≥ 2`,
-`s_ρ^{W,B} = 1/2 + |E_↑| / (2|E_S|)`. -/
-theorem sBurn_eq (hl : ∀ v, E v v) [Nonempty V] (hB : Fintype.card V - 1 ≤ B) (hm : 1 ≤ m) :
-    sBurn E B m = statValue E := by
+/-- **Theorem 1.9 (b)**, burn-in, sharp form: if `B ≥ Δ` (the largest finite distance), then for
+every `T ≥ 2`, `s_ρ^{W,B} = 1/2 + |E_↑| / (2|E_S|)`. -/
+theorem sBurn_eq_maxFinDist (hl : ∀ v, E v v) [Nonempty V] (hB : maxFinDist E ≤ B)
+    (hm : 1 ≤ m) : sBurn E B m = statValue E := by
   unfold sBurn rhoBurn
   rw [edgeBurn_eq]
-  exact sOf_window hl hm (relBurn_iff hl hB)
+  exact sOf_window hl hm (relBurn_iff_maxFinDist hl hB)
+
+/-- **Theorem 1.9 (b)**, burn-in: if `B ≥ p - 1`, then for every `T ≥ 2`,
+`s_ρ^{W,B} = 1/2 + |E_↑| / (2|E_S|)` (corollary of `sBurn_eq_maxFinDist`). -/
+theorem sBurn_eq (hl : ∀ v, E v v) [Nonempty V] (hB : Fintype.card V - 1 ≤ B) (hm : 1 ≤ m) :
+    sBurn E B m = statValue E :=
+  sBurn_eq_maxFinDist hl ((maxFinDist_le_card_sub_one hl).trans hB) hm
 
 end BurnIn
 
@@ -358,6 +377,16 @@ theorem sBurn_eq_half_iff_common_anc (hl : ∀ v, E v v) [Nonempty V] {B m : ℕ
     sBurn E B m = 1 / 2 ↔ ∀ i j, WeakConn E i j → ∃ u, Reach E u i ∧ Reach E u j := by
   have key := (upEdges_eq_empty_tfae (E := E)).out 1 4
   rw [sBurn_eq hl hB hm, statValue_eq_half_iff hl]
+  exact key
+
+/-- **Corollary 1.10 (i)**, sharp burn-in form: with `B ≥ Δ` (largest finite distance) and any
+`T ≥ 2`, `s_ρ^{W,B} = 1/2` iff every weakly connected component has exactly one source SCC. -/
+theorem sBurn_eq_half_iff_maxFinDist (hl : ∀ v, E v v) [Nonempty V] {B m : ℕ}
+    (hB : maxFinDist E ≤ B) (hm : 1 ≤ m) :
+    sBurn E B m = 1 / 2 ↔
+      ∀ x y, IsSource E x → IsSource E y → WeakConn E x y → SameSCC E x y := by
+  have key := (upEdges_eq_empty_tfae (E := E)).out 1 3
+  rw [sBurn_eq_maxFinDist hl hB hm, statValue_eq_half_iff hl]
   exact key
 
 /-- **Corollary 1.10 (i)**, infinite-past version. -/

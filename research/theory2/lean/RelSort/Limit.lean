@@ -89,6 +89,29 @@ lemma numStrict_inner_le (hl : ∀ v, E v v) {i j : V} (hc : SameSCC E i j) (n :
         · intro a _ b _ h; exact Fin.ext h
     _ = Fintype.card V - 1 := card_range _
 
+/-- Edges inside an SCC, sharp form: only the layers `s < Δ` (paper: `t ≤ Δ`) can have
+score `1`, where `Δ = maxFinDist E` is the largest finite distance. -/
+lemma lt_of_strictCond_inner_maxFinDist (hl : ∀ v, E v v) {i j : V} (hc : SameSCC E i j)
+    {s : ℕ} (h : StrictCond E s i j) : s < maxFinDist E := by
+  obtain ⟨u, h1, h2⟩ := h
+  have hui : Reach E u i := (walkN_reach h1).trans hc.2
+  by_contra hs
+  exact h2 (walkN_of_reach_maxFinDist hl hui (by omega))
+
+lemma numStrict_inner_le_maxFinDist (hl : ∀ v, E v v) {i j : V} (hc : SameSCC E i j) (n : ℕ) :
+    numStrict E n i j ≤ min (maxFinDist E) n := by
+  classical
+  refine le_min ?_ (numStrict_le n i j)
+  unfold numStrict
+  calc (univ.filter (fun s : Fin n => StrictCond E s i j)).card
+      ≤ (range (maxFinDist E)).card := by
+        apply card_le_card_of_injOn (fun s : Fin n => (s : ℕ))
+        · intro s hs
+          simp only [coe_filter, mem_univ, true_and, Set.mem_ofPred_eq] at hs
+          simpa using lt_of_strictCond_inner_maxFinDist hl hc hs
+        · intro a _ b _ h; exact Fin.ext h
+    _ = maxFinDist E := card_range _
+
 /-- Sum of the scores of the copies of one summary edge. -/
 lemma sum_layer_score (hl : ∀ v, E v v) {n : ℕ} {i j : V} (hij : E i j) :
     ∑ s : Fin n, score (rho (unrolled E n) (i, s.castSucc)) (rho (unrolled E n) (j, s.succ)) =
@@ -149,14 +172,15 @@ lemma sRho_unrolled_sub (hl : ∀ v, E v v) [Nonempty V] {n : ℕ} (hn : 1 ≤ n
   field_simp
   ring
 
-/-- **Theorem 1.5, explicit bound**: for every `T ≥ 2`,
-`0 ≤ s_ρ(G_T) - L ≤ min(p-1, T-1) |E_∘| / (2 (T-1) |E_S|) ≤ (p-1) / (2 (T-1))`. -/
-theorem sRho_unrolled_bounds (hl : ∀ v, E v v) [Nonempty V] {n : ℕ} (hn : 1 ≤ n) :
+/-- **Theorem 1.5, explicit bound, sharp form**: with `Δ = maxFinDist E` the largest finite
+shortest-path distance in `G_S` (`Δ ≤ p - 1`, `maxFinDist_le_card_sub_one`), for every `T ≥ 2`,
+`0 ≤ s_ρ(G_T) - L ≤ min(Δ, T-1) |E_∘| / (2 (T-1) |E_S|) ≤ Δ / (2 (T-1))`. -/
+theorem sRho_unrolled_bounds_maxFinDist (hl : ∀ v, E v v) [Nonempty V] {n : ℕ} (hn : 1 ≤ n) :
     0 ≤ sRho (unrolled E n) - limitValue E ∧
     sRho (unrolled E n) - limitValue E ≤
-      (min (Fintype.card V - 1) n : ℕ) * (innerEdges E).card / (2 * n * (edges E).card) ∧
-    (min (Fintype.card V - 1) n : ℕ) * ((innerEdges E).card : ℝ) / (2 * n * (edges E).card) ≤
-      ((Fintype.card V - 1 : ℕ) : ℝ) / (2 * n) := by
+      (min (maxFinDist E) n : ℕ) * (innerEdges E).card / (2 * n * (edges E).card) ∧
+    (min (maxFinDist E) n : ℕ) * ((innerEdges E).card : ℝ) / (2 * n * (edges E).card) ≤
+      (maxFinDist E : ℝ) / (2 * n) := by
   classical
   have hE : (0 : ℝ) < (edges E).card := by exact_mod_cast edges_card_pos hl
   have hn' : (0 : ℝ) < n := by exact_mod_cast hn
@@ -165,19 +189,48 @@ theorem sRho_unrolled_bounds (hl : ∀ v, E v v) [Nonempty V] {n : ℕ} (hn : 1 
   refine ⟨by positivity, ?_, ?_⟩
   · apply div_le_div_of_nonneg_right _ hden.le
     have : ∑ e ∈ innerEdges E, (numStrict E n e.1 e.2 : ℝ) ≤
-        ∑ _e ∈ innerEdges E, ((min (Fintype.card V - 1) n : ℕ) : ℝ) := by
+        ∑ _e ∈ innerEdges E, ((min (maxFinDist E) n : ℕ) : ℝ) := by
       apply sum_le_sum
       intro e he
       unfold innerEdges at he
       rw [mem_filter] at he
-      exact_mod_cast numStrict_inner_le hl he.2 n
+      exact_mod_cast numStrict_inner_le_maxFinDist hl he.2 n
     simpa [mul_comm] using this
+  · have hin : ((innerEdges E).card : ℝ) ≤ (edges E).card := by
+      exact_mod_cast card_filter_le _ _
+    have hmin : ((min (maxFinDist E) n : ℕ) : ℝ) ≤ (maxFinDist E : ℝ) := by
+      exact_mod_cast min_le_left _ _
+    rw [div_le_div_iff₀ hden (by positivity)]
+    calc (min (maxFinDist E) n : ℕ) * ((innerEdges E).card : ℝ) * (2 * n)
+        ≤ (maxFinDist E : ℝ) * (edges E).card * (2 * n) := by
+          apply mul_le_mul_of_nonneg_right _ (by positivity)
+          exact mul_le_mul hmin hin (by positivity) (by positivity)
+      _ = (maxFinDist E : ℝ) * (2 * n * (edges E).card) := by ring
+
+/-- **Theorem 1.5, explicit bound** (`p - 1` form; corollary of
+`sRho_unrolled_bounds_maxFinDist`, since `Δ ≤ p - 1`): for every `T ≥ 2`,
+`0 ≤ s_ρ(G_T) - L ≤ min(p-1, T-1) |E_∘| / (2 (T-1) |E_S|) ≤ (p-1) / (2 (T-1))`. -/
+theorem sRho_unrolled_bounds (hl : ∀ v, E v v) [Nonempty V] {n : ℕ} (hn : 1 ≤ n) :
+    0 ≤ sRho (unrolled E n) - limitValue E ∧
+    sRho (unrolled E n) - limitValue E ≤
+      (min (Fintype.card V - 1) n : ℕ) * (innerEdges E).card / (2 * n * (edges E).card) ∧
+    (min (Fintype.card V - 1) n : ℕ) * ((innerEdges E).card : ℝ) / (2 * n * (edges E).card) ≤
+      ((Fintype.card V - 1 : ℕ) : ℝ) / (2 * n) := by
+  classical
+  obtain ⟨h1, h2, -⟩ := sRho_unrolled_bounds_maxFinDist hl hn
+  have hE : (0 : ℝ) < (edges E).card := by exact_mod_cast edges_card_pos hl
+  have hn' : (0 : ℝ) < n := by exact_mod_cast hn
+  have hden : (0 : ℝ) < 2 * n * (edges E).card := by positivity
+  have hΔ := maxFinDist_le_card_sub_one hl (E := E)
+  refine ⟨h1, h2.trans ?_, ?_⟩
+  · apply div_le_div_of_nonneg_right _ hden.le
+    apply mul_le_mul_of_nonneg_right _ (by positivity)
+    exact_mod_cast min_le_min_right n hΔ
   · have hin : ((innerEdges E).card : ℝ) ≤ (edges E).card := by
       exact_mod_cast card_filter_le _ _
     have hmin : ((min (Fintype.card V - 1) n : ℕ) : ℝ) ≤ ((Fintype.card V - 1 : ℕ) : ℝ) := by
       exact_mod_cast min_le_left _ _
     rw [div_le_div_iff₀ hden (by positivity)]
-    have h0 : (0 : ℝ) ≤ ((min (Fintype.card V - 1) n : ℕ) : ℝ) := by positivity
     calc (min (Fintype.card V - 1) n : ℕ) * ((innerEdges E).card : ℝ) * (2 * n)
         ≤ ((Fintype.card V - 1 : ℕ) : ℝ) * (edges E).card * (2 * n) := by
           apply mul_le_mul_of_nonneg_right _ (by positivity)
