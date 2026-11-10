@@ -31,9 +31,8 @@ no undefined references or citations, no overfull boxes, 58 references.
 
 ## What changed against the ICML version
 
-- **Title:** "Rel-Sortability of Time-Unrolled Causal Graphs: Exact Values, the Fixed-Start
-  Artefact, Finite-Sample Limits and Real-Data Tests". Reason: the ICML title covered only the
-  start artefact (Round-3 finding NEW-3); with no page limit the title can name all four parts.
+- **Title:** "Rel-Sortability of Time-Unrolled Causal Graphs" (shortened at the user's request; the earlier
+  longer title listed all four parts of the paper).
 - **Front matter:** single author Quang-Vinh Dang, British University Vietnam, with the
   corresponding e-mail, as given by the user. New abstract (249 words) and keywords.
 - **Brought back into the body:** the 3-node examples table, the ER figure, the aggregation
