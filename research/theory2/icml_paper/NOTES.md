@@ -190,3 +190,32 @@ Main text ends on page 8 (left column of p. 9 starts with the Impact Statement);
 - Post the OSF plan (`../b3/OSF_PREREG.md` is only an archival copy now); any future confirmatory test needs an external registration before data access (B'5).
 - A human probabilist should read App. `app:erproof` and the new App. D propositions (B'4).
 - Author list, de-anonymised commit hashes, final AI-use statement, ICML 2027 style file and deadline (swap icml2026 -> icml2027 and re-check the 8-page limit).
+
+## Round-4 text fixes (2026-11-10, Round-3 findings in review/04_round3_decision.md)
+
+Text-only pass: no new experiment, no new analysis, no pre-registered verdict changed. Title unchanged.
+
+### Done
+
+- **NEW-1 (oracle).** Abstract, contribution (3), Sec. 4, Fig. `fig:oracle` caption, App. `app:b1x`, Limitations: the calculation is called post hoc everywhere; "not another mechanism" removed. The text now says it is the expectation of rel-SortnRegress under the exact start-dependent covariances, that it checks the size of the simulated gain against those covariances, that it does not separate the structural mechanism from a general change of correlation strength, and that the exact gap gives sign and ranking only (joint-regression coefficient -0.05).
+- **NEW-2, NEW-6 (HX2/HX3).** The attribution of the DAGMA/NOTEARS rank changes to var-sortability is now a stated hypothesis. Reported: standardised DAGMA and GOLEM are below chance in order accuracy under both starts; standardised NOTEARS keeps a significant gain (+0.036 order accuracy, -0.077 SHD/|E|); R2-sortability is not separated; the Var-SnR gain is equal on rings and chains; no variance-matched control was run. Plan predictions (from `../b1x/PLAN.md` l.109, l.117, l.127): HX1 held; HX2 ("no rank change on SHD/|E|") failed; HX3 ("reduced, not removed" for DAGMA and NOTEARS on order accuracy) held by the plan's label, but for DAGMA the standardised effect is negative, so the plan's reason (some gain survives) held for NOTEARS only. Note: the Round-3 report says both predictions failed; by the plan's own rule only HX2's did, and the paper says exactly what happened for HX3.
+- **NEW-5.** Abstract: only DAGMA and NOTEARS beat FLOP on in-trees (GOLEM G1 differences -0.011 and -0.042, Holm 1 and 0.46; `../b1x/results/analysis.txt` l.63-64). App. `app:b1x` gives the GOLEM-EV and standardised GOLEM levels that Table `tab:b1x` omits, and the main text marks the 0.09 vs 0.10 cell as untested.
+- **NEW-4 (survey).** Paragraph renamed "Which generators are exposed" and regraded: condition 1 is that slices go to a method that ignores time order (only the time-unrolled construction does this as shipped); condition 2 is burn-in below Delta*tau_max for the graph artefact and lack of distributional mixing for the variance artefact. No mixing time was computed, and the text says so.
+- **NEW-3, NEW-9 (refocus).** Sec. 5: F2 and F3 are one short paragraph; Prop. `prop:f2` and the F3 summary moved to App. `app:finite`. Sec. 7: three short paragraphs; the full account and Table `tab:real` moved to App. `app:real`. Compact Table `tab:b1` is back in Sec. 4. Abstract (iv) is one sentence. The body ends about halfway down the left column of page 8 (about 1.5 columns of slack); 41 pages in total.
+- **NEW-7.** `../reproduce.sh`: `sim` now runs b1x (shards, merge, analysis) and finite2 (simulations, ER c=1 at p=2e4 and 2e5); new `posthoc` stage (reanalysis_orders, reanalysis_b2, oracle_b3, multiplicity, make_fig_oracle); `realdata` runs finite2/k_sensitivity_b3. `../requirements.txt`: dagma 1.1.1, tigramite 5.2.10.1 (the installed versions). `../REPRODUCE.md` updated. The Artefact Statement no longer says "one-command" and lists the stages. Checked: `bash -n`, and `multiplicity.py` and `make_fig_oracle.py` run under `python3 -I` (multiplicity output identical to the committed file). The long stages were not re-run.
+- **NEW-8.** App. `app:prereg`: server push times for the B1-NL, B3 and learner-extension plans and results, as retrieved by the Round-3 check (review/05_round3_reports.md l.170); none retrieved for the B1 plan or plans 1-4. The text states that push order cannot exclude computation before a plan.
+- **NEW-10.** Sec. 5 and App. `app:finite` say the fixed-K size check was not run on the river data, study 3 or E1.
+
+### Open (needs new work)
+
+- **Variance-matched control** for the var-sortability attribution (Round-4 item 2): rescale each data set to the other generator's marginal variances, rerun DAGMA/NOTEARS on chains and in-trees; plan first, ideally on OSF.
+- **Population decomposition of the detectability calculation** (item 1, second half): relatives-status pairs versus correlation-strength pairs.
+- **R-N6 residual:** B3 is analysed as 30 segments of 3 experiments on one device; no per-experiment effects.
+- Fixed-K size check on the river data (NEW-10); mixing times for the surveyed generators (NEW-4).
+- The supplement's `../b1x/README.md` still says "pre-registered"; the paper says "time-stamped plan" (DA-m3).
+
+### Open (user-only)
+
+- Human probabilist read of App. `app:erproof` and the App. D propositions; a human check that the Lean statements match the paper.
+- External registration (OSF) before any further confirmatory run.
+- icml2027 style swap and 8-page re-check; final AI statement against the ICML 2027 policy; author list; decision on the committer of f435a7c.

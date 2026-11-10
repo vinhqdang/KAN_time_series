@@ -14,6 +14,9 @@ matplotlib==3.11.2
 causal-learn==0.1.4.8
 flopsearch==0.3.0
 gadjid==0.1.0
+# learner extension (b1x/): DAGMA linear (numpy version) and PCMCI+ (ParCorr). NOTEARS and GOLEM are in b1x/methods_x.py.
+dagma==1.1.1
+tigramite==5.2.10.1
 # Pulled in by the above; pinned for completeness of the recorded environment.
 joblib==1.6.0
 threadpoolctl==3.7.0

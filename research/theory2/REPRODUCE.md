@@ -4,7 +4,8 @@
 cd research/theory2
 python3.13 -m pip install -r requirements.txt     # pinned versions actually used; Python 3.13.17
 ./reproduce.sh                                     # lean + graph-only checks (no data, no downloads)
-./reproduce.sh sim                                 # simulation studies (hours)
+./reproduce.sh sim                                 # simulation studies (about 9 hours)
+./reproduce.sh posthoc                             # post hoc re-analyses and detectability calculation (no new data)
 export THEORY2_DATA_ROOT=/path/to/data             # optional; default research/theory2/data (git-ignored)
 ./reproduce.sh fetch realdata                      # download, verify checksums, run the real-data tests
 ./reproduce.sh all                                 # everything, in that order
@@ -14,7 +15,7 @@ export THEORY2_DATA_ROOT=/path/to/data             # optional; default research/
 
 ## Environment
 
-- **Python 3.13.17.** Package versions are pinned in `requirements.txt`: numpy 2.5.4, scipy 1.16.3, pandas 3.0.5, scikit-learn 1.9.1, networkx 3.7, matplotlib 3.11.2, causal-learn 0.1.4.8, flopsearch 0.3.0, gadjid 0.1.0. statsmodels, sympy and torch were installed but no theory2 script imports them.
+- **Python 3.13.17.** Package versions are pinned in `requirements.txt`: numpy 2.5.4, scipy 1.16.3, pandas 3.0.5, scikit-learn 1.9.1, networkx 3.7, matplotlib 3.11.2, causal-learn 0.1.4.8, flopsearch 0.3.0, gadjid 0.1.0, dagma 1.1.1, tigramite 5.2.10.1. statsmodels, sympy and torch were installed but no theory2 script imports them.
 - **Lean 4 v4.35.0** (`lean/lean-toolchain`), installed with elan. **Mathlib v4.35.0**, commit `56a005855ea17e0b0958f73ec801ae140b0a1679`. All Lean dependencies (batteries, aesop, Qq, proofwidgets, plausible, LeanSearchClient, importGraph, Cli) are pinned by commit in `lean/lake-manifest.json`. `lake exe cache get` downloads the prebuilt Mathlib.
 - **g++ 13.3.0**, only needed to re-run `x1proof/verify/*.cpp`. Their raw outputs are committed. See the last section.
 - **Tools for the fetch stage:** `curl`, `unzip`, `sha256sum`, `md5sum`.
@@ -55,6 +56,7 @@ The full stages were **not** re-run, because of the CPU budget. These checks wer
 - **`ext/verify/x2_enum.py` random modes** (p = 5, 6) **and `x2_limit.py`.** The sample-size arguments of the random parts are not recorded in the outputs. The exhaustive p = 2, 3, 4 runs are in the `graph` stage, with arguments read from the output headers. `x2_limit.py limit 390 199` and the stationary run with 248 graphs follow the counts in EXT.md, but the committed `x2_limit_results.txt` mixes several invocations, so these runs are not wired in.
 - **`x1proof/verify/*.cpp`** (x1check, gw_mc, gw_trunc). The compile flags and per-file arguments were not recorded. Each `x1check` record carries its own `p c seed`, so single records can be re-run (`g++ -O2 -std=c++17 x1check.cpp -o x1check && ./x1check p c seed`), but the full sweeps (hours of CPU) are not scripted. The `graph` stage re-derives every committed summary from the committed raw records.
 - **`lit2/cands.py`** queries the arXiv API, so its output depends on the query date.
-- **`b1x/`, `finite2/` and `lit3/`** were under active development by other work streams when this was written. They are not in `reproduce.sh`. Add them when they are final.
+- **`lit3/`** (verified BibTeX and the generator survey) is documentation, not computation, and is not in `reproduce.sh`.
+- **`b1x/` and `finite2/` were added to `reproduce.sh` on 2026-11-10 and those stages were not re-run end to end.** The `sim` stage now runs the learner extension (`b1x/run_shards.sh`, about 4.2 h on 1 core, then `merge_shards.py` and `analyse_b1x.py`) and `finite2/sim_finite2.py` and `er_c1_conv.py` (p = 20,000 and 200,000, 6 seeds each). The new `posthoc` stage runs `b1x/reanalysis_orders.py`, `reanalysis_b2.py`, `oracle_b3.py`, `multiplicity.py` and `icml_paper/figs/make_fig_oracle.py`; these write into `b1x/results/` and `icml_paper/figs/` in place. The `realdata` stage now also runs `finite2/k_sensitivity_b3.py`. Checked on 2026-11-10: `bash -n reproduce.sh`, and the `posthoc` commands `multiplicity.py` and `make_fig_oracle.py` (see below). The single ER seed at p = 10^6 (16 minutes) is not scripted. `finite2/sim_finite2_results.txt` is the stdout of one run with parts in the order E, A, D, B, C.
 - **The exact merged B1 / B1-NL csv files.** The concatenation order used originally was not recorded. `_merge_shards.py` uses sorted file names, so the merged file can differ in row order. The analyses do not depend on row order.
 - **External sources.** These can change or disappear. Downloads that do not match the recorded checksums are rejected, and the raw files must then come from a mirror. The SHA-256 values for the CausalRivers files and the study-3 archives were computed after those analyses ran (`DATA.md` §4).

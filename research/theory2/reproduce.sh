@@ -2,14 +2,15 @@
 # One-command reproduction of research/theory2 (REPRODUCE.md explains each stage, its run time and its outputs).
 #
 #   ./reproduce.sh                 default: lean graph   (no data, no downloads)
-#   ./reproduce.sh <stage> ...     any of: lean graph sim fetch realdata all
+#   ./reproduce.sh <stage> ...     any of: lean graph sim posthoc fetch realdata all
 #
 #   lean      build the Lean 4 / Mathlib proofs and print their axioms
 #   graph     graph-only and exact checks (no data; fixed seeds where random), minutes
-#   sim       the simulation studies (finite/, ext/, b1/, b1nl/), several hours on 1-2 cores; resumable
+#   sim       the simulation studies (finite/, finite2/, ext/, b1/, b1nl/, b1x/), about 9 hours on 1-2 cores; resumable
+#   posthoc   post hoc re-analyses of the committed B1 / B1-NL results, detectability calculation, Fig. oracle (b1x/)
 #   fetch     download the external datasets into $THEORY2_DATA_ROOT, check MD5 / SHA-256 against data_sha256/
 #   realdata  the real-data tests (CausalRivers; Causal Chambers studies 3, 4 and B3); needs fetch (or data in place)
-#   all       lean graph sim fetch realdata
+#   all       lean graph sim posthoc fetch realdata
 #
 # Environment: PYTHON (default /usr/bin/python3 if present, else python3), THEORY2_DATA_ROOT and the per-dataset
 # variables documented in datapaths.py / DATA.md.  Captured stdout goes to _repro_out/ (git-ignored) and is compared
@@ -96,6 +97,29 @@ stage_sim() {
   run b1nl_merge         -  b1nl  $PY "$T2/_merge_shards.py" "results/shards/test_*.csv.gz" "$OUT/b1nl_test.csv.gz"
   run b1nl_analyse       -  b1nl  $PY analyse_b1nl.py "$OUT/b1nl_test.csv.gz" "$OUT/b1nl"
   echo "compare _repro_out/b1/analysis.txt with b1/results/analysis.txt, _repro_out/b1nl/analysis.txt with b1nl/results/analysis.txt"
+  # Learner extension (b1x; DAGMA, NOTEARS, GOLEM, PCMCI+; about 4.2 h on 1 core): resumable shards under
+  # b1x/results/shards/ (git-ignored). merge_shards.py rewrites b1x/results/b1x_test.csv.gz in place; the analysis
+  # goes to _repro_out/b1x/ (compare analysis.txt with b1x/results/analysis.txt).
+  mkdir -p "$OUT/b1x"
+  run b1x_shards         -  b1x   bash run_shards.sh
+  run b1x_merge          -  b1x   $PY merge_shards.py
+  run b1x_analyse        -  b1x   $PY analyse_b1x.py results/b1x_test.csv.gz "$OUT/b1x"
+  # finite2: plug-in effective sample size, fixed-K size, recovery probability (stdout vs sim_finite2_results.txt
+  # by eye); ER c = 1 convergence at p = 20,000 and 200,000 (compare with er_c1_conv_results.txt).
+  run finite2_sim        -  finite2 $PY sim_finite2.py
+  run finite2_er_c1_2e4  -  finite2 $PY er_c1_conv.py 20000 6
+  run finite2_er_c1_2e5  -  finite2 $PY er_c1_conv.py 200000 6     # the single p = 10^6 seed (16 min) is not scripted
+}
+
+stage_posthoc() {
+  log "posthoc: re-analyses of the committed B1 / B1-NL results and the detectability calculation (no new data)"
+  # These scripts write into b1x/results/ in place (git diff shows any change). They need only the committed
+  # b1/results/b1_test.csv.gz, b1nl/results/b1nl_test.csv.gz, b3 and b1x analysis files.
+  run b1x_orders         -  b1x   $PY reanalysis_orders.py results/orders_x1.csv.gz
+  run b1x_reanalysis     -  b1x   $PY reanalysis_b2.py results
+  run b1x_oracle         -  b1x   $PY oracle_b3.py results
+  run b1x_multiplicity   -  b1x   $PY multiplicity.py results
+  run fig_oracle         -  icml_paper/figs $PY make_fig_oracle.py
 }
 
 archive() { awk -v z="$1" -v k="$2" '$1==z {print $k}' "$T2/data_sha256/archives.txt"; }   # NAME COLUMN (2 md5, 3 sha256, 5 url)
@@ -173,15 +197,17 @@ stage_realdata() {
   run cc_citris_design   check_citris_design_results.txt icml_exp $PY check_citris_design.py "$THEORY2_CC_CRL/citris_1.csv"
   run b3_test            -                 b3         $PY test_b3.py "$THEORY2_CC_B3" results
   run b3_explore         results/explore_b3.log b3    $PY explore_b3.py results "$THEORY2_CC_B3"
+  # post hoc: sensitivity of the B3 pair decisions to the truncation lag K (finite2/)
+  run b3_k_sensitivity   k_sensitivity_b3_results.txt finite2 $PY k_sensitivity_b3.py "$THEORY2_CC_B3" "$T2/b3"
 }
 
 stages=("$@"); [ ${#stages[@]} -eq 0 ] && stages=(lean graph)
 for s in "${stages[@]}"; do
   case "$s" in
-    lean) stage_lean;; graph) stage_graph;; sim) stage_sim;; fetch) stage_fetch;; realdata) stage_realdata;;
-    all) stage_lean; stage_graph; stage_sim; stage_fetch; stage_realdata;;
+    lean) stage_lean;; graph) stage_graph;; sim) stage_sim;; posthoc) stage_posthoc;; fetch) stage_fetch;; realdata) stage_realdata;;
+    all) stage_lean; stage_graph; stage_sim; stage_posthoc; stage_fetch; stage_realdata;;
     -h|--help) sed -n '2,18p' "$0"; exit 0;;
-    *) echo "unknown stage: $s (lean graph sim fetch realdata all)"; exit 2;;
+    *) echo "unknown stage: $s (lean graph sim posthoc fetch realdata all)"; exit 2;;
   esac
 done
 log "done (exit status $FAIL); committed outputs changed by this run:"
