@@ -13,7 +13,7 @@
 | Q3 first-slice-excluded scoring, post hoc re-analysis of committed data | **done** | `results/analysis_Q3.txt` |
 | Q2 variance-matched control, tuned learners | tuning running | |
 | Q4 run-level inference for real data (+ K-sensitivity) | **done** | `results/analysis_Q4_runlevel.txt`, `results/analysis_Q4_k.txt`, `results/analysis_Q4_k_b3.txt` |
-| Q5 extra baselines | pending | |
+| Q5 extra baselines | **done** | `results/analysis_Q5.txt` |
 
 ## Q1 verdict (pre-specified rules; metric OA_x1 = order accuracy of rel-SortnRegress with the edges leaving slice 1 dropped; non-SC families pooled; unit = summary graph, 300 graphs; graph-cluster bootstrap CI)
 
@@ -50,6 +50,14 @@ Data re-fetched with `reproduce.sh fetch` into `/home/user/theory2_data` on 2026
 
 - **Chosen hyper-parameters** (`results/q2_tuned.json`, rule of `PLAN.md` 4.1: mean SHD_x1n over validation graphs, raw data, generators G1 and G2 pooled, ties to the package default): **DAGMA lambda1 = 0.1, w_threshold = 0.1** (mean 0.550 over 144 rows; package default (0.03, 0.3): 0.572); **NOTEARS lambda1 = 0.1, w_threshold = 0.1** (0.456 over 72 rows, d <= 30 cells only; default (0.1, 0.3): 0.562). Full grid in `results/q2_tuning_table.csv`, all 1,152 tuning rows in `results/q2_tune.csv.gz`.
 - **Below-chance diagnosis (`results/diag_below_chance.txt`, no verdict).** Standardised DAGMA orients the true edges backwards more often than forwards: under G1 forwards 0.23, backwards 0.53, incomparable 0.24 (ancestral order accuracy 0.35); under G2 0.33 / 0.53 / 0.14 (0.40). GOLEM-EV and -NV standardised (p = 5 cells): G1 0.22-0.24 forwards, 0.56-0.59 backwards (0.33); G2 0.36-0.37 forwards, 0.46-0.49 backwards (0.44-0.45). The below-chance order accuracy is therefore a genuinely reversed orientation of the estimates, not a scoring error.
+
+
+## Q5 verdict (pre-specified HB1; B1x design, 12 graphs per (family, p), 384 data sets, no fit timed out; SHD_x1n, graph-cluster CIs)
+
+- **HB1 (FLOP is the best label-free method): supported, 7 of 8 (family, generator) groups** (rule: at least 6). The pool is {FLOP, GES (Tetrad FGES), GRaSP (causal-learn), BOSS (causal-learn), DirectLiNGAM, rel-SnR, Var-SnR}. The one group where FLOP is not best is **in-tree under G1**, where Var-SnR has 0.136 against FLOP's 0.251 (the same fixed-start variance effect that favours DAGMA and NOTEARS on in-trees in B1x). Under G2 FLOP is best in all four families.
+- **Mean SHD_x1n, G1 / G2 (all families, p, T pooled):** FLOP 0.161 [0.142, 0.180] / 0.353 [0.327, 0.379]; BOSS 0.358 / 0.449; GRaSP 0.344 / 0.522; GES (FGES) 0.596 / 0.944; DirectLiNGAM 1.417 / 1.688; rel-SnR 0.699 / 1.392; Var-SnR 0.487 / 1.139; empty graph 1.000 / 1.000. Tetrad BOSS and GRaSP (robustness rows, outside the HB1 verdict): 0.307 / 0.455 and 0.300 / 0.441, i.e. the same picture as the causal-learn implementations. DirectLiNGAM, GES and the sort baselines are at or above the empty graph's 1.0 under G2.
+- **Time-labelled references (not in HB1):** PCMCI+ 0.021 / 0.022; DYNOTEARS 0.025 / 0.047; pooled lag-1 OLS 0.000 / 0.071; pooled VAR-LiNGAM 0.007 / 0.080 (the b1y noise is Gaussian, so LiNGAM identifiability does not hold). With the labels, the gap to FLOP is 0.14 (G1) and 0.33 (G2).
+- **G1 -> G2 shift:** every label-free method gets worse under the burn-in (FLOP +0.193, BOSS +0.091, GRaSP +0.178, GES +0.348, rel-SnR +0.693, Var-SnR +0.653); PCMCI+ does not change (-0.001 [-0.008, +0.007]).
 
 ## Deviations and notes
 

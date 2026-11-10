@@ -1,0 +1,47 @@
+Q5 analysis. 5376 rows from 16 shards; graphs 96; data sets 384.
+Status counts: {"ok": 5376}
+
+HB1: {"flop_best_groups": 7, "groups": 8, "supported": true}
+
+Groups (family|arm): best method among the HB1 pool and FLOP's mean SHD_x1n
+  ER2|G1         best FLOP          FLOP 0.124  FLOP 0.124  BOSS 0.323  GRaSP 0.361  GES 0.570  RelSnR 0.690  VarSnR 0.846  DirectLiNGAM 1.215
+  ER2|G2         best FLOP          FLOP 0.285  FLOP 0.285  BOSS 0.403  GRaSP 0.434  GES 0.785  RelSnR 1.050  VarSnR 1.309  DirectLiNGAM 1.417
+  chain|G1       best FLOP          FLOP 0.100  FLOP 0.100  GRaSP 0.231  VarSnR 0.239  BOSS 0.283  GES 0.588  RelSnR 0.748  DirectLiNGAM 1.555
+  chain|G2       best FLOP          FLOP 0.269  FLOP 0.269  BOSS 0.358  GRaSP 0.474  VarSnR 1.079  GES 1.253  DirectLiNGAM 2.126  RelSnR 2.130
+  intree|G1      best VarSnR        FLOP 0.251  VarSnR 0.136  FLOP 0.251  GRaSP 0.334  BOSS 0.388  RelSnR 0.579  GES 0.696  DirectLiNGAM 1.723
+  intree|G2      best FLOP          FLOP 0.366  FLOP 0.366  BOSS 0.443  GRaSP 0.504  VarSnR 0.916  GES 0.968  RelSnR 1.121  DirectLiNGAM 1.888
+  ring|G1        best FLOP          FLOP 0.167  FLOP 0.167  BOSS 0.437  GRaSP 0.451  GES 0.530  VarSnR 0.728  RelSnR 0.780  DirectLiNGAM 1.177
+  ring|G2        best FLOP          FLOP 0.493  FLOP 0.493  BOSS 0.591  GRaSP 0.674  GES 0.771  VarSnR 1.254  RelSnR 1.267  DirectLiNGAM 1.324
+
+Mean SHD_x1n by arm and method (graph-cluster 95% CI; unit = summary graph; all families, p, T pooled)
+  BOSS              G1 0.358 [0.331, 0.385]  G2 0.449 [0.423, 0.475]  G1-G2 -0.091 [-0.123, -0.059]
+  BOSS_tetrad       G1 0.307 [0.278, 0.337]  G2 0.455 [0.426, 0.486]  G1-G2 -0.148 [-0.177, -0.120]
+  DYNOTEARS         G1 0.025 [0.014, 0.038]  G2 0.047 [0.033, 0.062]  G1-G2 -0.023 [-0.039, -0.007]
+  DirectLiNGAM      G1 1.417 [1.351, 1.486]  G2 1.688 [1.596, 1.785]  G1-G2 -0.271 [-0.350, -0.193]
+  EMPTY             G1 1.000 [1.000, 1.000]  G2 1.000 [1.000, 1.000]  G1-G2 +0.000 [+0.000, +0.000]
+  FLOP              G1 0.161 [0.142, 0.180]  G2 0.353 [0.327, 0.379]  G1-G2 -0.193 [-0.218, -0.167]
+  GES               G1 0.596 [0.571, 0.622]  G2 0.944 [0.892, 0.999]  G1-G2 -0.348 [-0.402, -0.299]
+  GRaSP             G1 0.344 [0.315, 0.374]  G2 0.522 [0.490, 0.554]  G1-G2 -0.178 [-0.218, -0.139]
+  GRaSP_tetrad      G1 0.300 [0.272, 0.330]  G2 0.441 [0.413, 0.470]  G1-G2 -0.140 [-0.171, -0.111]
+  PCMCI             G1 0.021 [0.016, 0.027]  G2 0.022 [0.016, 0.028]  G1-G2 -0.001 [-0.008, +0.007]
+  RelSnR            G1 0.699 [0.660, 0.739]  G2 1.392 [1.283, 1.508]  G1-G2 -0.693 [-0.801, -0.588]
+  VARLiNGAM_pooled  G1 0.007 [0.004, 0.010]  G2 0.080 [0.050, 0.117]  G1-G2 -0.073 [-0.110, -0.042]
+  VAR_OLS           G1 0.000 [0.000, 0.001]  G2 0.071 [0.041, 0.106]  G1-G2 -0.071 [-0.106, -0.041]
+  VarSnR            G1 0.487 [0.415, 0.559]  G2 1.139 [1.085, 1.191]  G1-G2 -0.653 [-0.711, -0.596]
+
+Mean secs per fit by method (CPU, one core)
+method
+BOSS                0.99
+BOSS_tetrad         0.13
+DYNOTEARS           0.14
+DirectLiNGAM        5.77
+EMPTY               0.00
+FLOP                0.11
+GES                 0.27
+GRaSP               0.72
+GRaSP_tetrad        0.24
+PCMCI               3.61
+RelSnR              0.00
+VARLiNGAM_pooled    1.58
+VAR_OLS             0.02
+VarSnR              0.00
