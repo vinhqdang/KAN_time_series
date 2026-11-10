@@ -45,6 +45,12 @@ Data re-fetched with `reproduce.sh fetch` into `/home/user/theory2_data` on 2026
 - **K-sensitivity of the plug-in effective-n test (`analysis_Q4_k.txt`, K in {20, 50, 100, 300}).** E1 wind tunnel, primary (base K = 20): 8, 15 and 13 of 1,800 decisions change for K = 50, 100, 300; non-relative dependence 0.034-0.039, accuracy on edges predicted 1: 0.641-0.656. E1 levels (S1, base K = 100): 82-227 of 1,800 change; dependence 0.052-0.132 (the levels analysis is K-sensitive). E1 light-tunnel replication: 0 of 1,900 change. Rivers, 12 h (base K = 100): 59-119 of 3,300 cond_neff decisions change (K = 50, 20, 300), non-relative dependence 0.730-0.773, edge accuracy 0.535-0.541; 24 h (base K = 50): 38-133 change, dependence 0.706-0.754, accuracy 0.536-0.540. B3: 0 of 2,730. Conclusions drawn from the primary analyses are unchanged by K; the E1 levels analysis is not stable.
 - **Not done as planned:** the circular block bootstrap for E1 was not run. The 15 wind-tunnel units are independent runs (the committed bootstrap is already over runs); the light-tunnel replication is 10 segments of one file and is reported without inference.
 
+
+## Q2 step 0: tuning, below-chance diagnosis (validation seeds 9810-9812; committed before the Q2 test run)
+
+- **Chosen hyper-parameters** (`results/q2_tuned.json`, rule of `PLAN.md` 4.1: mean SHD_x1n over validation graphs, raw data, generators G1 and G2 pooled, ties to the package default): **DAGMA lambda1 = 0.1, w_threshold = 0.1** (mean 0.550 over 144 rows; package default (0.03, 0.3): 0.572); **NOTEARS lambda1 = 0.1, w_threshold = 0.1** (0.456 over 72 rows, d <= 30 cells only; default (0.1, 0.3): 0.562). Full grid in `results/q2_tuning_table.csv`, all 1,152 tuning rows in `results/q2_tune.csv.gz`.
+- **Below-chance diagnosis (`results/diag_below_chance.txt`, no verdict).** Standardised DAGMA orients the true edges backwards more often than forwards: under G1 forwards 0.23, backwards 0.53, incomparable 0.24 (ancestral order accuracy 0.35); under G2 0.33 / 0.53 / 0.14 (0.40). GOLEM-EV and -NV standardised (p = 5 cells): G1 0.22-0.24 forwards, 0.56-0.59 backwards (0.33); G2 0.36-0.37 forwards, 0.46-0.49 backwards (0.44-0.45). The below-chance order accuracy is therefore a genuinely reversed orientation of the estimates, not a scoring error.
+
 ## Deviations and notes
 
 Listed in `DEVIATIONS` below as they occur.
@@ -55,4 +61,4 @@ See the table in the previous README revision (git history) for the code invento
 
 ## DEVIATIONS
 
-1. Q4: circular block bootstrap for E1 not run (see above). 2. River station counts: the paper's 457 / reuse 8 belong to the 7000 subgraph set, not to the 8000 set whose results are analysed (445 / 7); found while building Q4.
+1. Addendum 2: NOTEARS restricted to d <= 30 again after measuring G2 fit times (details in PLAN.md). 2. Q2 tuning: the first tuning run was stopped by killing its processes (nothing was scored); two shards (chain (5,10), (10,5)) lost their CSV header and were repaired by prepending it (all 36 data rows intact, verified), one shard (chain (20,3)) was truncated and recomputed from scratch; the runners now flush the header immediately. 3. `common_y2.eval_graph`: gadjid's SID raised a pyo3 PanicException (not an Exception) on a DAGMA output with self-loops at d = 60 (threshold 0.1 on G2 data) and killed a tuning shard; SID is now NaN for estimates with self-loops or cycles (SHD and the other metrics are unaffected; the code is committed before the test run). 4. Q4: circular block bootstrap for E1 not run (see above). 2. River station counts: the paper's 457 / reuse 8 belong to the 7000 subgraph set, not to the 8000 set whose results are analysed (445 / 7); found while building Q4.

@@ -1,0 +1,24 @@
+chain done
+chain done
+chain done
+chain done
+intree done
+intree done
+intree done
+intree done
+ring done
+ring done
+ring done
+ring done
+ER2 done
+ER2 done
+ER2 done
+ER2 done
+                   fwd    bwd  incomparable    aoa   nedge
+method      arm                                           
+DAGMA_std   G1   0.232  0.526         0.241  0.353  34.354
+            G2   0.330  0.529         0.141  0.400  39.146
+GOLEMEV_std G1   0.215  0.555         0.229  0.330  24.208
+            G2   0.363  0.458         0.180  0.452  31.125
+GOLEMNV_std G1   0.242  0.586         0.172  0.328  26.667
+            G2   0.373  0.490         0.137  0.442  29.958

@@ -1,0 +1,14 @@
+{
+ "DAGMA": {
+  "lambda1": 0.1,
+  "w_threshold": 0.1,
+  "mean_shd_x1n": 0.5500373684192512,
+  "n_rows": 144
+ },
+ "NOTEARS": {
+  "lambda1": 0.1,
+  "w_threshold": 0.1,
+  "mean_shd_x1n": 0.45617640661301667,
+  "n_rows": 72
+ }
+}

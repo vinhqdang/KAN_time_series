@@ -117,7 +117,7 @@ def main():
     with open(out, "a", newline="") as f:
         w = csv.DictWriter(f, fieldnames=FIELDS)
         if new:
-            w.writeheader()
+            w.writeheader(); f.flush()
         for s in seeds:
             if s in done:
                 continue

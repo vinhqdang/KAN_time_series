@@ -38,10 +38,14 @@ def eval_graph(Gp, Mdir, Mund, sl):
                aoa=float(v.mean()) if len(v) else float("nan"), aoa_x1=float(v[keep].mean()) if keep.any() else float("nan"),
                fwd=float((f & ~b).mean()), bwd=float((b & ~f).mean()), nedge=int(Mdir.sum() + np.triu(Mund, 1).sum()),
                dag=int(not closure(D).diagonal().any()))
-    try:
-        sn, sc = sid(Gp, D)
-    except Exception:                                  # noqa: BLE001  cyclic estimate: SID undefined
-        sn, sc = float("nan"), float("nan")
+    sn = float("nan")
+    if out["dag"] == 1 and not np.diag(D).any():       # SID is defined for DAG estimates only (self-loops and cycles: NaN)
+        try:
+            sn, sc = sid(Gp, D)
+        except BaseException as e:                     # noqa: BLE001  gadjid raises pyo3 PanicException (a BaseException) on malformed graphs
+            if isinstance(e, (KeyboardInterrupt, SystemExit)):
+                raise
+            sn = float("nan")
     out["sidn"] = sn
     return out
 
