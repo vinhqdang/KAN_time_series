@@ -181,3 +181,55 @@ Order: Q1 first (cheap, decides the story), then Q2, then Q5; Q3 and Q4 are anal
 - `README.md` (updated after the runs): the verdicts with CIs, every deviation with its reason, the U verdict, and the push time of this plan (recorded from the hosting server).
 - Any change to this plan after its commit is listed as a deviation. Results are committed compressed; shard files are ignored.
 - **Needed from the user before any run:** approval of the design and budget (about 9.6 CPU-h on one core), and, if wanted, an external registration (OSF) of this plan before Q1 and Q2 are run.
+
+---
+
+# Addendum 1 (2026-11-10): environment, restored and added learners, budget. Written before any scored run.
+
+Status when this addendum is committed: no study-seed data set has been simulated and no learner score has been computed on any study seed (Q1 main/dose, Q2 test, Q5 test seeds of section 10). Step-0 work done on validation seeds only: timings (`results/step0_timing.txt`), and three debug shards (Q1 chain p = 10 validation seeds; Q2 in-tree (p, T) = (5, 3) validation seeds with package-default hyper-parameters; Q5 chain (10, 5) validation seed), whose numbers were looked at for crashes only and are not evidence. Earlier text of this plan is not edited; where this addendum differs from it, this addendum governs and the difference is listed in section A8.
+
+The user (2026-11-10) approved running the whole plan and said run time is not a constraint, which removes the "not installable here" restrictions of section 7 and the GOLEM exclusion of section 4.1.
+
+## A1. Environment
+
+- **Main environment:** `/home/user/venv312`, CPython 3.12.3 (system `python3.12`), every package at the pin in `../requirements.txt` (numpy 2.5.4, scipy 1.16.3, pandas 3.0.5, scikit-learn 1.9.1, networkx 3.7, causal-learn 0.1.4.8, flopsearch 0.3.0, gadjid 0.1.0, dagma 1.1.1, tigramite 5.2.10.1) plus lingam 1.13.0 and torch 2.15.0+cpu (a causal-learn dependency); full list in `env_py312_pip_list.txt`. The earlier plan runs used CPython 3.13.17 with the same pins; Python 3.13 is no longer used for b1y.
+- **Equality check:** in the new environment `test_b1y.py` and `analyse_y.py --selftest` pass, and re-running `q1_population_predictions.py`, `q1_dose_population.py` and `q6_burnin_exact.py` reproduces the committed `results/*.txt` byte for byte and the committed `q1_population_predictions.csv.gz` with identical decompressed content.
+- **DYNOTEARS environment:** `/home/user/venv310`, CPython 3.10.20 (uv-managed build), causalnex 0.12.1 installed with `--no-deps` (QuantumBlack implementation of Pamfil et al., AISTATS 2020, arXiv 2002.00498; file `causalnex/structure/dynotears.py`, SHA-256 a3ce3ce6dd10fcf6b6f4373ff66364838d6cfb8cda82945e399325f1ff40c4c2), numpy 1.24.4, scipy 1.10.1, pandas 1.5.3, networkx 2.8.8, scikit-learn 1.2.2, torch 2.4.1+cpu (imported by causalnex, not used by DYNOTEARS); list in `env_py310_pip_list.txt`. It runs as a worker subprocess (`dynotears_worker.py`), arrays crossing as raw float64 bytes.
+- **Java and Tetrad:** OpenJDK 21.0.12, Tetrad 7.6.10 (`io.github.cmu-phil:tetrad-lib` and `data-reader` from Maven Central with the runtime libraries it needs), called through JPype1 1.7.1 (`methods_tetrad.py`, worker `tetrad_worker.py`). The PyPI name `py-tetrad` does not exist; this is the direct route.
+- **Parallelism and determinism:** 4 cores; independent (family, p, T) shards run as separate processes at `nice -n 10`, `OMP_NUM_THREADS=1`; every data set has its own deterministic seed stream, so results do not depend on scheduling.
+- **Fit time limit:** every learner fit runs in a child process with a wall-clock limit (Q2: 1,500 s, GOLEM 3,000 s; Q5: 600 s). A fit that exceeds it is stored as a row with status `timeout` and NaN metrics; the counts are reported in the README, and metrics are computed on the rows that finished.
+
+## A2. Learners added or restored (definitions fixed here)
+
+- **Pooled VAR-LiNGAM for replicated short trajectories (time-labelled reference; `methods_y2.varlingam_pooled`).** The packaged `lingam.VARLiNGAM` expects one long series, so this is *not* the packaged estimator. (1) Standardise the columns of the pooled (x_t, x_{t+1}) pairs over all trajectories and transitions; M = OLS of x_{t+1} on x_t. (2) DirectLiNGAM (lingam 1.13.0 defaults, adaptive-lasso pruning) on the pooled residuals gives B0 (B0[i, j] != 0: j -> i). (3) B1 = (I − B0) M; lag-1 edge j -> i iff |B1[i, j]| > 0.1; contemporaneous edges are the non-zeros of B0; both are repeated in every slice of the window (Hyvarinen, Zhang, Shimizu and Hoyer 2010). Unit test (`test_methods_y2.py`): on a known 4-variable SVAR with Laplace noise (1,000 trajectories, T = 5) it recovers the support of B0 and B1 exactly. **Caveat fixed now:** the b1y generators use Gaussian noise, so LiNGAM identifiability does not hold and its B0 may contain spurious contemporaneous edges; it is reported as a labelled reference, not as a competitor.
+- **DYNOTEARS (time-labelled reference).** causalnex 0.12.1 `from_numpy_dynamic`, lag 1, on the pooled standardised transitions, lambda_w = lambda_a = 0.1, max_iter 100, h_tol 1e-8, `w_threshold` 0.1 on standardised data; contemporaneous and lag-1 edges repeated in every slice. Unit test: recovers the support of a known SVAR with Gaussian noise exactly.
+- **GES, GRaSP, BOSS.** Penalty 2 everywhere (FLOP's BIC factor). Step-0 behaviour check on a 3-node chain, n = 4,000: causal-learn `ges` with its default BIC returns the triangle (0-1, 0-2, 1-2) and with `lambda_value = 2` the correct CPDAG; causal-learn GRaSP and BOSS return the correct CPDAG with both settings. The wrappers in `methods_y.py` therefore pass `lambda_value = 2.0` to all three (an edit of the committed wrappers, listed in A8). Under that setting causal-learn GES took 89.9 s on a d = 30 G2 data set and more than 400 s at d = 50, so by the 60 s gate of section 7 **GES is taken from Tetrad (FGES, SemBic penalty 2; 0.4-1.6 s at d = 30-50)**, and causal-learn GES is not run. GRaSP (causal-learn, depth 3) and BOSS (causal-learn) run in every Q5 cell; Tetrad GRaSP and BOSS run as robustness rows. All six conversions pass the toy-graph test (`test_conversions_y.py`: v-structure orients all three edges, undirected chain stays undirected, DirectLiNGAM direction, lag-1 OLS mapping).
+- **DirectLiNGAM** runs in all Q5 cells (11 s at d = 50), not only d <= 30.
+- **GOLEM-EV and GOLEM-NV** are restored in Q2 at their package defaults (EV: lambda1 2e-2, lambda2 5; NV: 2e-3, 5; 1e5 Adam steps, threshold 0.3), raw data, on all four arms, in the cells with d <= 50 ((5,3), (5,5), (5,10), (10,3), (10,5)). The (20,3) cell (d = 60, about 87 s per fit) is excluded for GOLEM only. No hyper-parameter grid for GOLEM.
+- **NOTEARS** now runs in all six Q2 cells (4-9 s per fit on the d = 30-60 validation data sets; the d <= 30 restriction of section 4.1 is lifted). DAGMA and NOTEARS grids, the tuning criterion and the tie rule are unchanged; the choice is committed in `results/q2_tuned.json` before the Q2 test run (`select_q2_tuned.py`).
+
+## A3. Question-specific consequences
+
+- **Q2:** methods FLOP, DAGMA, NOTEARS, GOLEM-EV, GOLEM-NV, Var-SnR, rel-SnR, EMPTY. HY1-HY3, precondition and manipulation check as in section 4.2, with GOLEM-EV and GOLEM-NV added as two further CO methods (each its own precondition and verdict; reported with DAGMA and NOTEARS, no change to thresholds). Holm family F unchanged: C5 and C6 remain the DAGMA and NOTEARS preconditions; the GOLEM preconditions are reported as secondary.
+- **Q5:** HB1 pool fixed now: FLOP against {GES (Tetrad FGES), GRaSP (causal-learn), BOSS (causal-learn), DirectLiNGAM, rel-SnR, Var-SnR}. Tetrad GRaSP and BOSS are robustness rows and enter no verdict. Time-labelled references (not in HB1): PCMCI+ (as in B1x), pooled lag-1 OLS (`VAR_OLS`), pooled VAR-LiNGAM, DYNOTEARS. Same 384 data sets, same seeds 4100-4111, B1x design.
+- **Below-chance diagnosis (section 4.2, step 0):** to be run on validation seeds 9810-9812 after this commit and before the Q2 test run; it produces no verdict.
+
+## A4. Budget (replaces the table of section 9; thresholds, seeds, decision rules, story table, multiplicity plan unchanged)
+
+Total cap 25 CPU-hours (one core equivalent; 4 cores in parallel). Per question: Q1 1.5 (measured 12 s for 165 validation data sets, so about 0.4 expected), Q2 16 (tuning about 1.5, DAGMA and NOTEARS about 4, GOLEM about 9, rest negligible), Q3 0.1, Q4 0.3, Q5 2.5. Stop rules kept: V1 fails -> stop Q1 interpretation; Q2 precondition fails -> HY1 not evaluated; **Q2 size rule replaced:** if the Q2 validation timing (shard `val`) projects the test run above 16 CPU-h, the test seeds are cut to 4300-4307 before the run and logged as a deviation; if Q1 + Q2 exceed their caps by more than 20%, Q5's added learners are dropped.
+
+## A5. Order and commit discipline
+
+Q1 first (V1 gate), then Q2, Q5; Q3 and Q4 (analyses of committed data) in between. The analysis code of Q2 beyond `q2_verdicts` (HY2, HY3, manipulation check, per-method GOLEM extension), Q3, Q4, Q5 (HB1) and the final Holm family is written and self-tested on dummy data and committed before the test run of the question it belongs to; Q1's analysis code is already in `analyse_y.py`. Each question's results are committed (with its `analysis_Qk.txt` and a README verdict) before the next question's test run starts. Partial shards stay untracked until a question is complete.
+
+## A6. Server-side push time
+
+The GitHub events feed for the repository lags behind pushes (at the time of writing its newest push event is older than the plan commit), so the server time of this push could not be read when it was made. The README records the server time as soon as the feed shows it; until then the commit time is client-set and the order of commits is the only evidence.
+
+## A7. Seeds, streams and thresholds
+
+Unchanged. Q2's order tie-breaking stream uses `data_rng(..., rho_index = 10)` and VM arms use arm indices 11 (VM_G1) and 12 (VM_G2); Q5's order stream uses `rho_index = 20` in the KEY_Q5 data stream. These indices are new and do not collide with any earlier stream (rho_index values 0-2 used in Q1).
+
+## A8. List of differences from the text above
+
+1. Section 4.1: GOLEM restored (d <= 50), NOTEARS in all cells, time limits per fit. 2. Section 4.3 size rule replaced by A4. 3. Section 7: DYNOTEARS, pooled VAR-LiNGAM and Tetrad (GES, GRaSP, BOSS) now available and included; causal-learn GES replaced by Tetrad FGES; DirectLiNGAM in all cells; all score-based learners at penalty 2; the "dropped from the plan" paragraph is void. 4. Section 9 budget replaced by A4. 5. `methods_y.py` wrappers `ges_cpdag`, `grasp_cpdag`, `boss_cpdag` now pass `lambda_value = 2.0`. 6. `run_q2.py` and `run_q5.py` implemented (were stubs). 7. Python 3.12 instead of 3.13 (A1).

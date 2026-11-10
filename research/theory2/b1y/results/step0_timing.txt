@@ -1,0 +1,10 @@
+Step-0 timing, one data set per cell, validation seed 9810, arm G1, seconds per fit (one core, OMP_NUM_THREADS=1); no metric computed.
+GES here is the causal-learn implementation (penalty default at the time); blank = not run in that process (chain 10 5: GES exceeded 400 s and was stopped; the cell was re-timed without it).
+Extra timings (validation seed 9820, causal-learn GES with lambda 2): chain 5 5 G1 2.3 G2 21.0; chain 10 3 G1 2.2 G2 89.9; ER2 10 3 G1 4.0 G2 3.4; intree 5 5 G1 26.9 G2 1.1.
+Tetrad (JPype, Tetrad 7.6.10) FGES/BOSS/GRaSP on chain 10 5 (d=50): 1.5/0.2-0.4/0.2 s; chain 10 3 (d=30): 0.4-1.0/0.1/0.1 s; intree 5 5 (d=25): 0.1-1.1/0.05-0.12/0.03-0.05 s.
+family	p	T	d	FLOP	DAGMA	NOTEARS	GOLEM	GES	GRaSP	BOSS	DirectLiNGAM	PCMCI+	VARLiNGAM_pooled	DYNOTEARS
+ER2	10	3	30	0.05	1.56	1.64	24.58	8.83	0.22	0.25	3.61	4.21	0.15	2.07
+chain	10	3	30	0.03	1.64	0.91	21.88		0.49	0.28	3.35	3.33	0.12	2.0
+chain	10	5	50	0.17	4.17	8.32	54.72		1.47	1.76	10.87	4.13	0.17	2.07
+chain	20	3	60	0.13	5.91	4.06	86.64	37.91	0.91	1.31	18.28	11.12	0.88	2.01
+chain	5	3	15	0.01	1.24	0.25	12.14	0.54	0.05	0.06	1.49	1.14	0.02	2.04

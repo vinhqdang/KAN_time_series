@@ -37,17 +37,17 @@ def _from_general_graph(Gr, d):
 
 def ges_cpdag(X):
     from causallearn.search.ScoreBased.GES import ges
-    r = ges(X, score_func="local_score_BIC"); return _from_general_graph(r["G"], X.shape[1])
+    r = ges(X, score_func="local_score_BIC", parameters={"lambda_value": 2.0}); return _from_general_graph(r["G"], X.shape[1])
 
 
 def grasp_cpdag(X):
     from causallearn.search.PermutationBased.GRaSP import grasp
-    return _from_general_graph(grasp(X, score_func="local_score_BIC_from_cov", depth=3, verbose=False), X.shape[1])
+    return _from_general_graph(grasp(X, score_func="local_score_BIC_from_cov", depth=3, verbose=False, parameters={"lambda_value": 2.0}), X.shape[1])
 
 
 def boss_cpdag(X):
     from causallearn.search.PermutationBased.BOSS import boss
-    return _from_general_graph(boss(X, score_func="local_score_BIC_from_cov", verbose=False), X.shape[1])
+    return _from_general_graph(boss(X, score_func="local_score_BIC_from_cov", verbose=False, parameters={"lambda_value": 2.0}), X.shape[1])
 
 
 def directlingam_dag(X):
