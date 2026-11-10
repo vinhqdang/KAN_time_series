@@ -1,0 +1,25 @@
+== E1 WT primary (D = 10, first differences): 15 units, base K = 20
+  K= 20: median B 1.15 (ratio to base median 1.000); decisions changed vs K=20: 0 of 1800; non-relative pairs declared dependent 0.039 [0.031, 0.047]; accuracy on edges predicted 1 0.656
+  K= 50: median B 1.12 (ratio to base median 1.000); decisions changed vs K=20: 8 of 1800; non-relative pairs declared dependent 0.039 [0.033, 0.046]; accuracy on edges predicted 1 0.641
+  K=100: median B 1.14 (ratio to base median 1.000); decisions changed vs K=20: 15 of 1800; non-relative pairs declared dependent 0.039 [0.033, 0.046]; accuracy on edges predicted 1 0.645
+  K=300: median B 1.15 (ratio to base median 1.000); decisions changed vs K=20: 13 of 1800; non-relative pairs declared dependent 0.034 [0.024, 0.041]; accuracy on edges predicted 1 0.653
+== E1 WT levels (secondary S1): 15 units, base K = 100
+  K= 20: median B 36.90 (ratio to base median 0.251); decisions changed vs K=100: 227 of 1800; non-relative pairs declared dependent 0.132 [0.099, 0.169]; accuracy on edges predicted 1 0.716
+  K= 50: median B 85.32 (ratio to base median 0.577); decisions changed vs K=100: 82 of 1800; non-relative pairs declared dependent 0.077 [0.06, 0.094]; accuracy on edges predicted 1 0.717
+  K=100: median B 144.09 (ratio to base median 1.000); decisions changed vs K=100: 0 of 1800; non-relative pairs declared dependent 0.054 [0.042, 0.066]; accuracy on edges predicted 1 0.719
+  K=300: median B 169.23 (ratio to base median 1.480); decisions changed vs K=100: 155 of 1800; non-relative pairs declared dependent 0.052 [0.032, 0.077]; accuracy on edges predicted 1 0.681
+== E1 LT replication (10 segments of one file): 10 units, base K = 20
+  K= 20: median B 1.00 (ratio to base median 1.000); decisions changed vs K=20: 0 of 1900; non-relative pairs declared dependent 0.000 [0.0, 0.0]; accuracy on edges predicted 1 1.000
+  K= 50: median B 1.00 (ratio to base median 1.000); decisions changed vs K=20: 0 of 1900; non-relative pairs declared dependent 0.000 [0.0, 0.0]; accuracy on edges predicted 1 1.000
+  K=100: median B 1.00 (ratio to base median 1.000); decisions changed vs K=20: 0 of 1900; non-relative pairs declared dependent 0.000 [0.0, 0.0]; accuracy on edges predicted 1 1.000
+  K=300: median B 1.01 (ratio to base median 1.005); decisions changed vs K=20: 0 of 1900; non-relative pairs declared dependent 0.000 [0.0, 0.0]; accuracy on edges predicted 1 1.000
+
+== CausalRivers subgraphs (120), decisions of the Fisher-z test with the Bartlett n_eff; changes relative to the committed K ==
+  12h K=100 (committed K): non-relative pairs declared dependent (cond_neff) 0.741; mean edge accuracy (cond_neff, all subgraphs) 0.539; median Bres 9.29
+  12h K= 20: non-relative pairs declared dependent (cond_neff) 0.773; mean edge accuracy (cond_neff, all subgraphs) 0.535; median Bres 7.29; decisions changed vs K=100: cond_neff 119, marg_neff 212 of 3300
+  12h K= 50: non-relative pairs declared dependent (cond_neff) 0.758; mean edge accuracy (cond_neff, all subgraphs) 0.541; median Bres 8.90; decisions changed vs K=100: cond_neff 59, marg_neff 92 of 3300
+  12h K=300: non-relative pairs declared dependent (cond_neff) 0.730; mean edge accuracy (cond_neff, all subgraphs) 0.539; median Bres 10.14; decisions changed vs K=100: cond_neff 66, marg_neff 58 of 3300
+  24h K= 50 (committed K): non-relative pairs declared dependent (cond_neff) 0.735; mean edge accuracy (cond_neff, all subgraphs) 0.540; median Bres 5.38
+  24h K= 20: non-relative pairs declared dependent (cond_neff) 0.754; mean edge accuracy (cond_neff, all subgraphs) 0.539; median Bres 4.83; decisions changed vs K=50: cond_neff 66, marg_neff 123 of 3300
+  24h K=100: non-relative pairs declared dependent (cond_neff) 0.729; mean edge accuracy (cond_neff, all subgraphs) 0.536; median Bres 5.65; decisions changed vs K=50: cond_neff 38, marg_neff 21 of 3300
+  24h K=300: non-relative pairs declared dependent (cond_neff) 0.706; mean edge accuracy (cond_neff, all subgraphs) 0.537; median Bres 6.31; decisions changed vs K=50: cond_neff 133, marg_neff 191 of 3300

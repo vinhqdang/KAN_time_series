@@ -1,0 +1,5 @@
+B3 ar_1: 2730 unit-pairs (30 units)
+K= 50: median B_hat 2.45 (q90 4.15, max 11.9); ratio B_hat(K)/B_hat(50): median 1.000, q10 1.000, q90 1.000; share of unfloored sums < 1: 0.000; declared status changed vs K=50: 0 of 2730
+K= 55: median B_hat 2.45 (q90 4.17, max 12.0); ratio B_hat(K)/B_hat(50): median 1.000, q10 0.998, q90 1.005; share of unfloored sums < 1: 0.000; declared status changed vs K=50: 0 of 2730
+K=122: median B_hat 2.46 (q90 4.16, max 12.0); ratio B_hat(K)/B_hat(50): median 1.007, q10 0.988, q90 1.035; share of unfloored sums < 1: 0.000; declared status changed vs K=50: 0 of 2730
+K=300: median B_hat 2.51 (q90 4.17, max 12.5); ratio B_hat(K)/B_hat(50): median 1.026, q10 0.981, q90 1.116; share of unfloored sums < 1: 0.000; declared status changed vs K=50: 0 of 2730

@@ -1,0 +1,33 @@
+Q4 run- and station-level inference (derived results only; descriptive, no nominal error rates).
+
+== (a) B3: one row per independent run or set; a run 'agrees' if the theorem has the lower loss on a majority of the units where it disagrees with the competitor and its mean delta is negative ==
+  H1 ar_1_uniform_ref          units with disagreement  10, theorem better in  10; delta -0.500  -> run agrees: True
+  H1 ar_1_uniform_pol_1_90     units with disagreement  10, theorem better in  10; delta -0.493  -> run agrees: True
+  H1 ar_1_uniform_pol_12_30    units with disagreement  10, theorem better in  10; delta -0.500  -> run agrees: True
+  H2 scm_5_red                 units with disagreement  10, theorem better in  10; delta -0.500  -> run agrees: True
+  H2 scm_5_blue                units with disagreement  10, theorem better in  10; delta -0.500  -> run agrees: True
+  H1: 3 of 3 independent runs agree; smallest attainable exact one-sided sign-test p = 2^-3 = 0.125 (cannot reach 0.05 with fewer than 5 runs)
+  H2: 2 of 2 independent runs agree; smallest attainable exact one-sided sign-test p = 2^-2 = 0.250 (cannot reach 0.05 with fewer than 5 runs)
+  The segment-level p-values of the stored B3 analysis (30 units from 3 runs, 20 from 2 sets) are not run-level evidence: units within a run are serially dependent.
+
+  [the 900-slot / 457-station / reuse-8 counts quoted in the paper belong to ../empirical/subgraphs_7000.json (the earlier subgraph set); the P4-P6 results analysed here (empirical2/results2.json) use subgraphs_8000.json]
+== (b) CausalRivers: 120 subgraphs, 900 station slots, 445 distinct stations (station = (region, node id)), max reuse 7; ==
+  station-sharing graph: 112 subgraphs share a station with another; connected components 25; sizes (sorted) [28, 20, 12, 8, 6, 6, 5, 4, 4, 4]
+
+  -- horizon 12h (headline) --
+    P5 cond_neff     all-subgraph pooled 0.539 | station-disjoint subsets: median 0.536, median CI lower 0.491 (median subset size 42 subgraphs, 200 orderings); share of orderings with CI lower bound > 0.5: 0.27 | station bootstrap 95% CI [0.527, 0.551]
+    P5 cond_nominal  all-subgraph pooled 0.518 | station-disjoint subsets: median 0.517, median CI lower 0.489 (median subset size 41 subgraphs, 200 orderings); share of orderings with CI lower bound > 0.5: 0.12 | station bootstrap 95% CI [0.511, 0.525]
+    P5 marg_nominal  all-subgraph pooled 0.508 | station-disjoint subsets: median 0.509, median CI lower 0.498 (median subset size 42 subgraphs, 200 orderings); share of orderings with CI lower bound > 0.5: 0.24 | station bootstrap 95% CI [0.505, 0.512]
+    P4 marg_nominal  all-subgraph pooled 0.980 | station-disjoint subsets: median 0.981, median CI lower 0.957 (median subset size 41 subgraphs, 200 orderings) | station bootstrap 95% CI [0.976, 0.985]
+    P4 marg_neff     all-subgraph pooled 0.866 | station-disjoint subsets: median 0.862, median CI lower 0.751 (median subset size 42 subgraphs, 200 orderings) | station bootstrap 95% CI [0.841, 0.888]
+    P4 cond_nominal  all-subgraph pooled 0.896 | station-disjoint subsets: median 0.903, median CI lower 0.838 (median subset size 42 subgraphs, 200 orderings) | station bootstrap 95% CI [0.882, 0.910]
+    P4 cond_neff     all-subgraph pooled 0.741 | station-disjoint subsets: median 0.736, median CI lower 0.614 (median subset size 42 subgraphs, 200 orderings) | station bootstrap 95% CI [0.713, 0.766]
+
+  -- horizon 24h (robustness row, same records) --
+    P5 cond_neff     all-subgraph pooled 0.540 | station-disjoint subsets: median 0.538, median CI lower 0.495 (median subset size 41 subgraphs, 200 orderings); share of orderings with CI lower bound > 0.5: 0.23 | station bootstrap 95% CI [0.529, 0.553]
+    P5 cond_nominal  all-subgraph pooled 0.523 | station-disjoint subsets: median 0.526, median CI lower 0.494 (median subset size 42 subgraphs, 200 orderings); share of orderings with CI lower bound > 0.5: 0.29 | station bootstrap 95% CI [0.516, 0.531]
+    P5 marg_nominal  all-subgraph pooled 0.511 | station-disjoint subsets: median 0.515, median CI lower 0.498 (median subset size 42 subgraphs, 200 orderings); share of orderings with CI lower bound > 0.5: 0.28 | station bootstrap 95% CI [0.506, 0.516]
+    P4 marg_nominal  all-subgraph pooled 0.975 | station-disjoint subsets: median 0.976, median CI lower 0.946 (median subset size 42 subgraphs, 200 orderings) | station bootstrap 95% CI [0.968, 0.981]
+    P4 marg_neff     all-subgraph pooled 0.866 | station-disjoint subsets: median 0.865, median CI lower 0.749 (median subset size 41 subgraphs, 200 orderings) | station bootstrap 95% CI [0.841, 0.888]
+    P4 cond_nominal  all-subgraph pooled 0.869 | station-disjoint subsets: median 0.873, median CI lower 0.793 (median subset size 42 subgraphs, 200 orderings) | station bootstrap 95% CI [0.853, 0.885]
+    P4 cond_neff     all-subgraph pooled 0.735 | station-disjoint subsets: median 0.736, median CI lower 0.615 (median subset size 42 subgraphs, 200 orderings) | station bootstrap 95% CI [0.708, 0.761]

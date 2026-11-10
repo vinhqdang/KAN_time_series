@@ -12,7 +12,7 @@
 | Q1 matched-correlation counterfactual, n- and rho-dose | **done** | `results/analysis_Q1.txt` |
 | Q3 first-slice-excluded scoring, post hoc re-analysis of committed data | **done** | `results/analysis_Q3.txt` |
 | Q2 variance-matched control, tuned learners | tuning running | |
-| Q4 run-level inference for real data | pending | |
+| Q4 run-level inference for real data (+ K-sensitivity) | **done** | `results/analysis_Q4_runlevel.txt`, `results/analysis_Q4_k.txt`, `results/analysis_Q4_k_b3.txt` |
 | Q5 extra baselines | pending | |
 
 ## Q1 verdict (pre-specified rules; metric OA_x1 = order accuracy of rel-SortnRegress with the edges leaving slice 1 dropped; non-SC families pooled; unit = summary graph, 300 graphs; graph-cluster bootstrap CI)
@@ -35,6 +35,16 @@
 
 First-slice-excluded scoring shrinks the artefact. rel-SortnRegress order-accuracy gain G1 − G2, non-SC: +0.125 [+0.116, +0.134] (full) versus +0.089 [+0.079, +0.100] (edges leaving slice 1 dropped). SHD/|E| shift G2 − G1: FLOP +0.197 → +0.093; rel-SnR +0.649 → +0.531; Var-SnR +0.780 → +0.670. The B1x rank-change interactions against FLOP on in-trees remain (and grow) under the x1 metric: DAGMA −0.524 → −0.587, NOTEARS −0.369 → −0.462, GOLEM-EV −0.384 → −0.484, GOLEM-NV −0.318 → −0.421, all with CIs excluding 0. The B1 swap cell (chain, p = 10, T = 3, rel- minus R²-SnR SHD/|E|): −0.979 → −1.006 under G1 and +0.393 → +0.441 under G2.
 
+
+## Q4 (run- and station-level inference, K-sensitivity; derived and re-fetched data; descriptive, no nominal error rates)
+
+Data re-fetched with `reproduce.sh fetch` into `/home/user/theory2_data` on 2026-11-10: every archive and file matched the recorded SHA-256 values, and the CausalRivers caches rebuilt by `build_cr_cache.py` are byte-identical to the checksummed ones (`data_sha256/causalrivers_cache.sha256`). Re-running the committed river analysis head (`empirical2/test2.py`) reproduces all 13,200 stored 12 h decisions (0 differences), and `finite2/k_sensitivity_b3.py` reproduces 0 of 2,730 changed B3 decisions.
+
+- **B3, run level (`analysis_Q4_runlevel.txt`).** H1: 3 of 3 independent runs agree (the theorem has the lower loss in 10 of 10 units of each run; delta -0.500, -0.493, -0.500). H2: 2 of 2 sets agree (10 of 10 units each; delta -0.500). The smallest attainable exact one-sided sign-test p over runs is 2^-3 = 0.125 (H1) and 2^-2 = 0.25 (H2): no run-level test can reach 0.05 with so few runs. The segment-level p values of the stored B3 analysis (30 units from 3 runs, 20 from 2 sets) are not run-level evidence.
+- **CausalRivers, station level (headline horizon named in advance: 12 h; 24 h is the same records, robustness row only).** The analysed subgraph set (`empirical2/subgraphs_8000.json`) has 900 station slots, **445** distinct stations, maximum reuse **7**; 112 of 120 subgraphs share a station with another subgraph, in 25 connected components (largest 28 subgraphs). **The paper quotes 457 stations and reuse 8, which are the counts of the earlier set `empirical/subgraphs_7000.json`; the P4-P6 results use the 8000 set (445 / 7); the paper text needs to say which set each statement refers to.** Edge accuracy of the relatives-count order on confluence edges (P5, cond_neff, 12 h): 0.539 over all subgraphs; station bootstrap (2,000 resamples of stations) 95% CI [0.527, 0.551]; random station-disjoint subsets (200 orderings, median 42 subgraphs): median 0.536, median CI lower bound 0.491, the CI lower bound exceeds 0.5 in 27% of orderings (12% for cond_nominal, 0.518 [0.511, 0.525] by station bootstrap). Share of non-relative pairs declared dependent (P4, cond_neff, 12 h): 0.741, station bootstrap [0.713, 0.766]; station-disjoint median 0.736. So the station-level interval for P5 still excludes 0.5 narrowly, and the claim "above 0.5" does not survive in most station-disjoint subsets.
+- **K-sensitivity of the plug-in effective-n test (`analysis_Q4_k.txt`, K in {20, 50, 100, 300}).** E1 wind tunnel, primary (base K = 20): 8, 15 and 13 of 1,800 decisions change for K = 50, 100, 300; non-relative dependence 0.034-0.039, accuracy on edges predicted 1: 0.641-0.656. E1 levels (S1, base K = 100): 82-227 of 1,800 change; dependence 0.052-0.132 (the levels analysis is K-sensitive). E1 light-tunnel replication: 0 of 1,900 change. Rivers, 12 h (base K = 100): 59-119 of 3,300 cond_neff decisions change (K = 50, 20, 300), non-relative dependence 0.730-0.773, edge accuracy 0.535-0.541; 24 h (base K = 50): 38-133 change, dependence 0.706-0.754, accuracy 0.536-0.540. B3: 0 of 2,730. Conclusions drawn from the primary analyses are unchanged by K; the E1 levels analysis is not stable.
+- **Not done as planned:** the circular block bootstrap for E1 was not run. The 15 wind-tunnel units are independent runs (the committed bootstrap is already over runs); the light-tunnel replication is 10 segments of one file and is reported without inference.
+
 ## Deviations and notes
 
 Listed in `DEVIATIONS` below as they occur.
@@ -45,4 +55,4 @@ See the table in the previous README revision (git history) for the code invento
 
 ## DEVIATIONS
 
-(none so far)
+1. Q4: circular block bootstrap for E1 not run (see above). 2. River station counts: the paper's 457 / reuse 8 belong to the 7000 subgraph set, not to the 8000 set whose results are analysed (445 / 7); found while building Q4.
