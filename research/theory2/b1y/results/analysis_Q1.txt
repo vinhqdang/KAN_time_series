@@ -1,0 +1,246 @@
+Q1 analysis. 16740 rows from 26 shards (main 13860, ndose 1920, rhodose 960).
+Metric OA_x1 (order accuracy of rel-SortnRegress, edges leaving slice 1 dropped); unit = summary graph; graph-cluster bootstrap CIs.
+
+== Q1 verdicts, non-SC families pooled (V1, V2, V3, slope)
+{
+ "V1_negative_control": {
+  "mean": -0.00432583425028906,
+  "ci": [
+   -0.010754690039316056,
+   0.0021826738250146577
+  ],
+  "valid": true
+ },
+ "gain_G1_minus_G2": {
+  "mean": 0.09027900676484642,
+  "ci": [
+   0.07990550560007689,
+   0.10077138344452478
+  ]
+ },
+ "V2_pattern_retention_CF2_m1": {
+  "R": 0.9550959735009402,
+  "ci": [
+   0.8844672612902131,
+   1.030249896790329
+  ],
+  "verdict": "detectable strength, not population pattern"
+ },
+ "retention_CF2_m3": {
+  "R": 0.9194323630843982,
+  "ci": [
+   0.8483412132532472,
+   0.9893969890167945
+  ]
+ },
+ "retention_CF2_m10": {
+  "R": 0.7880208880905809,
+  "ci": [
+   0.7134193882028244,
+   0.8616425726623509
+  ]
+ },
+ "V3_dose_fixed_pattern": {
+  "delta": 0.008281369815714881,
+  "ci": [
+   0.0006570776613687149,
+   0.015822309854268034
+  ],
+  "p_one_sided": 0.0160983901609839,
+  "verdict": "flat"
+ },
+ "slope_gain_on_exact_gap_within_family": {
+  "slope": 0.5685517998871392,
+  "ci": [
+   0.4022385034284788,
+   0.7305003742142354
+  ],
+  "boots": 2000,
+  "p_one_sided": 0.0004997501249375312
+ }
+}
+
+== Same statistics, SC families (symER, ring) pooled (descriptive)
+{
+ "V1_negative_control": {
+  "mean": -0.002189305005453244,
+  "ci": [
+   -0.013421189605726644,
+   0.009500153512290504
+  ],
+  "valid": true
+ },
+ "gain_G1_minus_G2": {
+  "mean": 0.10195080649319609,
+  "ci": [
+   0.08643368126917247,
+   0.11733722131918516
+  ]
+ },
+ "V2_pattern_retention_CF2_m1": {
+  "R": 0.9876523246263836,
+  "ci": [
+   0.8801042578181265,
+   1.1069616807835354
+  ],
+  "verdict": "detectable strength, not population pattern"
+ },
+ "retention_CF2_m3": {
+  "R": 0.8970075335625399,
+  "ci": [
+   0.7849507788765486,
+   1.0163873261997785
+  ]
+ },
+ "retention_CF2_m10": {
+  "R": 0.3713335701104005,
+  "ci": [
+   0.24998158552618113,
+   0.4889783459327296
+  ]
+ },
+ "V3_dose_fixed_pattern": {
+  "delta": -6.43839434097899e-05,
+  "ci": [
+   -0.011970061397181013,
+   0.011629062151508296
+  ],
+  "p_one_sided": 0.49195080491950804,
+  "verdict": "flat"
+ },
+ "slope_gain_on_exact_gap_within_family": {
+  "slope": 0.04639626486563864,
+  "ci": [
+   -0.3473607702740549,
+   0.4441873889732522
+  ],
+  "boots": 2000,
+  "p_one_sided": 0.39930034982508744
+ }
+}
+
+== Dose studies (V4 n-dose, V5 rho-dose)
+{
+ "V4_n_dose": {
+  "Q": {
+   "200": 0.1834583421203713,
+   "1000": 0.40165796915994,
+   "5000": 0.5660539690037941,
+   "25000": 0.7617762472188879
+  },
+  "delta": 0.3601182780589479,
+  "ci": [
+   0.2943352064124316,
+   0.42544163175102095
+  ],
+  "p_one_sided": 9.999000099990002e-05,
+  "verdict": "converges toward the exact gap"
+ },
+ "V5_rho_dose": {
+  "Q": {
+   "0.5": 0.09237199631170732,
+   "0.95": 0.5099203259932272
+  },
+  "delta": 0.41754832968151995,
+  "ci": [
+   0.34911149962011445,
+   0.4891372876765125
+  ],
+  "p_one_sided": 9.999000099990002e-05,
+  "verdict": "correlation strength raises the realised share"
+ }
+}
+
+== Sanity rules S1-S4
+{
+ "S1_burnin_mixed": {
+  "value": 0.0011288318829806338,
+  "ok": true
+ },
+ "S2_CF2_definable": {
+  "share_lam_at_floor": 0.011904761904761904,
+  "ok": true
+ },
+ "S3_CF2_m1_detectability": {
+  "share_cases_flip_le_2pct": 0.9547619047619048,
+  "ok": true
+ },
+ "S4_B1_reproduces": {
+  "gain": 0.09027900676484642,
+  "ci": [
+   0.07990550560007689,
+   0.10077138344452478
+  ],
+  "ok": true
+ }
+}
+
+== SHD_x1n arms (non-SC pooled; T in {3, 5}); retention = (G2 - arm)/(G2 - G1)
+{
+ "SHD_x1n_G2_minus_G1": {
+  "mean": 0.6778057454600711,
+  "ci": [
+   0.6115007527797399,
+   0.7466476793961174
+  ],
+  "G1": 0.7989113875079276,
+  "G2": 1.4767171329679987
+ },
+ "retention_CF1_0.25": {
+  "R": 1.0845028953390858,
+  "ci": [
+   1.0461515786062876,
+   1.126766454194355
+  ],
+  "mean": 0.741634839539084
+ },
+ "retention_CF1_4": {
+  "R": 1.0674553592833442,
+  "ci": [
+   1.0294794119698867,
+   1.1075535860297416
+  ],
+  "mean": 0.7531897574236035
+ },
+ "retention_CF2_m1": {
+  "R": 1.0038942860742774,
+  "ci": [
+   0.9685480742598404,
+   1.041834430201045
+  ],
+  "mean": 0.7962718180323172
+ }
+}
+
+== Oracle calibration: observed OA_full vs population threshold-oracle OA (cell level, all arms)
+{
+ "cells": 378,
+ "r2": 0.8962065475340788,
+ "slope": 0.7690606275588193,
+ "intercept": 0.14321267400450224,
+ "nonSC": {
+  "r2": 0.9209611437707343,
+  "slope": 0.7950712368989338,
+  "intercept": 0.13360187720836436
+ },
+ "SC": {
+  "r2": 0.910110459215245,
+  "slope": 0.6965423714937993,
+  "intercept": 0.16958030287213746
+ }
+}
+
+== Mean OA by arm (non-SC, main study, all T)
+           oa_x1  oa_full
+arm                      
+CF1_0.25  0.6956   0.6835
+CF1_0.5   0.6762   0.6961
+CF1_2     0.6932   0.7283
+CF1_4     0.7039   0.7391
+CF2_m1    0.6766   0.7134
+CF2_m10   0.6615   0.6733
+CF2_m3    0.6734   0.7006
+G1        0.6806   0.7127
+G1rep     0.6763   0.7112
+G2        0.5904   0.5939
+G2s       0.5915   0.5926

@@ -111,7 +111,9 @@ def q1_verdicts(df, families=NONSC):
         den = (xs ** 2).sum(); return (xs * ys).sum() / den if den > 0 else np.nan
     rng = np.random.default_rng(0); n = len(gain)
     sl = partial_slope(np.arange(n)); bs = [partial_slope(rng.integers(0, n, n)) for _ in range(2000)]
-    out["slope_gain_on_exact_gap_within_family"] = dict(slope=sl, ci=list(np.nanpercentile(bs, [2.5, 97.5])), boots=2000)
+    bs_ = np.asarray(bs, float); bs_ = bs_[~np.isnan(bs_)]
+    out["slope_gain_on_exact_gap_within_family"] = dict(slope=sl, ci=list(np.nanpercentile(bs, [2.5, 97.5])), boots=2000,
+                                                        p_one_sided=float((1 + np.sum(bs_ <= 0)) / (len(bs_) + 1)))
     return out
 
 
@@ -165,6 +167,111 @@ def q2_verdicts(df, co=("DAGMA", "NOTEARS"), families=("intree",)):
     return out
 
 
+# ----------------------------------------------------------------------------------------------- Q2 extension (Addendum 1, section A3)
+def _graph_pair_table(df, metric, methods, arms=("G1", "G2", "VM_G1", "VM_G2")):
+    d = df[df.method.isin(methods)].assign(key=lambda x: x.method + "|" + x.arm)
+    return _graph_table(d, metric, ["key"])
+
+
+def q2_extended(df, co=("DAGMA", "NOTEARS", "GOLEMEV", "GOLEMNV"), families=("chain", "intree", "ring", "ER2"), primary="intree"):
+    """Per CO method and family: A(arm) = M(FLOP) - M(CO) on SHD_x1n (positive: CO better), precondition, HY1, HY2, HY3 (FLOP shift,
+    interaction on SHD_x1n, sidn, aoa_x1), the manipulation check, and the one-sided p-values of claims C5-C7 (PLAN section 11).
+    Only rows with status ok enter; a graph needs all of its arms/methods present (graph-level pairing)."""
+    out = {"families": {}, "claims_p": {}}
+    ok = df[df.get("status", "ok") == "ok"] if "status" in df.columns else df
+    # manipulation check (Var-SnR order accuracy, all rows pooled over families)
+    v = ok[ok.method == "VarSnR"]
+    if len(v):
+        m = v.groupby("arm").oa_x1.mean()
+        if all(a in m.index for a in ("G1", "G2", "VM_G1", "VM_G2")):
+            out["manipulation_check"] = dict(VM_G1_vs_G2=float(m["VM_G1"] - m["G2"]), VM_G2_vs_G1=float(m["VM_G2"] - m["G1"]),
+                                             passed=bool(abs(m["VM_G1"] - m["G2"]) <= 0.03 and abs(m["VM_G2"] - m["G1"]) <= 0.03))
+    for fam in families:
+        d = ok[ok.family == fam]
+        if not len(d):
+            continue
+        res = {}
+        for method in co:
+            if method not in set(d.method):
+                continue
+            g = _graph_pair_table(d, "shd_x1n", [method, "FLOP"]).dropna()
+            need = [f"{method}|{a}" for a in ("G1", "G2", "VM_G1", "VM_G2")] + [f"FLOP|{a}" for a in ("G1", "G2", "VM_G1", "VM_G2")]
+            if not all(c in g.columns for c in need) or len(g) < 3:
+                continue
+            A = {a: (g[f"FLOP|{a}"] - g[f"{method}|{a}"]).values for a in ("G1", "G2", "VM_G1", "VM_G2")}
+            gap = A["G1"] - A["G2"]; mu, ci, b = boot_mean(gap)
+            r = dict(n_graphs=int(len(g)), A={k: float(x.mean()) for k, x in A.items()}, gap=mu, gap_ci=list(ci),
+                     precondition_met=bool(mu >= THR["pre_gap"] and ci[0] > 0), p_precondition=one_sided_p(b))
+            for arm in ("G1", "G2"):
+                m_, c_, _ = boot_mean(A[arm]); r[f"A_{arm}_ci"] = list(c_)
+            r["HY2_sign_pattern"] = bool(r["A"]["G1"] > 0 and r["A"]["G2"] < 0 and r["A_G1_ci"][0] > 0 and r["A_G2_ci"][1] < 0)
+            if r["precondition_met"]:
+                R, rci, _ = boot_ratio(A["VM_G1"] - A["G2"], gap)
+                r["HY1_R_VM"] = dict(R=R, ci=list(rci), verdict=("variance channel" if (R <= THR["vm_lo"] and rci[1] <= THR["vm_lo_hi"]) else
+                                                              "not variance" if (R >= THR["vm_hi"] and rci[0] >= THR["vm_hi_lo"]) else "mixed"))
+                Ri, ici, _ = boot_ratio(A["VM_G2"] - A["G2"], gap)
+                r["HY1_R_inj"] = dict(R=Ri, ci=list(ici), variance_alone_sufficient=bool(Ri >= THR["inj"]))
+            else:
+                r["note"] = "reversal not reproduced at tuned hyper-parameters: HY1 not evaluated"
+            # HY3 interaction on three metrics: [CO - FLOP](G1) - [CO - FLOP](G2)
+            r["HY3_interaction"] = {}
+            for metric in ("shd_x1n", "sidn", "aoa_x1"):
+                gm = _graph_pair_table(d, metric, [method, "FLOP"]).dropna()
+                if all(c in gm.columns for c in (f"{method}|G1", f"{method}|G2", "FLOP|G1", "FLOP|G2")):
+                    ix = ((gm[f"{method}|G1"] - gm["FLOP|G1"]) - (gm[f"{method}|G2"] - gm["FLOP|G2"])).values
+                    m_, c_, _ = boot_mean(ix); r["HY3_interaction"][metric] = dict(mean=m_, ci=list(c_))
+            res[method] = r
+        gf = _graph_pair_table(d, "shd_x1n", ["FLOP"]).dropna()
+        if all(c in gf.columns for c in ("FLOP|G1", "FLOP|G2")):
+            sh = (gf["FLOP|G1"] - gf["FLOP|G2"]).values; mu, ci, b = boot_mean(sh)
+            res["FLOP_shift_G1_minus_G2"] = dict(mean=mu, ci=list(ci), p_two_sided=min(1.0, 2 * min(one_sided_p(b, +1), one_sided_p(b, -1))))
+        out["families"][fam] = res
+    # claims for the Holm family: C5 DAGMA precondition and C6 NOTEARS precondition on in-trees; C7 FLOP shift pooled over families
+    for tag, method in (("C5", "DAGMA"), ("C6", "NOTEARS")):
+        r = out["families"].get(primary, {}).get(method)
+        if r:
+            out["claims_p"][tag] = r["p_precondition"]
+    ok2 = ok[ok.family.isin(families)]
+    gf = _graph_pair_table(ok2, "shd_x1n", ["FLOP"]).dropna()
+    if all(c in gf.columns for c in ("FLOP|G1", "FLOP|G2")):
+        sh = (gf["FLOP|G1"] - gf["FLOP|G2"]).values; mu, ci, b = boot_mean(sh)
+        out["FLOP_shift_pooled"] = dict(mean=mu, ci=list(ci)); out["claims_p"]["C7"] = min(1.0, 2 * min(one_sided_p(b, +1), one_sided_p(b, -1)))
+    return out
+
+
+# ----------------------------------------------------------------------------------------------- Q5 (HB1)
+HB1_POOL = ["FLOP", "GES", "GRaSP", "BOSS", "DirectLiNGAM", "RelSnR", "VarSnR"]
+Q5_LABELLED = ["PCMCI", "VAR_OLS", "VARLiNGAM_pooled", "DYNOTEARS"]
+
+
+def q5_hb1(df):
+    """HB1: FLOP has the lowest mean SHD_x1n among HB1_POOL in at least 6 of the 8 (family, generator) groups. Descriptive: groups are
+    (family, arm); the mean is over all rows of status ok in the group (graphs x p x T). Also returns the full method table with graph-cluster
+    CIs for each (arm, method) pooled over families, and the labelled references."""
+    ok = df[df.status == "ok"] if "status" in df.columns else df
+    out = {"groups": {}}
+    wins = 0; total = 0
+    for (fam, arm), g in ok.groupby(["family", "arm"]):
+        m = g[g.method.isin(HB1_POOL)].groupby("method").shd_x1n.mean()
+        if "FLOP" not in m.index:
+            continue
+        best = m.idxmin(); total += 1; wins += int(best == "FLOP")
+        out["groups"][f"{fam}|{arm}"] = dict(best=best, FLOP=float(m["FLOP"]), means={k: float(v) for k, v in m.items()})
+    out["HB1"] = dict(flop_best_groups=wins, groups=total, supported=bool(total == 8 and wins >= 6))
+    tab = {}
+    for (arm, method), g in ok.groupby(["arm", "method"]):
+        gm = g.groupby(["family", "p", "seed"]).shd_x1n.mean().values
+        mu, ci, _ = boot_mean(gm); tab[f"{arm}|{method}"] = dict(mean=mu, ci=list(ci), n_graphs=int(len(gm)))
+    out["table_shd_x1n"] = tab
+    nt = {}
+    for method, g in ok.groupby("method"):
+        d = g.groupby(["family", "p", "seed", "arm"]).shd_x1n.mean().unstack("arm")
+        if {"G1", "G2"} <= set(d.columns):
+            mu, ci, _ = boot_mean((d["G1"] - d["G2"]).dropna().values); nt[method] = dict(G1_minus_G2=mu, ci=list(ci))
+    out["shift_G1_minus_G2"] = nt
+    return out
+
+
 # ----------------------------------------------------------------------------------------------- selftest on dummy data
 def _dummy_q1(truth, seed=1):
     """truth: 'strength' (CF2 keeps the gain, dose matters) or 'pattern' (CF2 loses the gain, dose flat)."""
@@ -215,6 +322,21 @@ def _dummy_q2(truth, seed=3):
     return pd.DataFrame(rows)
 
 
+def _dummy_q2_ext(truth, seed=4):
+    rng = np.random.default_rng(seed); rows = []
+    for s in range(24):
+        for T in (3, 5):
+            flop = 0.5 + 0.03 * rng.standard_normal()
+            A = {"G1": 0.3, "G2": -0.3, "VM_G1": -0.25 if truth == "variance" else 0.25, "VM_G2": 0.25 if truth == "variance" else -0.25}
+            for arm, a in A.items():
+                base = dict(family="intree", p=10, seed=s, T=T, arm=arm, status="ok")
+                rows.append(dict(base, method="FLOP", shd_x1n=flop, sidn=0.5, aoa_x1=0.7, oa_x1=np.nan))
+                rows.append(dict(base, method="DAGMA", shd_x1n=flop - a + 0.03 * rng.standard_normal(), sidn=0.5 - a, aoa_x1=0.7 + a, oa_x1=np.nan))
+                vo = {"G1": 0.9, "G2": 0.55, "VM_G1": 0.56, "VM_G2": 0.89}[arm]
+                rows.append(dict(base, method="VarSnR", shd_x1n=1.0, sidn=0.5, aoa_x1=0.5, oa_x1=vo))
+    return pd.DataFrame(rows)
+
+
 def selftest():
     for truth in ("strength", "pattern"):
         r = q1_verdicts(_dummy_q1(truth)); v2 = r["V2_pattern_retention_CF2_m1"]["verdict"]; v3 = r["V3_dose_fixed_pattern"]["verdict"]
@@ -231,6 +353,19 @@ def selftest():
         r = q2_verdicts(_dummy_q2(truth))["DAGMA"]
         assert r["precondition_met"] and r["HY1_R_VM"]["verdict"] == exp, (truth, r)
         print("selftest Q2", truth, "->", r["HY1_R_VM"]["verdict"], "inj sufficient:", r["HY1_R_inj"]["variance_alone_sufficient"])
+    dq = _dummy_q2_ext("variance"); r = q2_extended(dq, co=("DAGMA",), families=("intree",))
+    f = r["families"]["intree"]["DAGMA"]
+    assert f["precondition_met"] and f["HY1_R_VM"]["verdict"] == "variance channel" and f["HY2_sign_pattern"], f
+    assert r["manipulation_check"]["passed"] and "C5" in r["claims_p"]
+    print("selftest Q2 extended ->", f["HY1_R_VM"]["verdict"], "HY2", f["HY2_sign_pattern"], "manipulation check", r["manipulation_check"]["passed"])
+    rng = np.random.default_rng(5); rows = []
+    for fam in ("ring", "chain", "intree", "ER2"):
+        for arm in ("G1", "G2"):
+            for sd in range(6):
+                for method, lvl in (("FLOP", 0.2), ("GES", 0.5), ("GRaSP", 0.6), ("BOSS", 0.6), ("DirectLiNGAM", 1.5), ("RelSnR", 1.0), ("VarSnR", 0.1 if arm == "G1" else 1.0), ("PCMCI", 0.0)):
+                    rows.append(dict(family=fam, p=5, seed=sd, T=3, arm=arm, method=method, shd_x1n=lvl + 0.01 * rng.standard_normal(), status="ok"))
+    r5 = q5_hb1(pd.DataFrame(rows)); assert r5["HB1"]["groups"] == 8 and r5["HB1"]["flop_best_groups"] == 4 and not r5["HB1"]["supported"], r5["HB1"]
+    print("selftest Q5 HB1 ->", r5["HB1"])
     h = holm({"a": 0.001, "b": 0.02, "c": 0.04}); assert abs(h["a"][0] - 0.003) < 1e-12 and abs(h["b"][0] - 0.04) < 1e-12 and h["c"][1]
     print("holm", {k: (round(v[0], 3), v[1]) for k, v in h.items()})
     print("selftest passed")
@@ -243,5 +378,9 @@ if __name__ == "__main__":
         d = pd.read_csv(sys.argv[2]); print(q1_verdicts(d)); print(q1_dose(d))
     elif len(sys.argv) > 2 and sys.argv[1] == "q2":
         print(q2_verdicts(pd.read_csv(sys.argv[2])))
+    elif len(sys.argv) > 2 and sys.argv[1] == "q5":
+        import json; print(json.dumps(q5_hb1(pd.read_csv(sys.argv[2])), indent=1, default=float))
+    elif len(sys.argv) > 2 and sys.argv[1] == "q2x":
+        import json; print(json.dumps(q2_extended(pd.read_csv(sys.argv[2])), indent=1, default=float))
     else:
         print(__doc__)

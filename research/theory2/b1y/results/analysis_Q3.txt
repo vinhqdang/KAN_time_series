@@ -1,0 +1,63 @@
+Q3 post hoc re-analysis of committed data (descriptive; not a verdict). Unit = summary graph, graph-cluster bootstrap 95% CI.
+
+== A. B1 (R-het): order accuracy gain G1 - G2, full-window vs first-slice-excluded (edges leaving slice 1 dropped) ==
+  rel-SnR    non-SC pooled  full: G1 0.711  G2 0.586  gain +0.125 [+0.116, +0.134]  (300 graphs)
+  rel-SnR    non-SC pooled  x1  : G1 0.673  G2 0.584  gain +0.089 [+0.079, +0.100]  (300 graphs)
+  rel-SnR    symER+ring     full: G1 0.657  G2 0.504  gain +0.153 [+0.143, +0.163]  (120 graphs)
+  rel-SnR    symER+ring     x1  : G1 0.595  G2 0.495  gain +0.101 [+0.087, +0.115]  (120 graphs)
+  R2-SnR     non-SC pooled  full: G1 0.709  G2 0.634  gain +0.075 [+0.071, +0.080]  (300 graphs)
+  R2-SnR     non-SC pooled  x1  : G1 0.574  G2 0.477  gain +0.096 [+0.091, +0.102]  (300 graphs)
+  R2-SnR     symER+ring     full: G1 0.597  G2 0.506  gain +0.091 [+0.086, +0.096]  (120 graphs)
+  R2-SnR     symER+ring     x1  : G1 0.410  G2 0.314  gain +0.095 [+0.088, +0.103]  (120 graphs)
+  Var-SnR    non-SC pooled  full: G1 0.882  G2 0.672  gain +0.210 [+0.203, +0.217]  (300 graphs)
+  Var-SnR    non-SC pooled  x1  : G1 0.867  G2 0.672  gain +0.195 [+0.187, +0.203]  (300 graphs)
+  Var-SnR    symER+ring     full: G1 0.684  G2 0.501  gain +0.183 [+0.173, +0.194]  (120 graphs)
+  Var-SnR    symER+ring     x1  : G1 0.645  G2 0.501  gain +0.144 [+0.132, +0.155]  (120 graphs)
+
+== B. B1 (R-het): SHD/|E|, full vs first-slice-excluded, by generator (all families, graph-level means over T) ==
+  rel-SnR    full: G1 1.048  G2 1.698  G2-G1 +0.649 [+0.599, +0.702]  (420 graphs)
+  rel-SnR    x1  : G1 1.020  G2 1.551  G2-G1 +0.531 [+0.484, +0.579]  (420 graphs)
+  R2-SnR     full: G1 1.331  G2 1.961  G2-G1 +0.631 [+0.605, +0.658]  (420 graphs)
+  R2-SnR     x1  : G1 1.312  G2 1.778  G2-G1 +0.466 [+0.443, +0.490]  (420 graphs)
+  Var-SnR    full: G1 0.605  G2 1.386  G2-G1 +0.780 [+0.735, +0.826]  (420 graphs)
+  Var-SnR    x1  : G1 0.576  G2 1.245  G2-G1 +0.670 [+0.633, +0.707]  (420 graphs)
+  Random-SnR full: G1 1.721  G2 2.041  G2-G1 +0.320 [+0.286, +0.355]  (420 graphs)
+  Random-SnR x1  : G1 1.619  G2 1.886  G2-G1 +0.267 [+0.238, +0.298]  (420 graphs)
+  FLOP       full: G1 0.265  G2 0.462  G2-G1 +0.197 [+0.185, +0.209]  (420 graphs)
+  FLOP       x1  : G1 0.256  G2 0.349  G2-G1 +0.093 [+0.084, +0.102]  (420 graphs)
+  PC         full: G1 0.396  G2 0.642  G2-G1 +0.246 [+0.229, +0.263]  (420 graphs)
+  PC         x1  : G1 0.395  G2 0.609  G2-G1 +0.215 [+0.199, +0.230]  (420 graphs)
+
+== C. B1x learner extension (B1x design, 12 graphs per family-p): SHD/|E| full vs x1 by generator, raw data ==
+  empty     full: G1 1.000  G2 1.000  G2-G1 +0.000 [+0.000, +0.000]  (96 graphs)
+  empty     x1  : G1 1.000  G2 1.000  G2-G1 +0.000 [+0.000, +0.000]  (96 graphs)
+  rel-SnR   full: G1 0.777  G2 1.605  G2-G1 +0.828 [+0.709, +0.953]  (96 graphs)
+  rel-SnR   x1  : G1 0.744  G2 1.422  G2-G1 +0.679 [+0.570, +0.792]  (96 graphs)
+  Var-SnR   full: G1 0.498  G2 1.291  G2-G1 +0.792 [+0.712, +0.877]  (96 graphs)
+  Var-SnR   x1  : G1 0.461  G2 1.113  G2-G1 +0.651 [+0.589, +0.718]  (96 graphs)
+  FLOP      full: G1 0.193  G2 0.516  G2-G1 +0.323 [+0.297, +0.349]  (96 graphs)
+  FLOP      x1  : G1 0.183  G2 0.365  G2-G1 +0.182 [+0.156, +0.209]  (96 graphs)
+  DAGMA     full: G1 0.350  G2 0.897  G2-G1 +0.548 [+0.438, +0.663]  (96 graphs)
+  DAGMA     x1  : G1 0.345  G2 0.823  G2-G1 +0.478 [+0.382, +0.581]  (96 graphs)
+  NOTEARS   full: G1 0.468  G2 0.888  G2-G1 +0.419 [+0.321, +0.521]  (96 graphs)
+  NOTEARS   x1  : G1 0.468  G2 0.833  G2-G1 +0.364 [+0.277, +0.454]  (96 graphs)
+  GOLEM-EV  full: G1 0.441  G2 0.932  G2-G1 +0.491 [+0.385, +0.602]  (48 graphs)
+  GOLEM-EV  x1  : G1 0.419  G2 0.868  G2-G1 +0.449 [+0.356, +0.548]  (48 graphs)
+  GOLEM-NV  full: G1 0.388  G2 0.797  G2-G1 +0.409 [+0.330, +0.491]  (48 graphs)
+  GOLEM-NV  x1  : G1 0.365  G2 0.732  G2-G1 +0.368 [+0.300, +0.437]  (48 graphs)
+
+== D. Rank change versus FLOP on in-trees (B1x data): [CO - FLOP] SHD/|E| under G1 and G2, full vs x1; interaction = G1 value - G2 value ==
+  DAGMA     full: [CO-FLOP] G1 -0.218  G2 +0.306  interaction -0.524 [-0.600, -0.440]  (24 graphs)
+  DAGMA     x1  : [CO-FLOP] G1 -0.222  G2 +0.364  interaction -0.587 [-0.659, -0.508]  (24 graphs)
+  NOTEARS   full: [CO-FLOP] G1 -0.176  G2 +0.193  interaction -0.369 [-0.462, -0.274]  (24 graphs)
+  NOTEARS   x1  : [CO-FLOP] G1 -0.172  G2 +0.290  interaction -0.462 [-0.548, -0.375]  (24 graphs)
+  GOLEM-EV  full: [CO-FLOP] G1 +0.096  G2 +0.480  interaction -0.384 [-0.549, -0.226]  (12 graphs)
+  GOLEM-EV  x1  : [CO-FLOP] G1 +0.049  G2 +0.532  interaction -0.484 [-0.624, -0.352]  (12 graphs)
+  GOLEM-NV  full: [CO-FLOP] G1 +0.016  G2 +0.334  interaction -0.318 [-0.434, -0.208]  (12 graphs)
+  GOLEM-NV  x1  : [CO-FLOP] G1 -0.027  G2 +0.395  interaction -0.421 [-0.520, -0.323]  (12 graphs)
+
+== E. B1 chain, rel-SnR minus R2-SnR SHD/|E|, cell p = 10, T = 3 (the B1 swap cell): full vs x1, by generator ==
+  full G1: -0.979 [-1.071, -0.888]  (30 graphs)
+  full G2: +0.393 [+0.243, +0.541]  (30 graphs)
+  x1   G1: -1.006 [-1.094, -0.918]  (30 graphs)
+  x1   G2: +0.441 [+0.304, +0.576]  (30 graphs)
