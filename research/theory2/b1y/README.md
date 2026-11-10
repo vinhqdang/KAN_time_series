@@ -11,7 +11,7 @@
 | Q6 exact tightness | done (committed with the plan) | `results/q6_burnin_exact.txt` |
 | Q1 matched-correlation counterfactual, n- and rho-dose | **done** | `results/analysis_Q1.txt` |
 | Q3 first-slice-excluded scoring, post hoc re-analysis of committed data | **done** | `results/analysis_Q3.txt` |
-| Q2 variance-matched control, tuned learners | tuning running | |
+| Q2 variance-matched control, tuned learners | **done** | `results/analysis_Q2.txt`, `results/holm_family.txt` |
 | Q4 run-level inference for real data (+ K-sensitivity) | **done** | `results/analysis_Q4_runlevel.txt`, `results/analysis_Q4_k.txt`, `results/analysis_Q4_k_b3.txt` |
 | Q5 extra baselines | **done** | `results/analysis_Q5.txt` |
 
@@ -30,6 +30,26 @@
 **Story-table selection (fixed in `PLAN.md` section 1): V2 = "detectable strength, not population pattern" and V4 supported gives U-A.** The exact relatives gap is the n → infinity ceiling of what the fixed start does to rel-SortnRegress; at finite n the realised effect is its detectable image, so its size depends on n and on correlation strength (V4, V5). The wording the plan allows for the paper: exact theory plus finite-n detectability with n- and correlation-dose curves.
 
 **What this does and does not show.** V2 says the effect does not require the population relatives pattern to be G1's: a start that has G2's population relatives but G1's detectable pattern at n = 1,000 produces the same order-accuracy gain. Equivalently, the sorting statistic reacts to which pairs clear the detection threshold, not to the population relatives structure itself; the exact gap becomes the right description as n grows (V4). V3 is flat: changing the start variance at fixed pattern moves the gain little (about 0.008). The rho-dose (V5) shows that the transition matrix strength, hence correlation strength, controls how much of the exact gap is realised. None of this tests the learner reversals (Q2).
+
+
+## Q2 verdict (pre-specified rules; SHD_x1n; unit = summary graph; graph-cluster CI; 288 graph-seeds, 8,256 rows, no fit timed out; tuned DAGMA/NOTEARS (0.1, 0.1); CO methods paired with FLOP on the cells where they ran: NOTEARS d <= 30, GOLEM d <= 50, DAGMA all)
+
+A(arm) = SHD_x1n(FLOP) - SHD_x1n(CO method): positive means the CO method is better. Manipulation check **passed**: Var-SnR order accuracy under VM_G1 differs from G2 by +0.008 and under VM_G2 from G1 by +0.001 (limit 0.03).
+
+**In-trees (the family of the B1x reversal), 12 graphs per p:**
+
+| CO method | A(G1) | A(G2) | A(G1) - A(G2) [CI] | precondition (>= 0.10, CI > 0) | HY2 (A(G1) > 0 > A(G2), CIs exclude 0) | R_VM (HY1) | verdict HY1 | R_inj |
+|---|---|---|---|---|---|---|---|---|
+| DAGMA | +0.200 | -0.365 | 0.564 [0.480, 0.654] | met | **yes** | -1.25 | variance channel | 0.43 (not sufficient) |
+| NOTEARS | +0.234 | -0.393 | 0.628 [0.528, 0.727] | met | **yes** | -0.44 | variance channel | 0.49 (not sufficient) |
+| GOLEM-NV | +0.123 | -0.325 | 0.448 [0.393, 0.505] | met | yes | -0.41 | variance channel | 0.08 (not sufficient) |
+| GOLEM-EV | +0.000 | -0.513 | 0.513 [0.430, 0.596] | met | no (A(G1) not > 0) | -1.50 | variance channel | -0.19 (not sufficient) |
+
+- **The reversal survives tuning on in-trees:** under G1 tuned DAGMA, NOTEARS and GOLEM-NV beat FLOP (A > 0), under G2 all four lose (A < 0); HY2 holds for DAGMA, NOTEARS and GOLEM-NV, not for GOLEM-EV (tie with FLOP under G1).
+- **HY1 by the rule is "variance channel" for all four methods** (R_VM <= 0.40 and CI upper <= 0.60). R_VM is *negative* throughout: giving the G1 data G2's marginal variances does not just remove the CO methods' advantage, it makes them worse than under G2 (A(VM_G1) = -1.07 for DAGMA). So rescaling to G2's variances is more than a removal of the variance advantage; the rule's reading ("variance channel") holds, with that qualification. **Variance injection is not sufficient** (R_inj 0.43-0.49 for DAGMA and NOTEARS, below 0.60): putting G1's variances on G2 data restores less than 60% of the CO methods' G1 advantage.
+- **FLOP's own shift** G1 - G2 (SHD_x1n): in-trees -0.099 [-0.119, -0.080]; pooled over the four families -0.168 [-0.191, -0.145] (FLOP gets worse under the burn-in).
+- **Other families (descriptive, no verdict):** chains: the CO methods are never better than FLOP; the gap A(G1) - A(G2) is large and positive (DAGMA 2.157 [1.573, 2.788]) because they are far worse than FLOP under G2 (A(G2) = -2.18); HY2 fails (A(G1) <= 0). Rings and ER2: no reversal (A < 0 under both generators; the precondition fails; the ring gap is negative).
+- **Holm over the seven claims C1-C7 (`results/holm_family.txt`): all seven reject at 0.05** (adjusted p between 0.0007 and 0.016; C1 = V3 at 0.016 is the weakest, and V3's verdict by the effect-size rule is "flat"; C5 DAGMA precondition, C6 NOTEARS precondition, C7 FLOP shift all 0.0007). Bootstrap p-values sit at their floor 1/10,001.
 
 ## Q3 (post hoc re-analysis of committed B1 and B1x data; no new data; `results/analysis_Q3.txt`)
 
@@ -59,9 +79,26 @@ Data re-fetched with `reproduce.sh fetch` into `/home/user/theory2_data` on 2026
 - **Time-labelled references (not in HB1):** PCMCI+ 0.021 / 0.022; DYNOTEARS 0.025 / 0.047; pooled lag-1 OLS 0.000 / 0.071; pooled VAR-LiNGAM 0.007 / 0.080 (the b1y noise is Gaussian, so LiNGAM identifiability does not hold). With the labels, the gap to FLOP is 0.14 (G1) and 0.33 (G2).
 - **G1 -> G2 shift:** every label-free method gets worse under the burn-in (FLOP +0.193, BOSS +0.091, GRaSP +0.178, GES +0.348, rel-SnR +0.693, Var-SnR +0.653); PCMCI+ does not change (-0.001 [-0.008, +0.007]).
 
+
+## Summary table
+
+| question | verdict (pre-specified rule) | key numbers | runtime (CPU-h, approx.) |
+|---|---|---|---|
+| Q6 exact burn-in | chain: B_min = Delta for Delta 1..7 and every T 2..5; ring: ceil(Delta/2); 396 random graphs: no violation of B_min <= Delta, B_min = Delta in 51% | `results/q6_burnin_exact.txt` | 0.01 |
+| Q1 counterfactual | V1 valid; S1-S4 hold; **V2 detectable strength, not population pattern**; V3 flat; **V4 supported; V5 supported**; story **U-A** | gain +0.090 [0.080, 0.101]; CF2_m1 retention 0.955 [0.884, 1.030]; Q(n): 0.18, 0.40, 0.57, 0.76; slope 0.569 [0.402, 0.731] | 0.3 |
+| Q2 variance control | in-trees: precondition met and HY2 holds for DAGMA, NOTEARS, GOLEM-NV (not GOLEM-EV); **HY1 variance channel for all four; injection not sufficient** | gaps 0.45-0.63, CIs above 0; R_VM -1.25 to -0.41; R_inj <= 0.49 | tuning 3.5 + test 15 |
+| Q3 first-slice scoring | descriptive: artefact shrinks, rank-change interactions remain | rel-SnR OA gain +0.125 -> +0.089; FLOP SHD shift +0.197 -> +0.093; interactions vs FLOP -0.37..-0.52 -> -0.42..-0.59 | 0 (committed data) |
+| Q4 run-level / K | B3: 3 of 3 and 2 of 2 runs agree (smallest attainable p 0.125 / 0.25); rivers P5 station-bootstrap CI [0.527, 0.551] but the CI lower bound exceeds 0.5 in only 27% of station-disjoint subsets; K changes at most 4% of decisions (E1 levels: 13%) | `analysis_Q4_*.txt` | 0.3 |
+| Q5 baselines | **HB1 supported, 7 of 8 groups** (exception: in-tree G1, Var-SnR best) | FLOP 0.161 / 0.353 (G1 / G2); PCMCI+ 0.021 / 0.022; DYNOTEARS 0.025 / 0.047 | 1.4 |
+| total | | about 21 CPU-h of the 25 cap | |
+
+## Runtime note
+
+`secs` in the Q2 shards counts the GOLEM fit time twice (once per GOLEM-EV and GOLEM-NV row), so the sum of `secs` (23.7 h) overstates the cost; wall-clock times: Q2 test 07:27-11:13 UTC on 4 cores (about 15 CPU-h), tuning 06:32-07:27, Q5 07:04-07:40 on 3 cores, Q1 06:15-06:19.
+
 ## Deviations and notes
 
-Listed in `DEVIATIONS` below as they occur.
+Listed in DEVIATIONS below.
 
 ## Files
 

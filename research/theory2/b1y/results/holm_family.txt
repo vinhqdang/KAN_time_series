@@ -1,0 +1,9 @@
+Holm over 7 of 7 pre-listed claims (missing claims are listed below)
+
+  C1_V3_dose_fixed_pattern             p = 0.01610   Holm-adjusted 0.01610   reject at 0.05
+  C2_V4_n_dose                         p = 0.00010   Holm-adjusted 0.00070   reject at 0.05
+  C3_V5_rho_dose                       p = 0.00010   Holm-adjusted 0.00070   reject at 0.05
+  C4_slope_within_family               p = 0.00050   Holm-adjusted 0.00100   reject at 0.05
+  C5_DAGMA_precondition_intree         p = 0.00010   Holm-adjusted 0.00070   reject at 0.05
+  C6_NOTEARS_precondition_intree       p = 0.00010   Holm-adjusted 0.00070   reject at 0.05
+  C7_FLOP_shift_G1_minus_G2            p = 0.00020   Holm-adjusted 0.00070   reject at 0.05
