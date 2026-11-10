@@ -94,3 +94,28 @@ no undefined references or citations, no overfull boxes, 58 references.
 Variance-matched control for the learner ranking change; population decomposition of the
 detectability calculation; B3 clustering at the level of 3 experiments (R-N6); fixed-K size
 check on the river data.
+
+## Restructure to six sections and full Related Work (user request)
+
+The user found the Related Work too short (a list of citations, ICML style) and asked for six sections.
+Structure now (appendices excluded):
+
+1. Introduction (contributions, new "Organisation" paragraph)
+2. Related Work and Background (about 3.7 pages; 2.1 sortability and evaluation of continuous-optimisation learners, with SPADE; 2.2 time-series causal discovery and generators; 2.3 tied unrolled models, labels and identification; 2.4 finite-sample behaviour of dependence tests; 2.5 formal verification; 2.6 positioning)
+3. Time-Unrolled DAGs: Exact Values, Burn-in and Identifiability (3.1 setting, 3.2 exact values, 3.3 random summary graphs, 3.4 start identifies nothing more with labels, 3.5 identifiability without labels, 3.6 machine-checked proofs)
+4. Finite Samples and Temporal Aggregation (4.1 estimating relatives, 4.2 aggregation versus subsampling)
+5. Experiments and Real-Data Evidence (5.1 start artefact in simulated benchmarks, 5.2 real-data evidence)
+6. Discussion, Limitations and Conclusions (6.1 implications, 6.2 limitations, 6.3 new short conclusions, 6.4 use of AI tools)
+
+Only headings, two or three bridging sentences per new section, the Conclusions subsection and three
+cross-reference wordings ("above" and "this section") changed; no theorem, label, number or caveat was altered.
+The old Related-work paragraph in the Introduction was removed (its content is in Section 2).
+
+References added to refs.bib, all verified: kaiser2022unsuitability (Crossref DOI 10.1007/s11063-021-10694-5, arXiv 2104.05441 abstract read),
+granger1969investigating (Crossref: Econometrica 37(3), 424 confirmed; the end page 438 is from memory),
+lanne2008identifying and lewis2021identifying (copied from alg2/refs.bib; Crossref-verified there, see ../alg2/REFS_VERIFY.md).
+Everything else cited in Section 2 was already in refs.bib.
+
+Not verified: how Section 2 describes works was written from their titles, abstracts and the earlier text of this paper, not from the full papers.
+In particular the statements on Boege et al. (results for colour classes with a common head, from alg/NOVELTY.md), on FLOP (only "discrete search", from the title)
+and on Lohse and Wahl (from earlier text) should be read against the originals before submission. The new Conclusions subsection restates claims made elsewhere in the paper.

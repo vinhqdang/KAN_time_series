@@ -186,46 +186,228 @@ finite-sample results use textbook tools. We see the paper as a completion of
 the unrolled-graph analysis of \citet[Section~5]{reisach2026topological} plus
 a finite-sample and real-data layer, not as a new theory of sortability.
 
-\textbf{Related work.} Varsortability~\citep{reisach2021beware} and
-$R^2$-sortability~\citep{reisach2023scale} have been analysed for standardised
-SCMs~\citep{ormaniec2025standardizing}, for unit-free generators with a time-series
-extension~\citep{herman2025unitless}, and, for time series, by
-\citet{lohse2025sortability}, who adapt both criteria to summary graphs, note that
-cyclic pairs push the signal towards $1/2$, and measure them on river-flow and Causal
-Chambers data; they give no theorem and do not study relatives or observation
-schemes. \citet{reisach2026topological} introduce rel-sortability and the
-time-unrolled DAG, and prove that strong connectivity of every weak component of the
-summary graph is sufficient for the limit $1/2$. Aggregation and subsampling change time-series models
-\citep{weiss1984systematic,breitung2002temporal} and identifiability
-\citep{gong2015subsampled,gong2017aggregated}; their effect on sortability is in
-\cref{sec:agg}. The size distortion of a Pearson test with the nominal sample size under
-autocorrelation is classical~\citep{bartlett1935, clifford1989, roy1989} and is
-handled in practice by effective sample sizes~\citep{runge2019detecting,
-afyouni2019effective}; testing the independence of two series through lagged
-cross-correlations goes back to \citet{haugh1976checking}. Residual confounding by
-unreliable covariates is also known~\citep{westfall2016confounding}. Formal libraries
-for causal inference exist~\citep{tan2026causalsmith}. Time-series discovery methods
-such as PCMCI and PCMCI+~\citep{runge2019detecting,runge2020pcmciplus},
-VAR-LiNGAM~\citep{hyvarinen2010varlingam} and DYNOTEARS~\citep{pamfil2020dynotears}
-use time order, and benchmarks for them include CauseMe~\citep{runge2019inferring},
-the Causality 4 Climate competition~\citep{weichwald2020causal} and
-CausalTime~\citep{cheng2024causaltime}; our finite-sample results concern only the
-marginal tests that define relatives. Robustness of score-based learners to
-violated assumptions is studied by \citet{montagna2023assumption}.
-Continuous-optimisation learners are developed
-and compared largely on simulated DAGs, which is why regularities of the
-generator matter for their evaluation. This holds for the linear learners
-tested in \cref{sec:b1} (NOTEARS, DAGMA, \citealp{bello2022dagma}, and GOLEM,
-\citealp{ng2020golem}) and for nonlinear additive-noise learners such as SPADE
-\citep{dang2026spade}, a B-spline (Kolmogorov--Arnold) DAG learner that was
-compared with DAGMA, GraN-DAG, GOLEM, NOTEARS, SCORE, NoGAM, PCMCI and
-VAR-LiNGAM on simulated nonlinear DAGs, with mixed results against NoGAM, and
-whose graph learned from a financial panel in levels collapsed in a
-re-analysis on stationary returns: an instance, on real data, of a learned
-graph driven by non-stationarity and not by the mechanism.
+\textbf{Organisation.} \Cref{sec:related} places the work among studies of
+benchmark regularities, time-series causal discovery and identification.
+\Cref{sec:theory} contains the graph results, the Lean verification and the
+identifiability statements for hidden time labels. \Cref{sec:finsamp} treats the
+estimation of relatives from one record and aggregation. \Cref{sec:experiments}
+reports the benchmark experiments and the real-data studies, and
+\cref{sec:disc} gives recommendations, limitations and the statement on the use
+of AI tools.
 
 %=============================================================================
-\section{Setting}
+\section{Related Work and Background}
+\label{sec:related}
+
+The paper touches three bodies of work: studies of what simulated benchmarks
+reward, time-series causal discovery together with the generators that supply
+its test data, and the identification and finite-sample theory that the later
+sections use. We discuss each in turn and then state what is new here and what
+is not.
+
+\subsection{Sortability and the evaluation of continuous-optimisation learners}
+\label{sec:rw-sort}
+
+Continuous-optimisation learners cast structure learning as numerical
+optimisation over weighted adjacency matrices. NOTEARS \citep{zheng2018notears}
+replaces the combinatorial acyclicity constraint by a smooth function of the
+matrix, and later methods change the constraint or the objective: DAGMA
+\citep{bello2022dagma} uses a log-determinant characterisation of acyclicity,
+and GOLEM \citep{ng2020golem} maximises a likelihood with soft penalties.
+Constraint-based search \citep{spirtes2000causation} and greedy score-based
+search \citep{chickering2002optimal} remain the classical alternatives, and
+FLOP \citep{wienobst2026flop}, a recent discrete-search method, is the
+strongest method without time labels in our experiments
+(\cref{sec:b1}). All of these are developed and compared mostly on simulated
+linear or additive-noise models with random graphs. A regularity of the
+generator that tracks the causal order can therefore change a ranking without
+any causal reasoning on the part of the learner, and a line of work has
+identified such regularities one by one.
+
+\citet{reisach2021beware} showed that in common generators the marginal
+variance tends to grow along the causal order (var-sortability). A baseline that
+sorts by variance and then regresses is competitive on such data, and
+continuous-optimisation methods lose accuracy once the data are standardised.
+\citet{kaiser2022unsuitability} reach a related conclusion from the side of the
+method: NOTEARS is not scale invariant, it aims at a parsimonious DAG that
+explains the residual variance, and the authors conclude that it is unsuited to
+identifying causal relationships from data with dimensional quantities.
+\citet{reisach2023scale} introduced $R^2$-sortability, the same kind of
+regularity measured with a scale-invariant quantity, and a corresponding
+sorting baseline. \citet{ormaniec2025standardizing} study internally
+standardised structural causal models, which are not var-sortable by
+construction and, empirically, mostly not $R^2$-sortable.
+\citet{herman2025unitless} relate the $R^2$ pattern to colliders and
+confounders and propose a unit-free generator that avoids it and whose
+time-series extension starts from the exact stationary distribution.
+\citet{reisach2026topological} then defined rel-sortability, which counts the
+relatives of a node, that is, the nodes joined to it by an open path. Relatives
+depend on the graph alone, so reweighting cannot remove the criterion. For
+time-unrolled DAGs built from a summary graph with self-loops they proved that
+the criterion tends to $1/2$ when every weak component of the summary graph is
+strongly connected, and they proposed such graphs for benchmarks. Their
+statement is a sufficient condition. This paper completes it: the exact value of
+every edge for every summary graph and horizon, the exact limit, the effect of a
+burn-in, and the question of whether the value matters for what learners
+recover.
+
+For time series, \citet{lohse2025sortability} adapt var- and $R^2$-sortability
+to summary graphs, observe that cyclic pairs push the signal towards $1/2$,
+and measure both on river-flow and Causal Chambers data. They give no theorem
+and do not study relatives or the way a record is observed. Robustness of
+score-matching learners to violated model assumptions has been studied by
+\citet{montagna2023assumption}, which is a different mechanism from the
+generator regularities above but leads to the same practical caution about
+reading benchmark rankings.
+
+Our own SPADE paper \citep{dang2026spade} is an instance of the setting. It
+introduces a B-spline (Kolmogorov--Arnold) additive-noise DAG learner and
+compares it with DAGMA, GraN-DAG, GOLEM, NOTEARS, SCORE, NoGAM, PCMCI and
+VAR-LiNGAM on simulated nonlinear DAGs, with mixed results against NoGAM. Its
+graph learned from a financial panel in levels collapsed when the analysis was
+repeated on stationary returns. The two observations connect to this paper in
+different ways. The first is the general point that a conclusion drawn on
+simulated DAGs depends on how the simulation is generated. The second is a
+case on real data of a learned graph that reflected non-stationarity and not
+the mechanism, which is the situation our start artefact creates in simulation.
+
+\subsection{Time-series causal discovery and its generators}
+\label{sec:rw-ts}
+
+Methods that use time order go back to Granger causality
+\citep{granger1969investigating}. VAR-LiNGAM \citep{hyvarinen2010varlingam}
+fits a structural vector autoregression and uses non-Gaussianity to orient the
+instantaneous effects. PCMCI and PCMCI+ \citep{runge2019detecting,
+runge2020pcmciplus} combine lagged conditional-independence tests with a
+momentary-conditional-independence step, the latter also handling contemporaneous
+links, and are available in the tigramite package \citep{tigramite}.
+DYNOTEARS \citep{pamfil2020dynotears} carries the NOTEARS formulation over to
+structural VAR models, and neural Granger methods \citep{tank2021neural} replace
+the linear lag effect by a network. All of them are given the time index. Only
+a static learner applied to a time-unrolled DAG, as in
+\citet{reisach2026topological}, sees the slices as unlabelled variables, and
+that is the setting of this paper. Our learner extension in \cref{sec:b1}
+therefore compares label-free static methods with PCMCI+ as a labelled
+reference.
+
+Benchmarks for the time-indexed methods include the CauseMe platform
+\citep{runge2019inferring}, the Causality 4 Climate competition
+\citep{weichwald2020causal} and CausalTime \citep{cheng2024causaltime}, which
+builds its data from fitted models of real series. A data-generating process
+for time-series causal discovery with explicit lag structure is described by
+\citet{lawrence2021dgp}. Real records with partial ground truth are rarer; we use
+CausalRivers \citep{stein2025causalrivers} and the Causal Chambers
+\citep{gamella2025chambers} in \cref{sec:real}.
+
+How these generators start a trajectory matters for the artefact studied here.
+We read the source code of the simulators in common use (\cref{app:b1x}). Some
+return the series from a fixed start with no burn-in; some discard between a few
+steps and several hundred, or a fraction of the series length; and the
+unit-free generator of \citet{herman2025unitless} draws the initial lags from
+the stationary distribution. Whether the start affects a result also depends on
+what is done with the data. A single record passed to a time-series method is
+outside the threat model, whereas the time-unrolled construction of
+\citet{reisach2026topological} gives every slice, including those right after
+the start, to a method that ignores time order. \Cref{sec:b1} states the two
+conditions and applies them to each generator.
+
+A related issue is the observation scheme. Block means and subsamples of a
+faster process change the model that the analyst sees
+\citep{weiss1984systematic,breitung2002temporal} and its identifiability
+\citep{gong2015subsampled,gong2017aggregated}. We ask what they do to the three
+sortability criteria in \cref{sec:agg}.
+
+\subsection{Tied unrolled models, time labels and identification}
+\label{sec:rw-ident}
+
+A time-unrolled DAG with a single transition applied at every step is a dynamic
+Bayesian network: a start network and a transition network that is repeated
+\citep{friedman1998learning}. When the time labels are known, learning such a
+model is standard, because the slices and the tying are given. Hiding the labels
+turns the slice structure into something that has to be identified, which is the
+question of \cref{sec:ident}. The tied parameters also bear on whether the
+usual genericity argument for faithfulness applies. Coloured Gaussian DAG models,
+which tie edge weights across a colour class, are the closest static analogue;
+\citet{boege2025colored} study their identifiability and show that such models
+can have no faithful distribution. To our reading their results are stated for
+colour classes with a common head, and the copies of an edge in an unrolled DAG
+have different heads, so we treat the unrolled case as outside what they cover.
+
+Two classical facts about time direction enter the non-identifiability results
+of \cref{sec:ident}. Time reversal can leave the covariance of a stationary
+linear process unchanged \citep{weiss1975time}, and the direction of a time
+series can be recovered under non-Gaussian or additive-noise assumptions that we
+do not make \citep{peters2009detecting}.
+
+\Cref{sec:labels} asks whether the changing covariance during the transient
+after a fixed start carries information about the mechanism. The closest
+precedents are identification through heteroskedasticity
+\citep{rigobon2003identification,lanne2008identifying,lewis2021identifying},
+which needs the covariance of the structural shocks to change across regimes or
+over time, and identification of linear stochastic differential equations from
+temporal marginals \citep{wang2023generator,guan2026identifying}. Our remark is
+a short consequence of the Markov property and is stated to separate the
+artefact for label-free methods from information available to methods with
+labels.
+
+\subsection{Finite-sample behaviour of dependence tests under autocorrelation}
+\label{sec:rw-finite}
+
+Estimating relatives from one record means running marginal independence tests
+between series. The distortion of a test for the correlation of two series that
+uses the nominal sample size, when the series are autocorrelated, is classical
+\citep{bartlett1935,clifford1989,roy1989}. In causal discovery it is usually
+handled by effective sample sizes \citep{runge2019detecting,afyouni2019effective}
+or by residual-based tests; testing independence of two series through lagged
+cross-correlations goes back to \citet{haugh1976checking}. The marginal tests we
+analyse are Fisher-$z$ tests of the kind used by the PC algorithm
+\citep{spirtes2000causation}. For the variance of the sample correlation we use
+the Bartlett form, and for tail and limit statements we rely on standard tools
+for quadratic forms of Gaussian processes and for Toeplitz-type functionals
+\citep{hsu2012tail,laurent2000adaptive,arcones1994limit,nourdin2011quantitative,
+ginovyan2021survey}. Residual confounding by an unreliably measured covariate,
+which limits what a partial-correlation test can remove, is documented in
+\citet{westfall2016confounding}. Our contribution in \cref{sec:finite} is to
+combine these ingredients for the specific statistic that defines relatives, to
+make explicit when the plug-in estimate of the effective sample size is
+consistent, and to state where a fixed truncation lag breaks the size guarantee.
+
+\subsection{Formal verification}
+\label{sec:rw-lean}
+
+The graph results are checked in Lean~4 \citep{demoura2021lean4} with Mathlib
+\citep{mathlib2020}. A formally grounded
+agentic framework for automated research in causal inference has been described
+\citep{tan2026causalsmith}. We are not aware of a Lean formalisation of
+rel-sortability or of the unrolled-graph results here, and our development
+covers only the deterministic graph and algebra parts (\cref{sec:lean}). No human has yet checked that the Lean statements match the
+statements in the paper.
+
+\subsection{Positioning}
+\label{sec:rw-pos}
+
+New here are four things. First, the exact per-edge value of rel-sortability of
+a time-unrolled DAG for every summary graph with self-loops and every horizon,
+its limit, and a burn-in condition that is both sufficient and tight, with the
+graph results machine-checked. Second, a measurement of what the fixed start does
+to benchmark results, with time-stamped plans, replications and every failed
+prediction reported. Third, finite-sample statements about estimating relatives
+from one autocorrelated record, with their limits. Fourth, identifiability
+statements for the case in which the time labels are hidden. We do not propose a
+new causal-discovery method, and the finite-sample and identifiability
+statements rest on standard tools and on paper proofs that no human has yet read
+line by line.
+
+%=============================================================================
+\section{Time-Unrolled DAGs: Exact Values, Burn-in and Identifiability}
+\label{sec:theory}
+
+This section collects the graph-theoretic results. \Cref{sec:setting} fixes
+notation, \cref{sec:exact,sec:er} give exact values, limits and the effect of a
+burn-in, \cref{sec:labels,sec:ident} ask what the start law and the time labels
+add, and \cref{sec:lean} states what is machine-checked.
+
+\subsection{Setting and notation}
 \label{sec:setting}
 
 For a directed graph, $\anc(y)$ and $\desc(y)$ contain $y$; the relatives of
@@ -246,8 +428,7 @@ $\Ex\subseteq\Es$ is the set of edges between different SCCs and
 $\Eo=\Es\setminus\Ex$. A \emph{source} SCC has no incoming edge from another
 SCC, and $\Src(v)$ is the set of source SCCs that reach $v$.
 
-%=============================================================================
-\section{Exact Rel-Sortability of Time-Unrolled DAGs}
+\subsection{Exact values, limit and burn-in}
 \label{sec:exact}
 
 \begin{theorem}[every edge, every $T$]\label{thm:edge}
@@ -386,7 +567,7 @@ collider $a\!\to\! c\!\leftarrow\! b$ & $0.7$ & $0.7$ \\
 summary DAG with the same $m/p$ has the same value, so a benchmark built this
 way rewards relatives-sorting on chains and forks, where the stationary
 process gives no signal; for long stationary records the stationary value is
-the relevant one. All statements of this section were checked by exhaustive
+the relevant one. All statements of \cref{sec:exact} were checked by exhaustive
 enumeration ($p\le4$ and $10^4$ random graphs with $p\le7$; 46{,}724 cases, 0
 failures; \cref{app:enum}).
 
@@ -449,11 +630,374 @@ Theorem~1, \cref{app:x3}). So $\srho=0.7$ caps such a method at $70\%$
 orientation accuracy. Rules that also see node degrees can exceed it.
 \lean{\lname{accRule_sortRule}, \lname{accRule_le_sRho}, \lname{edgeAcc_sortRule_strict}.}
 
-%=============================================================================
-\section{What the Start Artefact Does to Benchmarks}
-\label{sec:b1}
+\subsection{With time labels the start identifies nothing more}
+\label{sec:labels}
 
-\subsection{Benchmark experiments}
+The experiments of \cref{sec:b1} hide the time labels. One may ask whether the fixed
+start is also a source of information for a method that has them, for example
+through the changing covariance of the transient. It is not.
+
+\begin{proposition}[no gain from the transient]\label{prop:nogain}
+Let $X_t=\mathsf BX_t+AX_{t-1}+e_t$ for $t=1,\dots,T$, with $I-\mathsf B$
+invertible, $e_t$ i.i.d.\ and independent of the start $X_0\sim\nu$ ($\nu$ may
+be a point mass). Put $M=(I-\mathsf B)^{-1}A$ and $\eta_t=(I-\mathsf B)^{-1}e_t$.
+Then the law of $(X_0,\dots,X_T)$ depends on $(\mathsf B,A,\text{law of }e)$
+only through $(M,\text{law of }\eta)$. Two structures with the same reduced
+form are therefore observationally equivalent for every start law, every $T$
+and every number of independent replicates. If $\Sigma_t=\mathrm{Cov}(X_t)$ is
+nonsingular for some $t\le T-1$, then $M=\mathrm{Cov}(X_{t+1},X_t)\Sigma_t^{-1}$
+and $\Omega=\mathrm{Cov}(\eta_t)=\Sigma_{t+1}-M\Sigma_tM^\top$ are identified.
+\nolean{paper proof}
+\end{proposition}
+\begin{proof}
+$X_t=MX_{t-1}+\eta_t$ is a Markov chain whose transition kernel depends on
+$(M,\text{law of }\eta)$ only and whose initial law is $\nu$. The two formulas
+follow from $\mathrm{Cov}(X_{t+1},X_t)=M\Sigma_t$ and
+$\Sigma_{t+1}=M\Sigma_tM^\top+\Omega$.
+\end{proof}
+The covariance trajectory $\Sigma_t$ is itself a function of
+$(\Sigma_0,M,\Omega)$. Identification through heteroskedasticity
+\citep{rigobon2003identification} needs the \emph{innovation} covariance to
+change between regimes; in a transient with fixed mechanisms only the state
+covariance changes. In the lag-one model of this paper ($\mathsf B=0$) the
+transition matrix is identified under either start as soon as one $\Sigma_t$
+is nonsingular, in agreement with the labelled reference of \cref{sec:b1} (PCMCI+,
+$\mathrm{SHD}/|E|=0.02$ under both generators). The fixed start is therefore an
+artefact for label-free methods only. When each replicate is observed at a
+single time, so that only the marginal laws are seen, identification of the
+reduced form from these marginals has been established for linear stochastic
+differential equations \citep{wang2023generator,guan2026identifying}; this is
+consistent with \cref{prop:nogain} and is not our contribution.
+
+\subsection{Is the time order identifiable without labels?}
+\label{sec:ident}
+
+\citet{reisach2026topological} end by raising the question to what extent
+knowledge of the time order can and should be used for causal discovery on
+independent trajectories of short time-unrolled DAGs. A prior question is how
+much of the time order is hidden when the labels are removed. The statements
+below are population statements with paper proofs (\cref{app:ident}); none is
+machine-checked, and we do not propose a learning method.
+
+\textbf{Setting.} The columns of the data are the $pT$ cells $(\text{unit }j,
+\text{slice }t)$ of $X_{t+1}=AX_t+\varepsilon_t$ ($A_{ji}\ne0$ iff
+$(i,j)\in\Es$, $\varepsilon_t$ with diagonal covariance $D$, the same $A$ and
+$D$ for all $t$) in an unknown order; $p$ and $T$ are known. The \emph{column
+DAG} is $\GT$ on the columns. The \emph{fixed-start law} has a diagonal
+covariance of the first slice (not necessarily equal to $D$), the \emph{free
+law} an arbitrary one, which covers a burn-in window and an exact stationary
+start. The height of a node is one plus the number of edges of a longest
+directed path ending in it. A unit is \emph{loop-only} if its only parent in
+$\GS$ is itself, and \emph{isolated} if in addition it has no child other than
+itself; $m_0$ is the number of loop-only units. A \emph{representation} of a
+covariance $\Sigma$ is a parameter of the same model class (an assignment of
+columns to cells, $A'$ with non-zero diagonal, diagonal $D'$, a start
+covariance of the given law) that reproduces $\Sigma$; it is \emph{sparsest}
+if no representation has fewer non-zero entries in $A'$. Markov equivalence is
+equality of skeleton and unshielded colliders \citep{spirtes2000causation}.
+
+\begin{proposition}[slices are a graph invariant]\label{prop:slices}
+(a) In $\GT$, the height of $v(t)$ is $t$. Hence $T$, $p$ and the partition of
+the columns into slices are determined by the column DAG.
+(b) The partition of the columns into units is not: for the directed ring with
+self-loops, relabelling the cell $(i,t)$ as unit $i-t \pmod p$ gives the
+reversed ring with self-loops and the same column DAG.
+(c) Without self-loops (a) fails: for the single edge $0\to1$ the unrolled
+graph is a set of disjoint edges, and the slice of an edge is not determined.
+\nolean{paper proof; (a) uses the walk-length argument behind \lname{edge_score_dist}}
+\end{proposition}
+
+\begin{proposition}[Markov equivalence class of $\GT$]\label{prop:mec}
+An edge of $\GT$ is reversible within its Markov equivalence class iff it is
+an edge $j(t)\to j(t{+}1)$ of the self-chain of a loop-only unit $j$. The
+class has exactly $T^{m_0}$ members.
+\nolean{paper proof}
+\end{proposition}
+So under the fixed start a perfect label-free learner that uses conditional
+independence only is left with $T^{m_0}$ graphs: $m_0=0$ for a ring, $1$ for a
+chain or an out-tree, and the number of leaves for an in-tree.
+
+\begin{proposition}[fixed start, given faithfulness]\label{prop:fixident}
+Let the columns be Gaussian with covariance $\Sigma$ from the fixed-start law,
+$T\ge2$, and let their distribution be faithful to $\GT$.
+(a) Every sparsest representation of $\Sigma$ has the true column DAG, except
+that the self-chain of an isolated unit may be reversed as a whole.
+(b) For $T\ge3$ the chain of an isolated unit $j$ with coefficient $a=A_{jj}$,
+noise variance $d$ and start variance $v_1$ can be reversed iff its start is
+stationary, $v_1(1-a^2)=d$. For $T=2$ it can always be reversed.
+(c) Hence for $T\ge3$ the column DAG is identified from $\Sigma$ iff no
+isolated unit has a stationary start.
+\nolean{paper proof; faithfulness is assumed, not shown to be generic}
+\end{proposition}
+
+\begin{proposition}[three exact non-identifiability results]\label{prop:nonident}
+(a) \emph{$T=2$, free law.} For the summary edge $a\to b$ with self-loops and a
+free start covariance, the labelling with slices $\{a_1,b_2\},\{a_2,b_1\}$ is a
+representation with the same number of edges and a different column DAG
+($a_1\to a_2$, $a_1\to b_1$, $b_2\to b_1$).
+(b) \emph{Isolated units, stationary start.} Reversing the chain of an isolated
+unit with a stationary start leaves $\Sigma$ unchanged, for every $T$
+\citep{weiss1975time,peters2009detecting}; in particular $p=1$ is never
+identified from a stationary window.
+(c) \emph{Symmetric dynamics.} If $A=A^\top$, $D=\sigma^2I$ and the start is
+stationary, reversing all slices leaves $\Sigma$ unchanged for every $T$, and
+the reversed column DAG is a sparsest representation.
+\nolean{paper proof}
+\end{proposition}
+
+\begin{conjecture}[burn-in window]\label{conj:window}
+Under the free law with $T\ge3$, $p\ge2$, a weakly connected summary graph,
+faithfulness to the graph that adds a complete DAG on the first slice, and a
+time-reversed innovation covariance that is not diagonal, every sparsest
+representation has the true column DAG.
+\end{conjecture}
+We can reduce \cref{conj:window} to a finite combinatorial statement (the
+skeleton admits only one partition into $T$ layers of size $p$ that is
+compatible with an unrolling) and have checked it by hand only for the
+summary edge $a\to b$ with $T=3$ (\cref{app:ident}).
+
+\textbf{Reading.} Under the fixed start, hiding the labels hides little in
+the population: the slices are a graph invariant, and the column DAG is
+identified up to isolated units. This is a third regularity of the
+time-unrolled construction, next to rel- and var-sortability, and unlike them
+it comes from the shape constraint (the graph is an unrolling), which a burn-in
+does not remove; whether it also survives a burn-in is \cref{conj:window}.
+Three cautions apply. The statements assume faithfulness, and the tied
+parameters of an unrolled model form a null set among all linear Gaussian
+models on $\GT$, so the usual genericity argument does not apply;
+\citet{boege2025colored} show that coloured Gaussian DAG models can have no
+faithful distribution at all. They concern the global optimum of a sparsity
+criterion, not a computable procedure. And they say nothing about finite
+samples: at $n=1000$ FLOP is far from the labelled reference
+(\cref{tab:b1x}). Dynamic Bayesian networks with a start network and a tied
+transition network are classical when the labels are known
+\citep{friedman1998learning}.
+
+\subsection{Machine-checked proofs}
+\label{sec:lean}
+
+The formalisation (Lean~4, \citealp{demoura2021lean4}, with Mathlib,
+\citealp{mathlib2020}; 4{,}159 lines in 16 files, clean rebuild of the final
+state) certifies the exact and stationary results of \cref{sec:exact}
+(\cref{thm:edge,thm:limit,thm:stat}, \cref{cor:iff,cor:statiff},
+\cref{prop:boundary}), including the $\Delta$ forms of the bound and the
+burn-in and the sharpness example of \cref{rem:sharp}, the loop-free exact
+edge value and the accuracy reading, the algebra of the real-data estimand
+$\tilde s$ (\cref{app:estimand}), and the deterministic algebra of F1--F3. It
+does \emph{not} certify the ER limits, the loop-free limit and periodicity,
+the lag-weighted extension, the statements of \cref{sec:labels,sec:ident},
+or any probability bound or limit theorem. The
+axiom report lists 163 declarations, each depending only on
+\texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound}, and the
+sources contain no \texttt{sorry}, \texttt{admit} or \texttt{axiom} (33
+headline theorems, 53 graph lemmas, 65 algebraic facts, many elementary, and
+12 examples). Relatives, $\srho$, $\GT$ and the windows are defined from
+scratch following \citet{reisach2026topological}. No human has yet checked that each Lean
+statement matches its paper statement. \Cref{app:lean} maps every statement to its Lean names and status.
+
+%=============================================================================
+\section{Finite Samples and Temporal Aggregation}
+\label{sec:finsamp}
+
+The exact values are population statements about a graph.
+\Cref{sec:finite} asks whether the relatives behind them can be estimated from
+one finite, autocorrelated record, and \cref{sec:agg} asks what block means and
+subsamples of a faster process do to the three sortability criteria.
+
+\subsection{Estimating relatives from one record}
+\label{sec:finite}
+
+We now ask whether the population relatives can be estimated. $X$ is a
+zero-mean stationary Gaussian process with absolutely summable auto- and
+cross-covariances $\gamma_{ab}(h)$, standardised so that $\gamma_{aa}(0)=1$,
+observed at $n$ times. Two nodes are declared relatives if the Fisher-$z$ test
+of the sample correlation $\hat r_{ab}$ rejects at level $\alpha$ with
+Bonferroni over $m=d(d{-}1)/2$ pairs, i.e. $|\hat r_{ab}|>\tanh(z_c/\sqrt{n'-3})$,
+$z_c=\Phi^{-1}(1-\alpha/2m)$; $\hat\rho(v)=1+\#$declared partners. The
+\emph{nominal} test uses $n'=n$. Let
+$B_{ab}=\sum_h|\gamma_{aa}(h)\gamma_{bb}(h)+\gamma_{ab}(h)\gamma_{ab}(-h)|$
+(for an independent pair $B_{ab}=\sum_h|\rho_a(h)\rho_b(h)|$, at least the
+Bartlett sum $W_{ab}=\sum_h\rho_a(h)\rho_b(h)$, with equality iff all products
+are nonnegative; e.g.\ $4.56$ against $0.22$ for AR(1) coefficients $0.8$ and
+$-0.8$).
+
+\textbf{F1: recovery and effective sample size.} That the nominal-$n$ test has
+the wrong size under autocorrelation is classical: effective degrees of
+freedom go back to \citet{bartlett1935}, with spatial and multivariate versions
+in \citet{clifford1989} and \citet{roy1989}, and the variance with exactly our
+summand $B_{ab}$ is in \citet{afyouni2019effective}. We add a non-asymptotic
+exact-recovery bound for the relatives set (\cref{thm:f1}, \cref{app:finite}):
+if the thresholds separate the population correlations by more than explicit
+deviations, the declared set and hence $\hat s=\srho^{\mathrm{pop}}$ are
+recovered with failure probability decaying as
+$\exp(-n\min(\tau,\rho_{\min}-\tau)^2/(2(\sqrt B+\rho_{\max}\sqrt{D_\gamma})^2))$,
+so $n/B$ acts as an effective sample size. For i.i.d.\ snapshots $B=1+\rho^2$;
+under strong persistence $B$ can be in the tens. This bound is for a fixed
+threshold; for the Bonferroni Fisher-$z$ threshold $\tau_n\asymp z_c/\sqrt{n'}$
+that we use, the failure probability it certifies tends to
+$d(d{-}1)e^{-z_c^2/(2B)}>0$ ($0.089$ for i.i.d.\ data, $d=5$, $\alpha=0.01$;
+\cref{prop:f1scope}), and recovery is instead guaranteed asymptotically
+(\cref{prop:plugin}).
+
+\begin{proposition}[size distortion of the nominal test]\label{prop:nominal}
+In this setting, a non-relative pair is declared by the nominal test with
+probability $\to2\bar\Phi(z_c/\sqrt{W_{ab}})$, $W_{ab}=\sum_h\gamma_{aa}(h)\gamma_{bb}(h)$
+($\le B_{ab}$, with equality iff all products are nonnegative), above the nominal $\alpha/m$ when $W_{ab}>1$. With
+$\neff=n(1-\rho^2)^2/W_{ab}$ ($W$ the delta-method Bartlett variance) the
+false-positive rate tends to $\alpha/m$.
+\nolean{uses the multivariate Breuer--Major theorem}
+\end{proposition}
+The joint asymptotic normality used here follows from the multivariate
+Breuer--Major theorem \citep{arcones1994limit,nourdin2011quantitative}
+(\cref{app:finite}). On real data
+$\neff$ is estimated by $n/\hat B_{ab}$,
+$\hat B_{ab}=\max(1,1+2\sum_{h=1}^{K}\hat\rho_a(h)\hat\rho_b(h))$. If
+$K=K_n\to\infty$ with $K_n=o(n)$, $\hat B_{ab}$ is consistent, the plug-in test
+has asymptotic size at most $\alpha/m$ per pair, and the relatives set is
+recovered with probability at least $1-\alpha$ in the limit
+(\cref{prop:plugin}). Our code uses a fixed $K$ ($20$--$100$), which controls
+size only if the truncated sum captures the Bartlett sum: at AR coefficient
+$0.99$ and $K=50$ the size is $0.113$ against $0.05$, while on the B3 data
+$K$ up to $300$ changes none of 2{,}730 pair decisions (\cref{app:finite}). We
+did not run this check on the river data, which are the most persistent, or
+on study~3 and E1. For linear
+processes with non-Gaussian i.i.d.\ innovations the null variance, and hence
+the size results, are unchanged, because independent series share no fourth
+cumulant; for relatives the variance changes, which affects power but not the
+limits (\cref{rem:nongauss}).
+
+\textbf{F2: saturation by a latent driver.} Let $X_v=Y_v+b_vC$ with $C$ a
+stationary unit-variance process independent of the VAR $Y$, and
+$\ell_v=b_v^2/\mathrm{Var}X_v$ the driver's share of variance.
+
+\begin{proposition}[saturation]\label{prop:f2}
+For summary non-relatives,
+$\rho_{uv}=\mathrm{sgn}(b_ub_v)\sqrt{\ell_u\ell_v}=:\kappa_{uv}$. If all $b_v\ne0$,
+every pair is a population relative and the population rel-sortability is
+exactly $1/2$; $P(\hat s_n\ne\frac12)\le(d^2{+}3d)e^{-cn}$ with
+$c\approx\kappa_{\min}^2/(18(\sqrt B+\sqrt{D_\gamma})^2)$. Asymptotically, a pair is
+detected with probability $>1/2$ once
+$n>\nhalf=3+(z_c/\atanh\kappa)^2\approx z_c^2/\ell^2$ (nominal test; for the
+effective test, the same bound on $\neff$).
+\lean{\lname{prop21_corr_std}, \lname{sOf_saturated}, \lname{abs_sOf_sub_half_le}, location of $\nhalf$: \lname{ncrit_eq_iff}; the probability statements are not machine-checked.}
+\end{proposition}
+$\nhalf$ does not depend on autocorrelation, which only sets the width of the
+transition. A driver with share $\ell=0.1$ saturates at $n\approx10^3$, and
+one with $\ell=0.64$ at $n\approx22$ (both for $z_c=3.29$). A relatives count on a long record can
+recover the summary relatives only while
+$\max_{\text{non-rel}}|\kappa|<\tau_n<\min_{\text{rel}}|\rho|$, a window that
+closes at $n$ of order $\nhalf$.
+
+\textbf{F3: conditioning on a proxy.} A natural remedy is to condition on a
+measured proxy $Z$ of the driver. It works only if the proxy is almost
+perfectly reliable.
+
+\begin{proposition}[conditioning]\label{prop:f3}
+Let $Z=\sqrt r\,C+\sqrt{1-r}\,e$ with reliability $r=\mathrm{corr}(Z,C)^2$,
+$\pi_{uv}$ the partial correlation given $Z$, and $\rho^Y$ the driver-free
+correlation. Then
+\[
+\pi_{uv}=\frac{\rho^Y_{uv}\sqrt{(1{-}\ell_u)(1{-}\ell_v)}+(1{-}r)\,\mathrm{sgn}(b_ub_v)\sqrt{\ell_u\ell_v}}{\sqrt{(1-r\ell_u)(1-r\ell_v)}} .
+\]
+At $r=1$ the conditional relatives are the summary relatives and
+\cref{thm:stat} is restored. For non-relatives with $\ell_u,\ell_v\in(0,1)$ and
+$b_ub_v\ne0$, $|\pi_{uv}|$ is strictly decreasing in $r$ and vanishes only at
+$r=1$; fewer than half of the non-relative pairs are declared only if
+$r>r_{\mathrm{crit}}=1-\frac{\tau'(1-\ell)}{\ell(1-\tau')}$,
+$\tau'=\tanh(z_c/\sqrt{n'-4})$ (equal shares). If the driver reaches nodes
+through different filters, a scalar proxy leaves a nonzero residual even at
+$r=1$. The reliability is identified by $\rho_{uZ}\rho_{vZ}/\rho_{uv}=r$, the
+identity behind the three-indicator identification rule for one-factor models
+\citep[Ch.~7]{bollen1989structural}.
+\lean{\lname{prop31_std}, \lname{cor32}, \lname{absPi_strictAntiOn}, \lname{absPi_eq_zero_iff}, \lname{rcrit_iff}, \lname{thm35_bracket}, \lname{pc_lipschitz}, \lname{prop36_ar1_ne_zero}, \lname{prop36_rank_one}, \lname{prop38_ratio}.}
+\end{proposition}
+So spurious conditional relatives appear for every $r<1$ once $n$ is large;
+$r_{\mathrm{crit}}=0.95$ for $\ell=0.64$ and $\tau'=0.082$. Formalisation found
+four missing nondegeneracy hypotheses in our earlier statements (e.g.\
+$b_ub_v\ne0$; \cref{app:lean}). The algebra of F2 and F3 is machine-checked;
+the probability statements are not. The non-asymptotic bounds are loose
+(factors 3--13 in $n$, \cref{app:sims}); the asymptotic statements matched
+every simulation to within $0.03$ and are the ones used in \cref{sec:real}.
+
+\subsection{Aggregation versus subsampling}
+\label{sec:agg}
+
+Real records are often block means or subsamples of a faster process. This
+subsection states what these observation schemes do to the three sortability
+criteria; proofs are in \cref{app:agg}.
+
+
+For a stable linear SVAR with independent innovations, nodes with disjoint
+summary ancestor sets are independent at all lags, and so are any per-node,
+time-invariant transforms, including block means and subsamples; otherwise
+the lag-0 covariance is nonzero for almost every parameter
+(\cref{prop:zero}). So the population relatives of
+contemporaneous values are $\rel_S$ for every observation scheme, and the
+population relatives sort is the stationary value of \cref{thm:stat} (on
+non-self-loop edges), not the finite-$\GT$ value. Var- and $R^2$-sortability
+behave differently (\cref{thm:agg}): block means converge, at the textbook
+Fej\'er rate for averages of a stationary series
+\citep[Ch.~7]{brockwell1991time}, to the long-run structural model of
+\citet{gong2017aggregated}, whereas subsamples keep the snapshot covariance. As a
+consequence, for large block size, block-mean $R^2$-sortability is $0$ on
+out-stars and $1$ on in-stars with at least two arms for all weights; on
+out-stars subsampled data are $R^2$-sorted correctly on average ($0.84$) while
+block means drift to $0$. We claim only these sortability consequences.
+
+
+Assumptions: $X(t)=\sum_{\tau=1}^{L}A_\tau X(t-\tau)+\varepsilon(t)$, $t\in\mathbb Z$,
+i.i.d.\ innovations with diagonal positive-definite covariance $\Sigma$, stable
+(all roots of $\det(I-\sum_\tau A_\tau z^\tau)$ outside the unit disc),
+stationary solution; the summary graph has $i\to j$ iff $(A_\tau)_{ji}\ne0$ for
+some $\tau$. $\Gamma(h)$ is the autocovariance, $A(1)=\sum_\tau A_\tau$, and for a
+block size $D$ the block means are $\bar Y_s=\frac1D\sum_{u<D}X(sD{+}u)$ and the
+subsamples $Z_s=X(sD)$.
+
+\begin{proposition}[relatives survive any per-node filter]\label{prop:zero}
+If $\anc_S(i)\cap\anc_S(j)=\emptyset$ then $X_i$ and $X_j$ are independent at
+all lags, and so are any per-node, time-invariant (possibly nonlinear)
+transforms of them, including $\bar Y$ and $Z$ for every $D$. If the
+ancestor sets intersect, $\Gamma(0)_{ij}$, $\mathrm{Cov}(\bar Y)_{ij}$ and the
+long-run covariance are nonzero for Lebesgue-almost every parameter.
+\nolean{needs the SVAR moving-average representation and real-analytic genericity}
+\end{proposition}
+
+\begin{theorem}[block means vs subsampling]\label{thm:agg}
+(a) $\|D\,\mathrm{Cov}(\bar Y)-S_{LR}\|\le\frac1D\sum_h|h|\|\Gamma(h)\|$,
+with $S_{LR}=(I-A(1))^{-1}\Sigma(I-A(1))^{-\top}$.
+(b) If $\GS$ is acyclic apart from self-loops, $S_{LR}$ is the covariance of a
+static SEM (this long-run SEM is due to \citealp[Eqs.~(5), (10)]{gong2017aggregated}) on $\GS$ with weights $A(1)_{ji}/(1-\lambda_j)$ and noise variances
+$\sigma_j^2/(1-\lambda_j)^2$, $\lambda_j=A(1)_{jj}<1$.
+(c) $\mathrm{Cov}(Z_s)=\Gamma(0)$ for every $D$.
+(d) Hence, for large $D$, block-mean $R^2$-sortability is $0$ on out-stars and
+$1$ on in-stars with $\ge2$ arms, for all weights; under subsampling every
+contemporaneous criterion keeps its $\Gamma(0)$ value.
+\lean{(a) counting identity \lname{fejer_identity}; (b) \lname{longrun_factor}, \lname{selfloop_sum_lt_one}; the probabilistic steps, the rate and (c)--(d) are not machine-checked.}
+\end{theorem}
+Part (a) is the standard Fej\'er/Ces\`aro computation for the variance of the
+mean of a stationary series \citep[Ch.~7]{brockwell1991time}, written for
+block means of a vector process; (b) is due to \citet{gong2017aggregated}; (c)
+is stationarity. We claim only the sortability consequences (d).
+
+The $R^2$ statement for stars strengthens the three-node analysis in
+\citet[App.~D]{herman2025unitless}, whose qualitative message (that $R^2$
+reflects connectivity, with an asymmetry between colliders and confounders)
+we credit. Numerical observations (exact population moments, not proved):
+mean block-mean $R^2$-sortability over 150 in-trees moves from $0.853$
+($D=1$) to $0.834$ ($D=4$--$8$) and $0.880$ ($D=256$), so it is not monotone in
+$D$; on out-stars subsampled data are $R^2$-sorted at $0.842$ on average while
+block means give $0.546$ ($D=4$), $0.101$ ($D=16$) and $0$ in the limit.
+
+%=============================================================================
+\section{Experiments and Real-Data Evidence}
+\label{sec:experiments}
+
+\Cref{sec:b1} measures what the start of a simulation does to benchmark
+results when the time labels are hidden from static learners. \Cref{sec:real}
+applies the finite-sample theory and the criterion to real records.
+
+\subsection{The start artefact in simulated benchmarks}
+\label{sec:b1}
 \label{sec:b1exp}
 
 \textbf{Design (B1).} We unrolled 420 summary graphs (30 per family and
@@ -631,386 +1175,7 @@ out 20 steps \citep{cheng2024causaltime}, so windows cut from their first
 steps would be exposed. We could not check how the CauseMe data were
 initialised.
 
-
-\subsection{With time labels the start identifies nothing more}
-\label{sec:labels}
-
-The experiments above hide the time labels. One may ask whether the fixed
-start is also a source of information for a method that has them, for example
-through the changing covariance of the transient. It is not.
-
-\begin{proposition}[no gain from the transient]\label{prop:nogain}
-Let $X_t=\mathsf BX_t+AX_{t-1}+e_t$ for $t=1,\dots,T$, with $I-\mathsf B$
-invertible, $e_t$ i.i.d.\ and independent of the start $X_0\sim\nu$ ($\nu$ may
-be a point mass). Put $M=(I-\mathsf B)^{-1}A$ and $\eta_t=(I-\mathsf B)^{-1}e_t$.
-Then the law of $(X_0,\dots,X_T)$ depends on $(\mathsf B,A,\text{law of }e)$
-only through $(M,\text{law of }\eta)$. Two structures with the same reduced
-form are therefore observationally equivalent for every start law, every $T$
-and every number of independent replicates. If $\Sigma_t=\mathrm{Cov}(X_t)$ is
-nonsingular for some $t\le T-1$, then $M=\mathrm{Cov}(X_{t+1},X_t)\Sigma_t^{-1}$
-and $\Omega=\mathrm{Cov}(\eta_t)=\Sigma_{t+1}-M\Sigma_tM^\top$ are identified.
-\nolean{paper proof}
-\end{proposition}
-\begin{proof}
-$X_t=MX_{t-1}+\eta_t$ is a Markov chain whose transition kernel depends on
-$(M,\text{law of }\eta)$ only and whose initial law is $\nu$. The two formulas
-follow from $\mathrm{Cov}(X_{t+1},X_t)=M\Sigma_t$ and
-$\Sigma_{t+1}=M\Sigma_tM^\top+\Omega$.
-\end{proof}
-The covariance trajectory $\Sigma_t$ is itself a function of
-$(\Sigma_0,M,\Omega)$. Identification through heteroskedasticity
-\citep{rigobon2003identification} needs the \emph{innovation} covariance to
-change between regimes; in a transient with fixed mechanisms only the state
-covariance changes. In the lag-one model of this paper ($\mathsf B=0$) the
-transition matrix is identified under either start as soon as one $\Sigma_t$
-is nonsingular, in agreement with the labelled reference above (PCMCI+,
-$\mathrm{SHD}/|E|=0.02$ under both generators). The fixed start is therefore an
-artefact for label-free methods only. When each replicate is observed at a
-single time, so that only the marginal laws are seen, identification of the
-reduced form from these marginals has been established for linear stochastic
-differential equations \citep{wang2023generator,guan2026identifying}; this is
-consistent with \cref{prop:nogain} and is not our contribution.
-
-\subsection{Is the time order identifiable without labels?}
-\label{sec:ident}
-
-\citet{reisach2026topological} end by raising the question to what extent
-knowledge of the time order can and should be used for causal discovery on
-independent trajectories of short time-unrolled DAGs. A prior question is how
-much of the time order is hidden when the labels are removed. The statements
-below are population statements with paper proofs (\cref{app:ident}); none is
-machine-checked, and we do not propose a learning method.
-
-\textbf{Setting.} The columns of the data are the $pT$ cells $(\text{unit }j,
-\text{slice }t)$ of $X_{t+1}=AX_t+\varepsilon_t$ ($A_{ji}\ne0$ iff
-$(i,j)\in\Es$, $\varepsilon_t$ with diagonal covariance $D$, the same $A$ and
-$D$ for all $t$) in an unknown order; $p$ and $T$ are known. The \emph{column
-DAG} is $\GT$ on the columns. The \emph{fixed-start law} has a diagonal
-covariance of the first slice (not necessarily equal to $D$), the \emph{free
-law} an arbitrary one, which covers a burn-in window and an exact stationary
-start. The height of a node is one plus the number of edges of a longest
-directed path ending in it. A unit is \emph{loop-only} if its only parent in
-$\GS$ is itself, and \emph{isolated} if in addition it has no child other than
-itself; $m_0$ is the number of loop-only units. A \emph{representation} of a
-covariance $\Sigma$ is a parameter of the same model class (an assignment of
-columns to cells, $A'$ with non-zero diagonal, diagonal $D'$, a start
-covariance of the given law) that reproduces $\Sigma$; it is \emph{sparsest}
-if no representation has fewer non-zero entries in $A'$. Markov equivalence is
-equality of skeleton and unshielded colliders \citep{spirtes2000causation}.
-
-\begin{proposition}[slices are a graph invariant]\label{prop:slices}
-(a) In $\GT$, the height of $v(t)$ is $t$. Hence $T$, $p$ and the partition of
-the columns into slices are determined by the column DAG.
-(b) The partition of the columns into units is not: for the directed ring with
-self-loops, relabelling the cell $(i,t)$ as unit $i-t \pmod p$ gives the
-reversed ring with self-loops and the same column DAG.
-(c) Without self-loops (a) fails: for the single edge $0\to1$ the unrolled
-graph is a set of disjoint edges, and the slice of an edge is not determined.
-\nolean{paper proof; (a) uses the walk-length argument behind \lname{edge_score_dist}}
-\end{proposition}
-
-\begin{proposition}[Markov equivalence class of $\GT$]\label{prop:mec}
-An edge of $\GT$ is reversible within its Markov equivalence class iff it is
-an edge $j(t)\to j(t{+}1)$ of the self-chain of a loop-only unit $j$. The
-class has exactly $T^{m_0}$ members.
-\nolean{paper proof}
-\end{proposition}
-So under the fixed start a perfect label-free learner that uses conditional
-independence only is left with $T^{m_0}$ graphs: $m_0=0$ for a ring, $1$ for a
-chain or an out-tree, and the number of leaves for an in-tree.
-
-\begin{proposition}[fixed start, given faithfulness]\label{prop:fixident}
-Let the columns be Gaussian with covariance $\Sigma$ from the fixed-start law,
-$T\ge2$, and let their distribution be faithful to $\GT$.
-(a) Every sparsest representation of $\Sigma$ has the true column DAG, except
-that the self-chain of an isolated unit may be reversed as a whole.
-(b) For $T\ge3$ the chain of an isolated unit $j$ with coefficient $a=A_{jj}$,
-noise variance $d$ and start variance $v_1$ can be reversed iff its start is
-stationary, $v_1(1-a^2)=d$. For $T=2$ it can always be reversed.
-(c) Hence for $T\ge3$ the column DAG is identified from $\Sigma$ iff no
-isolated unit has a stationary start.
-\nolean{paper proof; faithfulness is assumed, not shown to be generic}
-\end{proposition}
-
-\begin{proposition}[three exact non-identifiability results]\label{prop:nonident}
-(a) \emph{$T=2$, free law.} For the summary edge $a\to b$ with self-loops and a
-free start covariance, the labelling with slices $\{a_1,b_2\},\{a_2,b_1\}$ is a
-representation with the same number of edges and a different column DAG
-($a_1\to a_2$, $a_1\to b_1$, $b_2\to b_1$).
-(b) \emph{Isolated units, stationary start.} Reversing the chain of an isolated
-unit with a stationary start leaves $\Sigma$ unchanged, for every $T$
-\citep{weiss1975time,peters2009detecting}; in particular $p=1$ is never
-identified from a stationary window.
-(c) \emph{Symmetric dynamics.} If $A=A^\top$, $D=\sigma^2I$ and the start is
-stationary, reversing all slices leaves $\Sigma$ unchanged for every $T$, and
-the reversed column DAG is a sparsest representation.
-\nolean{paper proof}
-\end{proposition}
-
-\begin{conjecture}[burn-in window]\label{conj:window}
-Under the free law with $T\ge3$, $p\ge2$, a weakly connected summary graph,
-faithfulness to the graph that adds a complete DAG on the first slice, and a
-time-reversed innovation covariance that is not diagonal, every sparsest
-representation has the true column DAG.
-\end{conjecture}
-We can reduce \cref{conj:window} to a finite combinatorial statement (the
-skeleton admits only one partition into $T$ layers of size $p$ that is
-compatible with an unrolling) and have checked it by hand only for the
-summary edge $a\to b$ with $T=3$ (\cref{app:ident}).
-
-\textbf{Reading.} Under the fixed start, hiding the labels hides little in
-the population: the slices are a graph invariant, and the column DAG is
-identified up to isolated units. This is a third regularity of the
-time-unrolled construction, next to rel- and var-sortability, and unlike them
-it comes from the shape constraint (the graph is an unrolling), which a burn-in
-does not remove; whether it also survives a burn-in is \cref{conj:window}.
-Three cautions apply. The statements assume faithfulness, and the tied
-parameters of an unrolled model form a null set among all linear Gaussian
-models on $\GT$, so the usual genericity argument does not apply;
-\citet{boege2025colored} show that coloured Gaussian DAG models can have no
-faithful distribution at all. They concern the global optimum of a sparsity
-criterion, not a computable procedure. And they say nothing about finite
-samples: at $n=1000$ FLOP is far from the labelled reference
-(\cref{tab:b1x}). Dynamic Bayesian networks with a start network and a tied
-transition network are classical when the labels are known
-\citep{friedman1998learning}.
-
-%=============================================================================
-\section{Aggregation versus Subsampling}
-\label{sec:agg}
-
-Real records are often block means or subsamples of a faster process. This
-section states what these observation schemes do to the three sortability
-criteria; proofs are in \cref{app:agg}.
-
-
-For a stable linear SVAR with independent innovations, nodes with disjoint
-summary ancestor sets are independent at all lags, and so are any per-node,
-time-invariant transforms, including block means and subsamples; otherwise
-the lag-0 covariance is nonzero for almost every parameter
-(\cref{prop:zero}). So the population relatives of
-contemporaneous values are $\rel_S$ for every observation scheme, and the
-population relatives sort is the stationary value of \cref{thm:stat} (on
-non-self-loop edges), not the finite-$\GT$ value. Var- and $R^2$-sortability
-behave differently (\cref{thm:agg}): block means converge, at the textbook
-Fej\'er rate for averages of a stationary series
-\citep[Ch.~7]{brockwell1991time}, to the long-run structural model of
-\citet{gong2017aggregated}, whereas subsamples keep the snapshot covariance. As a
-consequence, for large block size, block-mean $R^2$-sortability is $0$ on
-out-stars and $1$ on in-stars with at least two arms for all weights; on
-out-stars subsampled data are $R^2$-sorted correctly on average ($0.84$) while
-block means drift to $0$. We claim only these sortability consequences.
-
-
-Assumptions: $X(t)=\sum_{\tau=1}^{L}A_\tau X(t-\tau)+\varepsilon(t)$, $t\in\mathbb Z$,
-i.i.d.\ innovations with diagonal positive-definite covariance $\Sigma$, stable
-(all roots of $\det(I-\sum_\tau A_\tau z^\tau)$ outside the unit disc),
-stationary solution; the summary graph has $i\to j$ iff $(A_\tau)_{ji}\ne0$ for
-some $\tau$. $\Gamma(h)$ is the autocovariance, $A(1)=\sum_\tau A_\tau$, and for a
-block size $D$ the block means are $\bar Y_s=\frac1D\sum_{u<D}X(sD{+}u)$ and the
-subsamples $Z_s=X(sD)$.
-
-\begin{proposition}[relatives survive any per-node filter]\label{prop:zero}
-If $\anc_S(i)\cap\anc_S(j)=\emptyset$ then $X_i$ and $X_j$ are independent at
-all lags, and so are any per-node, time-invariant (possibly nonlinear)
-transforms of them, including $\bar Y$ and $Z$ for every $D$. If the
-ancestor sets intersect, $\Gamma(0)_{ij}$, $\mathrm{Cov}(\bar Y)_{ij}$ and the
-long-run covariance are nonzero for Lebesgue-almost every parameter.
-\nolean{needs the SVAR moving-average representation and real-analytic genericity}
-\end{proposition}
-
-\begin{theorem}[block means vs subsampling]\label{thm:agg}
-(a) $\|D\,\mathrm{Cov}(\bar Y)-S_{LR}\|\le\frac1D\sum_h|h|\|\Gamma(h)\|$,
-with $S_{LR}=(I-A(1))^{-1}\Sigma(I-A(1))^{-\top}$.
-(b) If $\GS$ is acyclic apart from self-loops, $S_{LR}$ is the covariance of a
-static SEM (this long-run SEM is due to \citealp[Eqs.~(5), (10)]{gong2017aggregated}) on $\GS$ with weights $A(1)_{ji}/(1-\lambda_j)$ and noise variances
-$\sigma_j^2/(1-\lambda_j)^2$, $\lambda_j=A(1)_{jj}<1$.
-(c) $\mathrm{Cov}(Z_s)=\Gamma(0)$ for every $D$.
-(d) Hence, for large $D$, block-mean $R^2$-sortability is $0$ on out-stars and
-$1$ on in-stars with $\ge2$ arms, for all weights; under subsampling every
-contemporaneous criterion keeps its $\Gamma(0)$ value.
-\lean{(a) counting identity \lname{fejer_identity}; (b) \lname{longrun_factor}, \lname{selfloop_sum_lt_one}; the probabilistic steps, the rate and (c)--(d) are not machine-checked.}
-\end{theorem}
-Part (a) is the standard Fej\'er/Ces\`aro computation for the variance of the
-mean of a stationary series \citep[Ch.~7]{brockwell1991time}, written for
-block means of a vector process; (b) is due to \citet{gong2017aggregated}; (c)
-is stationarity. We claim only the sortability consequences (d).
-
-The $R^2$ statement for stars strengthens the three-node analysis in
-\citet[App.~D]{herman2025unitless}, whose qualitative message (that $R^2$
-reflects connectivity, with an asymmetry between colliders and confounders)
-we credit. Numerical observations (exact population moments, not proved):
-mean block-mean $R^2$-sortability over 150 in-trees moves from $0.853$
-($D=1$) to $0.834$ ($D=4$--$8$) and $0.880$ ($D=256$), so it is not monotone in
-$D$; on out-stars subsampled data are $R^2$-sorted at $0.842$ on average while
-block means give $0.546$ ($D=4$), $0.101$ ($D=16$) and $0$ in the limit.
-
-%=============================================================================
-\section{Finite-Sample Theory}
-\label{sec:finite}
-
-We now ask whether the population relatives can be estimated. $X$ is a
-zero-mean stationary Gaussian process with absolutely summable auto- and
-cross-covariances $\gamma_{ab}(h)$, standardised so that $\gamma_{aa}(0)=1$,
-observed at $n$ times. Two nodes are declared relatives if the Fisher-$z$ test
-of the sample correlation $\hat r_{ab}$ rejects at level $\alpha$ with
-Bonferroni over $m=d(d{-}1)/2$ pairs, i.e. $|\hat r_{ab}|>\tanh(z_c/\sqrt{n'-3})$,
-$z_c=\Phi^{-1}(1-\alpha/2m)$; $\hat\rho(v)=1+\#$declared partners. The
-\emph{nominal} test uses $n'=n$. Let
-$B_{ab}=\sum_h|\gamma_{aa}(h)\gamma_{bb}(h)+\gamma_{ab}(h)\gamma_{ab}(-h)|$
-(for an independent pair $B_{ab}=\sum_h|\rho_a(h)\rho_b(h)|$, at least the
-Bartlett sum $W_{ab}=\sum_h\rho_a(h)\rho_b(h)$, with equality iff all products
-are nonnegative; e.g.\ $4.56$ against $0.22$ for AR(1) coefficients $0.8$ and
-$-0.8$).
-
-\textbf{F1: recovery and effective sample size.} That the nominal-$n$ test has
-the wrong size under autocorrelation is classical: effective degrees of
-freedom go back to \citet{bartlett1935}, with spatial and multivariate versions
-in \citet{clifford1989} and \citet{roy1989}, and the variance with exactly our
-summand $B_{ab}$ is in \citet{afyouni2019effective}. We add a non-asymptotic
-exact-recovery bound for the relatives set (\cref{thm:f1}, \cref{app:finite}):
-if the thresholds separate the population correlations by more than explicit
-deviations, the declared set and hence $\hat s=\srho^{\mathrm{pop}}$ are
-recovered with failure probability decaying as
-$\exp(-n\min(\tau,\rho_{\min}-\tau)^2/(2(\sqrt B+\rho_{\max}\sqrt{D_\gamma})^2))$,
-so $n/B$ acts as an effective sample size. For i.i.d.\ snapshots $B=1+\rho^2$;
-under strong persistence $B$ can be in the tens. This bound is for a fixed
-threshold; for the Bonferroni Fisher-$z$ threshold $\tau_n\asymp z_c/\sqrt{n'}$
-that we use, the failure probability it certifies tends to
-$d(d{-}1)e^{-z_c^2/(2B)}>0$ ($0.089$ for i.i.d.\ data, $d=5$, $\alpha=0.01$;
-\cref{prop:f1scope}), and recovery is instead guaranteed asymptotically
-(\cref{prop:plugin}).
-
-\begin{proposition}[size distortion of the nominal test]\label{prop:nominal}
-In this setting, a non-relative pair is declared by the nominal test with
-probability $\to2\bar\Phi(z_c/\sqrt{W_{ab}})$, $W_{ab}=\sum_h\gamma_{aa}(h)\gamma_{bb}(h)$
-($\le B_{ab}$, with equality iff all products are nonnegative), above the nominal $\alpha/m$ when $W_{ab}>1$. With
-$\neff=n(1-\rho^2)^2/W_{ab}$ ($W$ the delta-method Bartlett variance) the
-false-positive rate tends to $\alpha/m$.
-\nolean{uses the multivariate Breuer--Major theorem}
-\end{proposition}
-The joint asymptotic normality used here follows from the multivariate
-Breuer--Major theorem \citep{arcones1994limit,nourdin2011quantitative}
-(\cref{app:finite}). On real data
-$\neff$ is estimated by $n/\hat B_{ab}$,
-$\hat B_{ab}=\max(1,1+2\sum_{h=1}^{K}\hat\rho_a(h)\hat\rho_b(h))$. If
-$K=K_n\to\infty$ with $K_n=o(n)$, $\hat B_{ab}$ is consistent, the plug-in test
-has asymptotic size at most $\alpha/m$ per pair, and the relatives set is
-recovered with probability at least $1-\alpha$ in the limit
-(\cref{prop:plugin}). Our code uses a fixed $K$ ($20$--$100$), which controls
-size only if the truncated sum captures the Bartlett sum: at AR coefficient
-$0.99$ and $K=50$ the size is $0.113$ against $0.05$, while on the B3 data
-$K$ up to $300$ changes none of 2{,}730 pair decisions (\cref{app:finite}). We
-did not run this check on the river data, which are the most persistent, or
-on study~3 and E1. For linear
-processes with non-Gaussian i.i.d.\ innovations the null variance, and hence
-the size results, are unchanged, because independent series share no fourth
-cumulant; for relatives the variance changes, which affects power but not the
-limits (\cref{rem:nongauss}).
-
-\textbf{F2: saturation by a latent driver.} Let $X_v=Y_v+b_vC$ with $C$ a
-stationary unit-variance process independent of the VAR $Y$, and
-$\ell_v=b_v^2/\mathrm{Var}X_v$ the driver's share of variance.
-
-\begin{proposition}[saturation]\label{prop:f2}
-For summary non-relatives,
-$\rho_{uv}=\mathrm{sgn}(b_ub_v)\sqrt{\ell_u\ell_v}=:\kappa_{uv}$. If all $b_v\ne0$,
-every pair is a population relative and the population rel-sortability is
-exactly $1/2$; $P(\hat s_n\ne\frac12)\le(d^2{+}3d)e^{-cn}$ with
-$c\approx\kappa_{\min}^2/(18(\sqrt B+\sqrt{D_\gamma})^2)$. Asymptotically, a pair is
-detected with probability $>1/2$ once
-$n>\nhalf=3+(z_c/\atanh\kappa)^2\approx z_c^2/\ell^2$ (nominal test; for the
-effective test, the same bound on $\neff$).
-\lean{\lname{prop21_corr_std}, \lname{sOf_saturated}, \lname{abs_sOf_sub_half_le}, location of $\nhalf$: \lname{ncrit_eq_iff}; the probability statements are not machine-checked.}
-\end{proposition}
-$\nhalf$ does not depend on autocorrelation, which only sets the width of the
-transition. A driver with share $\ell=0.1$ saturates at $n\approx10^3$, and
-one with $\ell=0.64$ at $n\approx22$ (both for $z_c=3.29$). A relatives count on a long record can
-recover the summary relatives only while
-$\max_{\text{non-rel}}|\kappa|<\tau_n<\min_{\text{rel}}|\rho|$, a window that
-closes at $n$ of order $\nhalf$.
-
-\textbf{F3: conditioning on a proxy.} A natural remedy is to condition on a
-measured proxy $Z$ of the driver. It works only if the proxy is almost
-perfectly reliable.
-
-\begin{proposition}[conditioning]\label{prop:f3}
-Let $Z=\sqrt r\,C+\sqrt{1-r}\,e$ with reliability $r=\mathrm{corr}(Z,C)^2$,
-$\pi_{uv}$ the partial correlation given $Z$, and $\rho^Y$ the driver-free
-correlation. Then
-\[
-\pi_{uv}=\frac{\rho^Y_{uv}\sqrt{(1{-}\ell_u)(1{-}\ell_v)}+(1{-}r)\,\mathrm{sgn}(b_ub_v)\sqrt{\ell_u\ell_v}}{\sqrt{(1-r\ell_u)(1-r\ell_v)}} .
-\]
-At $r=1$ the conditional relatives are the summary relatives and
-\cref{thm:stat} is restored. For non-relatives with $\ell_u,\ell_v\in(0,1)$ and
-$b_ub_v\ne0$, $|\pi_{uv}|$ is strictly decreasing in $r$ and vanishes only at
-$r=1$; fewer than half of the non-relative pairs are declared only if
-$r>r_{\mathrm{crit}}=1-\frac{\tau'(1-\ell)}{\ell(1-\tau')}$,
-$\tau'=\tanh(z_c/\sqrt{n'-4})$ (equal shares). If the driver reaches nodes
-through different filters, a scalar proxy leaves a nonzero residual even at
-$r=1$. The reliability is identified by $\rho_{uZ}\rho_{vZ}/\rho_{uv}=r$, the
-identity behind the three-indicator identification rule for one-factor models
-\citep[Ch.~7]{bollen1989structural}.
-\lean{\lname{prop31_std}, \lname{cor32}, \lname{absPi_strictAntiOn}, \lname{absPi_eq_zero_iff}, \lname{rcrit_iff}, \lname{thm35_bracket}, \lname{pc_lipschitz}, \lname{prop36_ar1_ne_zero}, \lname{prop36_rank_one}, \lname{prop38_ratio}.}
-\end{proposition}
-So spurious conditional relatives appear for every $r<1$ once $n$ is large;
-$r_{\mathrm{crit}}=0.95$ for $\ell=0.64$ and $\tau'=0.082$. Formalisation found
-four missing nondegeneracy hypotheses in our earlier statements (e.g.\
-$b_ub_v\ne0$; \cref{app:lean}). The algebra of F2 and F3 is machine-checked;
-the probability statements are not. The non-asymptotic bounds are loose
-(factors 3--13 in $n$, \cref{app:sims}); the asymptotic statements matched
-every simulation to within $0.03$ and are the ones used in \cref{sec:real}.
-
-%=============================================================================
-\section{Machine-Checked Proofs}
-\label{sec:lean}
-
-The formalisation (Lean~4, \citealp{demoura2021lean4}, with Mathlib,
-\citealp{mathlib2020}; 4{,}159 lines in 16 files, clean rebuild of the final
-state) certifies the exact and stationary results of \cref{sec:exact}
-(\cref{thm:edge,thm:limit,thm:stat}, \cref{cor:iff,cor:statiff},
-\cref{prop:boundary}), including the $\Delta$ forms of the bound and the
-burn-in and the sharpness example of \cref{rem:sharp}, the loop-free exact
-edge value and the accuracy reading, the algebra of the real-data estimand
-$\tilde s$ (\cref{app:estimand}), and the deterministic algebra of F1--F3. It
-does \emph{not} certify the ER limits, the loop-free limit and periodicity,
-the lag-weighted extension, the statements of \cref{sec:labels,sec:ident},
-or any probability bound or limit theorem. The
-axiom report lists 163 declarations, each depending only on
-\texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound}, and the
-sources contain no \texttt{sorry}, \texttt{admit} or \texttt{axiom} (33
-headline theorems, 53 graph lemmas, 65 algebraic facts, many elementary, and
-12 examples). Relatives, $\srho$, $\GT$ and the windows are defined from
-scratch following \citet{reisach2026topological}. No human has yet checked that each Lean
-statement matches its paper statement. \Cref{app:lean} maps every statement to its Lean names and status.
-
-\subsection{Use of AI tools}
-\label{sec:aiuse}
-
-Most of this project was carried out with AI coding agents (large language
-models, Claude-based) working under the author's direction; no AI system is
-an author. The paper proofs (including \cref{app:erproof,app:ident}), all Lean
-code, all experiment and analysis code, the analysis plans, the simulated
-pre-submission reviews that motivated several revisions, and the manuscript
-text were generated by these agents. What is machine-checked: the 163 Lean
-declarations of \cref{sec:lean} (Lean kernel, standard axioms only), which
-cover the exact and stationary results of \cref{sec:exact} including the
-$\Delta$ forms of \cref{thm:limit,thm:stat} and the sharpness of $B\ge\Delta$,
-the estimand algebra and the deterministic algebra of F1--F3. No human has
-checked that the Lean statements say what the paper statements say; the map
-in \cref{app:lean} is the agents' reading. What is checked only by
-computation: the enumeration of \cref{app:enum,app:noloop}, the ER numerics
-and the simulations of \cref{app:sims}. What no human has yet read line by
-line: the paper-only proofs, namely \cref{app:erproof}, \cref{prop:zero},
-\cref{thm:agg}, the probabilistic parts of
-\cref{thm:f1,prop:nominal,prop:f2,prop:f3,prop:plugin}, \cref{prop:f1scope},
-\cref{rem:nongauss}, the loop-free limit results of \cref{app:noloop}, the
-lag-weighted extension (\cref{app:lags}), and
-\cref{prop:nogain,prop:slices,prop:mec,prop:fixident,prop:nonident}. The
-author takes responsibility for all content.
-
-%=============================================================================
-\section{Real-Data Evidence}
+\subsection{Real-data evidence}
 \label{sec:real}
 
 \textbf{Protocol and its limits.} We ran four studies (P1--P9, then E1/E2),
@@ -1215,8 +1380,10 @@ orientation accuracy & 0.630 & 0.620 & 0.999 & 1.000 \\
 Data selection, preprocessing and secondary analyses are in \cref{app:real}.
 
 %=============================================================================
-\section{Discussion and Limitations}
+\section{Discussion, Limitations and Conclusions}
 \label{sec:disc}
+
+\subsection{Implications for benchmark design and real data}
 
 \textbf{For benchmark design.} The finite time-unrolled generator is
 rel-sortable above $1/2$ for every summary graph that is not a union of
@@ -1251,7 +1418,9 @@ $3+(z_c/\atanh\hat\kappa)^2$, where $\hat\kappa$ is the typical correlation of
 pairs believed unrelated; if $\neff$ is far above it, the count is saturated
 whatever the graph.
 
-\textbf{Limitations.} The closed forms assume self-loops at every node and
+\subsection{Limitations}
+
+The closed forms assume self-loops at every node and
 unit lags (\cref{app:noloop,app:lags}). The ER limits are paper proofs not yet
 checked by a human probabilist; they are iterated limits ($T\to\infty$ at
 fixed $p$, then $p\to\infty$; the stationary value needs no $T$-limit), with
@@ -1279,6 +1448,45 @@ artefact was not measured (no mixing times). The identifiability statements
 of \cref{sec:ident} are paper proofs that assume faithfulness, which we have
 not shown to hold for almost all tied parameters; \cref{conj:window} is open;
 and they give no finite-sample guarantee and no algorithm.
+
+\subsection{Conclusions}
+
+We determined the exact rel-sortability of every edge of a time-unrolled DAG for
+every summary graph with self-loops, its limit, and a burn-in condition that is
+sufficient and tight, and we checked the graph results in Lean. With the time
+labels hidden, the fixed start of the unrolled benchmark inflates
+rel-sortability and var-sortability. The exact values give the sign and the
+ranking of conditions, and a post hoc detectability calculation gives the size.
+The ranking among label-free learners can change with the start, which our
+theory does not explain. The finite-sample and identifiability statements are
+paper proofs with the limits listed above. A benchmark builder who hands the
+slices of a simulated record to static learners should start from the stationary
+distribution or use a burn-in that has been checked for mixing.
+
+\subsection{Use of AI tools}
+\label{sec:aiuse}
+
+Most of this project was carried out with AI coding agents (large language
+models, Claude-based) working under the author's direction; no AI system is
+an author. The paper proofs (including \cref{app:erproof,app:ident}), all Lean
+code, all experiment and analysis code, the analysis plans, the simulated
+pre-submission reviews that motivated several revisions, and the manuscript
+text were generated by these agents. What is machine-checked: the 163 Lean
+declarations of \cref{sec:lean} (Lean kernel, standard axioms only), which
+cover the exact and stationary results of \cref{sec:exact} including the
+$\Delta$ forms of \cref{thm:limit,thm:stat} and the sharpness of $B\ge\Delta$,
+the estimand algebra and the deterministic algebra of F1--F3. No human has
+checked that the Lean statements say what the paper statements say; the map
+in \cref{app:lean} is the agents' reading. What is checked only by
+computation: the enumeration of \cref{app:enum,app:noloop}, the ER numerics
+and the simulations of \cref{app:sims}. What no human has yet read line by
+line: the paper-only proofs, namely \cref{app:erproof}, \cref{prop:zero},
+\cref{thm:agg}, the probabilistic parts of
+\cref{thm:f1,prop:nominal,prop:f2,prop:f3,prop:plugin}, \cref{prop:f1scope},
+\cref{rem:nongauss}, the loop-free limit results of \cref{app:noloop}, the
+lag-weighted extension (\cref{app:lags}), and
+\cref{prop:nogain,prop:slices,prop:mec,prop:fixident,prop:nonident}. The
+author takes responsibility for all content.
 
 \backmatter
 
