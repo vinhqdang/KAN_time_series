@@ -19,6 +19,7 @@ from common import rel_counts, var_scores, order_from_scores, regress_in_order
 from methods_x import golem as golem_fn
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+NOTEARS_MAX_D = 30               # PLAN.md Addendum 2: NOTEARS only where d <= 30 (restores PLAN section 4.1; a G2 fit takes about 150 s at d = 30)
 GOLEM_MAX_D = 50                 # PLAN.md Addendum 1: GOLEM runs where d <= 50 (the (p, T) = (20, 3) cell, d = 60, is excluded)
 DAGMA_GRID = [(l1, th) for l1 in (0.01, 0.03, 0.1) for th in (0.1, 0.3)]
 NOTEARS_GRID = [(l1, th) for l1 in (0.01, 0.1) for th in (0.1, 0.3)]
@@ -77,7 +78,8 @@ def run_graph(fam, p, s, T, tuned):
         rec(rows, base, "VarSnR", 0.0, **c2.eval_order(Gp, vo, sl), **c2.eval_graph(Gp, regress_in_order(Xp, vo), z, sl))
         rec(rows, base, "EMPTY", 0.0, **c2.eval_graph(Gp, z, z, sl))
         learn(rows, base, "DAGMA", lambda: my.dagma_hp(Xp, *tuned["DAGMA"]), Gp, sl)
-        learn(rows, base, "NOTEARS", lambda: my.notears_hp(Xp, *tuned["NOTEARS"]), Gp, sl)
+        if d <= NOTEARS_MAX_D:
+            learn(rows, base, "NOTEARS", lambda: my.notears_hp(Xp, *tuned["NOTEARS"]), Gp, sl)
         if d <= GOLEM_MAX_D:
             t0 = time.time(); val, st = c2.with_timeout(lambda: golem_fn(Xp), 2 * LIMIT); tg = time.time() - t0
             for name, k in (("GOLEMEV", 0), ("GOLEMNV", 1)):
@@ -95,8 +97,9 @@ def run_tune_graph(fam, p, s, T):
         base = dict(family=fam, p=p, seed=s, T=T, arm=arm, d=d, n_true=int(G.sum()))
         for l1, th in DAGMA_GRID:
             learn(rows, base, f"DAGMA|{l1}|{th}", lambda: my.dagma_hp(Xp, l1, th), Gp, sl)
-        for l1, th in NOTEARS_GRID:
-            learn(rows, base, f"NOTEARS|{l1}|{th}", lambda: my.notears_hp(Xp, l1, th), Gp, sl)
+        if d <= NOTEARS_MAX_D:
+            for l1, th in NOTEARS_GRID:
+                learn(rows, base, f"NOTEARS|{l1}|{th}", lambda: my.notears_hp(Xp, l1, th), Gp, sl)
     return rows
 
 

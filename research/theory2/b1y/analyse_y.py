@@ -194,9 +194,13 @@ def q2_extended(df, co=("DAGMA", "NOTEARS", "GOLEMEV", "GOLEMNV"), families=("ch
         for method in co:
             if method not in set(d.method):
                 continue
+            # a CO method may run in only some (p, T) cells (NOTEARS d <= 30, GOLEM d <= 50): compare with FLOP on exactly those cells
+            cells = set(zip(d[d.method == method].p, d[d.method == method]["T"]))
+            d_full, d = d, d[[(p_, t_) in cells for p_, t_ in zip(d.p, d["T"])]]
             g = _graph_pair_table(d, "shd_x1n", [method, "FLOP"]).dropna()
             need = [f"{method}|{a}" for a in ("G1", "G2", "VM_G1", "VM_G2")] + [f"FLOP|{a}" for a in ("G1", "G2", "VM_G1", "VM_G2")]
             if not all(c in g.columns for c in need) or len(g) < 3:
+                d = d_full
                 continue
             A = {a: (g[f"FLOP|{a}"] - g[f"{method}|{a}"]).values for a in ("G1", "G2", "VM_G1", "VM_G2")}
             gap = A["G1"] - A["G2"]; mu, ci, b = boot_mean(gap)
@@ -221,6 +225,7 @@ def q2_extended(df, co=("DAGMA", "NOTEARS", "GOLEMEV", "GOLEMNV"), families=("ch
                     ix = ((gm[f"{method}|G1"] - gm["FLOP|G1"]) - (gm[f"{method}|G2"] - gm["FLOP|G2"])).values
                     m_, c_, _ = boot_mean(ix); r["HY3_interaction"][metric] = dict(mean=m_, ci=list(c_))
             res[method] = r
+            d = d_full
         gf = _graph_pair_table(d, "shd_x1n", ["FLOP"]).dropna()
         if all(c in gf.columns for c in ("FLOP|G1", "FLOP|G2")):
             sh = (gf["FLOP|G1"] - gf["FLOP|G2"]).values; mu, ci, b = boot_mean(sh)
