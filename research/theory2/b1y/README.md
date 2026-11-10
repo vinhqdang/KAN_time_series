@@ -17,4 +17,4 @@ Status: **plan committed, no study run yet.** `PLAN.md` is the time-stamped plan
 
 Run the tests: `OMP_NUM_THREADS=1 /usr/bin/python3 test_b1y.py` and `/usr/bin/python3 analyse_y.py --selftest` (the system interpreter has the scientific stack; the default `python3` here does not).
 
-Push time of the plan commit (from the hosting server): recorded below after the push.
+Plan commit: `5c9f942`, pushed to `main` on 2026-11-10; the push command returned before 05:15:32 UTC by the local clock. The commit timestamp (05:15:29 UTC) is set by the client, and the hosting commit API returns that same value, so neither is a server push time. The hosting push-events feed did not yet list this push when queried (it lags); the server time of the push event is to be added here from `GET /repos/vinhqdang/KAN_time_series/events` before any run.
