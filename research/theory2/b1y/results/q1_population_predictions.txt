@@ -1,0 +1,18 @@
+graph-only predictions, Q1 test graphs (seeds 4000-4029), non-SC families pooled ( 300 graphs )
+exact s_rho gap (mean over T,graphs): 0.275; oracle OA gain G1-G2s: 0.134
+oracle retention CF1_0.25 :  0.760   (mean oracle OA 0.690; G1 0.723; G2s 0.588)
+oracle retention CF1_0.5  :  0.850   (mean oracle OA 0.702; G1 0.723; G2s 0.588)
+oracle retention CF1_2    :  1.150   (mean oracle OA 0.743; G1 0.723; G2s 0.588)
+oracle retention CF1_4    :  1.272   (mean oracle OA 0.759; G1 0.723; G2s 0.588)
+oracle retention CF2_m1   :  1.019   (mean oracle OA 0.725; G1 0.723; G2s 0.588)
+oracle retention CF2_m3   :  0.988   (mean oracle OA 0.721; G1 0.723; G2s 0.588)
+oracle retention CF2_m10  :  0.709   (mean oracle OA 0.684; G1 0.723; G2s 0.588)
+lam_star: median 8.97e-03, min 1.00e-07, max 7.94e-02; share lam_star < 1e-6 (grid floor): 0.012
+detectability flips between CF2_m1 and G1 (pairs): mean 4.81, 95th pct 20, max 63
+  symER    gap 0.288 oracleGain 0.121 retCF2_m1 1.062 retCF1_4 1.382 retCF1_0.25 1.142
+  ring     gap 0.454 oracleGain 0.270 retCF2_m1 0.985 retCF1_4 1.077 retCF1_0.25 0.771
+  chain    gap 0.387 oracleGain 0.262 retCF2_m1 1.007 retCF1_4 1.042 retCF1_0.25 0.897
+  outtree  gap 0.344 oracleGain 0.148 retCF2_m1 1.026 retCF1_4 1.389 retCF1_0.25 0.539
+  intree   gap 0.129 oracleGain 0.074 retCF2_m1 1.005 retCF1_4 1.332 retCF1_0.25 0.654
+  ER1      gap 0.210 oracleGain 0.094 retCF2_m1 1.028 retCF1_4 1.378 retCF1_0.25 0.725
+  ER2      gap 0.303 oracleGain 0.093 retCF2_m1 1.042 retCF1_4 1.580 retCF1_0.25 0.845
