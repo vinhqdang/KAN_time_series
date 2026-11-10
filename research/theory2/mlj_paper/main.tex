@@ -74,24 +74,26 @@
 
 \abstract{Hiding the time labels of an unrolled process does not hide the time
 order. In a time-unrolled DAG built from a summary graph with self-loops, the
-relatives of a variable (the variables joined to it by an open path) leave a
-graph-determined footprint of time. We follow this footprint through four
+relatives of a variable leave a graph-determined
+footprint of time. We follow this footprint through four
 questions. First, we compute the rel-sortability of every edge exactly, for
-every summary graph and horizon, with its limit and a burn-in, equal to the
-largest finite distance in the summary graph, after which the value no longer
-depends on the start; the graph statements are machine-checked in Lean~4. The
-burn-in is sharp for a one-edge graph and can be too long for others. Second,
-a fixed start inflates the footprint: strongly connected summary graphs are
-not protected at short horizons, and the fixed start raised the order accuracy
-of a relatives-sorting baseline by 0.13 in simulations. Third, we give
-finite-sample conditions under which relatives can be estimated from one
-autocorrelated record. Fourth, on raw data DAGMA and NOTEARS overtook FLOP on
-in-trees under the fixed start and lost to it after a burn-in; we suspect
-var-sortability but did not test it. The exact gap orders the simulated
-conditions but adds nothing to a post hoc detectability calculation that
-reproduces their size. Real-data support is mostly negative. Results are for
-lag-one dynamics, self-loops at every node and $n=1000$. No deployed generator
-was found to use the construction as shipped. We propose no new algorithm.}
+every summary graph and horizon, with its limit and a burn-in (the largest
+finite distance in the summary graph) after which the value no longer depends
+on the start; the graph statements are machine-checked in Lean~4. The
+burn-in is minimal for directed chains (proved for relatives, computed for
+values) and can be too long for other graphs. Second, a fixed start inflates the footprint: strongly connected
+summary graphs are not protected at short horizons, and the fixed start raised
+the order accuracy of a relatives-sorting baseline by 0.13.
+Third, we state when relatives can be estimated from one autocorrelated
+record. Fourth, controlled tests show that the gain follows the
+correlations a test can detect, not the population relatives pattern, and that
+the share of the exact gap that is realised grows with sample size (0.18 at
+$n=200$, 0.76 at $n=25{,}000$). Tuned DAGMA, NOTEARS and GOLEM-NV
+overtook FLOP on in-trees under the fixed start and lost after a burn-in;
+variance is involved but does not explain it alone. Real-data support is mostly
+negative. Results are for lag-one dynamics; no deployed
+generator was found to use the construction as shipped. We propose no new
+algorithm.}
 
 \keywords{causal discovery, sortability, time series, benchmark simulation,
 formal verification, finite-sample theory}
@@ -159,10 +161,14 @@ no human has read them yet.
 effect of the deterministic start (\cref{prop:boundary}). After a latent
 burn-in of $B\ge\Delta$ slices, the value is fixed by the \emph{source}
 strongly connected components for every $T$ (\cref{thm:stat,cor:statiff}).
-This burn-in is sufficient. It is needed for a one-edge graph (Lean); in an
-enumeration of 726 random summary graphs, $B=\Delta-1$ was insufficient in
-445, so a shorter burn-in can suffice for a particular graph, and we have no
-closed form for the minimal burn-in (\cref{rem:sharp}). Strongly connected
+This burn-in is sufficient. It is exactly minimal for the one-edge graph
+(Lean) and, by an exact argument on paper and exact enumeration, for directed
+chains at every length computed (\cref{prop:chainsharp}); it is not minimal in
+general: in an enumeration of 726 random summary graphs, $B=\Delta-1$ was
+insufficient in 445 and sufficed in 281, and in a second exact computation on
+396 random graphs the minimal burn-in was $\Delta$ in 51\% of the cases and up
+to four slices shorter in the rest. We have no closed form for the minimal
+burn-in of a given graph (\cref{rem:sharp}). Strongly connected
 summary graphs are not protected at short horizons: a ring has $\srho(\GT)=1$
 for all $T\le p$.
 \emph{(Q3) Visibility.} An effective sample size for the relatives test, the
@@ -174,15 +180,22 @@ only away from a unit root.
 labels hidden, the fixed start raised the order accuracy of a relatives-sorting
 baseline by $0.13$ in simulations, and the gain replicated under nonlinear
 dynamics. All 42 simulated conditions have a positive exact gap and a positive
-gain, so agreement in sign does not test the theory; the exact gap orders the
-conditions (Spearman $0.80$) but adds nothing to a post hoc detectability
-calculation that reproduces their size. On raw data DAGMA and NOTEARS overtook
-FLOP on in-trees under the fixed start and lost to it after a burn-in, which
-our plan had predicted would not happen; we attribute this to var-sortability
-as an untested hypothesis that our theory does not cover. The real-data
-studies ask a different question (can relatives be estimated from one record?)
-and mostly failed or did not discriminate; the positive results come from one
-device, and their p-values rest on units that are not independent.
+gain, so agreement in sign does not test the theory. A designed test
+(\cref{sec:controls}) separates two readings. Data with the population
+relatives of a burn-in but the detectable correlations of the fixed start kept
+$0.96$ of the gain, and the share of the exact gap that is realised grew with
+the sample size ($0.18$ at $n=200$, $0.76$ at $n=25{,}000$) and with the
+spectral radius. The exact gap is therefore the large-sample ceiling, and the
+effect realised at a finite sample size is its detectable image. On raw data,
+tuned DAGMA, NOTEARS and GOLEM-NV overtook FLOP on in-trees under the fixed
+start and lost to it after a burn-in, which our plan had predicted would not
+happen. Matching the marginal variances across the two starts removed the
+advantage, which points to variance, but imposing the fixed-start variances on
+burn-in data restored less than half of it, so the cause is not fully explained
+and our theory does not cover it. The real-data studies ask a different
+question (can relatives be estimated from one record?) and mostly failed or did
+not discriminate; the positive results come from one device, and at the level
+of independent runs or stations they cannot reach conventional significance.
 
 \textbf{Scope and status.} The results are for lag-one unrollings with a
 self-loop at every node, and the simulations use $n=1000$. The unrolled
@@ -198,7 +211,8 @@ textbook tools. \Cref{tab:status} lists the status of each claim.
 \caption{Status of the claims of this paper. ``Lean'' means a theorem proved
 in Lean~4 (the map from Lean statements to paper statements has not been
 checked by a human); ``paper proof'' means a proof in the appendix that no
-human has read line by line.}
+human has read line by line; ``enumerated'' means exact computation on many
+instances, not a proof.}
 \label{tab:status}
 \centering\small
 \setlength{\tabcolsep}{3pt}
@@ -208,13 +222,13 @@ claim & evidence & status \\
 \midrule
 exact per-edge value, limit, necessity of the condition (Q1) & proof; Lean; 46{,}724 enumerated cases & proved; Lean-checked \\
 stationary value after burn-in $B\ge\Delta$ (Q2) & proof; Lean & proved; Lean-checked \\
-sharpness of $B\ge\Delta$ (Q2) & Lean for one edge; 445 of 726 random graphs fail at $\Delta-1$ & proved for $\Delta=1$ only; open in general \\
+sharpness of $B\ge\Delta$ (Q2) & Lean for one edge; paper proof for the relatives of chains; exact enumeration for chains ($p\le8$), rings and 396 random graphs; 445 of 726 random graphs fail at $\Delta-1$ & Lean for $\Delta=1$; proved on paper for chain relatives; enumerated for chain $\srho$; not sharp in general \\
 limits for random summary graphs (Q2) & paper proof; numerics & paper proof, unread by a probabilist \\
 slices, equivalence class, non-identifiability (Q1) & paper proofs; small-case checks & paper proofs, conditional on faithfulness \\
 effective sample size, saturation, conditioning (Q3) & paper proofs; simulations; algebra in Lean & paper proofs, asymptotic; bounds loose \\
 fixed start raises rel-sortability (Q2, Q4) & simulation, 420 graphs, replicated & supported, positive in all 42 conditions \\
-exact gap explains the size of the gain (Q4) & post hoc detectability calculation & not supported beyond detectability \\
-DAGMA and NOTEARS overtake FLOP under a fixed start (Q4) & learner extension, 96 graphs & observed; plan predicted otherwise; cause untested \\
+exact gap and the size of the gain (Q4) & post hoc detectability calculation; designed counterfactual and dose tests (\cref{sec:controls}) & the realised effect follows detectable correlation; the exact gap is the large-$n$ ceiling (0.76 of it at $n=25{,}000$) \\
+DAGMA and NOTEARS overtake FLOP under a fixed start (Q4) & learner extension, 96 graphs; tuned, variance-matched control, 288 graph-seeds & observed and survives tuning; variance channel by the plan's rule but not sufficient; mechanism not explained; plan predicted otherwise \\
 relatives count orients edges in real data (Q3, Q4) & CausalRivers; two Causal Chambers devices (P7--P9, E1, E2, B3) & mostly failed or non-discriminating \\
 \bottomrule
 \end{tabular}
@@ -226,7 +240,7 @@ benchmark regularities, time-series causal discovery and identification.
 the effect of a burn-in, the Lean verification and the identifiability
 statements for hidden labels. \Cref{sec:finsamp} answers Q3 and treats block
 means and subsamples. \Cref{sec:experiments} answers the empirical part of Q2
-and Q4 with the benchmark experiments and the real-data studies, and
+and Q4 with the benchmark experiments, the controlled tests of the mechanism and the real-data studies, and
 \cref{sec:disc} gives recommendations, limitations and the statement on the use
 of AI tools.
 
@@ -579,17 +593,25 @@ $\rho_W(v(t))=T|\rel_S(v)|$, and for every $T$
 $w(s)\in\rel(v(t))$ iff $\anc_S(v)\cap\anc_S(w)\ne\emptyset$. For an edge
 $(i,j)$, $\rel_S(i)\subseteq\rel_S(j)$ with equality iff $\Src(i)=\Src(j)$.
 This burn-in is sufficient. For one edge with self-loops ($\Delta=1$), $B=0$
-leaves $\srho^W\ge2/3$ for every $T$, so $B\ge\Delta$ cannot be lowered for
-that graph (\cref{rem:sharp}); for other graphs a shorter burn-in can suffice.
+leaves $\srho^W\ge2/3$ for every $T$ (Lean), and for the directed chain with
+self-loops the window relatives at $B=\Delta-1$ differ from the stationary ones
+at every length (\cref{prop:chainsharp}); for other graphs a shorter burn-in can
+suffice (\cref{rem:sharp}).
 
 \textbf{What is and is not claimed about sharpness.} \Cref{thm:stat} is a
 sufficient condition, valid for every summary graph with self-loops. That
 $\Delta-1$ does not suffice is proved, and checked in Lean, for the one-edge
-graph ($\Delta=1$). For other graphs a shorter burn-in can already give the
-stationary value: in an enumeration of 726 random summary graphs $B=\Delta$
-gave it in all of them, and $B=\Delta-1$ failed in 445, so it sufficed in 281.
-For $\Delta\ge2$ we have no proof that a graph needing exactly $\Delta$ slices
-exists, and no closed form for the minimal burn-in of a given graph.
+graph ($\Delta=1$); it is proved on paper for the relatives of the directed
+chain at every length (\cref{prop:chainsharp}, not checked in Lean), and exact
+computation gives a window $\srho$ different from the stationary value at
+$B=\Delta-1$ for chains with $p\le8$ and $T\le5$. For directed rings the
+minimal burn-in found by computation is $\lceil\Delta/2\rceil$. For other
+graphs the bound is not sharp: in 726 random summary graphs $B=\Delta$ gave
+the stationary value in all of them and $B=\Delta-1$ failed in 445, so it
+sufficed in 281; in a second exact computation on 396 random graphs (792
+cases) none needed more than $\Delta$, the minimal burn-in equalled $\Delta$ in
+51\% of the cases and was shorter by one to four slices in the rest. We have no
+closed form for the minimal burn-in of a given graph.
 
 \textbf{Scope: unit lags.} \Cref{thm:edge,thm:limit,thm:stat} are stated, and
 machine-checked, for VAR(1)-shaped unrollings. If each summary edge $(i,j)$
@@ -1011,7 +1033,12 @@ orders the simulated conditions, and a post hoc calculation of which
 correlations are detectable at $n=1000$ reproduces the size of the observed
 gain. That calculation is the analytic expectation of the algorithm, so it
 checks consistency of size and does not separate the graph mechanism from a
-general change in correlation strength.
+general change in correlation strength. A designed test does
+(\cref{sec:controls}): the share of the exact gap that is realised rises from
+$0.18$ at $n=200$ to $0.76$ at $n=25{,}000$, and from $0.09$ to $0.51$ when the
+spectral-radius cap rises from $0.5$ to $0.95$; and a start that has the
+population relatives of a burn-in but the detectable correlations of the fixed
+start keeps $0.96$ of the gain.
 
 \subsection{Block means and subsamples}
 \label{sec:agg}
@@ -1040,7 +1067,9 @@ population statement is recovered with probability of at least $1-\alpha$ in the
 limit (\cref{prop:plugin}), and outside them the count carries little or no
 information. The bounds are loose,
 the proofs are on paper, and block means and subsamples change var- and
-$R^2$-sortability while leaving the population relatives unchanged.
+$R^2$-sortability while leaving the population relatives unchanged. In the
+benchmark simulations, the effect of the start on a relatives sort is the
+detectable image of the exact gap (\cref{sec:controls}).
 
 %=============================================================================
 \section{Experiments and Real-Data Evidence}
@@ -1050,6 +1079,9 @@ $R^2$-sortability while leaving the population relatives unchanged.
 do to what label-free learners appear to achieve, and does a relatives count
 orient edges in real records? \Cref{sec:b1} measures what the start does to
 benchmark results when the time labels are hidden from static learners.
+\Cref{sec:controls} reports controlled tests of two readings that
+\cref{sec:b1} leaves open: what carries the effect of the start, and whether the
+learner reversal survives tuning and a variance control.
 \Cref{sec:real} applies the finite-sample theory and the criterion to real
 records, which is a different question: whether relatives can be estimated from
 one record at all.
@@ -1119,7 +1151,8 @@ from a general change of correlation strength during the transient. In a
 joint regression the exact gap adds nothing to it (coefficient $-0.063$ over
 cells and $-0.039$ over graph--horizon units). For rings with $p=T=10$, for
 example, the gap is $0.50$ but only $40\%$ of the relatives have a detectable
-correlation; the calculation gives $+0.094$ and we observed $+0.079$. The gain
+correlation; the calculation gives $+0.094$ and we observed $+0.079$. The designed
+test that separates these readings is reported in \cref{sec:controls}. The gain
 does not come from the latently confounded first window slice: without edges
 leaving it, it is $+0.089$ $[0.079,0.100]$. Strong connectivity did not protect
 short horizons: on rings and symmetrised ER graphs the gain was $+0.13$ to
@@ -1178,14 +1211,14 @@ had predicted that standardisation would reduce the gain without removing it.
 By the plan's rule this held, except that DAGMA's SHD gain was removed; but
 the order-accuracy effect of the start became negative for DAGMA and GOLEM
 ($-0.06$ to $-0.10$), which the plan had not expected, and NOTEARS kept a small
-significant gain ($+0.036$; SHD$/|E|$ $-0.077$). We read the ranking changes
-as a var-sortability effect, but this is a hypothesis, and the evidence for
-it is weak. Standardised DAGMA and GOLEM are below chance in order accuracy
-under both starts ($0.31$--$0.42$), so they cannot show whether a scale-free
-part remains; standardised NOTEARS shows that some does; the fixed start also
-raises $R^2$-sortability, which is scale free; and the var-sortability gain
-is the same on rings and chains while the learners' gains are not. A control
-that matches marginal variances across the two starts has not been run. In
+significant gain ($+0.036$; SHD$/|E|$ $-0.077$). At the time of this experiment we could only suspect var-sortability:
+standardised DAGMA and GOLEM are below chance in order accuracy under both
+starts ($0.31$--$0.42$), so they cannot show whether a scale-free part remains;
+standardised NOTEARS shows that some does; the fixed start also raises
+$R^2$-sortability, which is scale free; and the var-sortability gain is the same
+on rings and chains while the learners' gains are not. The variance-matched
+control and the tuned re-run were planned after this experiment and are reported
+in \cref{sec:controls}. In
 any case \cref{thm:limit,thm:stat} do not predict these ranking changes; they
 cover the scale-free gain of the sort baselines (rel-SortnRegress $+0.19$
 again here). PCMCI+ \citep{runge2020pcmciplus}, which uses the time labels,
@@ -1242,6 +1275,150 @@ out 20 steps \citep{cheng2024causaltime}, so windows cut from their first
 steps would be exposed. We could not check how the CauseMe data were
 initialised.
 
+\subsection{Controlled tests of the two-factor reading and of the learner reversal}
+\label{sec:controls}
+
+\textbf{Question.} Which part of the start artefact is carried by the
+population relatives pattern and which by the correlations that a test can
+detect, and does the learner reversal survive tuning and a variance control?
+\textbf{Plan.} A time-stamped plan (\cref{app:b1y}) fixed designs, thresholds,
+seeds, a table that maps outcomes to the paper's reading, and a multiplicity
+family before any data were simulated. Its two addenda (the second restricts
+NOTEARS to $d\le30$ after fit times were measured) were committed before the
+scored runs they govern. In this subsection all metrics drop the edges that
+leave the first slice (SHD$_{x1}$, OA$_{x1}$): under a latent burn-in the first
+window slice is confounded by the last burn-in slice and its pairs are scored
+differently (reference SHD $0.044$ under the fixed start and $0.273$ after a
+burn-in, but $0.041$ against $0.048$ without first-slice pairs). Units are
+summary graphs, and intervals are graph-cluster bootstrap intervals.
+
+\textbf{Matched-correlation counterfactual.} For the same graphs, weights and
+noise (300 graphs that are not strongly connected, $T\in\{3,5,10\}$) only the
+covariance of the first slice was changed. The counterfactual CF1 keeps the
+population relatives of the fixed start and rescales the first slice by a
+factor $c\in\{0.25,\dots,4\}$. The counterfactual CF2 has the population
+relatives of the burn-in, hence the same exact $\srho$, but in its smallest
+setting every new correlation is below half the detection threshold, so that
+the pairs a test can detect are those of the fixed start; larger settings make
+the burn-in pattern detectable. A second independent draw of the fixed start is
+the negative control. The control was valid ($-0.004$ [$-0.011,+0.002$]; limit
+$\pm0.01$), and the burn-in was mixed (exact stationary start within $0.001$).
+The fixed start raised the order accuracy of rel-SortnRegress by $+0.090$
+[$0.080,0.101$]. CF2 with undetectable burn-in correlations kept $0.955$
+[$0.884,1.030$] of this gain; where the burn-in pattern became detectable the
+retention fell to $0.92$ and $0.79$. Changing the strength at the fixed start's
+own pattern moved the gain by $0.008$ [$0.001,0.016$] between the weakest and
+the strongest setting, which the plan's rule (a quarter of the gain) calls
+flat. By the plan's rule the first result reads ``detectable strength, not
+population pattern'': the order accuracy of the relatives sort responds to
+which pairs clear the detection threshold, not to the population relatives
+pattern itself.
+
+\textbf{Dose.} On rings, chains and ER($c{=}2$) graphs the share $Q(n)$ of the
+exact gap that is realised was $0.18$, $0.40$, $0.57$ and $0.76$ at
+$n=200$, $1000$, $5000$ and $25{,}000$ ($+0.36$ [$0.29,0.43$] between $1000$
+and $25{,}000$), and $0.09$ and $0.51$ at spectral-radius caps $0.5$ and
+$0.95$ (difference $+0.42$ [$0.35,0.49$]). In the main design (graphs that
+are not strongly connected, $n=1000$) the within-family slope of the gain on the
+exact gap was $0.57$ [$0.40,0.73$], against $0.53$ pooled in B1. Read together: the exact gap is the large-sample ceiling of what the start
+does to the relatives sort, and the effect realised at a finite $n$ is its
+detectable image, which grows with $n$ and with the correlation strength that
+the spectral radius sets. The share had not reached one at $n=25{,}000$.
+
+\textbf{Learner reversal.} We used chains, in-trees, rings and ER($c{=}2$)
+graphs in six $(p,T)$ cells with $d$ from $15$ to $60$ and 12 graphs per
+(family, $p$). DAGMA and NOTEARS hyper-parameters were chosen on separate
+validation seeds, pooled over both starts so that tuning could not favour the
+artefact; GOLEM-EV and GOLEM-NV ran at their defaults ($d\le50$), and NOTEARS
+only for $d\le30$ because fits on burn-in data were too slow in larger cells.
+Two further arms rescaled each data set so that its marginal variances equal
+those of the other start, leaving correlations unchanged; the manipulation
+check passed (order accuracy of Var-SortnRegress within $0.01$ of the target
+start). On in-trees, tuned DAGMA, NOTEARS and GOLEM-NV beat FLOP under the
+fixed start and lost to it under the burn-in (SHD$_{x1}$ of FLOP minus method:
+$+0.200$ and $-0.365$ for DAGMA, $+0.234$ and $-0.393$ for NOTEARS, $+0.123$ and
+$-0.325$ for GOLEM-NV; all intervals exclude $0$). GOLEM-EV only tied FLOP
+under the fixed start, so the sign pattern did not hold for it. FLOP's own
+SHD$_{x1}$ rose by $0.099$ [$0.080,0.119$] on in-trees under the burn-in. By
+the pre-specified rule the channel is variance for all four methods: giving
+fixed-start data the burn-in variances removed the advantage and made the
+methods worse than under the burn-in itself (the ratio is $-1.25$ for DAGMA,
+$-0.44$ NOTEARS, $-0.41$ GOLEM-NV and $-1.50$ GOLEM-EV, where $1$ means the
+advantage is untouched and $0$ that it falls to its burn-in level), an
+over-correction that we do not interpret. Imposing the fixed-start variances on
+burn-in data restored only $0.43$ (DAGMA) and $0.49$ (NOTEARS) of the
+advantage, below the $0.60$ that the plan required for variance alone to be
+sufficient. So, in the plan's sense, variance is involved in the reversal and
+is not sufficient for it. Rings and ER($c{=}2$) graphs showed no reversal, and
+on chains the continuous methods lost to FLOP under both starts. The seven
+claims of the plan's multiplicity family (the strength dose, the two dose
+tests, the slope, the DAGMA and NOTEARS preconditions and FLOP's shift) all
+reject under Holm at $0.05$ (adjusted $p$ from $0.0007$ to $0.016$; the
+weakest is the strength dose, whose effect-size verdict is ``flat''). This
+family is separate from the 21-claim family above, and the sequence of studies
+is adaptive.
+
+\begin{table}[t]
+\caption{Scoring without the edges that leave the first slice (post hoc
+re-analysis of committed B1 and learner-extension data; no new data). Gains
+are G1$-$G2 in order accuracy; shifts are G2$-$G1 in SHD$/|E|$; the last three
+rows (four methods) are the in-tree interactions of the rank change against FLOP (G1 value
+minus G2 value of [method $-$ FLOP]). Graph-cluster 95\% CIs for the first
+rows.}
+\label{tab:x1}
+\centering\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.44\textwidth}cc@{}}
+\toprule
+quantity & all edges & without slice-1 edges \\
+\midrule
+rel-SortnRegress, OA gain (300 non-SC graphs) & $+0.125$ [$0.116,0.134$] & $+0.089$ [$0.079,0.100$] \\
+$R^2$-SortnRegress, OA gain & $+0.075$ & $+0.096$ \\
+Var-SortnRegress, OA gain & $+0.210$ & $+0.195$ \\
+FLOP, SHD$/|E|$ shift (420 graphs) & $+0.197$ [$0.185,0.209$] & $+0.093$ [$0.084,0.102$] \\
+rel-SortnRegress, SHD$/|E|$ shift & $+0.649$ & $+0.531$ \\
+in-tree interaction vs FLOP, DAGMA & $-0.524$ & $-0.587$ \\
+\quad NOTEARS & $-0.369$ & $-0.462$ \\
+\quad GOLEM-EV / GOLEM-NV & $-0.384$ / $-0.318$ & $-0.484$ / $-0.421$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{First-slice-excluded scoring.} Dropping the first-slice pairs removes
+nearly a third of the rel-SortnRegress order-accuracy gain ($+0.125$ to
+$+0.089$) and about half of FLOP's SHD shift ($+0.197$ to $+0.093$)
+(\cref{tab:x1}); the artefact survives, and the rank changes against FLOP on
+in-trees remain and grow slightly. For B1 and the learner extension the
+full-window numbers stay the primary results of their own plans, and the
+excluded-slice numbers are shown beside them.
+
+\textbf{Further baselines.} On 384 new data sets (rings, chains, in-trees and
+ER($c{=}2$); $p\in\{5,10\}$; $T\in\{3,5\}$) FLOP had the lowest mean SHD$_{x1}$
+among the label-free methods (FLOP, GES from Tetrad, GRaSP and BOSS in
+causal-learn, DirectLiNGAM, rel- and Var-SortnRegress) in 7 of 8 (family,
+start) groups; the exception is in-trees under the fixed start, where
+Var-SortnRegress ($0.136$) beat FLOP ($0.251$), which fits the variance
+account. Mean SHD$_{x1}/|E|$ under the fixed start and after a burn-in was
+$0.161$ and $0.353$ for FLOP, $0.358$ and $0.449$ for BOSS, $0.344$ and $0.522$
+for GRaSP, $0.596$ and $0.944$ for GES, $1.417$ and $1.688$ for DirectLiNGAM,
+$0.699$ and $1.392$ for rel-SortnRegress and $0.487$ and $1.139$ for
+Var-SortnRegress; the empty graph scores $1$. Methods that use the time labels
+are much closer to the truth and do not depend on the start: PCMCI+
+\citep{runge2020pcmciplus} $0.021$ and $0.022$, DYNOTEARS \citep{pamfil2020dynotears}
+$0.025$ and $0.047$, pooled lag-1 least squares $0.000$ and $0.071$, and a pooled
+variant of VAR-LiNGAM \citep{hyvarinen2010varlingam} for replicated short
+trajectories $0.007$ and $0.080$ (our noise is Gaussian, so its identifiability
+condition does not hold). With the labels the gap to FLOP is $0.14$ under the
+fixed start and $0.33$ after a burn-in. Every label-free method got worse under
+the burn-in; PCMCI+ did not change.
+
+\textbf{Takeaway (Q2, Q4).} The start changes what label-free learners appear
+to do in two ways that the theory only partly covers. For the relatives sort,
+the exact gap is the large-sample ceiling and the effect at a given sample size
+is the detectable part of it. For tuned continuous-optimisation learners, a
+fixed start produces a ranking change against FLOP on in-trees that variance
+accounts for in part and that our theory does not predict.
+
 \subsection{Real-data evidence: can relatives be estimated from one record?}
 \label{sec:real}
 
@@ -1265,7 +1442,7 @@ over which the reported intervals and p-values are computed.}
 study & units used for inference & what is independent \\
 \midrule
 B1, B1-NL, learner extension (simulation) & summary graphs (cluster bootstrap) & graphs; each data set has $n=1000$ replicate trajectories of a short window \\
-CausalRivers (P1--P6) & 120 subgraphs & 900 station slots, 457 distinct stations, one station used up to 8 times; two regions share a confounding driver; the 12\,h and 24\,h columns are the same records \\
+CausalRivers (P1--P6) & 120 subgraphs & 900 station slots, 445 distinct stations, one station used up to 7 times (112 of the 120 subgraphs share a station with another); two regions share a confounding driver; the 12\,h and 24\,h columns are the same records \\
 wind tunnel (P7--P9) & 300 subgraphs, 15 runs & runs \\
 E1 & 10 segments & one series (\texttt{citris\_1}) \\
 B3 & 30 units & three runs of 30{,}000 steps \\
@@ -1277,9 +1454,10 @@ E2 & 64 held-out regimes, 1{,}280 subgraphs & regimes within runs; dependence be
 \textbf{Protocol and its limits.} We ran four studies (P1--P9, then E1/E2),
 each with an analysis plan (predictions, thresholds, estimator, seeds, stop
 conditions) committed to version control before any dependence statistic of its
-data was computed (timeline in \cref{app:prereg}). Eight plans were written
-in all, counting the plans of B1, B1-NL, B3 and the learner extension, and
-the hosting service's push records were retrieved for three of them. The
+data was computed (timeline in \cref{app:prereg}). Nine plans were written
+in all, counting the plans of B1, B1-NL, B3, the learner extension and the
+controls of \cref{sec:controls}, and the hosting service's push records were
+retrieved for three of them. The
 plans, analyses and
 results were produced by AI agents within about six hours of one day, commit
 times are set by the client and no external registry was used, so we call
@@ -1422,6 +1600,31 @@ regimes raised detection from $0.328$ to $0.398$ without more false
 positives, but failed the graded criterion ($0.243<0.3$), so E2 does not
 succeed, and neither did the lag-0 estimator on these regimes.
 
+\textbf{Run- and station-level inference.} A later plan (\cref{app:b1y})
+recomputed the real-data evidence at the level of independent units from
+committed results, with no new data. B3: the theorem sorted as predicted in 3
+of 3 independent runs (H1) and 2 of 2 (H2), with 10 of 10 segments agreeing in
+each run; with so few runs the smallest attainable one-sided sign-test $p$ is
+$1/8$ and $1/4$, so no run-level test can reach $0.05$, and the segment-level
+$p$-values above are not run-level evidence. CausalRivers: the analysed
+subgraph set has 900 station slots and 445 distinct stations, one station is
+reused up to 7 times, and 112 of its 120 subgraphs share a station with another
+(25 connected components, the largest of 28 subgraphs); the 457 stations and
+reuse of 8 quoted in earlier drafts belong to a different, earlier subgraph set
+whose results are not analysed here. For the orientation accuracy of the
+conditioned relatives sort (P5, 12\,h) a station bootstrap gives $0.539$
+[$0.527,0.551$], but in random station-disjoint subsets of about 42 subgraphs
+the lower bound of the interval exceeded $0.5$ in only $27\%$ of 200 orderings
+(median lower bound $0.491$). The pass of P5 is therefore narrow and does not
+hold in most station-disjoint subsets. Sensitivity of the plug-in test to its
+truncation lag ($K\in\{20,50,100,300\}$): at most $4\%$ of decisions changed on
+the primary wind-tunnel analysis and on the river data, and none of $2{,}730$ on
+B3; the E1 levels analysis is less stable (up to $13\%$ changed). The
+re-fetched data matched every recorded SHA-256 value, and the rebuilt river
+caches were byte-identical. We conclude that the real-data tests cannot reach
+conventional significance at the level of independent runs or stations, and we
+read them as effect sizes.
+
 
 \begin{figure}[t]
 \centering
@@ -1487,14 +1690,14 @@ orientation accuracy & 0.630 & 0.620 & 0.999 & 1.000 \\
 Data selection, preprocessing and secondary analyses are in \cref{app:real}.
 
 \textbf{Takeaway (Q2, Q4).} Under a fixed start, the relatives-sorting
-baseline does better in every simulated condition we tried, and the size of the
-improvement follows detectability more closely than the graph gap (a post hoc
-finding). Competitive
-learners change rank against FLOP on in-trees; we do not know why. In real
-records the relatives count orients edges only where the sources are designed
-to be independent and the relatives are detectable, which was the case on one
-device. The set of real-data results is too small, and too dependent, to say
-more.
+baseline does better in every simulated condition we tried. The controlled
+tests of \cref{sec:controls} show that its gain follows the correlations a test
+can detect, with the exact gap as the large-sample ceiling. Tuned competitive
+learners change rank against FLOP on in-trees; variance is involved and does
+not explain the effect alone. In real records the relatives count orients edges
+only where the sources are designed to be independent and the relatives are
+detectable, which was the case on one device. The real-data results are too
+few, and too dependent, to say more.
 
 %=============================================================================
 \section{Discussion, Limitations and Conclusions}
@@ -1516,9 +1719,10 @@ Start trajectories from the stationary distribution (an exact
 Lyapunov or Cholesky start, as in \citealp{herman2025unitless}), or use a
 burn-in that is checked for distributional mixing. A burn-in of $\Delta$ slices
 ($\Delta\tau_{\max}$ with lags up to $\tau_{\max}$) removes the structural
-artefact (\cref{thm:stat}); it is sufficient, it is needed for the one-edge
-graph, and a shorter burn-in can suffice for other graphs
-(\cref{rem:sharp}). It does not remove the distributional transient, which
+artefact (\cref{thm:stat}); it is sufficient, it is the minimal burn-in
+for chains (relatives: proved; value: computed for $p\le8$, $T\le5$) and for the
+one-edge graph, and a shorter burn-in suffices for many
+other graphs (\cref{rem:sharp}). It does not remove the distributional transient, which
 decays with the spectral radius: B1 needed 100 steps to pass its mixing check.
 As a rule of thumb, burn in for at least $\Delta$ slices and long enough for
 the covariance to be near its stationary value, or draw the start from the
@@ -1527,11 +1731,15 @@ columns as well as raw ones, since the fixed start also inflates
 var-sortability and the raw-data advantage of DAGMA and NOTEARS over FLOP under
 the fixed start was reduced, and for DAGMA's SHD removed, on standardised data.
 Standardisation alone is not a remedy: standardised DAGMA and GOLEM are below
-chance in order accuracy. (c) Score the window without first-slice pairs
+chance in order accuracy. Tuning the hyper-parameters does not remove the effect
+either: tuned DAGMA, NOTEARS and GOLEM-NV still beat FLOP on in-trees under the
+fixed start (\cref{sec:controls}). (c) Score the window without first-slice pairs
 or as an ADMG: a latent burn-in makes the last burn-in slice a set of latent
 common causes of the first window slice, so a labels-using reference that has
 normalised SHD $0.044$ under the fixed start has $0.273$ after a burn-in, but
-$0.041$ against $0.048$ without first-slice pairs. An algorithm that sees time
+$0.041$ against $0.048$ without first-slice pairs; dropping them reduced the
+rel-SortnRegress gain from $+0.125$ to $+0.089$ and FLOP's SHD shift from
+$+0.197$ to $+0.093$ (\cref{tab:x1}). An algorithm that sees time
 stamps orients every cross-time edge for free, so the artefact matters for
 methods that do not use time order. Random summary graphs are sortable only
 near criticality. Removing the time labels does not hide the time order in
@@ -1550,9 +1758,10 @@ whatever the graph.
 \subsection{Limitations}
 
 The closed forms assume self-loops at every node and
-unit lags (\cref{app:noloop,app:lags}). The burn-in bound is proved sharp only
-for one edge ($\Delta=1$); for other graphs we have enumeration and no closed
-form for the minimal burn-in. No human has compared the Lean statements with
+unit lags (\cref{app:noloop,app:lags}). The burn-in bound is machine-checked sharp only
+for one edge ($\Delta=1$), proved on paper to be sharp for the relatives of
+chains, and not sharp in general; we have enumeration and no closed form for
+the minimal burn-in. No human has compared the Lean statements with
 the paper's statements. The spectral radii of the transition matrices of B1
 were bounded by $0.8$ by construction and not tabulated. The ER limits are paper proofs not yet
 checked by a human probabilist; they are iterated limits ($T\to\infty$ at
@@ -1570,14 +1779,22 @@ one device per chamber, and the units behind its p-values are not independent
 primary graph and is carried mainly by ties; B3 separates the theorem from
 that rule but on the same light tunnel, with no external registration. The
 graded criteria P2, P3, P4, P6, P9, Q9 and one B3 secondary set failed. The
-benchmark experiments are simulations at $n=1000$; the learner extension uses
-one linear-Gaussian parametrisation, $T\le5$, default hyperparameters and
-GOLEM at $p=5$ only. Our theory does not predict the ranking changes among
-competitive methods; their attribution to var-sortability is a hypothesis
-without a variance-matched control, and the plan's prediction of no rank
-change failed. The detectability calculation and the re-analyses with
-graph-cluster inference are post hoc, and the former does not isolate the
-structural mechanism. Exposure of deployed generators to the variance
+benchmark experiments are simulations at $n=1000$ (the dose study goes to
+$25{,}000$ for three families); the learner extension uses one linear-Gaussian
+parametrisation, $T\le5$ and default hyperparameters, and the tuned control
+covers DAGMA, NOTEARS ($d\le30$) and GOLEM ($d\le50$) with $T\le10$ and
+$p\le20$. Our theory does not predict the ranking changes among competitive
+methods. They survive tuning and point to a variance channel by the plan's
+rule, but imposing the fixed-start variances on burn-in data restored less than
+half of the advantage, and we have no theory or experiment that explains the
+rest; the plan's prediction of no rank change failed. The detectability calculation and the re-analyses with
+graph-cluster inference are post hoc. The designed counterfactual separates the
+population pattern from detectable correlations, but only for one estimator
+(rel-SortnRegress) at $n=1000$ and in the dose study; we have not shown that the
+exact gap itself, as opposed to its detectable image, drives the effect for any
+learner. At the level of independent runs or stations the real-data tests
+cannot reach conventional significance (B3 has three runs; the P5 interval
+excludes $0.5$ in $27\%$ of station-disjoint subsets). Exposure of deployed generators to the variance
 artefact was not measured (no mixing times). The identifiability statements
 of \cref{sec:ident} are paper proofs that assume faithfulness, which we have
 not shown to hold for almost all tied parameters; \cref{conj:window} is open;
@@ -1589,18 +1806,24 @@ Time order survives label removal as a footprint that the unrolled graph
 determines. For lag-one unrollings with self-loops we computed the footprint
 exactly: the value of every edge, its limit, and a burn-in after which it no
 longer depends on the start, with the graph statements checked in Lean. The
-burn-in is sufficient and is needed for the one-edge graph. Under a fixed start
-the footprint is inflated, strongly connected summary graphs are not protected
-at short horizons, and a relatives-sorting baseline gained $0.13$ in order
-accuracy in simulation; the exact gap orders the conditions, and a post hoc
-detectability calculation reproduces their size. How much of the footprint an
-estimator sees depends on the sample size, the autocorrelation and latent
-drivers, and the real-data support was mostly negative. Competitive learners
-change rank against FLOP under the fixed start, which our theory does not
-explain. The finite-sample and identifiability statements are paper proofs,
-with the limits listed above. A builder who hands the slices of a simulated
-record to static learners should start from the stationary distribution or use
-a burn-in that has been checked for mixing.
+burn-in is sufficient, minimal for chains (proved for the relatives, computed for
+the value with $p\le8$ and $T\le5$) and the one-edge graph, and longer than needed
+for many other graphs. Under a fixed start the footprint is
+inflated, strongly connected summary graphs are not protected at short
+horizons, and a relatives-sorting baseline gained $0.13$ in order accuracy in
+simulation. Controlled tests show that this gain follows the correlations a
+test can detect, not the population relatives pattern, and that the exact gap is
+the large-sample ceiling of the effect, reached in part ($0.76$) at
+$n=25{,}000$. How much of the footprint an estimator sees depends on the sample
+size, the autocorrelation and latent drivers; the real-data support was mostly
+negative and, at the level of independent runs or stations, cannot reach
+conventional significance. Tuned competitive learners change rank against FLOP
+on in-trees under the fixed start; variance is involved but does not explain the
+effect on its own, and our theory does not cover it. The finite-sample and
+identifiability statements are paper proofs, with the limits listed above. A
+builder who hands the slices of a simulated record to static learners should
+start from the stationary distribution or use a burn-in that has been checked
+for mixing, and should score the window without first-slice pairs.
 
 \subsection{Use of AI tools}
 \label{sec:aiuse}

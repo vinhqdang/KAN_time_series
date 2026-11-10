@@ -186,3 +186,45 @@ No experiment was run, no number changed, no verdict changed.
 - The repository still says "pre-registered" in b1x/README.md, b3/PLAN.md, b3/README.md and some commit
   messages; those files were not touched here (the paper says "time-stamped plan").
 - The body is now about 28 pages (appendix from page 29, 83 pages in all).
+
+
+## b1y results integrated (roadmap b1-b6, b8 of review/00_decision.md)
+
+Source: research/theory2/b1y (plan 5c9f942, Addendum 1 583ff30 pushed before the first scored run,
+Addendum 2 c768a7d, results 365c91f, 013c82f, e51698b, 8ad59cd, beca56f). Every number was re-read from
+b1y/README.md and results/analysis_*.txt; no verdict or threshold was changed.
+
+- Q6 (exact burn-in): chains p = 2..8, T = 2..5: B_min = Delta; rings ceil(Delta/2); 396 random graphs
+  (792 cases) B_min <= Delta always, = Delta in 51%. Added Proposition (chainsharp) with a paper proof that
+  the relatives at B = Delta-1 differ from the stationary ones for every p (re-read from b1y/PLAN.md section 8,
+  checked by hand: ancestor distance argument); it is NOT Lean-checked, and it does not by itself show that
+  the edge-level s_rho differs (that is computed for p <= 8, T <= 5). Abstract, intro, Sec. 3, Sec. 6,
+  claim-status table and appendix remark updated; "sharp only for Delta = 1" removed everywhere.
+- Q1: new Section 5.2 "Controlled tests ..." (matched-correlation counterfactual, dose, learner reversal,
+  first-slice scoring, further baselines) with takeaway; Section 4 and the abstract state V4/V5 and the
+  U-A reading (exact gap = n -> infinity ceiling, realised effect = detectable image; Q(25000) = 0.76, not 1).
+  The earlier hedge "the exact gap adds nothing" is kept only as the description of the post hoc oracle.
+- Q2: tuned in-tree reversal for DAGMA, NOTEARS, GOLEM-NV; GOLEM-EV only ties under G1 (HY2 fails for it);
+  HY1 variance channel for all four with negative R_VM (over-correction, not interpreted); injection 0.43/0.49
+  (< 0.60) so variance is involved but not sufficient; no reversal on rings and ER2; chains lose to FLOP under
+  both starts. The text no longer says that the variance-matched control was not run.
+- Q3: Table "x1" (full vs first-slice-excluded). B1 and the learner extension keep their full-window numbers
+  as the primary results of their own plans; x1 numbers are shown beside them (the b1y plan makes x1 primary
+  only for the new studies).
+- Q4: 457/8 corrected to 445/7 (the 457/8 belong to subgraphs_7000.json, the P4-P6 analysis uses
+  subgraphs_8000.json); new paragraph "Run- and station-level inference"; Table 5 row corrected;
+  B3 run level 3/3 and 2/2 (smallest attainable p 0.125, 0.25); P5 station-disjoint result (27%); K-sensitivity;
+  SHA-256 re-check. The real-data tests are described as effect sizes.
+- Q5: further baselines paragraph (HB1 7 of 8 groups). GRaSP and DirectLiNGAM are named without a citation
+  (no verified bib entry was added); GES, BOSS, DYNOTEARS and VAR-LiNGAM cite existing bib entries
+  only where the bib has them (DYNOTEARS, VAR-LiNGAM, PCMCI+); GES/BOSS are named without a new entry.
+- Plan count: nine plans, push records for three (b1y has none: the activity feed lagged). New appendix
+  "Controls: Plan, Design and Verdicts (b1y)" with the full verdict table; timeline rows added.
+- Abstract rebuilt to 247 words (my own count; Springer asks for 150-250: re-count with the journal's tool).
+
+Still open: SVAR spectral radii and generator mixing times (not computed), symbolic faithfulness check,
+a full `reproduce.sh all` run end to end, optional Lean lemma for the chain sharpness, Lean statement-map
+check by a human, human reading of the load-bearing proofs (including the new Proposition chainsharp and the
+Boege reading), OSF registration of any further plan, DOI archive of the repository, AI-statement wording with
+model identifiers, the f435a7c committer decision, final bibliographic checks (Granger end page 438,
+descriptions of works read only at abstract level).

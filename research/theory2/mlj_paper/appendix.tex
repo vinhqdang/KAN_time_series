@@ -18,7 +18,8 @@ in \cref{app:erproof}) and the accuracy interpretation,
 \cref{app:b1,app:b1nl,app:b1x,app:b3} the benchmark experiment B1, its
 replication B1-NL, the extension to competitive learners with the post hoc
 re-analysis, detectability calculation and generator survey, and the
-discriminating test B3, and \cref{app:ident} the proofs of
+discriminating test B3, \cref{app:b1y} the plan, design and verdicts of the
+controlled tests of \cref{sec:controls}, and \cref{app:ident} the proofs of
 \cref{sec:labels,sec:ident}.
 
 Status labels. \emph{Machine-checked}: a Lean theorem with no \texttt{sorry}
@@ -148,18 +149,55 @@ $\Src(i)\subseteq\Src(j)$, is $\Src(i)\ne\Src(j)$. Lean:
 $B\ge p-1$ forms \lname{rhoBurn_eq}, \lname{sBurn_eq} as corollaries.
 \end{proof}
 
-\begin{remark}[sharpness of $B\ge\Delta$ for one edge]\label{rem:sharp}
+\begin{proposition}[sharpness of $B\ge\Delta$ for the relatives of a chain]\label{prop:chainsharp}
+Let the summary graph be the directed chain $0\to1\to\dots\to p-1$ with a
+self-loop at every node, $p\ge2$, so $\Delta=p-1$. Take a latent burn-in of
+$B=\Delta-1=p-2$ slices before a window of any length $T\ge1$. Then the window
+nodes $(0,1)$ and $(p-1,1)$ are not relatives, whereas they are relatives under
+the stationary start. Hence the relatives set of $(0,1)$ differs from its
+stationary value, and so does the relatives count $\rho$.
+\end{proposition}
+\begin{proof}
+Number the window slices $1,\dots,T$ and the burn-in slices $-B+1,\dots,0$. The
+parents of $(v,t)$ are $(v,t-1)$ and $(u,t-1)$ for each summary edge $(u,v)$.
+The ancestors of $(0,1)$ are the copies $(0,s)$, $s\le1$. A copy $(u,s)$ is an
+ancestor of $(p-1,1)$ iff $1-s\ge p-1-u$, because each step of the chain takes
+one slice and self-loops only allow waiting. A common ancestor must be some
+$(0,s)$, which requires $1-s\ge p-1$, that is $s\le2-p$. The earliest slice
+present with $B=p-2$ burn-in slices is $3-p>2-p$, so there is no common
+ancestor. Neither node is an ancestor of the other: $(0,1)$ would need $p-1\ge1$
+slices to reach node $p-1$, and edges do not point backwards along the chain.
+With the stationary start (a burn-in of $B\ge\Delta=p-1$ slices, or an infinite
+past) the copy $(0,2-p)$ exists and is a common ancestor, so the two nodes are
+relatives. The relatives count $\rho$ of $(0,1)$ therefore differs by at least
+one. \end{proof}
+This shows that the relatives, and so the counts, differ at $B=\Delta-1$; it does
+not by itself show that the edge-level value $\srho^W$ differs, which we computed
+exactly for $p\le8$ and $T\le5$ (below). The proposition is a paper proof; it is
+not checked in Lean.
+
+\begin{remark}[sharpness of $B\ge\Delta$]\label{rem:sharp}
 For the single edge $0\to1$ with self-loops, $\Delta=1$; with $B=1$ the window
 value is the stationary value $1/2$, and with $B=\Delta-1=0$ it is at least
 $2/3$ for every $T\ge2$ (\lname{edgeLoops_burn_sharp}). So $B\ge\Delta$ cannot be
-lowered for this graph. This is all that is proved. Enumeration on 726 random
-summary graphs gave the stationary value at $B=\Delta$ in all of them, and at
-$B=\Delta-1$ in 281; in 445 it did not (\cref{app:b1}). Hence $\Delta-1$
-suffices for some graphs, and the minimal sufficient burn-in of a given graph
-can be shorter than $\Delta$. We have no proof that for every $\Delta\ge2$ some
-graph needs exactly $\Delta$ slices, and no closed form for the minimal
-burn-in. Proving the first, for instance for the directed chain with
-self-loops, would turn the enumeration into a theorem.
+lowered for this graph; this is the part checked in Lean.
+\Cref{prop:chainsharp} extends the statement for the relatives of the chain to
+every length, on paper. An exact computation (\texttt{b1y/q6\_burnin\_exact.py},
+independent of the theorems; \cref{app:b1y}) took the minimal burn-in $B_{\min}$
+to be the smallest $B$ such that the window relatives counts, and separately
+$\srho^W$, equal their stationary values for every larger $B$. It gave: chains,
+$p=2,\dots,8$ and $T=2,\dots,5$ (28 cases): $B_{\min}=\Delta$ for both measures
+in every case; directed rings in the same range: $B_{\min}=\lceil\Delta/2\rceil$;
+396 random summary graphs ($p=3,\dots,7$, $T\in\{3,5\}$; 792 cases): never
+$B_{\min}>\Delta$, $B_{\min}=\Delta$ in 406 cases ($51\%$), and slack
+$\Delta-B_{\min}$ of $1$, $2$, $3$ and $4$ in $250$, $114$, $20$ and $2$ cases;
+counts and $\srho$ gave the same $B_{\min}$ in every case. So $B\ge\Delta$ is
+the minimal burn-in for the one-edge graph and, in this range, for chains, and
+it is longer than needed for many other graphs. The enumeration of 726 random
+summary graphs (\cref{app:b1}) agrees: stationary at $B=\Delta$ in all of them
+and at $B=\Delta-1$ in 281. We have no closed form for the minimal burn-in of
+a given graph, and no proof that $\srho^W$ differs at $B=\Delta-1$ for chains of
+every length.
 \end{remark}
 
 \begin{proof}[Proof of \cref{cor:statiff}]
@@ -859,8 +897,8 @@ or of lag-0 faithfulness, not evidence against \cref{thm:edge,thm:limit}.
 
 \textbf{Process.} The four real-data analysis plans, all analyses and the
 results were produced by AI coding agents (\cref{sec:real}, AI-use statement)
-within about six hours of one day; the later plans for B1, B1-NL, B3 and the
-learner extension are listed at the end of this section. Each plan was committed to version control before its
+within about six hours of one day; the later plans for B1, B1-NL, B3, the learner
+extension and the controls (b1y) are listed at the end of this section. Each plan was committed to version control before its
 study's data were loaded for any dependence statistic in this project. Commit
 timestamps are set by the committing client; no third-party registry (e.g.\
 OSF) was used. The hosting service's push records are given below for the
@@ -937,14 +975,16 @@ fixed in plan 4, together with the secondary analysis on the published graph $G_
 the theorem fails against the sensor indicator on strictly ordered edges.
 
 \textbf{Later plans (benchmark experiments and B3).} Times in the table are
-commit times (UTC, set by the committing client). Eight plans were written in
-all: the four real-data plans, and the plans of B1, B1-NL, B3 and the learner
-extension. For three of the eight we also
+commit times (UTC, set by the committing client). Nine plans were written in
+all: the four real-data plans, and the plans of B1, B1-NL, B3, the learner
+extension and the controls (b1y). For three of the nine we also
 retrieved the hosting service's own push records (its activity log, UTC, 09
 Nov): B1-NL plan 04:10:47; B3 plan 04:21:12 and B3 results 04:24:37;
 learner-extension plan 08:20:31 and results 12:44:27. Each is 2 to 28 seconds
 after the corresponding commit time. We did not retrieve push records for the
-B1 plan or the four earlier plans. Push records order pushes, not
+B1 plan or the four earlier plans, and for the controls plan the activity feed
+did not list the pushes when queried, so only client commit times are recorded
+for it. Push records order pushes, not
 computations: a plan pushed three minutes before its results, with a run of
 about two minutes in between, is consistent with the stated process but cannot
 exclude that something was computed before the plan was written. Only
@@ -967,6 +1007,14 @@ time (2026) & event \\
 09 Nov 08:20 & learner-extension plan (\cref{app:b1x}) committed and pushed before any score \\
 09 Nov 08:34 & post hoc re-analysis of B1/B1-NL and detectability oracle (no new data) \\
 09 Nov 12:44 & learner-extension results (one run, 08:28--12:41) \\
+10 Nov 05:15 & controls plan (b1y) committed (\texttt{5c9f942}); exact burn-in computation (Q6) committed with it \\
+10 Nov 06:15 & Addendum 1 (environment, added learners, budget; \texttt{583ff30}) committed before any scored run \\
+10 Nov 06:20 & Q1 results (counterfactual, dose) \\
+10 Nov 06:28 & Q4 results (run- and station-level inference, truncation-lag sensitivity) \\
+10 Nov 06:32 & Addendum 2 (NOTEARS restricted to $d\le30$) before the Q2 test run \\
+10 Nov 07:26 & Q2 tuning results and tuned hyper-parameters, before the Q2 test run \\
+10 Nov 07:40 & Q5 results (further baselines) \\
+10 Nov 11:14 & Q2 results (variance-matched control, tuned learners); Holm table \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -2066,8 +2114,8 @@ $\Delta$ form of \cref{thm:limit} was checked against brute-force relatives
 enumeration on 3{,}000 random summary graphs $\times$ 7 horizons: no violation
 of either bound, equality in 3{,}164 cases, strictly sharper than the $p-1$
 bound in 10{,}186. For \cref{thm:stat}, $B=\Delta$ gave the stationary value in
-726 of 726 graphs and $B=\Delta-1$ did not in 445, so $\Delta$ cannot be
-lowered in general.
+726 of 726 graphs and $B=\Delta-1$ did not in 445, so $\Delta$ is sufficient for
+all of them and necessary for 445 of them (\cref{rem:sharp}).
 
 \begin{figure}[h]
 \centering
@@ -2201,7 +2249,8 @@ Var-SortnRegress order accuracy is the same on rings ($+0.224$) and chains
 ($+0.231$), while the learners gain on chains and not on rings; the
 explanation by levels ($0.73$ against $0.93$ under G1) was made after the
 results. A control that rescales each data set to the other generator's
-marginal variances would test the attribution; it has not been run. GOLEM
+marginal variances was planned afterwards and is reported in
+\cref{sec:controls} and \cref{app:b1y}. GOLEM
 did not overtake FLOP on in-trees (G1 differences $-0.011$ and $-0.042$, Holm
 $1$ and $0.46$). \Cref{tab:b1x} omits GOLEM-EV (SHD$/|E|$ $0.44$ / $0.93$ raw)
 and standardised GOLEM ($0.97$ / $1.30$ EV, $0.95$ / $0.99$ NV).
@@ -2289,6 +2338,105 @@ time-unrolled construction produce a single record with time order for
 time-series methods, so neither artefact applies to them as shipped; they
 would be exposed only if windows from their first steps were given to a
 method that ignores time order.
+
+\section{Controls: Plan, Design and Verdicts (b1y)}
+\label{app:b1y}
+
+\textbf{Plan.} The controls of \cref{sec:controls} were specified in a
+time-stamped plan (\texttt{b1y/PLAN.md}, commit \texttt{5c9f942}) with two
+dated addenda; it is not a registration and was not posted to a third party.
+The plan was committed before any simulated data set or learner score of its
+questions existed; what had been computed (graph-only quantities, unit tests,
+the exact burn-in computation) is listed in it. Thresholds, verdict rules, the
+table that maps outcomes to the paper's reading, seeds and the multiplicity
+family were not changed after the first scored run. Server-side push times could
+not be read (the activity feed lagged behind the pushes), so the order of commits
+is the only evidence, and push order cannot rule out that results were computed
+before a plan was written.
+
+\textbf{Design.} Graphs, weights, noise and the two starts are those of B1
+(heterogeneous noise, raw data, $n=1000$ unless stated, time labels hidden by
+shuffling columns). Seeds and random streams are disjoint from all earlier
+studies (a unit test checks this). Primary metrics drop the edges that leave the
+first slice (SHD$_{x1}/|E|$, OA$_{x1}$); full-window metrics are secondary.
+Units are summary graphs; intervals are 10{,}000-resample graph-cluster
+bootstrap intervals. Q1 (counterfactual starts and dose): 7 families, $p\in\{5,10\}$,
+30 graphs each, $T\in\{3,5,10\}$, 11 arms; dose study on rings, chains and
+ER($c{=}2$) graphs with $n\in\{200,1000,5000,25000\}$ and spectral-radius caps
+$\{0.5,0.8,0.95\}$. Q2 (variance-matched control): chains, in-trees, rings,
+ER($c{=}2$), six $(p,T)$ cells, 12 test graphs per (family, $p$), four arms (the
+two starts and two variance-rescaled arms). Q5 (baselines): 12 new graphs per
+(family, $p$) for rings, chains, in-trees and ER($c{=}2$), 384 data sets. The
+real-data analysis (Q4) and the first-slice re-analysis (Q3) use committed data
+only.
+
+\textbf{Environment and learners.} Addendum~1 moved the runs to Python 3.12
+(Python 3.10 for DYNOTEARS, which uses \texttt{causalnex} 0.12.1; all versions
+pinned in \texttt{requirements.txt} and the environment lists) and added
+GOLEM-EV and GOLEM-NV, DYNOTEARS, GES, GRaSP and BOSS (GES from Tetrad 7.6.10
+with its SEM-BIC penalty $2$, because causal-learn's GES was too slow at that
+penalty), DirectLiNGAM and a pooled VAR-LiNGAM for replicated short
+trajectories: pooled least squares for the lag-one matrix on all transitions,
+DirectLiNGAM on the pooled residuals for the contemporaneous matrix, and the
+combination $(I-B_0)M$ as in \citet{hyvarinen2010varlingam}. It is not the
+packaged estimator, which expects one long series, and it is a time-labelled
+reference only. A unit test recovers a known SVAR with non-Gaussian noise.
+
+\begin{table}[ht]
+\caption{Verdicts of the controls plan, by the rules fixed in advance (metric
+OA$_{x1}$ for Q1, SHD$_{x1}/|E|$ for Q2 and Q5; graph-cluster 95\% intervals).
+A: SHD$_{x1}/|E|$ of FLOP minus that of the method, so positive means the method
+is better; R: ratios defined in the plan.}
+\label{tab:b1yverdicts}
+\centering\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.11\textwidth}>{\raggedright\arraybackslash}p{0.36\textwidth}>{\raggedright\arraybackslash}p{0.30\textwidth}>{\raggedright\arraybackslash}p{0.15\textwidth}}
+\toprule
+item & rule fixed in advance & result & verdict \\
+\midrule
+V1 & negative control: $|\text{difference}|<0.01$ & $-0.004$ [$-0.011,0.002$] & valid \\
+S1--S4 & burn-in mixed ($<0.02$); CF2 definable ($\le10\%$); detectability of CF2$_{m1}$ equals the fixed start's ($\le2\%$ of pairs flip in $\ge90\%$ of cases); gain reproduces & $0.001$; $1.2\%$; $95.5\%$; $+0.090$ [$0.080,0.101$] & all hold \\
+V2 & retention of CF2$_{m1}$: $\ge0.75$ with CI lower bound $\ge0.50$ means ``detectable strength''; $\le0.35$ with upper bound $\le0.60$ means ``population pattern'' & $0.955$ [$0.884,1.030$]; CF2$_{m3}$ $0.919$, CF2$_{m10}$ $0.788$ & detectable strength \\
+V3 & strength dose at the fixed start's pattern: CI excludes $0$ and $\ge0.25\times$ gain & $+0.008$ [$0.001,0.016$] vs $0.023$ & flat \\
+V4 & $Q(25000)-Q(1000)\ge0.10$, CI above $0$, $Q(25000)\ge0.60$ & $0.18,0.40,0.57,0.76$ at $n=200,\dots,25000$; $+0.360$ [$0.294,0.425$] & supported \\
+V5 & $Q(0.95)-Q(0.5)\ge0.10$, CI above $0$ & $0.09\to0.51$; $+0.418$ [$0.349,0.489$] & supported \\
+slope & within-family slope of gain on exact gap (no threshold) & $0.569$ [$0.402,0.731$] (SC families $0.046$ [$-0.347,0.444$]) & reported \\
+story table & V2 ``detectable strength'' and V4 supported & exact gap is the $n\to\infty$ ceiling; realised effect is its detectable image & U-A \\
+\midrule
+Q2 precondition & in-trees: $A(\text{G1})-A(\text{G2})\ge0.10$, CI above $0$ & DAGMA $0.564$, NOTEARS $0.628$, GOLEM-NV $0.448$, GOLEM-EV $0.513$ & met for all four \\
+HY2 & $A(\text{G1})>0>A(\text{G2})$, both CIs exclude $0$ & DAGMA $+0.200/-0.365$; NOTEARS $+0.234/-0.393$; GOLEM-NV $+0.123/-0.325$; GOLEM-EV $0.000/-0.513$ & holds except GOLEM-EV \\
+HY1 & R$_{VM}\le0.40$ with CI upper bound $\le0.60$ means ``variance channel'' & $-1.25$, $-0.44$, $-0.41$, $-1.50$ (DAGMA, NOTEARS, GOLEM-NV, GOLEM-EV) & variance channel (over-correction) \\
+injection & R$_{inj}\ge0.60$ means variance alone suffices & $0.43$, $0.49$, $0.08$, $-0.19$ & not sufficient \\
+HY3 & FLOP's own shift, in-trees (no threshold) & $-0.099$ [$-0.119,-0.080$] (G1$-$G2) & reported \\
+check & Var-SortnRegress order accuracy within $0.03$ of the target start & $0.008$, $0.001$ & passed \\
+\midrule
+HB1 & FLOP has the lowest mean SHD$_{x1}$ among label-free methods in $\ge6$ of 8 groups & 7 of 8; exception in-tree, fixed start (Var-SortnRegress $0.136$ vs FLOP $0.251$) & supported \\
+\midrule
+C1--C7 & Holm over seven claims at $0.05$ & adjusted $p$: $0.016$ (V3), $0.0007$ (V4, V5, C5, C6, C7), $0.0010$ (slope) & all reject \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Deviations (all recorded).} (1) Addendum~2: NOTEARS runs only for
+$d\le30$ after measured fit times on burn-in data (about $150$\,s per fit at
+$d=30$, against $3.5$\,s on fixed-start data); the pairing of NOTEARS and GOLEM
+with FLOP uses only the cells where they ran. (2) The first tuning run was
+stopped; two shards lost their CSV header and were repaired, one truncated
+shard was recomputed. (3) SID is set to missing for estimates with self-loops or
+cycles, after one such output made \texttt{gadjid} panic; SHD and the other
+metrics are unaffected. (4) The circular block bootstrap for E1 was not run:
+its 15 wind-tunnel units are independent runs, and the light-tunnel replication
+is ten segments of one file and is reported without inference. (5) The
+\texttt{secs} column double-counts GOLEM time, so summed fit time overstates
+the cost; the whole study took about 21 CPU-hours of a 25-hour cap. (6) Server
+push times were not obtainable. (7) For the river data the earlier text quoted
+the station counts of an earlier subgraph set; the corrected counts are in
+\cref{tab:units}.
+
+\textbf{Exact burn-in computation (Q6).} The results quoted in \cref{rem:sharp}
+come from \texttt{results/q6\_burnin\_exact.txt}, an exact enumeration of window
+relatives that does not use the theorems of \cref{sec:exact}; the reference
+burn-in was $\Delta+2p$.
 
 \section{B3: Discriminating Test of the Source-SCC Rule on Held-Out Data}
 \label{app:b3}
