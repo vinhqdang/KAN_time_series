@@ -119,3 +119,70 @@ Everything else cited in Section 2 was already in refs.bib.
 Not verified: how Section 2 describes works was written from their titles, abstracts and the earlier text of this paper, not from the full papers.
 In particular the statements on Boege et al. (results for colour classes with a common head, from alg/NOVELTY.md), on FLOP (only "discrete search", from the title)
 and on Lohse and Wahl (from earlier text) should be read against the originals before submission. The new Conclusions subsection restates claims made elsewhere in the paper.
+
+## Unified-story revision (one paper, no split)
+
+The author decided against splitting the paper (the review panel had recommended it). The paper
+now follows one object, the relatives footprint of the time-unrolled DAG, through four questions
+(Q1 footprint and identification without labels; Q2 effect of the start; Q3 what an estimator can
+see; Q4 effect on learners and real data). Thesis sentence in the Introduction; every section
+opens with its question and closes with a takeaway (Sections 3, 4, 5; Section 2 closes with a
+takeaway in the Positioning subsection). The six sections are unchanged in number. Title kept.
+No experiment was run, no number changed, no verdict changed.
+
+**Review roadmap items (a), what was done**
+- a1/a7 abstract rewritten (246 words by whitespace count): thesis, four questions, scope limits
+  (lag one, self-loops everywhere, n = 1000), no deployed generator found exposed, no new algorithm.
+- a2 tightness: "cannot be shortened/lowered" removed everywhere; the claim is sufficiency, sharpness
+  proved (Lean) for the one-edge graph only, enumeration 445 of 726 fail at Delta-1 (so 281 do not),
+  no closed form for the minimal burn-in. New paragraph after Theorem 5, expanded Remark 21 in the
+  appendix, claim-status table row.
+- a3 "machine-checked": scoped to the Lean theorems as formalised; count sentence corrected (163 in the
+  axiom report, 259 theorem/lemma declarations in 16 files / 4,159 lines, 97 not in the report, no
+  sorry/admit/axiom, statement map not human-checked). Section 3.5, AI statement, appendix Lean map.
+- a4 "predicts the sign" removed; sign is non-discriminating (all 42 cells have positive gap and gain,
+  checked in b1x/results/oracle_b3.json); coefficient drift fixed to -0.063 (cells) and -0.039 (units)
+  as in oracle_b3.txt. Both pooled values (+0.125 over five, +0.133 over seven) stay.
+- a5 Boege et al.: corrected in Related Work and Section 3.4 per review/00_decision.md V1
+  (generic faithfulness for edge-only and vertex-only colourings, Props 5.3/5.4; mixed Example 5.7;
+  open Question 5.8; common-head condition belongs to BPEC-DAGs/GECS). The text says that on our
+  reading the unrolled model is the mixed case and that this reading is not established.
+  I did not re-trace the mapping from Prop. 11's model to their classes.
+- a6 real data reframed as a different question (estimating relatives from one record), mostly
+  negative or non-discriminating; "kill rule" -> "stop condition" and "confirmatory" -> "claim-level"
+  in paper and appendix; new Table 5 (units behind each study); pseudo-replication stated in text
+  (E1 10 segments of one series; B3 30 units from 3 runs; rivers 900 slots / 457 stations / max reuse 8;
+  12 h and 24 h are the same records). "Not pre-registrations" wording kept.
+- a8 references: added gentzel2019case, brouillard2025landscape, andrews2026daggeneration,
+  nagarajan2025topology, assaad2022survey, mooij2013ode, hyttinen2016subsampled, vowels2022dya,
+  hamilton1994time, lutkepohl2005new, kilian2017structural, muller2003tests (andrews2023boss is in
+  refs.bib but not cited). Existence checked on 2026-11-10: Crossref for Assaad, Vowels, Muller-Elliott
+  (DOI 10.1111/1468-0262.00447), Kilian-Lutkepohl, Lutkepohl, Hamilton; arXiv API for the arXiv ones.
+  Venue and page details of the arXiv ones (NeurIPS 2019, CLeaR 2025/PMLR 275, JMLR 27(147), UAI 2013,
+  PGM 2016 PMLR 52:216-227) come from the Round-1 domain reviewer's web checks, not from my own.
+  The sentences describing them are written from titles, abstracts and that report, not full texts.
+  Dynare initial-state options were not cited (not verified). SPADE paragraph shortened.
+- a9 claim-status table (Table 1, end of the Introduction) and the replicates-versus-single-record
+  table (Table 5). The generator survey stays in Section 5.1 (it was already in the main text).
+- a12 REPRODUCE limits added to Supplementary information; plan count (eight plans, push records for
+  three) stated in Section 5.2 and the appendix timeline.
+- a13 "fixed start of Reisach et al." and "horizons proposed for benchmarks" reworded: the preprint
+  fixes neither an initial law nor a horizon.
+- Demoted to the appendix: the ER proposition and figure (Remark in Section 3.2 keeps the formula, the
+  peaks and the c = 1 convergence sentence); the block-mean/subsampling statements (Section 4.2 is a
+  short summary; statements in Appendix "Block Means and Subsamples: Statements").
+- SVAR spectral radii: not computed (this environment has no numpy and the check would be a new
+  analysis). The paper says the weights were rescaled to a spectral radius of at most 0.8 by
+  construction (common.py RHO_CAP) and that realised radii were not tabulated. Still open: roadmap b7.
+
+**Not done in this revision**
+- Roadmap (b): matched-correlation counterfactual start, variance-matched control, first-slice-excluded
+  scoring as primary, per-graph burn-in or chain-family tightness, run-level cluster inference for
+  E1/B3/rivers, missing baselines, mixing times, K-sensitivity on real data, symbolic faithfulness
+  check, a full `reproduce.sh all` run, remaining push records.
+- Roadmap (c), author only: human reading of the load-bearing proofs and of the Lean statement map,
+  OSF registration and a DOI archive of the repository, AI-statement wording with model identifiers,
+  contact with the Reisach authors.
+- The repository still says "pre-registered" in b1x/README.md, b3/PLAN.md, b3/README.md and some commit
+  messages; those files were not touched here (the paper says "time-stamped plan").
+- The body is now about 28 pages (appendix from page 29, 83 pages in all).

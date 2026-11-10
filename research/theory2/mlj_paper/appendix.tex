@@ -4,7 +4,7 @@
 \label{app:overview}
 \Cref{app:exact} gives full proofs of \cref{sec:exact} (including
 \cref{rem:sharp}), \cref{app:enum} the exhaustive enumeration check,
-\cref{app:agg} the proofs of \cref{sec:agg}, \cref{app:finite} the proofs of
+\cref{app:aggstate,app:agg} the statements and proofs for \cref{sec:agg}, \cref{app:finite} the proofs of
 \cref{sec:finite} (including the plug-in effective sample size and the scope
 of the recovery bound), \cref{app:sims} the simulation checks of F1--F3,
 \cref{app:lean} the map from statements to Lean names, \cref{app:real} data
@@ -148,12 +148,18 @@ $\Src(i)\subseteq\Src(j)$, is $\Src(i)\ne\Src(j)$. Lean:
 $B\ge p-1$ forms \lname{rhoBurn_eq}, \lname{sBurn_eq} as corollaries.
 \end{proof}
 
-\begin{remark}[$B\ge\Delta$ cannot be lowered]\label{rem:sharp}
+\begin{remark}[sharpness of $B\ge\Delta$ for one edge]\label{rem:sharp}
 For the single edge $0\to1$ with self-loops, $\Delta=1$; with $B=1$ the window
 value is the stationary value $1/2$, and with $B=\Delta-1=0$ it is at least
-$2/3$ for every $T\ge2$ (\lname{edgeLoops_burn_sharp}). Enumeration agrees: on 726
-random summary graphs $B=\Delta$ always gave the stationary value and $B=\Delta-1$
-did not in 445 (\cref{app:b1}).
+$2/3$ for every $T\ge2$ (\lname{edgeLoops_burn_sharp}). So $B\ge\Delta$ cannot be
+lowered for this graph. This is all that is proved. Enumeration on 726 random
+summary graphs gave the stationary value at $B=\Delta$ in all of them, and at
+$B=\Delta-1$ in 281; in 445 it did not (\cref{app:b1}). Hence $\Delta-1$
+suffices for some graphs, and the minimal sufficient burn-in of a given graph
+can be shorter than $\Delta$. We have no proof that for every $\Delta\ge2$ some
+graph needs exactly $\Delta$ slices, and no closed form for the minimal
+burn-in. Proving the first, for instance for the directed chain with
+self-loops, would turn the enumeration into a theorem.
 \end{remark}
 
 \begin{proof}[Proof of \cref{cor:statiff}]
@@ -200,7 +206,75 @@ conjecture is \cref{thm:stat}, not the limit of $\GT$.
 
 %=============================================================================
 %=============================================================================
-\section{Proofs for Section~\ref{sec:agg}}
+\section{Block Means and Subsamples: Statements}
+\label{app:aggstate}
+
+
+
+
+For a stable linear SVAR with independent innovations, nodes with disjoint
+summary ancestor sets are independent at all lags, and so are any per-node,
+time-invariant transforms, including block means and subsamples; otherwise
+the lag-0 covariance is nonzero for almost every parameter
+(\cref{prop:zero}). So the population relatives of
+contemporaneous values are $\rel_S$ for every observation scheme, and the
+population relatives sort is the stationary value of \cref{thm:stat} (on
+non-self-loop edges), not the finite-$\GT$ value. Var- and $R^2$-sortability
+behave differently (\cref{thm:agg}): block means converge, at the textbook
+Fej\'er rate for averages of a stationary series
+\citep[Ch.~7]{brockwell1991time}, to the long-run structural model of
+\citet{gong2017aggregated}, whereas subsamples keep the snapshot covariance. As a
+consequence, for large block size, block-mean $R^2$-sortability is $0$ on
+out-stars and $1$ on in-stars with at least two arms for all weights; on
+out-stars subsampled data are $R^2$-sorted correctly on average ($0.84$) while
+block means drift to $0$. We claim only these sortability consequences.
+
+
+Assumptions: $X(t)=\sum_{\tau=1}^{L}A_\tau X(t-\tau)+\varepsilon(t)$, $t\in\mathbb Z$,
+i.i.d.\ innovations with diagonal positive-definite covariance $\Sigma$, stable
+(all roots of $\det(I-\sum_\tau A_\tau z^\tau)$ outside the unit disc),
+stationary solution; the summary graph has $i\to j$ iff $(A_\tau)_{ji}\ne0$ for
+some $\tau$. $\Gamma(h)$ is the autocovariance, $A(1)=\sum_\tau A_\tau$, and for a
+block size $D$ the block means are $\bar Y_s=\frac1D\sum_{u<D}X(sD{+}u)$ and the
+subsamples $Z_s=X(sD)$.
+
+\begin{proposition}[relatives survive any per-node filter]\label{prop:zero}
+If $\anc_S(i)\cap\anc_S(j)=\emptyset$ then $X_i$ and $X_j$ are independent at
+all lags, and so are any per-node, time-invariant (possibly nonlinear)
+transforms of them, including $\bar Y$ and $Z$ for every $D$. If the
+ancestor sets intersect, $\Gamma(0)_{ij}$, $\mathrm{Cov}(\bar Y)_{ij}$ and the
+long-run covariance are nonzero for Lebesgue-almost every parameter.
+\nolean{needs the SVAR moving-average representation and real-analytic genericity}
+\end{proposition}
+
+\begin{theorem}[block means vs subsampling]\label{thm:agg}
+(a) $\|D\,\mathrm{Cov}(\bar Y)-S_{LR}\|\le\frac1D\sum_h|h|\|\Gamma(h)\|$,
+with $S_{LR}=(I-A(1))^{-1}\Sigma(I-A(1))^{-\top}$.
+(b) If $\GS$ is acyclic apart from self-loops, $S_{LR}$ is the covariance of a
+static SEM (this long-run SEM is due to \citealp[Eqs.~(5), (10)]{gong2017aggregated}) on $\GS$ with weights $A(1)_{ji}/(1-\lambda_j)$ and noise variances
+$\sigma_j^2/(1-\lambda_j)^2$, $\lambda_j=A(1)_{jj}<1$.
+(c) $\mathrm{Cov}(Z_s)=\Gamma(0)$ for every $D$.
+(d) Hence, for large $D$, block-mean $R^2$-sortability is $0$ on out-stars and
+$1$ on in-stars with $\ge2$ arms, for all weights; under subsampling every
+contemporaneous criterion keeps its $\Gamma(0)$ value.
+\lean{(a) counting identity \lname{fejer_identity}; (b) \lname{longrun_factor}, \lname{selfloop_sum_lt_one}; the probabilistic steps, the rate and (c)--(d) are not machine-checked.}
+\end{theorem}
+Part (a) is the standard Fej\'er/Ces\`aro computation for the variance of the
+mean of a stationary series \citep[Ch.~7]{brockwell1991time}, written for
+block means of a vector process; (b) is due to \citet{gong2017aggregated}; (c)
+is stationarity. We claim only the sortability consequences (d).
+
+The $R^2$ statement for stars strengthens the three-node analysis in
+\citet[App.~D]{herman2025unitless}, whose qualitative message (that $R^2$
+reflects connectivity, with an asymmetry between colliders and confounders)
+we credit. Numerical observations (exact population moments, not proved):
+mean block-mean $R^2$-sortability over 150 in-trees moves from $0.853$
+($D=1$) to $0.834$ ($D=4$--$8$) and $0.880$ ($D=256$), so it is not monotone in
+$D$; on out-stars subsampled data are $R^2$-sorted at $0.842$ on average while
+block means give $0.546$ ($D=4$), $0.101$ ($D=16$) and $0$ in the limit.
+
+
+\section{Proofs for the Block-Mean and Subsampling Statements}
 \label{app:agg}
 
 \begin{proof}[Proof of \cref{prop:zero}]
@@ -585,9 +659,10 @@ perturbation, Chernoff algebra, trace and Toeplitz identities, partial
 correlation formulas, threshold locations; several are elementary, e.g.\
 $|\hat s-\tfrac12|\le\tfrac12$); 12 examples (10 concrete graphs, the sharpness
 example \lname{edgeLoops_burn_sharp}, 1 numerical $r_{\mathrm{crit}}$ instance).
-No human has checked, line by line, that each Lean statement says what the
-corresponding paper statement says; the map below is the authors' (AI-generated)
-reading.
+The sources contain 259 theorem and lemma declarations in all; the axiom
+report lists the 163 above, and the other 97 are not in it. No human has
+checked, line by line, that each Lean statement says what the corresponding
+paper statement says; the map below is the authors' (AI-generated) reading.
 
 \begin{center}\small
 \begin{tabular}{>{\raggedright\arraybackslash}p{0.21\textwidth}>{\raggedright\arraybackslash}p{0.53\textwidth}>{\raggedright\arraybackslash}p{0.16\textwidth}}
@@ -600,7 +675,7 @@ statement & Lean names & status \\
 \cref{thm:limit} & \lname{sRho_unrolled_exact}, \lname{sRho_unrolled_bounds_maxFinDist} ($\Delta$ form), \lname{sRho_unrolled_bounds} ($p-1$ form), \lname{tendsto_sRho_unrolled}, \lname{tendsto_sRho_GT}; $\Delta$: \lname{maxFinDist}, \lname{dist_le_maxFinDist}, \lname{exists_dist_eq_maxFinDist}, \lname{maxFinDist_le_card_sub_one} & checked \\
 \cref{cor:iff} & \lname{tendsto_half_iff}, \lname{crossEdges_eq_empty_tfae}, \lname{sRho_unrolled_ge_of_cross}, \lname{reisach_theorem4}, \lname{limitValue_dag} & checked \\
 \cref{thm:stat} & \lname{rhoBurn_eq_maxFinDist}, \lname{sBurn_eq_maxFinDist}, \lname{relBurn_iff_maxFinDist}, \lname{walkN_of_reach_maxFinDist} ($B\ge\Delta$); \lname{rhoBurn_eq}, \lname{sBurn_eq} ($B\ge p-1$); \lname{rhoZ_eq}, \lname{sZ_eq}, \lname{sOf_window}, \lname{relSet_eq_iff_src}, \lname{mem_upEdges_iff} & checked \\
-\cref{rem:sharp} ($B\ge\Delta$ cannot be lowered) & \lname{edgeLoops_burn_sharp}, \lname{sBurn_zero}, \lname{relBurn_zero_iff}, \lname{maxFinDist_edgeLoops} & checked \\
+\cref{rem:sharp} (sharpness of $B\ge\Delta$ for one edge) & \lname{edgeLoops_burn_sharp}, \lname{sBurn_zero}, \lname{relBurn_zero_iff}, \lname{maxFinDist_edgeLoops} & checked \\
 \cref{cor:statiff} & \lname{sBurn_eq_half_iff_maxFinDist}, \lname{sBurn_eq_half_iff}, \lname{sBurn_eq_half_iff_common_anc}, \lname{sZ_eq_half_iff}, \lname{upEdges_eq_empty_tfae}, \lname{stat_half_of_strong}, \lname{stat_half_of_outForest}, \lname{inForest_isRel_iff}, \lname{inForest_up_iff}, \lname{statValue_inForest}, \lname{statValue_inForest_gt_iff} & checked \\
 \cref{tab:examples} & \lname{collider_limit}, \lname{fork_limit}, \lname{chain3_limit}, \lname{collider_stat}, \lname{fork_stat}, \lname{chain3_stat} & checked \\
 self-loop remark & \lname{edgeLoops_limit}, \lname{edgeNoLoops_sRho} & checked \\
@@ -822,13 +897,13 @@ Times below are commit timestamps relative to the first plan commit ($T_0$).
 \toprule
 time & event \\
 \midrule
-$T_0+0{:}00$ & plan 1 committed: targets T1--T3, predictions P1--P3, kill rule \\
+$T_0+0{:}00$ & plan 1 committed: targets T1--T3, predictions P1--P3, stop condition \\
 $T_0+0{:}14$ & theory of \cref{sec:exact,sec:agg}, enumeration checks, operationalisation of P1--P3 (before data) \\
-$T_0+0{:}17$ & study 1 results (P2, P3 fail; kill rule triggered) \\
-$T_0+1{:}05$ & plan 2 committed: F1--F3 targets, Lean target, predictions P4--P6, kill rule \\
+$T_0+0{:}17$ & study 1 results (P2, P3 fail; stop condition met) \\
+$T_0+1{:}05$ & plan 2 committed: F1--F3 targets, Lean target, predictions P4--P6, stop condition \\
 $T_0+1{:}18$--$1{:}31$ & Lean formalisation of \cref{sec:exact} and algebraic parts of \cref{sec:agg} \\
 $T_0+1{:}38$ & finite-sample theory, simulations, operationalisation of P4--P6 (before data) \\
-$T_0+1{:}44$ & study 2 results (P4, P6 fail; kill rule triggered) \\
+$T_0+1{:}44$ & study 2 results (P4, P6 fail; stop condition met) \\
 $T_0+4{:}58$ & plan 3 committed: candidate scoping, graph-only predictions, P7--P9 (before any dependence statistic) \\
 $T_0+5{:}02$ & study 3 results (P7, P8 pass; P9 fails; replication passes) \\
 $T_0+5{:}14$--$5{:}24$ & Lean formalisation of the finite-sample lemmas; errata \\
@@ -862,7 +937,9 @@ fixed in plan 4, together with the secondary analysis on the published graph $G_
 the theorem fails against the sensor indicator on strictly ordered edges.
 
 \textbf{Later plans (benchmark experiments and B3).} Times in the table are
-commit times (UTC, set by the committing client). For three plans we also
+commit times (UTC, set by the committing client). Eight plans were written in
+all: the four real-data plans, and the plans of B1, B1-NL, B3 and the learner
+extension. For three of the eight we also
 retrieved the hosting service's own push records (its activity log, UTC, 09
 Nov): B1-NL plan 04:10:47; B3 plan 04:21:12 and B3 results 04:24:37;
 learner-extension plan 08:20:31 and results 12:44:27. Each is 2 to 28 seconds
@@ -937,7 +1014,7 @@ Faithfulness inside the blocks is assumed, as in \cref{prop:zero}. A zero-mark o
 $o\in\{0,\frac12,1\}$ from the estimated counts, and the loss is $|o-p|$ for the predicted value $p$. For each competitor take the instances where it disagrees with the theorem;
 $\Delta=$ loss(theory) $-$ loss(competitor), pooled, with a unit-level exact sign-flip test (1{,}024 flips for 10 units) and Holm correction over eight competitors, and a unit-bootstrap CI.
 E1a (prerequisites): non-relatives declared $<0.5$ and relatives detected $\ge0.8$. E1b: $\Delta\le-0.10$ and Holm $p\le0.05$ for all eight. E1c: the same restricted to instances whose own pair is declared dependent ($\Delta<0$).
-Separation was to be claimed iff E1a, E1b and E1c all pass on \texttt{citris\_\allowbreak 1}. Kill rules: K1 (E1a fails: no claim), K2 (a competitor is significantly better: no claim against it), K3 (E1b passes and E1c fails: attributed to power-induced ties).
+Separation was to be claimed iff E1a, E1b and E1c all pass on \texttt{citris\_\allowbreak 1}. Stop conditions: K1 (E1a fails: no claim), K2 (a competitor is significantly better: no claim against it), K3 (E1b passes and E1c fails: attributed to power-induced ties).
 None was triggered on the primary analysis.
 
 \begin{table}[h]
@@ -1040,7 +1117,7 @@ for 105 pairs at $\alpha=0.01$, $z_c$ rises from $3.90$ ($L=0$) to $4.35$ ($L=3$
 
 \textbf{Design.} Held-out data: the wind-tunnel regime-jump runs (\texttt{regime\_\allowbreak jumps\_\allowbreak single}, \texttt{regime\_\allowbreak jumps\_\allowbreak multi}), $2\times32=64$ regimes of $10{,}000$ steps, in the same archive as the study-3 data but never analysed in study 3.
 Load\_\allowbreak in, load\_\allowbreak out, pot$_1$, pot$_2$ follow independent mirrored random walks within a regime; the hatch and sensor parameters are constant within a regime. The first 100 rows of each regime are dropped. Graph: 20 edges without the hatch (19 predicted $1$, pot$_1\to$ signal$_1$ predicted $1/2$); 54 non-relative and 51 relative pairs; 1{,}280 subgraphs (10 of size 5 and 10 of size 8 per unit). Primary: $D=1$ (first differences), $L=30$ (about 9\,s) against $L=0$; secondary: block means with $D=10$ and $L=3$ against $L=0$.
-Success required Q7--Q10 all to pass at the primary configuration. Kill rules: Q7 fails (saturation) or Q10 fails (lags do not help detection, and the lagged estimator is not recommended). Plan 4 states that E2 is not a re-analysis of P9 and that P9's verdict is final.
+Success required Q7--Q10 all to pass at the primary configuration. Stop conditions: Q7 fails (saturation) or Q10 fails (lags do not help detection, and the lagged estimator is not recommended). Plan 4 states that E2 is not a re-analysis of P9 and that P9's verdict is final.
 
 \begin{sidewaystable}
 \caption{E2, 64 held-out regimes, 95\% unit-bootstrap CIs. Q8: accuracy on the 1{,}216 instances predicted $1$. Q10: relatives detected, lagged minus lag 0 (non-relatives declared difference in the last column).}
@@ -1061,7 +1138,7 @@ lag 0, $D{=}1$ & 0.002 [0.001, 0.004] & 0.552 [0.532, 0.570] & 0.120 [0.066, 0.1
 
 Detection of the 51 relative pairs: $D=1$: $0.328$ [0.312, 0.345] at lag 0 and $0.398$ [0.383, 0.412] with $L=30$; $D=10$: $0.592$ [0.584, 0.599] and $0.585$ [0.576, 0.592] with $L=3$ (lags reduce detection: the Bonferroni cost exceeds the gain).
 On \texttt{citris\_\allowbreak 1} with $L=5$ against $L=0$: $0.976$ against $0.969$, difference $+0.008$ [0, 0.024], so Q10 fails there; detection is already nearly saturated at lag 0.
-\textbf{Verdict.} Q9 fails at the primary configuration, so E2 does not succeed; no kill rule is triggered (Q7 and Q10 pass). Lags raise detection at fine resolution without adding false positives, as A1 and A3 predict.
+\textbf{Verdict.} Q9 fails at the primary configuration, so E2 does not succeed; no stop condition is triggered (Q7 and Q10 pass). Lags raise detection at fine resolution without adding false positives, as A1 and A3 predict.
 The study-3 estimator (lag 0) rerun on these held-out regimes fails the graded criterion again ($0.202$ at $D=10$, $0.120$ at $D=1$): the P9-type failure repeats on held-out data. P9's original verdict ($0.267$, failed) stands; E2 is not presented as rescuing it.
 The development check of plan 4 showed that, on the study-3 data with the same estimator, drawing different subgraph seeds moves the P9 statistic from $0.267$ to $0.338$. We report this as variability of the statistic (about $0.07$ from the subgraph draw alone); it is a development run, not a verdict, and it does not change the P9 outcome.
 
@@ -1330,6 +1407,51 @@ $\anc_S(v)\cap\anc_S(w)\ne\emptyset$, and the proof of \cref{thm:stat} applies.
 All graphs here are a non-loop random graph plus a self-loop at every node, so
 $|\Es|=p+m$ with $m$ the number of non-loop edges, and for acyclic graphs
 $|\Ex|=m$.
+
+\textbf{Directed ER: statement and figure.}
+Let $\GS$ be the directed Erd\H{o}s--R\'enyi graph $G(p,c/p)$ plus a self-loop at
+every node, and $x$ the largest root of $x=1-e^{-cx}$ ($x=0$ for $c\le1$). By
+\cref{thm:limit,thm:stat} only $|\Ex|$ and $|\Eu|$ matter.
+
+\begin{proposition}[ER limits; proved on paper]\label{prop:er}
+Let $L(\GS)=\lim_{T\to\infty}\srho(\GT)$ at fixed $p$ and $S(\GS)=\srho^W$.
+In probability and in $L^1$ as $p\to\infty$,
+$L(\GS)\to\tfrac12+\frac{c(1-x^2)}{2(1+c)}$ and
+$S(\GS)\to\tfrac12+\frac{c\,F_\uparrow}{2(1+c)}$ with
+$F_\uparrow=(1-x)(1-e^{-c})+x(1-x)\big(1-e^{-c(1-x)d}\big)$, where $d$ is the
+smallest fixed point in $[0,1]$ of $d=1+e^{-c}-e^{-c(1-x)d}$ ($d=1$ for $c\le1$).
+\lean{only the deterministic witness lemmas for $E_\uparrow$ (\lname{upEdge_witness}, \lname{upEdges_subset_confluenceNL}); the probabilistic proof (\cref{app:erproof}) uses textbook Poisson-coupling, Chernoff and Galton--Watson facts \citep{hofstad2016random}. Not proved: rates, the window $c=1+\lambda p^{-1/3}$, a.s.\ convergence, fixed $T$ as $p$ grows.}
+\end{proposition}
+The first formula says that the fraction of non-loop edges inside an SCC tends
+to $x^2$ (giant strongly connected component, \citealp{dorogovtsev2001giant,dovgal2020birth}).
+$L(1)=3/4$, $L$ peaks at $0.754$ near $c=1.07$ and then decays like $e^{-c}$;
+$S$ peaks at $0.665$ near $c=1.09$ (\cref{fig:er}). Random summary graphs are
+thus rel-sortable only near or below criticality, as the giant SCC removes the
+signal. For in-forests (rivers) the identities are exact (\cref{app:er}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.6\textwidth, height=0.3\textwidth, xmin=0, xmax=6, ymin=0.49, ymax=0.78,
+  xlabel={mean degree $c$}, ylabel={rel-sortability},
+  tick label style={font=\scriptsize}, label style={font=\footnotesize},
+  legend style={font=\scriptsize, draw=none, fill=none, at={(0.98,0.97)}, anchor=north east},
+  axis line style={gray}, tick style={gray}]
+\input{er_curves}
+\addplot[only marks, mark=square*, mark size=1.8pt, color={rgb,255:red,235;green,104;blue,52}]
+  coordinates {(0.5,0.6666) (1,0.7486) (1.5,0.6975) (2,0.6214) (3,0.5434) (5,0.5059)};
+\addplot[only marks, mark=*, mark size=1.8pt, color={rgb,255:red,42;green,120;blue,214}]
+  coordinates {(0.5,0.5658) (1,0.6557) (1.5,0.6159) (2,0.5629) (3,0.5215) (5,0.5028)};
+\legend{$L(c)$,$S(c)$,exact $L$,exact $S$}
+\end{axis}
+\end{tikzpicture}
+\caption{\cref{prop:er} (lines) against exact computation on seeded graphs
+($p=2\cdot10^4$ to $10^5$; points, means over seeds). The standard deviations
+over seeds are at most $0.0022$ (\cref{app:er}).}
+\label{fig:er}
+\end{figure}
+
+
 
 \textbf{In-forests (proved identities).} Let the non-loop part be an in-forest
 with $m$ edges and $n_1$ nodes with exactly one parent. By
@@ -2103,7 +2225,7 @@ SHD$/|E|$): rel- $1.05$/$1.70$, $R^2$- $1.33$/$1.96$, Var- $0.61$/$1.39$,
 random $1.72$/$2.04$, FLOP $0.27$/$0.46$, PC $0.40$/$0.64$; the empty graph has
 normalised SID $0.50$. Order accuracy without edges leaving the first window
 slice (non-SC families): rel-SortnRegress $+0.089$ $[0.079,0.100]$ (B1), $+0.067$
-(NL), $+0.087$ (SGN), $+0.095$ (SGNU). Multiplicity: each confirmatory claim of
+(NL), $+0.087$ (SGN), $+0.095$ (SGNU). Multiplicity: each claim of
 B1, B1-NL, B3 and the extension gets one claim-level $p$ (the $k$-th smallest
 Holm $p$ for ``$k$ of $m$ families'' rules, the best swap for swap rules, the
 cluster permutation for tracking, the plan's Holm $p$ for B3); Holm over the 21
@@ -2124,7 +2246,7 @@ $P(c_i<c_j)+\tfrac12P(c_i=c_j)$, treating the indicators as independent. It uses
 no simulated data. Against the observed G1$-$G2 gain: cell level Spearman
 $0.99$, $R^2=0.97$, slope $1.03$, intercept $-0.010$; unit level $R^2=0.61$
 against $0.34$ for the exact gap (difference $+0.27$ $[0.23,0.30]$); in a joint
-regression the gap's coefficient is $-0.05$. Predicted G1 / G2 levels: chain
+regression the gap's coefficient is $-0.063$ over cells and $-0.039$ over graph--horizon units. Predicted G1 / G2 levels: chain
 $0.756$/$0.528$ (observed $0.749$/$0.532$), ring $0.702$/$0.503$ ($0.687$/$0.507$),
 in-tree $0.746$/$0.677$ ($0.743$/$0.673$). Without slice-1 edges the non-SC gain
 is predicted to fall from $+0.130$ to $+0.096$ (observed $+0.125$ to $+0.089$).
@@ -2138,7 +2260,7 @@ only (the mechanism of \cref{sec:exact}) and pairs that are relatives under
 both starts but differ in correlation strength (a transient that needs no
 graph argument). We did not decompose the predicted gain into these two
 parts, so the calculation does not show that the gain is due to the first.
-The exact gap therefore predicts sign and ranking only.
+The exact gap therefore gives a ranking and a rough scale; all 42 cells have the same sign, so the sign tests nothing.
 
 \textbf{Generator survey.} We read the source code of tigramite 5.2.10.1
 (\texttt{structural\_causal\_process}: zeros plus noise, burn-in
@@ -2207,7 +2329,7 @@ $\Delta=-0.50$ against the tie rules and the sensor indicator, 20/20 units;
 R$\to$G sorted 264/264 when B is observed and tied 123/123 when not. S1
 (predicted tie, detected edge; 1{,}251 instances): theorem beats the eight
 naive rules ($\Delta=-0.43$, 30/30 units) and the theorem on $G_D$ narrowly
-($\Delta=-0.21$, 21/30 units, Holm $p=0.021$). No kill rule triggered.
+($\Delta=-0.21$, 21/30 units, Holm $p=0.021$). No stop condition met.
 
 \textbf{Failures.} \texttt{scm\_4\_blue}: the tie rule is significantly better
 ($\Delta=+0.115$, 0/10 units, reverse $p=0.001$); post hoc, the intervened blue
