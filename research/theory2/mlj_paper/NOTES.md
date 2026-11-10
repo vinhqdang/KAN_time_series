@@ -75,9 +75,9 @@ no undefined references or citations, no overfull boxes, 58 references.
 
 ## For the author to do or confirm
 
-- **Competing interests:** placeholder (red) in the Declarations.
-- **Code availability:** placeholder for the public repository URL or archive DOI.
-- **Acknowledgements:** placeholder; delete the heading if there are none.
+- **Competing interests:** "no competing interests" (stated by the user).
+- **Code availability:** GitHub URL given; before submission make sure the repository is public and consider a Zenodo archive with a DOI (Springer prefers a persistent identifier).
+- **Acknowledgements:** section removed (none supplied); add one if wanted.
 - **Funding and author contributions** are written from what the user stated (no funding; sole
   author). Confirm the wording.
 - **AI-use statement** (Section 7.1): confirm against Springer's current policy.
