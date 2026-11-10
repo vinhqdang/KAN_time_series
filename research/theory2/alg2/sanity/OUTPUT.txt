@@ -1,0 +1,19 @@
+Tiny sanity computations, run once on 2026-11-10 with /usr/bin/python3 (numpy 2.5.4), one core. Total CPU time under 2 minutes.
+These are not experiments: one synthetic generator written for this note, 8 seeds, no tuning, no real data.
+
+$ python3 sanity_flow.py        (p=8 in-forest, T=1500, multi-filter latent driver, 2 % multiplicative measurement noise, tau=0.02)
+local-event prob 0.01 {'cf_lp': (0.927, 0.043), 'nnls': (0.878, 0.044), 'var_ols': (0.852, 0.083), 'corr': (0.88, 0.052), 'corr+mean-order': (0.951, 0.026)}
+local-event prob 0.0 {'cf_lp': (0.777, 0.056), 'nnls': (0.798, 0.066), 'var_ols': (0.555, 0.112), 'corr': (0.703, 0.043), 'corr+mean-order': (0.859, 0.038)}
+seconds 14.5
+(values: mean and standard deviation over 8 seeds of the directed AUROC)
+
+$ python3 sanity_flow2.py       (same generator; mean directed AUROC over 8 seeds)
+pi 0.03 meas 0.0 tau 0.001 {'cf_lp': 0.958, 'corr+mean-order': 0.958}
+pi 0.01 meas 0.0 tau 0.001 {'cf_lp': 0.942, 'corr+mean-order': 0.952}
+pi 0.01 meas 0.02 tau 0.001 {'cf_lp': 0.941, 'corr+mean-order': 0.951}
+pi 0.01 meas 0.02 tau 0.1 {'cf_lp': 0.902, 'corr+mean-order': 0.951}
+
+$ python3 sanity_subsample.py   (p=4, k=2, 200 random VAR(1) with real distinct eigenvalues and diagonal D)
+p 4 number of observationally equivalent roots per draw (200 draws): (array([0, 2]), array([ 10, 190]))
+(190 draws: exactly two of the 16 square roots of M^2 admit a positive diagonal D, namely +M and -M.
+ 10 draws: none passed the 1e-8 tolerance, the true root included; this is a numerical failure of the check and was not investigated.)
