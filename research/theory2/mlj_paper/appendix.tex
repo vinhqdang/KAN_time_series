@@ -2119,12 +2119,11 @@ all of them and necessary for 445 of them (\cref{rem:sharp}).
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.48\linewidth]{figs/fig_b1.pdf}\hfill
-\includegraphics[width=0.48\linewidth]{figs/fig_srho_vs_T.pdf}
-\caption{Left: per-cell G1$-$G2 gain in rel-SortnRegress order accuracy
+\includegraphics[width=0.95\linewidth]{figs/fig_b1.pdf}
+\caption{B1: per-cell G1$-$G2 gain in rel-SortnRegress order accuracy
 against the exact population gap (all 42 cells below the diagonal and above
-0), and normalised SID per method under G1 and G2. Right: exact
-$\srho(\GT)$ against $T$, mean over the 30 test graphs per family and $p$.}
+0), and normalised SID per method under G1 and G2. The exact curves of
+$\srho(\GT)$ against $T$ are in \cref{fig:srho}.}
 \label{fig:srhoT}
 \end{figure}
 
@@ -2416,6 +2415,16 @@ C1--C7 & Holm over seven claims at $0.05$ & adjusted $p$: $0.016$ (V3), $0.0007$
 \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig_baselines.pdf}
+\caption{Q5: label-free methods (orange, blue, grey) and references that use the time labels (green) under the fixed start (circles) and a burn-in
+(squares); SHD per true edge without first-slice edges, all families, $p\in\{5,10\}$, $T\in\{3,5\}$, 95\% graph-cluster intervals
+(\texttt{figs/fig\_learners.py}, from \texttt{b1y/results/q5.csv.gz}). FLOP is the best label-free method in 7 of the 8
+(family, start) groups; every label-free method is worse than the labelled references, and only the SortnRegress variants and DirectLiNGAM get worse than the empty graph (dashed) under the burn-in.}
+\label{fig:baselines}
+\end{figure}
 
 \textbf{Deviations (all recorded).} (1) Addendum~2: NOTEARS runs only for
 $d\le30$ after measured fit times on burn-in data (about $150$\,s per fit at

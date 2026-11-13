@@ -21,6 +21,8 @@
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.16}
 \usepgfplotslibrary{fillbetween}
+\input{figs/tikzstyle.tex}
+\newcommand{\tikzfig}[1]{\adjustbox{max width=\textwidth,center}{\input{figs/tikz/#1}}}
 \usepackage{url}
 \usepackage[capitalize,noabbrev]{cleveref}
 
@@ -143,6 +145,20 @@ record? \textbf{Q4:} what does it do to label-free learners and to real data?
 The questions matter for real time series, whose summary graphs are often
 feed-forward (rivers, supply chains, signalling cascades), and for anyone who
 builds a benchmark from an unrolled graph.
+
+\begin{figure}[t]
+\centering
+\tikzfig{fig_hero}
+\caption{The idea in one picture. (a) A summary graph with a self-loop at every node.
+(b) Its time-unrolled DAG $G_T$ for $T=4$: one column per slice, one row per variable.
+The \emph{relatives} of a node are the nodes that share an ancestor with it; the blue nodes
+are the eight relatives of $c_2$. (c) A label-free learner receives only the columns of the data, in unknown order.
+Counting the partners of each column (here, exactly, the number of relatives $\rho$) still carries the time
+order: along every edge of (b) the count either grows or stays equal (for example $c_1\to c_2$: $4\to 8$).
+The rest of the paper asks how exactly this footprint can be computed, how a simulation's start changes it,
+and how much of it a learner sees.}
+\label{fig:hero}
+\end{figure}
 
 \textbf{Contributions.} \emph{(Q1) The footprint.} The exact rel-sortability of
 every edge of the time-unrolled DAG $\GT$, for every summary graph with
@@ -523,6 +539,17 @@ $\Ex\subseteq\Es$ is the set of edges between different SCCs and
 $\Eo=\Es\setminus\Ex$. A \emph{source} SCC has no incoming edge from another
 SCC, and $\Src(v)$ is the set of source SCCs that reach $v$.
 
+\begin{figure}[t]
+\centering
+\tikzfig{fig_defs}
+\caption{Notation. (a) A summary graph with a self-loop at every node, and its table of distances $d(u,v)$
+(shortest directed path; $\infty$ if $v$ is not reachable from $u$). The largest finite entry is
+$\Delta$ (here $3$, from $a$ to $d$); it is the burn-in that \cref{thm:stat} asks for.
+(b) The summary-graph families used in the paper, with their $\Delta$: a directed chain, a directed ring (the
+smallest strongly connected example), in- and out-trees (a river network is an in-tree), and a two-way path.}
+\label{fig:defs}
+\end{figure}
+
 \subsection{Exact values, limit and burn-in}
 \label{sec:exact}
 
@@ -558,6 +585,18 @@ so $\lim_{T\to\infty}\srho(\GT)=L(\GS)$.
 $j$ are reached by the same nodes, which forces $t\le d(u,i)\le\Delta$, so at
 most $\Delta$ copies score $1$.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig_srho.pdf}
+\caption{Exact rel-sortability of unrolled DAGs (computed by enumerating ancestors and descendants of $G_T$, not from the theorems,
+which they confirm). (a) $\srho(G_T)$ under the fixed start against the horizon $T$. All curves tend to the limit of \cref{thm:limit}
+(dotted: $0.73$ for the chain and the trees, $0.5$ for strongly connected graphs). The strongly connected ring has
+$\srho=1$ for all $T\le p$ and the two-way path starts at $1$ and decays slowly, so strongly connected summary graphs are not
+protected at short horizons. (b) The value of the last $T=6$ slices after a latent burn-in of $B$ slices: it falls to the
+stationary value of \cref{thm:stat} at or before $B=\Delta$ (triangles).}
+\label{fig:srho}
+\end{figure}
+
 \begin{corollary}[necessary and sufficient condition]\label{cor:iff}
 $\lim_T\srho(\GT)=1/2$ iff every weakly connected component of $\GS$ is
 strongly connected. Otherwise $\srho(\GT)\ge\tfrac12+\frac1{2|\Es|}$ for every
@@ -573,10 +612,20 @@ For $t\ge p$, $\rho(v(t))=T\,|\rel_S(v)|-\sum_{w\in\rel_S(v)}d(\anc_S(v),w)$.
 \end{proposition}
 So for a crossing edge with $\rel_S(i)=\rel_S(j)$ (root to child in an
 out-tree, a chain), the strict order rests on $O(1)$ extra relatives out of
-$\Theta(T)$, all located in the first $p$ slices. \Cref{fig:chain} shows the
-smallest case. A sample-based relatives count on a long record cannot see such
+$\Theta(T)$, all located in the first $p$ slices. \Cref{fig:start} shows a chain of three units under both starts. A sample-based relatives count on a long record cannot see such
 a difference, which motivates the stationary version.
 
+
+\begin{figure}[t]
+\centering
+\tikzfig{fig_start}
+\caption{The start artefact on the summary chain $a\to b\to c$. (a) Under the fixed start the first slice is
+independent noise, so the relatives counts $\rho$ differ between a node and its child; every orange edge is oriented by the count.
+(b) With a latent burn-in $B\ge\Delta$ (grey, not observed) all window nodes of a unit have the same count and the
+stationary value is $\srho^W=1/2$, because a chain has a single source component (\cref{cor:statiff}). Relatives counts are computed in the full graph and
+counted inside the window.}
+\label{fig:start}
+\end{figure}
 
 \begin{theorem}[stationary start]\label{thm:stat}
 Observe the window of the last $T\ge2$ slices of $G_{B+T}$ with a latent
@@ -613,6 +662,28 @@ cases) none needed more than $\Delta$, the minimal burn-in equalled $\Delta$ in
 51\% of the cases and was shorter by one to four slices in the rest. We have no
 closed form for the minimal burn-in of a given graph.
 
+\begin{figure}[t]
+\centering
+\tikzfig{fig_sharp}
+\caption{Why $B=\Delta-1$ is not enough for a chain (picture of the proof of \cref{prop:chainsharp}; chain of four units, $\Delta=3$,
+window of two slices). The orange node is the last unit at the first window slice; blue nodes are its ancestors.
+(a) With $B=2$ latent slices no copy of $v_0$ is an ancestor, so the first-slice node of $v_0$ and the orange node
+are not relatives, whereas they are under the stationary start. (b) With $B=3$ the copy of $v_0$ at slice~1 (ringed) is a
+common ancestor.}
+\label{fig:sharp}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig_bmin.pdf}
+\caption{The minimal sufficient burn-in $B_{\min}$ (smallest $B$ after which the window relatives counts equal their
+stationary values) from exact computation (\texttt{b1y/q6\_burnin\_exact.py}, independent of the theorems; chains and rings $T=2,\dots,5$, random graphs $T\in\{3,5\}$).
+(a) Directed chains need $B_{\min}=\Delta$ for every $\Delta$ computed ($1,\dots,7$); directed rings need only
+$\lceil\Delta/2\rceil$. (b) For 396 random summary graphs ($792$ cases) $B_{\min}$ never exceeded $\Delta$; it equalled $\Delta$ in
+$51\%$ of the cases and was shorter by one to four slices in the rest.}
+\label{fig:bmin}
+\end{figure}
+
 \textbf{Scope: unit lags.} \Cref{thm:edge,thm:limit,thm:stat} are stated, and
 machine-checked, for VAR(1)-shaped unrollings. If each summary edge $(i,j)$
 instead acts at a lag $\tau_{ij}\in\{1,\dots,\tau_{\max}\}$ (self-loops at lag
@@ -631,30 +702,7 @@ confluences}\}/(2|\Es|)$, which exceeds $1/2$ iff there is a confluence.
 \lean{\lname{sBurn_eq_half_iff_maxFinDist}, \lname{sZ_eq_half_iff}, \lname{stat_half_of_outForest}, \lname{statValue_inForest}, \lname{statValue_inForest_gt_iff}, \lname{collider_stat}, \lname{fork_stat}.}
 \end{corollary}
 
-\begin{figure}[t]
-\centering
-\begin{tikzpicture}[x=1.05cm,y=0.9cm,
-  nd/.style={circle,draw=black!70,fill=white,inner sep=1.2pt,minimum size=15pt,font=\scriptsize},
-  hl/.style={nd,draw={rgb,255:red,235;green,104;blue,52},line width=1.2pt,fill={rgb,255:red,253;green,226;blue,214}},
-  ar/.style={-latex,black!60,line width=0.6pt}]
-\fill[black!6,rounded corners=3pt] (0.55,-1.45) rectangle (1.45,0.45);
-\node[font=\tiny,black!70] at (1,-1.75) {latent if $B\ge\Delta$};
-\foreach \t in {1,...,5} {
-  \node[nd] (a\t) at (\t,0) {$a_{\t}$};
-  \ifnum\t=1 \node[hl] (b\t) at (\t,-1) {$b_{\t}$}; \else \node[nd] (b\t) at (\t,-1) {$b_{\t}$}; \fi
-  \node[font=\tiny,black!60] at (\t,0.62) {$t=\t$};
-}
-\foreach \t [evaluate=\t as \u using int(\t+1)] in {1,...,4} {
-  \draw[ar] (a\t) -- (a\u); \draw[ar] (b\t) -- (b\u); \draw[ar] (a\t) -- (b\u);
-}
-\end{tikzpicture}
-\caption{Summary chain $a\to b$ unrolled to $T=5$. Every $a_t$ has the
-relatives $\{a_s\}\cup\{b_s:s\ge2\}$ ($2T-1$ nodes); every $b_t$ with $t\ge2$ also
-has $b_1$ ($2T$ nodes). So each edge $a_t\to b_{t+1}$ is strictly sorted
-(finite limit $L=2/3$), but only because of the root $b_1$ at the fixed start.
-With a latent burn-in slice, both counts are $2T$ and $\srho^W=1/2$.}
-\label{fig:chain}
-\end{figure}
+
 \begin{table}[t]
 \caption{Rel-sortability of 3-node summary graphs (with self-loops, $|\Es|=5$).
 Finite: $\lim_T\srho(\GT)$ (\cref{thm:limit}); stationary: $\srho^W$
@@ -842,6 +890,17 @@ skeleton admits only one partition into $T$ layers of size $p$ that is
 compatible with an unrolling) and have checked it by hand only for the
 summary edge $a\to b$ with $T=3$ (\cref{app:ident}).
 
+\begin{figure}[t]
+\centering
+\tikzfig{fig_ident}
+\caption{What is identified when the labels are hidden. (a) The height of a node in $G_T$ equals its slice, so the partition of the columns into slices is a graph invariant
+(\cref{prop:slices}). (b) The Markov equivalence class of $G_T$ (\cref{prop:mec}): only the self-chain of the loop-only unit $a$ is
+undirected, giving $T^{m_0}=3$ graphs; the other edges are oriented by the colliders at $b$ and $c$. (c) Without a restriction on the start
+($T=2$, free start law) the same four columns admit two labellings with the same number of edges and the same law (\cref{prop:nonident}(a)): the time order is
+not identified.}
+\label{fig:ident}
+\end{figure}
+
 \textbf{Reading.} Under the fixed start, hiding the labels hides little in
 the population: the slices are a graph invariant, and the column DAG is
 identified up to isolated units. This is a third regularity of the
@@ -970,6 +1029,18 @@ the size results, are unchanged, because independent series share no fourth
 cumulant; for relatives the variance changes, which affects power but not the
 limits (\cref{rem:nongauss}).
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig_finite.pdf}
+\caption{Estimating relatives from one autocorrelated record (simulations of \texttt{finite2/sim\_finite2.py}, fixed seeds).
+(a) The effective sample size $n_{\mathrm{eff}}=n/W$ of the correlation of two independent AR(1) series with the same coefficient $\lambda$, with
+$W=(1+\lambda^2)/(1-\lambda^2)$; dots are the simulated cases. (b) False-positive rate of one non-relative pair at nominal level $0.05$:
+the test that uses $n$ rejects far too often, the plug-in test that estimates $W$ is close to the target, except that a fixed truncation lag $K=50$ is too
+short at $\lambda=0.99$ ($0.11$). (c) Probability that the Bonferroni Fisher-$z$ procedure recovers the relatives set of a five-node graph
+($\lambda=0.9$, $\alpha=0.05$): the nominal test does not, the plug-in test does, and it behaves like the test that knows $W$.}
+\label{fig:finite}
+\end{figure}
+
 \textbf{F2: saturation by a latent driver.} Let $X_v=Y_v+b_vC$ with $C$ a
 stationary unit-variance process independent of the VAR $Y$, and
 $\ell_v=b_v^2/\mathrm{Var}X_v$ the driver's share of variance.
@@ -1085,6 +1156,16 @@ learner reversal survives tuning and a variance control.
 \Cref{sec:real} applies the finite-sample theory and the criterion to real
 records, which is a different question: whether relatives can be estimated from
 one record at all.
+
+\begin{figure}[t]
+\centering
+\tikzfig{fig_pipeline}
+\caption{The experimental pipeline and where the four questions enter. A summary graph is simulated under a start rule (fixed start or
+latent burn-in), the time labels are dropped and the columns shuffled, a learner returns a graph, and the result is scored against the
+window DAG $G_T$. Edges that leave the first slice are scored separately in the controlled tests, because under a burn-in their
+confounder lies in the unobserved past.}
+\label{fig:pipeline}
+\end{figure}
 
 \subsection{The start artefact in simulated benchmarks}
 \label{sec:b1}
@@ -1314,6 +1395,17 @@ population pattern'': the order accuracy of the relatives sort responds to
 which pairs clear the detection threshold, not to the population relatives
 pattern itself.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig_controls.pdf}
+\caption{Matched-correlation counterfactual (\texttt{b1y/results/q1.csv.gz}; graphs that are not strongly connected unless marked;
+order accuracy without first-slice edges). (a) Each point is one (family, $p$, $T$) cell: the realised gain of the fixed start over a burn-in,
+$n=1000$, against the exact gap of \cref{thm:limit,thm:stat}. All cells lie below the line gain = gap. (b) Share of the fixed-start gain
+retained when only the first-slice covariance is changed (graph-cluster 95\% intervals). Data with the fixed start's population pattern keep the gain at every
+strength. Data with the burn-in's population pattern keep it ($0.96$) while the new correlations are below the detection threshold and keep less of it ($0.92$, $0.79$) as they become detectable.}
+\label{fig:controls}
+\end{figure}
+
 \textbf{Dose.} On rings, chains and ER($c{=}2$) graphs the share $Q(n)$ of the
 exact gap that is realised was $0.18$, $0.40$, $0.57$ and $0.76$ at
 $n=200$, $1000$, $5000$ and $25{,}000$ ($+0.36$ [$0.29,0.43$] between $1000$
@@ -1324,6 +1416,17 @@ exact gap was $0.57$ [$0.40,0.73$], against $0.53$ pooled in B1. Read together: 
 does to the relatives sort, and the effect realised at a finite $n$ is its
 detectable image, which grows with $n$ and with the correlation strength that
 the spectral radius sets. The share had not reached one at $n=25{,}000$.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig_twofactor.pdf}
+\caption{Two factors behind the effect of the start. (a) Illustration (not data): the correlation between two relatives decays with their graph distance,
+and a pair is detected only if it clears the threshold $\varepsilon(n)$, which falls as $n$ grows, so more of the exact footprint is visible at large $n$.
+(b) The share $Q$ of the exact gap that is realised in the order accuracy of the relatives sort, against $n$ (rings, chains, ER($c{=}2$); graph-cluster
+95\% bands). (c) The same share at $n=1000$ against the spectral-radius cap of the weights: stronger dynamics make more relatives detectable.
+$Q$ stays below one at $n=25\,000$.}
+\label{fig:twofactor}
+\end{figure}
 
 \textbf{Learner reversal.} We used chains, in-trees, rings and ER($c{=}2$)
 graphs in six $(p,T)$ cells with $d$ from $15$ to $60$ and 12 graphs per
@@ -1357,6 +1460,17 @@ reject under Holm at $0.05$ (adjusted $p$ from $0.0007$ to $0.016$; the
 weakest is the strength dose, whose effect-size verdict is ``flat''). This
 family is separate from the 21-claim family above, and the sequence of studies
 is adaptive.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig_learners.pdf}
+\caption{Learners under the fixed start (G1, circles) and a burn-in (G2, squares) on four summary-graph families
+(SHD per true edge without first-slice edges; lower is better; 95\% graph-cluster intervals; dashed: the empty graph). On in-trees the
+tuned continuous-optimisation methods (orange) beat FLOP (blue) under the fixed start and lose to it under the burn-in. Diamonds: the fixed-start data rescaled to the
+marginal variances of the burn-in, which removes the advantage and over-corrects (see text). The panels use only the cells every method has
+($p,T\in\{(5,3),(5,5),(10,3)\}$, see \texttt{figs/fig\_learners.py}); the tables pool each method over its own cells.}
+\label{fig:learners}
+\end{figure}
 
 \begin{table}[t]
 \caption{Scoring without the edges that leave the first slice (post hoc
@@ -1450,6 +1564,14 @@ E2 & 64 held-out regimes, 1{,}280 subgraphs & regimes within runs; dependence be
 \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{figure}[t]
+\centering
+\tikzfig{fig_units}
+\caption{The units behind the inference of each study (\cref{tab:units}). Segments of one series, runs, and stations that recur across subgraphs are
+not independent replicates, so the real-data results are effect sizes, not tests with nominal error rates.}
+\label{fig:units}
+\end{figure}
 
 \textbf{Protocol and its limits.} We ran four studies (P1--P9, then E1/E2),
 each with an analysis plan (predictions, thresholds, estimator, seeds, stop

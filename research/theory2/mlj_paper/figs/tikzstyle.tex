@@ -1,0 +1,26 @@
+% Shared TikZ styles for the schematic figures (colours = slots 1-4 of the validated reference palette).
+\usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds,matrix,decorations.pathreplacing}
+\definecolor{cBlue}{HTML}{2A78D6}
+\definecolor{cOrange}{HTML}{EB6834}
+\definecolor{cAqua}{HTML}{1BAF7A}
+\definecolor{cViolet}{HTML}{6250D6}
+\definecolor{cInk}{HTML}{1D1D1B}
+\definecolor{cInkTwo}{HTML}{52514E}
+\definecolor{cBand}{HTML}{F0EFEA}
+\tikzset{
+  nd/.style={circle,draw=cInkTwo,fill=white,line width=0.5pt,inner sep=0pt,minimum size=0.43cm,font=\scriptsize,text=cInk},
+  ndh/.style={nd,fill=cBlue!24,draw=cBlue,line width=0.8pt},
+  ndr/.style={nd,fill=cOrange!30,draw=cOrange,line width=0.9pt},
+  ndl/.style={nd,fill=black!7,draw=black!35,text=black!50},
+  ndu/.style={nd,fill=black!6},
+  ndsm/.style={nd,minimum size=0.33cm,font=\tiny},
+  ar/.style={-{Stealth[length=3pt,width=2.4pt]},draw=cInkTwo!80,line width=0.55pt},
+  ars/.style={-{Stealth[length=3.2pt,width=2.6pt]},draw=cOrange,line width=1.2pt},
+  arl/.style={-{Stealth[length=3pt,width=2.4pt]},draw=black!30,line width=0.55pt},
+  arb/.style={-{Stealth[length=3pt,width=2.4pt]},draw=cBlue,line width=0.9pt},
+  un/.style={draw=cInkTwo!80,line width=0.55pt},
+  lab/.style={font=\scriptsize,text=cInkTwo},
+  labb/.style={font=\scriptsize\bfseries,text=cInk},
+  band/.style={fill=cBand,draw=none,rounded corners=2pt},
+  box/.style={draw=cInkTwo,rounded corners=2pt,line width=0.6pt,fill=white,align=center,font=\scriptsize,inner sep=3pt},
+}
