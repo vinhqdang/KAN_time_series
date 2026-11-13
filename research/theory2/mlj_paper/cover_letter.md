@@ -25,7 +25,7 @@ Please consider the manuscript "Rel-Sortability of Time-Unrolled Causal Graphs" 
 
 **Related work and other submissions.** The manuscript extends a preprint by other authors (cited above). The author's earlier paper on SPADE (Array 32, 101335, 2026) is a learner paper, is cited once, and shares no text or results with this manuscript. The manuscript is not published and is not under consideration elsewhere.
 
-**Use of AI tools.** AI tools were used to support the work and the writing, as described in Section 6.4 of the manuscript. The author reviewed the content and takes full responsibility for it. AI systems are not listed as authors.
+**Use of AI tools.** AI tools were used to support the work and the writing, as described in Section 6.4 of the manuscript. The author has checked the proofs and the correspondence between the Lean statements and the statements in the paper, and takes full responsibility for the content. AI systems are not listed as authors.
 
 **Data and code.** No new data were collected. All code, including the Lean development, plans and result files, is at https://github.com/vinhqdang/KAN_time_series (directory research/theory2). Public data sets and their checksums are listed in DATA.md.
 
