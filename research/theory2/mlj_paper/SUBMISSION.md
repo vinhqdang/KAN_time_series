@@ -34,3 +34,7 @@ These come from the simulated first-round review (review/00_decision.md), update
 ## Still open (author only)
 
 Human reading of the load-bearing proofs and of the Lean statement map; Zenodo or similar DOI for the repository; AI statement wording check against Springer policy; decision on commit f435a7c (committer recorded as Claude).
+
+## Technical check (2026-11-13)
+
+Editorial Support returned the manuscript (ID db7dbcb4-4fad-4b00-955b-760345a4081a v1.0) with one request: cite all figures in the text. 13 of the 19 figures had no in-text citation. The fix adds one citation per figure and changes nothing else (13 one-line edits in main.tex and appendix.tex; main.pdf is now 99 pages). Every figure label is cited at least once. The resubmitted PDF is the main.pdf of the commit that carries this note.

@@ -137,7 +137,7 @@ variables are relatives of which, a property of the unrolled graph alone.
 footprint is exactly computable, depends on how a simulation starts, is only
 partly visible at realistic sample sizes, and measurably changes what
 label-free learners appear to do.} The paper follows this one object through
-four questions, and they give it its order.
+four questions (\cref{fig:hero} shows the idea), and they give it its order.
 \textbf{Q1:} what is the footprint exactly, and what does it identify when the
 labels are hidden? \textbf{Q2:} how does the start of a simulation shape it?
 \textbf{Q3:} how much of it can an estimator see in one finite, autocorrelated
@@ -534,7 +534,7 @@ and an edge $(i(t),j(t{+}1))$ for each $(i,j)\in\Es$ and $t<T$, so every
 summary edge has $T-1$ copies, all at lag one (a VAR(1)-shaped unrolling;
 other lags are discussed after \cref{thm:stat}). $d(u,v)$ is the shortest-path
 length in $\GS$ (self-loops ignored; $d(v,v)=0$; $\infty$ if unreachable), and
-$\anc_S$, $\rel_S$ are taken in $\GS$. SCC means strongly connected component.
+$\anc_S$, $\rel_S$ are taken in $\GS$. SCC means strongly connected component. \Cref{fig:defs} gives a worked example of the distances and $\Delta$ and shows the graph families used below.
 $\Ex\subseteq\Es$ is the set of edges between different SCCs and
 $\Eo=\Es\setminus\Ex$. A \emph{source} SCC has no incoming edge from another
 SCC, and $\Src(v)$ is the set of source SCCs that reach $v$.
@@ -644,7 +644,7 @@ $(i,j)$, $\rel_S(i)\subseteq\rel_S(j)$ with equality iff $\Src(i)=\Src(j)$.
 This burn-in is sufficient. For one edge with self-loops ($\Delta=1$), $B=0$
 leaves $\srho^W\ge2/3$ for every $T$ (Lean), and for the directed chain with
 self-loops the window relatives at $B=\Delta-1$ differ from the stationary ones
-at every length (\cref{prop:chainsharp}); for other graphs a shorter burn-in can
+at every length (\cref{prop:chainsharp}, drawn in \cref{fig:sharp}); for other graphs a shorter burn-in can
 suffice (\cref{rem:sharp}).
 
 \textbf{What is and is not claimed about sharpness.} \Cref{thm:stat} is a
@@ -660,7 +660,7 @@ the stationary value in all of them and $B=\Delta-1$ failed in 445, so it
 sufficed in 281; in a second exact computation on 396 random graphs (792
 cases) none needed more than $\Delta$, the minimal burn-in equalled $\Delta$ in
 51\% of the cases and was shorter by one to four slices in the rest. We have no
-closed form for the minimal burn-in of a given graph.
+closed form for the minimal burn-in of a given graph. \Cref{fig:bmin} shows the computed minimal burn-in.
 
 \begin{figure}[t]
 \centering
@@ -888,7 +888,7 @@ representation has the true column DAG.
 We can reduce \cref{conj:window} to a finite combinatorial statement (the
 skeleton admits only one partition into $T$ layers of size $p$ that is
 compatible with an unrolling) and have checked it by hand only for the
-summary edge $a\to b$ with $T=3$ (\cref{app:ident}).
+summary edge $a\to b$ with $T=3$ (\cref{app:ident}). \Cref{fig:ident} illustrates the slice-as-height statement, the equivalence class and the $T=2$ counterexample.
 
 \begin{figure}[t]
 \centering
@@ -1027,7 +1027,7 @@ on study~3 and E1. For linear
 processes with non-Gaussian i.i.d.\ innovations the null variance, and hence
 the size results, are unchanged, because independent series share no fourth
 cumulant; for relatives the variance changes, which affects power but not the
-limits (\cref{rem:nongauss}).
+limits (\cref{rem:nongauss}). \Cref{fig:finite} shows the effective sample size, the size of the nominal and plug-in tests and the recovery of the relatives set.
 
 \begin{figure}[t]
 \centering
@@ -1155,7 +1155,7 @@ benchmark results when the time labels are hidden from static learners.
 learner reversal survives tuning and a variance control.
 \Cref{sec:real} applies the finite-sample theory and the criterion to real
 records, which is a different question: whether relatives can be estimated from
-one record at all.
+one record at all. \Cref{fig:pipeline} summarises the pipeline and marks where each question enters.
 
 \begin{figure}[t]
 \centering
@@ -1393,7 +1393,7 @@ the strongest setting, which the plan's rule (a quarter of the gain) calls
 flat. By the plan's rule the first result reads ``detectable strength, not
 population pattern'': the order accuracy of the relatives sort responds to
 which pairs clear the detection threshold, not to the population relatives
-pattern itself.
+pattern itself (\cref{fig:controls}).
 
 \begin{figure}[t]
 \centering
@@ -1415,7 +1415,7 @@ are not strongly connected, $n=1000$) the within-family slope of the gain on the
 exact gap was $0.57$ [$0.40,0.73$], against $0.53$ pooled in B1. Read together: the exact gap is the large-sample ceiling of what the start
 does to the relatives sort, and the effect realised at a finite $n$ is its
 detectable image, which grows with $n$ and with the correlation strength that
-the spectral radius sets. The share had not reached one at $n=25{,}000$.
+the spectral radius sets. The share had not reached one at $n=25{,}000$ (\cref{fig:twofactor}).
 
 \begin{figure}[t]
 \centering
@@ -1453,7 +1453,7 @@ burn-in data restored only $0.43$ (DAGMA) and $0.49$ (NOTEARS) of the
 advantage, below the $0.60$ that the plan required for variance alone to be
 sufficient. So, in the plan's sense, variance is involved in the reversal and
 is not sufficient for it. Rings and ER($c{=}2$) graphs showed no reversal, and
-on chains the continuous methods lost to FLOP under both starts. The seven
+on chains the continuous methods lost to FLOP under both starts (\cref{fig:learners}). The seven
 claims of the plan's multiplicity family (the strength dose, the two dose
 tests, the slope, the DAGMA and NOTEARS preconditions and FLOP's shift) all
 reject under Holm at $0.05$ (adjusted $p$ from $0.0007$ to $0.016$; the
@@ -1542,7 +1542,7 @@ the question becomes whether the relatives of the unrolled structure can be
 estimated from it at all (Q3), and whether the resulting count orients edges
 (Q4). This differs from the effect of the start, and it is tested on few
 independent units, because the units are segments of single records or
-stations that recur across subgraphs (\cref{tab:units}). The overall result is
+stations that recur across subgraphs (\cref{tab:units,fig:units}). The overall result is
 negative or does not discriminate between hypotheses.
 
 \begin{table}[!ht]
