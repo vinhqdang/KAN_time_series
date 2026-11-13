@@ -1,0 +1,55 @@
+\documentclass[11pt]{article}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage[T1]{fontenc}\usepackage{lmodern}\usepackage{url}\usepackage{hyperref}
+\setlength{\parindent}{0pt}\setlength{\parskip}{7pt}
+\begin{document}
+Quang-Vinh Dang\\
+British University Vietnam, Hung Yen, Vietnam\\
+vinh.dq4@buv.edu.vn
+
+13 November 2026
+
+To the Editors of \textit{Machine Learning}
+
+Dear Editors,
+
+Please consider the manuscript "Rel-Sortability of Time-Unrolled Causal Graphs" for publication in \textit{Machine Learning}.
+
+\textbf{What the paper is about.} Benchmarks for causal discovery are usually simulated, and recent work has shown that simulation choices can make a benchmark easier than it looks. Reisach, Chambaz, Blanchard and Weichwald (arXiv:2605.06288) proposed time-unrolled DAGs, built from a summary graph, as a way to generate benchmark graphs, and introduced rel-sortability, a count of how well the relatives of a variable (variables joined to it by an open path) reveal the order of the graph. We ask what happens to that quantity when the process is unrolled over a finite horizon, and what it means for methods that never see the time labels. The thesis is that hiding the labels does not hide the time order: the relatives structure of the unrolled graph carries a graph-determined footprint of time.
+
+\textbf{What we show.}
+
+\begin{enumerate}\setlength\itemsep{2pt}
+
+\item We compute the rel-sortability of every edge exactly, for every summary graph with self-loops and every horizon, together with its limit, and a burn-in (the largest finite distance in the summary graph) after which the value no longer depends on the start. The graph statements are checked in Lean 4. The burn-in is minimal for directed chains and can be too long for other graphs.
+
+\item A fixed start inflates the footprint, and strongly connected summary graphs are not protected at short horizons. In simulations the fixed start raised the order accuracy of a relatives-sorting baseline by about 0.13.
+
+\item We give conditions under which relatives can be estimated from one autocorrelated record, and results on what is identifiable without labels.
+
+\item In controlled tests the gain follows the correlations a test can detect, not the population relatives pattern. The share of the exact gap that is realised grows with sample size (0.18 at n = 200, 0.76 at n = 25,000). Tuned DAGMA, NOTEARS and GOLEM-NV overtook FLOP on in-trees under the fixed start and lost to it after a burn-in; variance is involved but does not explain this alone.
+
+\end{enumerate}
+
+\textbf{What we do not claim.} The paper proposes no new causal-discovery algorithm. Support from real data (CausalRivers, Causal Chambers) is mostly negative or not discriminating, and we say so. The benchmark construction is hypothetical: we found no deployed generator that uses it as shipped. Results are for lag-one dynamics. The paper has a table that lists each claim with its evidence and status (proved on paper, checked in Lean, simulated, post hoc, or failed).
+
+\textbf{Fit with the journal.} The paper combines exact theory, finite-sample analysis, designed simulation studies and real-data tests on how causal-discovery methods are evaluated, which falls within the scope of \textit{Machine Learning}. Each simulation study was planned in a time-stamped plan committed to the public repository before its results (client commit times; server push times could be retrieved for only some plans, as the manuscript states), and post hoc analyses are labelled as such.
+
+\textbf{Related work by the author and other submissions.} The manuscript extends a preprint by other authors (cited above). {[}CONFIRM: whether you have contacted its authors; as far as this letter knows, you have not.{]} The author's earlier paper on SPADE (Array 32, 101335, 2026) is a learner paper, is cited once, and shares no text or results with this manuscript. {[}CONFIRM BEFORE SENDING: the manuscript is not published, and not under consideration, elsewhere.{]}
+
+\textbf{Use of AI tools.} The research was carried out by the author with AI coding agents, which wrote code, ran simulations, drafted proofs and text, and ran simulated peer reviews under the author's direction. Section 6.4 of the manuscript gives the details. AI systems are not listed as authors. The graph statements are machine-checked in Lean; the proofs that exist only on paper (finite-sample and identifiability results) have not been checked independently of the AI agents, and the manuscript says so. {[}CONFIRM: wording of the last sentence against what you have personally read and checked.{]}
+
+\textbf{Data and code.} No new data were collected. All code, including the Lean development, plans and result files, is at \url{https://github.com/vinhqdang/KAN_time_series} (directory research/theory2). Public data sets and their checksums are listed in DATA.md.
+
+\textbf{Competing interests.} The author declares no competing interests, and received no funding for this work.
+
+\textbf{Suggested reviewers.} {[}TO FILL: 3 to 5 people with expertise in causal discovery benchmarks, time-series causal discovery, or formal verification, with no co-authorship or institutional link to the author. Include name, institution, e-mail.{]}
+
+\textbf{Excluded reviewers.} None.
+
+Thank you for considering the manuscript.
+
+Sincerely,
+
+Quang-Vinh Dang 
+\end{document}
