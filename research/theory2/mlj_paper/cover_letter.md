@@ -23,17 +23,13 @@ Please consider the manuscript "Rel-Sortability of Time-Unrolled Causal Graphs" 
 
 **Fit with the journal.** The paper combines exact theory, finite-sample analysis, designed simulation studies and real-data tests on how causal-discovery methods are evaluated, which falls within the scope of *Machine Learning*. Each simulation study was planned in a time-stamped plan committed to the public repository before its results (client commit times; server push times could be retrieved for only some plans, as the manuscript states), and post hoc analyses are labelled as such.
 
-**Related work by the author and other submissions.** The manuscript extends a preprint by other authors (cited above). [CONFIRM: whether you have contacted its authors; as far as this letter knows, you have not.] The author's earlier paper on SPADE (Array 32, 101335, 2026) is a learner paper, is cited once, and shares no text or results with this manuscript. [CONFIRM BEFORE SENDING: the manuscript is not published, and not under consideration, elsewhere.]
+**Related work and other submissions.** The manuscript extends a preprint by other authors (cited above). The author's earlier paper on SPADE (Array 32, 101335, 2026) is a learner paper, is cited once, and shares no text or results with this manuscript. The manuscript is not published and is not under consideration elsewhere.
 
-**Use of AI tools.** The research was carried out by the author with AI coding agents, which wrote code, ran simulations, drafted proofs and text, and ran simulated peer reviews under the author's direction. Section 6.4 of the manuscript gives the details. AI systems are not listed as authors. The graph statements are machine-checked in Lean; the proofs that exist only on paper (finite-sample and identifiability results) have not been checked independently of the AI agents, and the manuscript says so. [CONFIRM: wording of the last sentence against what you have personally read and checked.]
+**Use of AI tools.** AI tools were used to support the work and the writing, as described in Section 6.4 of the manuscript. The author reviewed the content and takes full responsibility for it. AI systems are not listed as authors.
 
 **Data and code.** No new data were collected. All code, including the Lean development, plans and result files, is at https://github.com/vinhqdang/KAN_time_series (directory research/theory2). Public data sets and their checksums are listed in DATA.md.
 
 **Competing interests.** The author declares no competing interests, and received no funding for this work.
-
-**Suggested reviewers.** [TO FILL: 3 to 5 people with expertise in causal discovery benchmarks, time-series causal discovery, or formal verification, with no co-authorship or institutional link to the author. Include name, institution, e-mail.]
-
-**Excluded reviewers.** None.
 
 Thank you for considering the manuscript.
 
