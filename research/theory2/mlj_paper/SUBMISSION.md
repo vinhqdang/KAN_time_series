@@ -55,3 +55,13 @@ A full read of the manuscript found corrections only; no results changed. Applie
 - Redrew fig_b1 and fig_b1nl from the committed B1/B1-NL results (figs/fig_b1.py) with TrueType fonts and the correct axis label (Theorems 2 and 5); replaced the TS1 bullet that produced a bitmap Type 3 font. pdffonts reports no Type 3 font.
 - Bibliography: arXiv ids for three preprints; published versions for Rudelson–Vershynin, Hsu–Kakade–Zhang, Wang et al. (NeurIPS 2023), Boege et al. (JRSS-B 88(3)); acronyms brace-protected; citations added for BOSS, GRaSP (UAI 2022, PMLR 180) and DirectLiNGAM (JMLR 12, 2011), each checked against the publisher page or arXiv.
 Not applied: Tank et al. issue and pages (not confirmed by Crossref; entry left as early access); no Tetrad citation (no verified entry). PDF is now 100 pages; Dang_MLJ_LaTeX.zip rebuilt and tested from a clean unzip.
+
+## Resubmitted after technical check (2026-11-16)
+
+The author resubmitted the revised manuscript (ID db7dbcb4-4fad-4b00-955b-760345a4081a) on 2026-11-16, as reported by the author. Version: commit f35ac4c.
+- LaTeX source: Dang_MLJ_LaTeX.zip (25 files), SHA-256 starts with 234e9d26904a5b31.
+- PDF: main.pdf, 100 pages, SHA-256 starts with 0ae44c5a0c2afaf9.
+- Cover letter: cover_letter.md / .pdf (commit 5d73c8b version: states the author checked the proofs and the Lean statements).
+- Changes since the first upload: every figure cited in the text (the technical-check request), "not checked by a human" statements removed at the author's instruction, and the proofread corrections listed above.
+
+The freeze rule above applies to this version. Known open points for a revision: tank2021neural issue and pages unconfirmed; no Tetrad citation; ECP article numbers not added; appendix table tab:noloop first cited out of order.
