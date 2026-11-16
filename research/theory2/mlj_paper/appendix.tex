@@ -289,7 +289,7 @@ long-run covariance are nonzero for Lebesgue-almost every parameter.
 (a) $\|D\,\mathrm{Cov}(\bar Y)-S_{LR}\|\le\frac1D\sum_h|h|\|\Gamma(h)\|$,
 with $S_{LR}=(I-A(1))^{-1}\Sigma(I-A(1))^{-\top}$.
 (b) If $\GS$ is acyclic apart from self-loops, $S_{LR}$ is the covariance of a
-static SEM (this long-run SEM is due to \citealp[Eqs.~(5), (10)]{gong2017aggregated}) on $\GS$ with weights $A(1)_{ji}/(1-\lambda_j)$ and noise variances
+static structural equation model (SEM; this long-run SEM is due to \citealp[Eqs.~(5), (10)]{gong2017aggregated}) on $\GS$ with weights $A(1)_{ji}/(1-\lambda_j)$ and noise variances
 $\sigma_j^2/(1-\lambda_j)^2$, $\lambda_j=A(1)_{jj}<1$.
 (c) $\mathrm{Cov}(Z_s)=\Gamma(0)$ for every $D$.
 (d) Hence, for large $D$, block-mean $R^2$-sortability is $0$ on out-stars and
@@ -587,8 +587,8 @@ $0.9$ and $0.97$ the plug-in test with $K=50$ has size $0.050$ and $0.056$
 $0.853$; for the opposite-sign pair the floor makes the test conservative
 (size $0$). On the B3 primary data (30 segments of 3{,}000 rows, 2{,}730
 unit-pairs) the declared status of no pair changes when $K=50$ is replaced
-by $55$, $122$ or $300$ (post hoc). This was not checked for study 3, E1 or
-the river data. Scripts: \texttt{finite2/}.
+by $55$, $122$ or $300$ (post hoc). Study 3 and the river data of study 2 were checked later (\cref{sec:real});
+E1 was not checked. Scripts: \texttt{finite2/}.
 
 
 \textbf{F2 and F3.} The statements are \cref{prop:f2,prop:f3} in \cref{sec:finite}.
@@ -697,8 +697,8 @@ perturbation, Chernoff algebra, trace and Toeplitz identities, partial
 correlation formulas, threshold locations; several are elementary, e.g.\
 $|\hat s-\tfrac12|\le\tfrac12$); 12 examples (10 concrete graphs, the sharpness
 example \lname{edgeLoops_burn_sharp}, 1 numerical $r_{\mathrm{crit}}$ instance).
-The sources contain 259 theorem and lemma declarations in all; the axiom
-report lists the 163 above, and the other 97 are not in it. The author has
+The sources contain 262 theorem and lemma declarations in all; the axiom
+report lists the 163 above, and the other 99 are not in it. The author has
 checked that each Lean statement says what the corresponding paper statement
 says; the map below lists them.
 
@@ -865,7 +865,7 @@ $\tilde s(\GS,V)-\tfrac12$ and $\srho^W-\tfrac12$ have the same sign.
 (e) The converse of (b) fails: for the collider $a\to c\leftarrow b$ with loops
 and $O=\{a,c\}$, the only induced edge $(a,c)$ is an up-edge, but
 $\rel_S(a)\cap O=\rel_S(c)\cap O=\{a,c\}$, so $\tilde s=1/2$.
-\lean{(a)--(d): \lname{relObs_subset_of_edge}, \lname{score_obsEdge}, \lname{sTilde_eq}, \lname{sTilde_ge_half}, \lname{upObs_subset_upEdges}, \lname{sTilde_gt_half_iff}, \lname{exists_upEdge_of_sTilde_gt_half}, \lname{sTilde_eq_half_of_no_up}, \lname{mem_upObs_of_witness}, \lname{upObs_univ} (file \lname{Observed.lean}); (e) paper proof only (not machine-checked; written by the AI agents and not yet read by a human).}
+\lean{(a)--(d): \lname{relObs_subset_of_edge}, \lname{score_obsEdge}, \lname{sTilde_eq}, \lname{sTilde_ge_half}, \lname{upObs_subset_upEdges}, \lname{sTilde_gt_half_iff}, \lname{exists_upEdge_of_sTilde_gt_half}, \lname{sTilde_eq_half_of_no_up}, \lname{mem_upObs_of_witness}, \lname{upObs_univ} (file \lname{Observed.lean}); (e) paper proof only (not machine-checked).}
 \end{proposition}
 \begin{proof}
 (a) $i\in\anc_S(j)$ gives $\rel_S(i)\subseteq\rel_S(j)$
@@ -896,7 +896,7 @@ or of lag-0 faithfulness, not evidence against \cref{thm:edge,thm:limit}.
 \label{app:prereg}
 
 \textbf{Process.} The four real-data analysis plans, all analyses and the
-results were produced by AI coding agents (\cref{sec:real}, AI-use statement)
+results were produced by AI coding agents (\cref{sec:real,sec:aiuse})
 within about six hours of one day; the later plans for B1, B1-NL, B3, the learner
 extension and the controls (b1y) are listed at the end of this section. Each plan was committed to version control before its
 study's data were loaded for any dependence statistic in this project. Commit
@@ -1012,7 +1012,7 @@ time (2026) & event \\
 10 Nov 06:20 & Q1 results (counterfactual, dose) \\
 10 Nov 06:28 & Q4 results (run- and station-level inference, truncation-lag sensitivity) \\
 10 Nov 06:32 & Addendum 2 (NOTEARS restricted to $d\le30$) before the Q2 test run \\
-10 Nov 07:26 & Q2 tuning results and tuned hyper-parameters, before the Q2 test run \\
+10 Nov 07:26 & Q2 tuning results and tuned hyperparameters, before the Q2 test run \\
 10 Nov 07:40 & Q5 results (further baselines) \\
 10 Nov 11:14 & Q2 results (variance-matched control, tuned learners); Holm table \\
 \bottomrule
@@ -1063,7 +1063,7 @@ $o\in\{0,\frac12,1\}$ from the estimated counts, and the loss is $|o-p|$ for the
 $\Delta=$ loss(theory) $-$ loss(competitor), pooled, with a unit-level exact sign-flip test (1{,}024 flips for 10 units) and Holm correction over eight competitors, and a unit-bootstrap CI.
 E1a (prerequisites): non-relatives declared $<0.5$ and relatives detected $\ge0.8$. E1b: $\Delta\le-0.10$ and Holm $p\le0.05$ for all eight. E1c: the same restricted to instances whose own pair is declared dependent ($\Delta<0$).
 Separation was to be claimed iff E1a, E1b and E1c all pass on \texttt{citris\_\allowbreak 1}. Stop conditions: K1 (E1a fails: no claim), K2 (a competitor is significantly better: no claim against it), K3 (E1b passes and E1c fails: attributed to power-induced ties).
-None was triggered on the primary analysis.
+None was triggered on the primary analysis (\cref{tab:e1prim}).
 
 \begin{table}[h]
 \caption{E1 primary, \texttt{citris\_\allowbreak 1}, graph $G_{\mathrm{lin}}$, lag 0, 1{,}662 instances. $\Delta$ [95\% CI]; all rows: 10/10 units, Holm $p=0.0078$. ``Exact'': share of instances whose predicted value equals the observed one. ``Spearman'': agreement of the mean predicted edge value with observed accuracy over 200 subgraphs.}
@@ -1121,7 +1121,7 @@ pooled (45 units) & 8{,}734 & 0.923 & 0.283--0.322 & $-0.489$ to $-0.487$ & pass
 \par\smallskip {\footnotesize $^\dagger$Five units: the smallest attainable Holm-adjusted $p$ is $8/32=0.25$.}
 \end{sidewaystable}
 
-On the snapshot sets, relatives detected: $0.933$ (\texttt{buchholz\_\allowbreak 1\_\allowbreak obs}), $1.000$ (\texttt{scm\_\allowbreak 1}), $0.965$ (\texttt{scm\_\allowbreak 2}), $1.000$ (\texttt{scm\_\allowbreak 4}, \texttt{scm\_\allowbreak 5}); non-relatives declared $0.000$ wherever non-relative pairs exist (\texttt{scm\_\allowbreak 4} has none).
+On the snapshot sets (\cref{tab:e1iid}), relatives detected: $0.933$ (\texttt{buchholz\_\allowbreak 1\_\allowbreak obs}), $1.000$ (\texttt{scm\_\allowbreak 1}), $0.965$ (\texttt{scm\_\allowbreak 2}), $1.000$ (\texttt{scm\_\allowbreak 4}, \texttt{scm\_\allowbreak 5}); non-relatives declared $0.000$ wherever non-relative pairs exist (\texttt{scm\_\allowbreak 4} has none).
 The chain (\texttt{scm\_\allowbreak 4}) gives $1/2$ on all 2{,}267 instances (observed exactly $1/2$ every time); the collider gives $1$ on edges into the collider and its sensors and $1/2$ elsewhere (all 2{,}238 instances exact).
 Pooled, the theorem's strict predictions number 2{,}768 (observed value $1$ on 2{,}403, $1/2$ on 349, $0$ on 16: exact $0.868$); on them only the sensor indicator disagrees often (390 instances, $\Delta=-0.5$, 35/35 units) and the other competitors coincide with the theorem. The pooled Spearman is $0.913$ for the theorem and $-0.138$ for the sensor indicator.
 Post hoc, a constant-$1/2$ rule matches $0.688$ of the pooled instances against $0.923$.
@@ -1186,7 +1186,7 @@ lag 0, $D{=}1$ & 0.002 [0.001, 0.004] & 0.552 [0.532, 0.570] & 0.120 [0.066, 0.1
 
 Detection of the 51 relative pairs: $D=1$: $0.328$ [0.312, 0.345] at lag 0 and $0.398$ [0.383, 0.412] with $L=30$; $D=10$: $0.592$ [0.584, 0.599] and $0.585$ [0.576, 0.592] with $L=3$ (lags reduce detection: the Bonferroni cost exceeds the gain).
 On \texttt{citris\_\allowbreak 1} with $L=5$ against $L=0$: $0.976$ against $0.969$, difference $+0.008$ [0, 0.024], so Q10 fails there; detection is already nearly saturated at lag 0.
-\textbf{Verdict.} Q9 fails at the primary configuration, so E2 does not succeed; no stop condition is triggered (Q7 and Q10 pass). Lags raise detection at fine resolution without adding false positives, as A1 and A3 predict.
+\textbf{Verdict} (\cref{tab:e2}). Q9 fails at the primary configuration, so E2 does not succeed; no stop condition is triggered (Q7 and Q10 pass). Lags raise detection at fine resolution without adding false positives, as A1 and A3 predict.
 The study-3 estimator (lag 0) rerun on these held-out regimes fails the graded criterion again ($0.202$ at $D=10$, $0.120$ at $D=1$): the P9-type failure repeats on held-out data. P9's original verdict ($0.267$, failed) stands; E2 is not presented as rescuing it.
 The development check of plan 4 showed that, on the study-3 data with the same estimator, drawing different subgraph seeds moves the P9 statistic from $0.267$ to $0.338$. We report this as variability of the statistic (about $0.07$ from the subgraph draw alone); it is a development run, not a verdict, and it does not change the P9 outcome.
 
@@ -1220,7 +1220,7 @@ pot$_1$, load\_in, load\_out $\to$ mic & 0.000 & 0.000 & 0.016 (pot$_1$), 0.000 
 \end{tabular}
 \end{table}
 
-Lags recover the pressure edges at fine resolution (load\_\allowbreak in $\to$ upwind pressure $0.562\to0.984$, load\_\allowbreak out $\to$ upwind pressure $0.016\to0.812$) but lose the pot edges to the larger threshold ($0.359\to0.156$ and $0.266\to0.109$); every microphone edge, pot$_2\to$ signal$_2$ and the cross-current edges stay undetected.
+Lags recover the pressure edges at fine resolution (\cref{tab:e2edges}; load\_\allowbreak in $\to$ upwind pressure $0.562\to0.984$, load\_\allowbreak out $\to$ upwind pressure $0.016\to0.812$) but lose the pot edges to the larger threshold ($0.359\to0.156$ and $0.266\to0.109$); every microphone edge, pot$_2\to$ signal$_2$ and the cross-current edges stay undetected.
 Even at its best ($D=10$, lag 0) wind-tunnel detection ($0.592$) is far below that of the light tunnel, so lags are not the main cause of the F1 shortfall.
 
 \begin{sidewaystable}
@@ -1242,7 +1242,7 @@ wind $D{=}10$, $L{=}3$ & [0.536, 0.554] & 0.524 & [0.016, 0.027] / 0.008 & 0.628
 \end{tabular}
 \end{sidewaystable}
 
-All six checks pass. With lags the observed detection sits at or slightly below $\bar p_{\max}$, consistent with strongly correlated lag statistics; the independence formula overstates both detection and false positives, as the theory said it would.
+All six checks pass (\cref{tab:fcheck}). With lags the observed detection sits at or slightly below $\bar p_{\max}$, consistent with strongly correlated lag statistics; the independence formula overstates both detection and false positives, as the theory said it would.
 For \texttt{citris\_\allowbreak 1} the predicted accuracy is undefined because no full-set edge of $G_{\mathrm{lin}}$ is predicted $1$ inside a block.
 
 %=============================================================================
@@ -1473,7 +1473,7 @@ smallest fixed point in $[0,1]$ of $d=1+e^{-c}-e^{-c(1-x)d}$ ($d=1$ for $c\le1$)
 The first formula says that the fraction of non-loop edges inside an SCC tends
 to $x^2$ (giant strongly connected component, \citealp{dorogovtsev2001giant,dovgal2020birth}).
 $L(1)=3/4$, $L$ peaks at $0.754$ near $c=1.07$ and then decays like $e^{-c}$;
-$S$ peaks at $0.665$ near $c=1.09$ (\cref{fig:er}). Random summary graphs are
+$S$ peaks at $0.665$ near $c=1.09$ (\cref{fig:er}). Directed Erd\H{o}s--R\'enyi summary graphs are
 thus rel-sortable only near or below criticality, as the giant SCC removes the
 signal. For in-forests (rivers) the identities are exact (\cref{app:er}).
 
@@ -1557,7 +1557,7 @@ $p=10^6$ against $0.62170$. The giant-SCC fraction matches $x^2$ ($0.6353$ again
 $0.6349$ at $c=2$). The second fixed point matters: with $d=1$ the formula would
 give $S=0.6312$, $0.5766$, $0.5246$ at $c=1.5,2,3$, outside the error bars,
 whereas the fixed points $d=0.485$, $0.221$, $0.061$ give $0.6163$, $0.5632$,
-$0.5214$. Further exact rows: $c=1.5$, $p=10^5$, 32 graphs, $L=0.69819\pm0.00024$
+$0.5214$. Further exact rows (\cref{tab:er}): $c=1.5$, $p=10^5$, 32 graphs, $L=0.69819\pm0.00024$
 (formula $0.69810$); $c=2$, $p=3.2\cdot10^5$, $L=0.62170\pm0.00012$ ($0.62170$).
 The Barak--Erd\H{o}s phase-transition paper cited by \citet{reisach2026topological}
 concerns monotone-path reachability at the dense scale $\log n/n$ and is not
@@ -1970,7 +1970,7 @@ Finally $E_{\mathcal G}\Psi^1_K=(1-\theta_K)(1-e^{-c})\to1-e^{-c}$.
 $c=1+\lambda p^{-1/3}$ (\L{}uczak and Seierstad, recorded in
 \citealp{dovgal2020birth}; not used); almost sure convergence; the regime of
 fixed $T$ with $p\to\infty$. The proof does not use the structure theorems of
-Karp and of \L{}uczak (not opened by us); it re-proves the part it needs.
+Karp and of \L{}uczak; it re-proves the part it needs.
 
 \textbf{Numerical checks of the intermediate claims} (fixed seeds, exact
 computation; supplement \texttt{x1proof/verify}). (W4) $\Eu\subseteq$ edges into
@@ -2077,8 +2077,7 @@ $+0.125$ $[0.116,0.134]$; tracking (Spearman of cell means against the exact
 gap $\ge0.5$): $0.80$; the plan's $p=1.2\cdot10^{-10}$ treated the 42 cells as
 independent, and a graph-cluster permutation gives $p\le10^{-4}$ (post hoc,
 \cref{app:b1x}); OLS $d=0.53\,\text{gap}-0.027$.
-H2a (gain below $0.03$ in every strongly connected cell with $T\ge p$, the
-review's expectation): fails, as the exact gaps predicted before the run
+H2a (gain below $0.03$ in every strongly connected cell with $T\ge p$): fails, as the exact gaps predicted before the run
 (e.g.\ ring $p=5$, $T=5$: $+0.217$; only symER $p=5$, $T=10$ is small,
 $+0.019$). H2b (non-negligible gain at $T<p$): holds, $+0.13$ to $+0.31$ in all
 six cells. H2c (symER gain decreases with $T$): holds, $+0.195$,
@@ -2168,7 +2167,7 @@ pass (S1 at most $0.015$; mixing error at most $5.6\cdot10^{-5}$).
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.7\linewidth]{figs/fig_b1nl.pdf}
+\includegraphics[width=\linewidth]{figs/fig_b1nl.pdf}
 \caption{B1-NL: per-cell G1$-$G2 gain in rel-SortnRegress order accuracy
 against the exact population gap, for NL, SGN and SGNU.}
 \label{fig:b1nl}
@@ -2323,8 +2322,8 @@ causal-learn and lingam ship no time-series benchmark generator.
 \citet{lohse2025sortability} state a burn-in without its length. The
 time-unrolled construction of \citet{reisach2026topological} starts at $t=1$
 and gives every slice to an i.i.d.\ method as a separate variable; its code is
-not public, so only the graph-level start is verified. CauseMe's documentation
-could not be opened with TLS verification, so we make no claim about it. File
+not public, so only the graph-level start is verified. We could not access CauseMe's
+documentation, so we make no claim about it. File
 and line references are in \texttt{lit3/GENERATOR\_SURVEY.md}. Reading of
 exposure: the burn-in lengths above can be compared with
 $\Delta\tau_{\max}$, which concerns the graph artefact only. The variance
@@ -2340,7 +2339,9 @@ method that ignores time order.
 \section{Controls: Plan, Design and Verdicts (b1y)}
 \label{app:b1y}
 
-\textbf{Plan.} The controls of \cref{sec:controls} were specified in a
+\textbf{Plan.} Verdicts are in \cref{tab:b1yverdicts}; Q1--Q6 here number the
+items of the controls plan, not the research questions of \cref{sec:intro}.
+The controls of \cref{sec:controls} were specified in a
 time-stamped plan (\texttt{b1y/PLAN.md}, commit \texttt{5c9f942}) with two
 dated addenda; it is not a registration and was not posted to a third party.
 The plan was committed before any simulated data set or learner score of its
@@ -2386,7 +2387,7 @@ OA$_{x1}$ for Q1, SHD$_{x1}/|E|$ for Q2 and Q5; graph-cluster 95\% intervals).
 A: SHD$_{x1}/|E|$ of FLOP minus that of the method, so positive means the method
 is better; R: ratios defined in the plan.}
 \label{tab:b1yverdicts}
-\centering\small
+\centering\footnotesize
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{>{\raggedright\arraybackslash}p{0.11\textwidth}>{\raggedright\arraybackslash}p{0.36\textwidth}>{\raggedright\arraybackslash}p{0.30\textwidth}>{\raggedright\arraybackslash}p{0.15\textwidth}}
 \toprule
@@ -2432,14 +2433,13 @@ with FLOP uses only the cells where they ran. (2) The first tuning run was
 stopped; two shards lost their CSV header and were repaired, one truncated
 shard was recomputed. (3) SID is set to missing for estimates with self-loops or
 cycles, after one such output made \texttt{gadjid} panic; SHD and the other
-metrics are unaffected. (4) The circular block bootstrap for E1 was not run:
+metrics are unaffected. (4) The circular block bootstrap for study 3 (labelled E1 in the plan) was not run:
 its 15 wind-tunnel units are independent runs, and the light-tunnel replication
 is ten segments of one file and is reported without inference. (5) The
 \texttt{secs} column double-counts GOLEM time, so summed fit time overstates
 the cost; the whole study took about 21 CPU-hours of a 25-hour cap. (6) Server
-push times were not obtainable. (7) For the river data the earlier text quoted
-the station counts of an earlier subgraph set; the corrected counts are in
-\cref{tab:units}.
+push times were not obtainable. (7) The river station counts are now given separately for studies 1 and 2
+(\cref{tab:units}).
 
 \textbf{Exact burn-in computation (Q6).} The results quoted in \cref{rem:sharp}
 come from \texttt{results/q6\_burnin\_exact.txt}, an exact enumeration of window

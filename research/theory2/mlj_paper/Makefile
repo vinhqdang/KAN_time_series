@@ -11,7 +11,7 @@ main.pdf: main.tex appendix.tex refs.bib sn-jnl.cls figs/tikzstyle.tex $(wildcar
 PYV ?= /home/user/venv312/bin/python
 figs:
 	cd figs && python3 gen_tikz.py
-	cd figs && $(PYV) fig_theory.py && $(PYV) fig_q1.py && $(PYV) fig_learners.py && $(PYV) fig_finite.py && $(PYV) make_fig_oracle.py
+	cd figs && $(PYV) fig_theory.py && $(PYV) fig_q1.py && $(PYV) fig_learners.py && $(PYV) fig_finite.py && $(PYV) make_fig_oracle.py && $(PYV) fig_b1.py
 
 .PHONY: figs clean
 clean:

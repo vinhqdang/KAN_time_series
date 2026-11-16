@@ -44,3 +44,14 @@ Editorial Support returned the manuscript (ID db7dbcb4-4fad-4b00-955b-760345a408
 The journal asked for the LaTeX source. Before packing, the statements that no human had checked the proofs or the Lean-to-paper map were removed, at the author's instruction, from the introduction, the claim-status table, Related Work, the ER remark, the Lean section, the Discussion, the AI-use statement (Sec. 6.4) and two appendix passages. The AI-use statement now says the author checked the Lean statements against the paper and the paper-only proofs, matching the cover letter. Nothing else changed.
 
 Package: Dang_MLJ_LaTeX.zip (main.tex, appendix.tex, er_curves.tex, refs.bib, main.bbl, sn-jnl.cls, sn-apacite.bst, figs/). A clean unzip builds with pdflatex + bibtex to the same 99-page PDF (text identical to main.pdf in this commit).
+
+## Proofread fixes before the LaTeX upload (2026-11-16)
+
+A full read of the manuscript found corrections only; no results changed. Applied:
+- Lean counts: 262 theorem and lemma declarations (the earlier 259 missed three `@[simp] lemma` lines), 163 in the axiom report, 99 not in it.
+- Truncation-lag check: study 3 and the river data of study 2 were checked (at most 4% of primary decisions changed; 13% in the secondary wind-tunnel levels analysis); E1 was not. The earlier text said none were checked and mislabelled the wind-tunnel analysis as E1.
+- River station counts per study: 457 stations, reuse up to 8 (P1–P3); 445, reuse up to 7 (P4–P6). The earlier text called the 457/8 set "not analysed"; it is study 1.
+- Removed a last "not yet read by a human" phrase (App. J); corrected the Positioning sharpness sentence; cited Fig. 3 and every appendix table; fixed citation order of Table 4; hyperref duplicate destinations; Fig. 1 relatives count wording; ER-specific wording for the criticality statement; scope of the "six hours" and "before any dependence statistic" sentences; acronyms expanded at first use; Q-numbering note; Table 1 count (144 graphs, 288 graph–horizon cases); hyphenation of hyperparameter; Table U8 font size (float no longer too large).
+- Redrew fig_b1 and fig_b1nl from the committed B1/B1-NL results (figs/fig_b1.py) with TrueType fonts and the correct axis label (Theorems 2 and 5); replaced the TS1 bullet that produced a bitmap Type 3 font. pdffonts reports no Type 3 font.
+- Bibliography: arXiv ids for three preprints; published versions for Rudelson–Vershynin, Hsu–Kakade–Zhang, Wang et al. (NeurIPS 2023), Boege et al. (JRSS-B 88(3)); acronyms brace-protected; citations added for BOSS, GRaSP (UAI 2022, PMLR 180) and DirectLiNGAM (JMLR 12, 2011), each checked against the publisher page or arXiv.
+Not applied: Tank et al. issue and pages (not confirmed by Crossref; entry left as early access); no Tetrad citation (no verified entry). PDF is now 100 pages; Dang_MLJ_LaTeX.zip rebuilt and tested from a clean unzip.

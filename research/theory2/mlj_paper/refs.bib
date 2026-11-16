@@ -43,13 +43,14 @@
   howpublished  = {arXiv:2605.06288}
 }
 
-@article{lohse2025sortability,
-  title   = {Sortability of Time Series Data},
-  author  = {Lohse, Christopher and Wahl, Jonas},
-  journal = {Transactions on Machine Learning Research},
-  year    = {2025},
-  note    = {arXiv:2407.13313}
+@misc{lohse2025sortability,
+  title        = {Sortability of Time Series Data},
+  author       = {Lohse, Christopher and Wahl, Jonas},
+  howpublished = {Transactions on Machine Learning Research},
+  year         = {2025},
+  note         = {arXiv:2407.13313}
 }
+
 
 @article{gamella2025chambers,
   title   = {Causal Chambers as a Real-World Physical Testbed for {AI} Methodology},
@@ -108,9 +109,11 @@
   author  = {Hsu, Daniel and Kakade, Sham M. and Zhang, Tong},
   journal = {Electronic Communications in Probability},
   volume  = {17},
+  pages   = {1--6},
   year    = {2012},
-  note    = {arXiv:1110.2842}
+  doi     = {10.1214/ECP.v17-2079}
 }
+
 
 @article{laurent2000adaptive,
   title   = {Adaptive Estimation of a Quadratic Functional by Model Selection},
@@ -125,7 +128,7 @@
 @inproceedings{demoura2021lean4,
   title     = {The {Lean 4} Theorem Prover and Programming Language},
   author    = {de Moura, Leonardo and Ullrich, Sebastian},
-  booktitle = {Automated Deduction -- CADE 28},
+  booktitle = {Automated Deduction -- {CADE} 28},
   series    = {Lecture Notes in Computer Science},
   pages     = {625--635},
   year      = {2021}
@@ -134,7 +137,7 @@
 @inproceedings{mathlib2020,
   title     = {The {Lean} Mathematical Library},
   author    = {{The mathlib Community}},
-  booktitle = {Proceedings of the 9th ACM SIGPLAN International Conference on Certified Programs and Proofs},
+  booktitle = {Proceedings of the 9th {ACM} {SIGPLAN} International Conference on Certified Programs and Proofs},
   pages     = {367--381},
   year      = {2020}
 }
@@ -193,16 +196,20 @@
   author        = {Ginovyan, Mamikon S. and Taqqu, Murad S.},
   year          = {2021},
   eprint        = {2102.00343},
-  archivePrefix = {arXiv}
+  archivePrefix = {arXiv},
+  note = {arXiv:2102.00343}
 }
+
 
 @misc{tan2026causalsmith,
   title         = {{CausalSmith}: A Formally Grounded, Self-Improving Agentic Framework for Automated Research in Causal Inference},
   author        = {Tan, Jiyuan and Syrgkanis, Vasilis},
   year          = {2026},
   eprint        = {2607.22511},
-  archivePrefix = {arXiv}
+  archivePrefix = {arXiv},
+  note = {arXiv:2607.22511}
 }
+
 
 @article{dorogovtsev2001giant,
   title   = {Giant Strongly Connected Component of Directed Networks},
@@ -226,8 +233,10 @@
   author        = {Dovgal, Sergey and de Panafieu, {\'E}lie and Ralaivaosaona, Dimbinaina and Rasendrahasina, Vonjy and Wagner, Stephan},
   year          = {2020},
   eprint        = {2009.12127},
-  archivePrefix = {arXiv}
+  archivePrefix = {arXiv},
+  note = {arXiv:2009.12127}
 }
+
 
 % Added 2026-11-08 (revision after the simulated review); see REFS_LOG.md.
 @book{brockwell1991time,
@@ -397,7 +406,7 @@
 @inproceedings{weichwald2020causal,
   title     = {Causal Structure Learning from Time Series: Large Regression Coefficients May Predict Causal Links Better in Practice than Small p-Values},
   author    = {Weichwald, Sebastian and Jakobsen, Martin E. and Mogensen, Phillip B. and Petersen, Lasse and Thams, Nikolaj and Varando, Gherardo},
-  booktitle = {Proceedings of the NeurIPS 2019 Competition and Demonstration Track},
+  booktitle = {Proceedings of the {NeurIPS} 2019 Competition and Demonstration Track},
   series    = {Proceedings of Machine Learning Research},
   volume    = {123},
   pages     = {27--36},
@@ -482,20 +491,27 @@
 }
 
 % verified in ../finite2/FINITE2.md (arXiv record); journal version (Electron. Commun. Probab. 18, no. 82) not re-checked
-@misc{rudelson2013hanson,
-  author = {Rudelson, Mark and Vershynin, Roman},
-  title  = {Hanson--{W}right inequality and sub-{G}aussian concentration},
-  year   = {2013},
-  note   = {arXiv:1306.2872}
+@article{rudelson2013hanson,
+  author  = {Rudelson, Mark and Vershynin, Roman},
+  title   = {Hanson--{W}right inequality and sub-{G}aussian concentration},
+  journal = {Electronic Communications in Probability},
+  volume  = {18},
+  pages   = {1--9},
+  year    = {2013},
+  doi     = {10.1214/ECP.v18-2865}
 }
 
+
 % ---- added for the journal version (verified in ../alg/REFS_VERIFY.md, ../alg2/REFS_VERIFY.md; dang2026spade as supplied by the author) ----
-@article{wang2023generator,
+@inproceedings{wang2023generator,
   author = {Wang, Yuanyuan and Geng, Xi and Huang, Wei and Huang, Biwei and Gong, Mingming},
   title = {Generator Identification for Linear {SDE}s with Additive and Multiplicative Noise},
-  journal = {arXiv preprint arXiv:2310.19491},
-  year = {2023}
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume = {36},
+  year = {2023},
+  note = {arXiv:2310.19491}
 }
+
 
 @article{guan2026identifying,
   author = {Guan, Vincent and Janssen, Joseph and Rahmani, Hossein and Warren, Andrew and Zhang, Stephen and Robeva, Elina and Schiebinger, Geoffrey},
@@ -539,7 +555,7 @@
 @inproceedings{peters2009detecting,
   author = {Peters, Jonas and Janzing, Dominik and Gretton, Arthur and Sch{\"o}lkopf, Bernhard},
   title = {Detecting the direction of causal time series},
-  booktitle = {Proceedings of the 26th Annual International Conference on Machine Learning (ICML)},
+  booktitle = {Proceedings of the 26th Annual International Conference on Machine Learning ({ICML})},
   pages = {801--808},
   year = {2009},
   doi = {10.1145/1553374.1553477}
@@ -549,15 +565,18 @@
   author = {Boege, Tobias and Kubjas, Kaie and Misra, Pratik and Solus, Liam},
   title = {Colored {G}aussian directed acyclic graphical models},
   journal = {Journal of the Royal Statistical Society Series B: Statistical Methodology},
+  volume = {88},
+  number = {3},
+  pages = {819--875},
   year = {2025},
-  doi = {10.1093/jrsssb/qkaf068},
-  note = {arXiv:2404.04024}
+  doi = {10.1093/jrsssb/qkaf068}
 }
+
 
 @inproceedings{friedman1998learning,
   author = {Friedman, Nir and Murphy, Kevin and Russell, Stuart},
   title = {Learning the Structure of Dynamic Probabilistic Networks},
-  booktitle = {Proceedings of the 14th Conference on Uncertainty in Artificial Intelligence (UAI)},
+  booktitle = {Proceedings of the 14th Conference on Uncertainty in Artificial Intelligence ({UAI})},
   year = {1998},
   note = {arXiv:1301.7374}
 }
@@ -735,4 +754,25 @@
   pages   = {1269--1286},
   year    = {2003},
   doi     = {10.1111/1468-0262.00447}
+}
+
+@inproceedings{lam2022grasp,
+  author    = {Lam, Wai-Yin and Andrews, Bryan and Ramsey, Joseph},
+  title     = {Greedy relaxations of the sparsest permutation algorithm},
+  booktitle = {Proceedings of the 38th Conference on Uncertainty in Artificial Intelligence ({UAI})},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {180},
+  pages     = {1052--1062},
+  year      = {2022},
+  note      = {arXiv:2206.05421}
+}
+
+@article{shimizu2011directlingam,
+  author  = {Shimizu, Shohei and Inazumi, Takanori and Sogawa, Yasuhiro and Hyv{\"a}rinen, Aapo and Kawahara, Yoshinobu and Washio, Takashi and Hoyer, Patrik O. and Bollen, Kenneth},
+  title   = {{DirectLiNGAM}: A Direct Method for Learning a Linear Non-{G}aussian Structural Equation Model},
+  journal = {Journal of Machine Learning Research},
+  volume  = {12},
+  number  = {33},
+  pages   = {1225--1248},
+  year    = {2011}
 }

@@ -86,7 +86,7 @@ def fig_hero():
                        lambda v, t: "ndr" if (v, t) == target else ("ndh" if (v, t) in R else "nd"),
                        sub, lambda i, j, t: "ar")
     b.append(rf"\node[lab,align=center,text width=4.3cm] at ({x0 + 1.5 * dxb:.2f},-2.4) "
-             rf"{{blue: the {len(R)} relatives of $c_2$ (orange); they share an ancestor with it}};")
+             rf"{{blue and orange: the {len(R)} relatives of $c_2$ (orange, itself included); they share an ancestor with it}};")
     # (c) label-free view
     x1, dxc = 8.6, 0.8
     b.append(rf"\node[labb,anchor=west] at ({x1 - 0.3:.2f},1.35) {{(c) what the learner sees}};")
@@ -353,7 +353,7 @@ def fig_units():
         x = rnd.random() * W
         yy = y + (rnd.random() - 0.5) * 0.75
         b.append(rf"\fill[cAqua!70] ({x:.2f},{yy:.2f}) circle (0.07);")
-    b.append(rf"\node[lab,anchor=west,align=left,text width={tw}cm] at ({W + 0.2:.2f},{y:.2f}) {{120 subgraphs fill 900 station slots with 445 distinct stations (a station is used up to 7 times)}};")
+    b.append(rf"\node[lab,anchor=west,align=left,text width={tw}cm] at ({W + 0.2:.2f},{y:.2f}) {{900 slots per study; 457 and 445 stations, reused up to 8 and 7 times}};")
     y = -3.35  # simulations
     b.append(rf"\node[lab,anchor=east] at (-0.15,{y:.2f}) {{B1, B1-NL}};")
     for i in range(12):
