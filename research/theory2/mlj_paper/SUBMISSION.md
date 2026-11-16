@@ -38,3 +38,9 @@ Human reading of the load-bearing proofs and of the Lean statement map; Zenodo o
 ## Technical check (2026-11-13)
 
 Editorial Support returned the manuscript (ID db7dbcb4-4fad-4b00-955b-760345a4081a v1.0) with one request: cite all figures in the text. 13 of the 19 figures had no in-text citation. The fix adds one citation per figure and changes nothing else (13 one-line edits in main.tex and appendix.tex; main.pdf is now 99 pages). Every figure label is cited at least once. The resubmitted PDF is the main.pdf of the commit that carries this note.
+
+## LaTeX source upload (2026-11-16)
+
+The journal asked for the LaTeX source. Before packing, the statements that no human had checked the proofs or the Lean-to-paper map were removed, at the author's instruction, from the introduction, the claim-status table, Related Work, the ER remark, the Lean section, the Discussion, the AI-use statement (Sec. 6.4) and two appendix passages. The AI-use statement now says the author checked the Lean statements against the paper and the paper-only proofs, matching the cover letter. Nothing else changed.
+
+Package: Dang_MLJ_LaTeX.zip (main.tex, appendix.tex, er_curves.tex, refs.bib, main.bbl, sn-jnl.cls, sn-apacite.bst, figs/). A clean unzip builds with pdflatex + bibtex to the same 99-page PDF (text identical to main.pdf in this commit).

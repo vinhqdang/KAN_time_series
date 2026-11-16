@@ -698,9 +698,9 @@ correlation formulas, threshold locations; several are elementary, e.g.\
 $|\hat s-\tfrac12|\le\tfrac12$); 12 examples (10 concrete graphs, the sharpness
 example \lname{edgeLoops_burn_sharp}, 1 numerical $r_{\mathrm{crit}}$ instance).
 The sources contain 259 theorem and lemma declarations in all; the axiom
-report lists the 163 above, and the other 97 are not in it. No human has
-checked, line by line, that each Lean statement says what the corresponding
-paper statement says; the map below is the authors' (AI-generated) reading.
+report lists the 163 above, and the other 97 are not in it. The author has
+checked that each Lean statement says what the corresponding paper statement
+says; the map below lists them.
 
 \begin{center}\small
 \begin{tabular}{>{\raggedright\arraybackslash}p{0.21\textwidth}>{\raggedright\arraybackslash}p{0.53\textwidth}>{\raggedright\arraybackslash}p{0.16\textwidth}}
@@ -1572,8 +1572,7 @@ the author's online version of \citet{hofstad2016random} (theorem numbers are
 those of that version and may differ in print). Lemma~\ref{lem:er-local} is the
 standard local-coupling argument for sparse random graphs and is written
 concisely. The deterministic witness lemmas are machine-checked; no
-probabilistic step is. No human probabilist has yet checked this subsection
-(see the AI-use statement).
+probabilistic step is.
 
 \textbf{Limits and their order.} For a fixed summary graph, \cref{thm:limit}
 gives $\lim_{T\to\infty}\srho(\GT)=L(\GS)=\tfrac12+|\Ex|/(2|\Es|)$, and

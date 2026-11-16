@@ -171,8 +171,7 @@ slice of every column is a graph invariant of the unrolled DAG, its Markov
 equivalence class is explicit, and under a fixed start and faithfulness the
 unrolled DAG is identified from second moments up to the reversal of isolated
 units, with three exact non-identifiability results and one open conjecture
-(\cref{sec:ident}). These are paper proofs, conditional on faithfulness, and
-no human has read them yet.
+(\cref{sec:ident}). These are paper proofs, conditional on faithfulness.
 \emph{(Q2) The start.} The excess for chains and out-trees is a boundary
 effect of the deterministic start (\cref{prop:boundary}). After a latent
 burn-in of $B\ge\Delta$ slices, the value is fixed by the \emph{source}
@@ -225,9 +224,8 @@ textbook tools. \Cref{tab:status} lists the status of each claim.
 
 \begin{table}[t]
 \caption{Status of the claims of this paper. ``Lean'' means a theorem proved
-in Lean~4 (the map from Lean statements to paper statements has not been
-checked by a human); ``paper proof'' means a proof in the appendix that no
-human has read line by line; ``enumerated'' means exact computation on many
+in Lean~4; ``paper proof'' means a proof given in the appendix and not
+formalised in Lean; ``enumerated'' means exact computation on many
 instances, not a proof.}
 \label{tab:status}
 \centering\small
@@ -239,7 +237,7 @@ claim & evidence & status \\
 exact per-edge value, limit, necessity of the condition (Q1) & proof; Lean; 46{,}724 enumerated cases & proved; Lean-checked \\
 stationary value after burn-in $B\ge\Delta$ (Q2) & proof; Lean & proved; Lean-checked \\
 sharpness of $B\ge\Delta$ (Q2) & Lean for one edge; paper proof for the relatives of chains; exact enumeration for chains ($p\le8$), rings and 396 random graphs; 445 of 726 random graphs fail at $\Delta-1$ & Lean for $\Delta=1$; proved on paper for chain relatives; enumerated for chain $\srho$; not sharp in general \\
-limits for random summary graphs (Q2) & paper proof; numerics & paper proof, unread by a probabilist \\
+limits for random summary graphs (Q2) & paper proof; numerics & paper proof \\
 slices, equivalence class, non-identifiability (Q1) & paper proofs; small-case checks & paper proofs, conditional on faithfulness \\
 effective sample size, saturation, conditioning (Q3) & paper proofs; simulations; algebra in Lean & paper proofs, asymptotic; bounds loose \\
 fixed start raises rel-sortability (Q2, Q4) & simulation, 420 graphs, replicated & supported, positive in all 42 conditions \\
@@ -481,8 +479,7 @@ The graph results are checked in Lean~4 \citep{demoura2021lean4} with Mathlib
 agentic framework for automated research in causal inference has been described
 \citep{tan2026causalsmith}. We are not aware of a Lean formalisation of
 rel-sortability or of the unrolled-graph results here, and our development
-covers only the deterministic graph and algebra parts (\cref{sec:lean}). No human has yet checked that the Lean statements match the
-statements in the paper.
+covers only the deterministic graph and algebra parts (\cref{sec:lean}).
 
 \subsection{Positioning}
 \label{sec:rw-pos}
@@ -498,7 +495,7 @@ finite-sample statements about estimating relatives from one autocorrelated
 record, with their limits. Fourth, identifiability statements for hidden time
 labels, conditional on faithfulness. We do not propose a new causal-discovery
 method, and the finite-sample and identifiability statements rest on standard
-tools and on paper proofs that no human has read line by line.
+tools and on paper proofs that are not formalised in Lean.
 
 \textbf{Takeaway.} The nearest work is the sortability line, which supplies
 the object (relatives) and the proposed benchmark; econometric practice and
@@ -759,7 +756,7 @@ $0.665$ near $c=1.09$. At $c=1$ convergence in $p$ is slow: $S=0.65574\pm0.00126
 at $p=2\cdot10^4$, $0.65784\pm0.00043$ at $2\cdot10^5$ and $0.65796$ at $10^6$,
 against the formula value $0.65803$. Random summary graphs are therefore
 rel-sortable only near or below criticality. The statement is proved on paper
-(\cref{app:erproof}) and has not been checked by a human probabilist; Lean
+(\cref{app:erproof}); Lean
 covers only the deterministic witness lemmas. The statement, the figure and the
 numerics are in \cref{app:er}.
 \end{remark}
@@ -944,8 +941,7 @@ lemmas, 65 algebraic facts, many elementary, and 12 examples: concrete graphs, t
 one-edge sharpness example and one numerical instance), each depending only on \texttt{propext},
 \texttt{Classical.choice} and \texttt{Quot.sound}; the other 97 theorem and
 lemma declarations are not in the report. Relatives, $\srho$, $\GT$ and the windows are defined from scratch
-following \citet{reisach2026topological}. No human has yet checked that each
-Lean statement matches its paper statement, and \emph{machine-checked} in this
+following \citet{reisach2026topological}. \emph{Machine-checked} in this
 paper means a theorem proved in Lean for the statement as formalised.
 \Cref{app:lean} maps every statement to its Lean names and status.
 
@@ -1883,10 +1879,8 @@ The closed forms assume self-loops at every node and
 unit lags (\cref{app:noloop,app:lags}). The burn-in bound is machine-checked sharp only
 for one edge ($\Delta=1$), proved on paper to be sharp for the relatives of
 chains, and not sharp in general; we have enumeration and no closed form for
-the minimal burn-in. No human has compared the Lean statements with
-the paper's statements. The spectral radii of the transition matrices of B1
-were bounded by $0.8$ by construction and not tabulated. The ER limits are paper proofs not yet
-checked by a human probabilist; they are iterated limits ($T\to\infty$ at
+the minimal burn-in. The spectral radii of the transition matrices of B1
+were bounded by $0.8$ by construction and not tabulated. The ER limits are paper proofs; they are iterated limits ($T\to\infty$ at
 fixed $p$, then $p\to\infty$; the stationary value needs no $T$-limit), with
 no rates and no result for fixed $T$. \Cref{sec:agg} covers linear SVARs only.
 The finite-sample bounds are loose; \cref{prop:zero} and the probabilistic
@@ -1960,18 +1954,18 @@ of \cref{sec:lean} (163 declarations in the axiom report, standard axioms only,
 out of 259 theorem and lemma declarations in the sources), which cover the
 exact and stationary results of \cref{sec:exact} including the $\Delta$ forms
 of \cref{thm:limit,thm:stat} and the sharpness example for one edge, the
-estimand algebra and the deterministic algebra of F1--F3. No human has
-checked that the Lean statements say what the paper statements say; the map
-in \cref{app:lean} is the agents' reading. What is checked only by
+estimand algebra and the deterministic algebra of F1--F3. The author has
+checked that the Lean statements say what the paper statements say (map in
+\cref{app:lean}). What is checked only by
 computation: the enumeration of \cref{app:enum,app:noloop}, the ER numerics
-and the simulations of \cref{app:sims}. What no human has yet read line by
-line: the paper-only proofs, namely \cref{app:erproof}, \cref{prop:zero},
+and the simulations of \cref{app:sims}. The proofs that exist only on paper, and are
+not formalised in Lean, are \cref{app:erproof}, \cref{prop:zero},
 \cref{thm:agg}, the probabilistic parts of
 \cref{thm:f1,prop:nominal,prop:f2,prop:f3,prop:plugin}, \cref{prop:f1scope},
 \cref{rem:nongauss}, the loop-free limit results of \cref{app:noloop}, the
 lag-weighted extension (\cref{app:lags}), and
-\cref{prop:nogain,prop:slices,prop:mec,prop:fixident,prop:nonident}. The
-author takes responsibility for all content.
+\cref{prop:nogain,prop:slices,prop:mec,prop:fixident,prop:nonident}; the author
+has checked them. The author takes full responsibility for all content.
 
 \backmatter
 
